@@ -1,0 +1,17 @@
+# Capstone source docs — kept locally, not committed (copyright / not code)
+*.pdf
+
+# Env / secrets
+.env
+.env.*
+
+# Go build output
+/bin/
+/dist/
+*.test
+*.out
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
