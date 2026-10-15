@@ -21,6 +21,7 @@ Each package owns one concern (separation of concerns):
 | Package | Responsibility |
 |---|---|
 | `cmd/server` | Entry point; wires packages together and serves HTTP |
+| `internal/config` | Load and validate runtime configuration from the environment |
 | `internal/githubclient` | GitHub API: metadata, file tree, contents; auth, rate limits, errors |
 | `internal/crawler` | Classify repo type, select informative files, enforce limits |
 | `internal/preview` | Build evidence-linked claims + calibrated uncertainty |
@@ -32,8 +33,15 @@ Each package owns one concern (separation of concerns):
 
 ```sh
 go build ./...        # build everything
-go run ./cmd/server   # run the backend
 go test ./...         # run tests
+
+cp .env.example .env  # then fill in GITHUB_TOKEN
+export GITHUB_TOKEN=ghp_...   # or source your .env
+go run ./cmd/server   # run the backend (defaults to :8080)
+
+curl localhost:8080/healthz   # -> {"status":"ok"}
 ```
 
-Requires Go 1.25+. Set `GITHUB_TOKEN` in your environment (see `.env`).
+Requires Go 1.25+. Configuration is read from the environment (see
+`.env.example`): `GITHUB_TOKEN` is **required** and the server refuses to
+start without it; `PORT` is optional and defaults to `8080`.
