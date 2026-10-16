@@ -22,12 +22,19 @@ Each package owns one concern (separation of concerns):
 |---|---|
 | `cmd/server` | Entry point; wires packages together and serves HTTP |
 | `internal/config` | Load and validate runtime configuration from the environment |
+| `internal/apimodel` | The JSON contract served to the app (feed, previews, claims, profile) |
 | `internal/githubclient` | GitHub API: metadata, file tree, contents; auth, rate limits, errors |
 | `internal/crawler` | Classify repo type, select informative files, enforce limits |
 | `internal/preview` | Build evidence-linked claims + calibrated uncertainty |
 | `internal/selection` | Choose & rank repos for the feed (curated now; personalized later) |
 | `internal/store` | Persist built previews (and later, user profiles) |
 | `internal/feed` | Serve the feed JSON to the app |
+
+## API contract
+
+The JSON served to the app is documented in [`docs/api-contract.md`](docs/api-contract.md),
+defined in Go under `internal/apimodel`, with a canonical sample at
+`internal/apimodel/testdata/feed_example.json`.
 
 ## Develop
 

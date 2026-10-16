@@ -1,0 +1,154 @@
+{
+  "items": [
+    {
+      "id": "orbit",
+      "owner": "acme",
+      "name": "orbit",
+      "slug": "acme/orbit",
+      "kind": "frontend",
+      "language": "TypeScript",
+      "headline": "Your work. One clear view.",
+      "description": "A productivity dashboard that pulls tasks from several tools into a single web view.",
+      "github_url": "https://github.com/acme/orbit",
+      "license": "MIT",
+      "media": {
+        "kind": "narrated_video",
+        "evidence_mode": "observed_running",
+        "caption": "The dashboard loading a live board.",
+        "url": "https://cdn.example.com/previews/orbit.mp4"
+      },
+      "signals": [
+        {
+          "value": "TypeScript",
+          "reason": "you_know"
+        },
+        {
+          "value": "Go",
+          "reason": "you_want_to_learn"
+        },
+        {
+          "value": "Developer tools",
+          "reason": "domain_match"
+        }
+      ],
+      "metrics": [
+        {
+          "key": "last_commit",
+          "label": "since last commit",
+          "value": "3d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident"
+        },
+        {
+          "key": "good_first_issues",
+          "label": "good first issues",
+          "value": "12",
+          "source": {
+            "kind": "api",
+            "ref": "GET /repos/acme/orbit/issues?labels=good+first+issue"
+          },
+          "confidence": "confident"
+        },
+        {
+          "key": "contributing_guide",
+          "label": "contributing guide",
+          "value": "Yes",
+          "source": {
+            "kind": "file",
+            "ref": "CONTRIBUTING.md"
+          },
+          "confidence": "confident"
+        }
+      ],
+      "fit": {
+        "summary": "TypeScript you know, Go you want",
+        "dimensions": [
+          {
+            "name": "Matches your skills",
+            "level": 3,
+            "word": "Strong"
+          },
+          {
+            "name": "Teaches you",
+            "level": 2,
+            "word": "Go"
+          },
+          {
+            "name": "Setup effort",
+            "level": 2,
+            "word": "Medium"
+          },
+          {
+            "name": "Way in for newcomers",
+            "level": 3,
+            "word": "Good"
+          }
+        ]
+      },
+      "sections": [
+        {
+          "kind": "idea",
+          "title": "What it does",
+          "body": "Orbit is a dashboard that unifies tasks from issue trackers into one web view."
+        },
+        {
+          "kind": "how",
+          "title": "How it works",
+          "body": "A React app talks to a Go API that stores items in PostgreSQL.",
+          "claims": [
+            {
+              "label": "Frontend is TypeScript and React",
+              "source": {
+                "kind": "file",
+                "ref": "apps/web/package.json",
+                "lines": "12-18"
+              },
+              "excerpt": "\"react\": \"^18.2\",\n\"next\": \"^14.0\"",
+              "explanation": "The web app lists React and Next.js as dependencies.",
+              "supports": "the stack as written",
+              "limit": "does not prove runtime behavior",
+              "confidence": "confident",
+              "stance": "match"
+            },
+            {
+              "label": "API is Go",
+              "source": {
+                "kind": "file",
+                "ref": "go.mod",
+                "lines": "1-5"
+              },
+              "excerpt": "module github.com/acme/orbit",
+              "explanation": "The server module is written in Go.",
+              "supports": "the API language",
+              "limit": "does not prove the API runs",
+              "confidence": "confident",
+              "stance": "stretch"
+            }
+          ],
+          "evidence_mode": "not_executed"
+        },
+        {
+          "kind": "decision",
+          "title": "Your call",
+          "claims": [
+            {
+              "label": "No tests found for the API",
+              "source": {
+                "kind": "search",
+                "ref": "glob: server/**/*_test.go"
+              },
+              "explanation": "A search for Go test files under the server turned up nothing.",
+              "limit": "absence of test files is not proof there are no tests",
+              "confidence": "uncertain",
+              "stance": "unknown"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "next_cursor": "eyJvZmZzZXQiOjF9"
+}
