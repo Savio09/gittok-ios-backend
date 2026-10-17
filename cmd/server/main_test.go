@@ -5,13 +5,22 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
+
+	"github.com/Savio09/gittok-ios-backend/internal/feed"
 )
+
+// testRouter builds the router with a feed service whose fetcher is never
+// exercised by these tests (they only hit /healthz).
+func testRouter() http.Handler {
+	return newRouter(feed.NewService(nil, nil, time.Minute))
+}
 
 func TestHealthz(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/healthz", nil)
 	rec := httptest.NewRecorder()
 
-	newRouter().ServeHTTP(rec, req)
+	testRouter().ServeHTTP(rec, req)
 
 	if rec.Code != http.StatusOK {
 		t.Fatalf("status = %d, want %d", rec.Code, http.StatusOK)
@@ -33,7 +42,7 @@ func TestHealthzRejectsNonGET(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "/healthz", nil)
 	rec := httptest.NewRecorder()
 
-	newRouter().ServeHTTP(rec, req)
+	testRouter().ServeHTTP(rec, req)
 
 	if rec.Code != http.StatusMethodNotAllowed {
 		t.Errorf("status = %d, want %d", rec.Code, http.StatusMethodNotAllowed)

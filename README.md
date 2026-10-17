@@ -47,7 +47,12 @@ export GITHUB_TOKEN=ghp_...   # or source your .env
 go run ./cmd/server   # run the backend (defaults to :8080)
 
 curl localhost:8080/healthz   # -> {"status":"ok"}
+curl localhost:8080/v1/feed   # -> live feed of the curated repos (see API contract)
 ```
+
+The feed currently serves live GitHub **metadata** for a curated set of repos
+(`internal/selection`); the evidence layer (claims, fit, walkthrough) is filled
+in by later tickets.
 
 Requires Go 1.25+. Configuration is read from the environment (see
 `.env.example`): `GITHUB_TOKEN` is **required** and the server refuses to

@@ -16,6 +16,9 @@ import (
 	"time"
 
 	"github.com/Savio09/gittok-ios-backend/internal/config"
+	"github.com/Savio09/gittok-ios-backend/internal/feed"
+	"github.com/Savio09/gittok-ios-backend/internal/githubclient"
+	"github.com/Savio09/gittok-ios-backend/internal/selection"
 )
 
 func main() {
@@ -24,9 +27,12 @@ func main() {
 		log.Fatalf("gittok: invalid configuration: %v", err)
 	}
 
+	gh := githubclient.New(cfg.GitHubToken, githubclient.WithUserAgent("gittok-backend"))
+	feedSvc := feed.NewService(gh, selection.Curated(), 10*time.Minute)
+
 	srv := &http.Server{
 		Addr:              ":" + strconv.Itoa(cfg.Port),
-		Handler:           newRouter(),
+		Handler:           newRouter(feedSvc),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
@@ -66,11 +72,13 @@ func run(srv *http.Server) error {
 	}
 }
 
-// newRouter builds the HTTP handler for the backend. Feed endpoints are added
-// in later tickets; for now it exposes only the operational health check.
-func newRouter() http.Handler {
+// newRouter builds the HTTP handler for the backend: the operational health
+// check and the v1 feed. Further v1 endpoints (preview, profile, events) are
+// added in later tickets.
+func newRouter(feedSvc *feed.Service) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", handleHealthz)
+	mux.Handle("GET /v1/feed", feedSvc.Handler())
 	return mux
 }
 

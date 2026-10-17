@@ -18,6 +18,7 @@ type Repo struct {
 	License     string    // SPDX id (e.g. "MIT"), or license name, or empty
 	HTMLURL     string    // the repo's github.com page
 	PushedAt    time.Time // last push (proxy for last-commit activity)
+	Topics      []string  // repo topics, used to classify the repo
 	Archived    bool
 	Fork        bool
 }
@@ -38,6 +39,7 @@ type repoPayload struct {
 	} `json:"license"`
 	HTMLURL  string    `json:"html_url"`
 	PushedAt time.Time `json:"pushed_at"`
+	Topics   []string  `json:"topics"`
 	Archived bool      `json:"archived"`
 	Fork     bool      `json:"fork"`
 }
@@ -60,6 +62,7 @@ func (c *Client) GetRepo(ctx context.Context, owner, name string) (Repo, error) 
 		License:     licenseLabel(p.License),
 		HTMLURL:     p.HTMLURL,
 		PushedAt:    p.PushedAt,
+		Topics:      p.Topics,
 		Archived:    p.Archived,
 		Fork:        p.Fork,
 	}, nil
