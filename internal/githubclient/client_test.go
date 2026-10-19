@@ -42,6 +42,7 @@ func TestGetRepoMapsFields(t *testing.T) {
 		"license": { "spdx_id": "MIT", "name": "MIT License" },
 		"html_url": "https://github.com/acme/orbit",
 		"pushed_at": "2026-10-10T12:00:00Z",
+		"default_branch": "main",
 		"archived": false,
 		"fork": false
 	}`

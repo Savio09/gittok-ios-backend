@@ -9,18 +9,19 @@ import (
 // Repo is the subset of GitHub repository metadata the backend uses. It is a
 // stable, typed shape; callers never see GitHub's raw JSON.
 type Repo struct {
-	Owner       string
-	Name        string
-	FullName    string // "owner/name"
-	Description string
-	Language    string // primary language, may be empty
-	Stars       int
-	License     string    // SPDX id (e.g. "MIT"), or license name, or empty
-	HTMLURL     string    // the repo's github.com page
-	PushedAt    time.Time // last push (proxy for last-commit activity)
-	Topics      []string  // repo topics, used to classify the repo
-	Archived    bool
-	Fork        bool
+	Owner         string
+	Name          string
+	FullName      string // "owner/name"
+	Description   string
+	Language      string // primary language, may be empty
+	Stars         int
+	License       string    // SPDX id (e.g. "MIT"), or license name, or empty
+	HTMLURL       string    // the repo's github.com page
+	PushedAt      time.Time // last push (proxy for last-commit activity)
+	Topics        []string  // repo topics, used to classify the repo
+	DefaultBranch string    // e.g. "main"; the ref to fetch the file tree from
+	Archived      bool
+	Fork          bool
 }
 
 // repoPayload mirrors the GitHub /repos/{owner}/{repo} JSON we read.
@@ -37,11 +38,12 @@ type repoPayload struct {
 		SPDXID string `json:"spdx_id"`
 		Name   string `json:"name"`
 	} `json:"license"`
-	HTMLURL  string    `json:"html_url"`
-	PushedAt time.Time `json:"pushed_at"`
-	Topics   []string  `json:"topics"`
-	Archived bool      `json:"archived"`
-	Fork     bool      `json:"fork"`
+	HTMLURL       string    `json:"html_url"`
+	PushedAt      time.Time `json:"pushed_at"`
+	Topics        []string  `json:"topics"`
+	DefaultBranch string    `json:"default_branch"`
+	Archived      bool      `json:"archived"`
+	Fork          bool      `json:"fork"`
 }
 
 // GetRepo fetches metadata for a single repository. It returns ErrNotFound when
@@ -53,18 +55,19 @@ func (c *Client) GetRepo(ctx context.Context, owner, name string) (Repo, error) 
 		return Repo{}, err
 	}
 	return Repo{
-		Owner:       p.Owner.Login,
-		Name:        p.Name,
-		FullName:    p.FullName,
-		Description: p.Description,
-		Language:    p.Language,
-		Stars:       p.StargazersCount,
-		License:     licenseLabel(p.License),
-		HTMLURL:     p.HTMLURL,
-		PushedAt:    p.PushedAt,
-		Topics:      p.Topics,
-		Archived:    p.Archived,
-		Fork:        p.Fork,
+		Owner:         p.Owner.Login,
+		Name:          p.Name,
+		FullName:      p.FullName,
+		Description:   p.Description,
+		Language:      p.Language,
+		Stars:         p.StargazersCount,
+		License:       licenseLabel(p.License),
+		HTMLURL:       p.HTMLURL,
+		PushedAt:      p.PushedAt,
+		Topics:        p.Topics,
+		DefaultBranch: p.DefaultBranch,
+		Archived:      p.Archived,
+		Fork:          p.Fork,
 	}, nil
 }
 
