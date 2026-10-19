@@ -4,20 +4,31 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"math"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
 
 const defaultBaseURL = "https://api.github.com"
 
+const (
+	defaultMaxRetries  = 3
+	defaultBackoffBase = 500 * time.Millisecond
+	maxBackoff         = 30 * time.Second
+)
+
 // Client talks to the GitHub REST API. It is safe for concurrent use. Construct
 // one with New and share it; it owns no per-request state.
 type Client struct {
-	httpClient *http.Client
-	token      string
-	baseURL    string
-	userAgent  string
+	httpClient  *http.Client
+	token       string
+	baseURL     string
+	userAgent   string
+	maxRetries  int
+	backoffBase time.Duration
+	sleep       func(time.Duration) // injectable so tests don't actually wait
 }
 
 // Option configures a Client. Options exist mainly so tests can point the
@@ -43,15 +54,38 @@ func WithUserAgent(ua string) Option {
 	return func(c *Client) { c.userAgent = ua }
 }
 
+// WithMaxRetries sets how many times a transient failure (5xx, 429, secondary
+// rate limit, transport error) is retried before giving up. Zero disables
+// retries.
+func WithMaxRetries(n int) Option {
+	return func(c *Client) {
+		if n >= 0 {
+			c.maxRetries = n
+		}
+	}
+}
+
+// WithBackoffBase sets the base delay for exponential backoff between retries.
+func WithBackoffBase(d time.Duration) Option {
+	return func(c *Client) {
+		if d > 0 {
+			c.backoffBase = d
+		}
+	}
+}
+
 // New returns a Client authenticated with token. The token may be empty for
 // unauthenticated access, but GitHub's low anonymous rate limit makes that
 // impractical, so the backend always supplies one.
 func New(token string, opts ...Option) *Client {
 	c := &Client{
-		httpClient: &http.Client{Timeout: 15 * time.Second},
-		token:      token,
-		baseURL:    defaultBaseURL,
-		userAgent:  "gittok-backend",
+		httpClient:  &http.Client{Timeout: 15 * time.Second},
+		token:       token,
+		baseURL:     defaultBaseURL,
+		userAgent:   "gittok-backend",
+		maxRetries:  defaultMaxRetries,
+		backoffBase: defaultBackoffBase,
+		sleep:       time.Sleep,
 	}
 	for _, opt := range opts {
 		opt(c)
@@ -60,12 +94,49 @@ func New(token string, opts ...Option) *Client {
 }
 
 // get issues a GET for path (joined to the base URL) and decodes a JSON body
-// into v. It centralizes headers, auth, and the mapping of HTTP status codes
-// onto this package's typed errors, so the typed methods stay small.
+// into v. It centralizes headers, auth, status-to-typed-error mapping, and
+// retry with exponential backoff for transient failures. Terminal outcomes
+// (success, 404, primary rate limit, other 4xx) return immediately; transient
+// ones (5xx, 429, secondary rate limit, transport errors) are retried up to
+// maxRetries, honoring a Retry-After header when present.
 func (c *Client) get(ctx context.Context, path string, v any) error {
+	var lastErr error
+	var retryAfter time.Duration
+
+	for attempt := 0; attempt <= c.maxRetries; attempt++ {
+		if attempt > 0 {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			default:
+			}
+			c.sleep(backoffDelay(attempt, retryAfter, c.backoffBase))
+			retryAfter = 0
+		}
+
+		resp, err := c.doOnce(ctx, path)
+		if err != nil {
+			lastErr = err // transport error — transient, retry
+			continue
+		}
+
+		done, ra, err := classify(resp, c.baseURL+path, v)
+		resp.Body.Close()
+		if done {
+			return err
+		}
+		lastErr = err
+		retryAfter = ra
+	}
+	return lastErr
+}
+
+// doOnce performs a single GET. The caller is responsible for closing the
+// response body.
+func (c *Client) doOnce(ctx context.Context, path string) (*http.Response, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.baseURL+path, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	req.Header.Set("Accept", "application/vnd.github+json")
 	req.Header.Set("X-GitHub-Api-Version", "2022-11-28")
@@ -73,32 +144,63 @@ func (c *Client) get(ctx context.Context, path string, v any) error {
 	if c.token != "" {
 		req.Header.Set("Authorization", "Bearer "+c.token)
 	}
+	return c.httpClient.Do(req)
+}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
+// classify interprets one response. It returns done=true for a terminal outcome
+// (with err nil on success or the typed error otherwise) and done=false for a
+// transient one that should be retried (with the suggested Retry-After delay).
+func classify(resp *http.Response, url string, v any) (done bool, retryAfter time.Duration, err error) {
 	switch {
 	case resp.StatusCode >= 200 && resp.StatusCode < 300:
-		if err := json.NewDecoder(resp.Body).Decode(v); err != nil {
-			return err
+		if decErr := json.NewDecoder(resp.Body).Decode(v); decErr != nil {
+			return true, 0, decErr
 		}
-		return nil
+		return true, 0, nil
+
 	case resp.StatusCode == http.StatusNotFound:
-		return ErrNotFound
+		return true, 0, ErrNotFound
+
 	case resp.StatusCode == http.StatusForbidden && resp.Header.Get("X-RateLimit-Remaining") == "0":
-		return ErrRateLimited
-	case resp.StatusCode == http.StatusTooManyRequests:
-		return ErrRateLimited
+		// Primary rate limit: the quota is spent and resets far in the future,
+		// so retrying now is pointless — fail fast with a distinct error.
+		return true, 0, ErrRateLimited
+
+	case resp.StatusCode == http.StatusTooManyRequests ||
+		(resp.StatusCode == http.StatusForbidden && resp.Header.Get("Retry-After") != ""):
+		// Secondary / abuse rate limit: transient, honor Retry-After and retry.
+		return false, parseRetryAfter(resp.Header.Get("Retry-After")), ErrRateLimited
+
+	case resp.StatusCode >= 500:
+		return false, 0, &APIError{StatusCode: resp.StatusCode, URL: url, Message: messageFromBody(resp.Body)}
+
 	default:
-		return &APIError{
-			StatusCode: resp.StatusCode,
-			URL:        c.baseURL + path,
-			Message:    messageFromBody(resp.Body),
-		}
+		return true, 0, &APIError{StatusCode: resp.StatusCode, URL: url, Message: messageFromBody(resp.Body)}
 	}
+}
+
+// backoffDelay returns the wait before attempt n (1-based). It uses exponential
+// backoff from base, capped, and never less than a Retry-After hint.
+func backoffDelay(attempt int, retryAfter, base time.Duration) time.Duration {
+	exp := time.Duration(float64(base) * math.Pow(2, float64(attempt-1)))
+	if exp > maxBackoff {
+		exp = maxBackoff
+	}
+	if retryAfter > exp {
+		return retryAfter
+	}
+	return exp
+}
+
+// parseRetryAfter reads a Retry-After header expressed as a number of seconds.
+func parseRetryAfter(v string) time.Duration {
+	if v == "" {
+		return 0
+	}
+	if secs, err := strconv.Atoi(strings.TrimSpace(v)); err == nil && secs >= 0 {
+		return time.Duration(secs) * time.Second
+	}
+	return 0
 }
 
 // messageFromBody best-effort extracts GitHub's "message" field from an error
