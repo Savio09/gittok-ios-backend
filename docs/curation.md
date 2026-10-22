@@ -14,9 +14,20 @@ observed behavior via a sandbox run or agent crawl — so the app still works wh
 thin, stale, or missing. The curated set therefore **deliberately includes repos with
 weak or missing READMEs** to prove the analysis holds without them.
 
-## Selection criteria (hard gates)
+## Two reasons to engage → two selection tracks
 
-A candidate repository must be:
+GitTok surfaces repos a developer might engage with for **two different reasons**, so
+curation has two tracks:
+
+- **Track A — public discovery (popularity-gated).** Unfamiliar public OSS the user has
+  no prior connection to. Popularity is a reasonable proxy for "worth a stranger's time."
+- **Track B — personal / known-author.** Repos the user has a *personal* reason to engage
+  with — a **friend's or collaborator's project, or your own** — that they may want to read
+  or contribute to regardless of stars. Popularity is irrelevant here; the reason is social.
+  These repos very often have **no README**, which makes Track B the ideal
+  README-independence test.
+
+### Track A hard gates
 
 - **Public** and **≥ 1,000 stars**
 - **Pushed within the last 30 days** (actively maintained)
@@ -24,6 +35,15 @@ A candidate repository must be:
 - **Not a fork** and **not archived**
 - **Enough code signal to analyze** — a real software project, not a docs-only,
   awesome-list, or assets-only repository
+
+### Track B gates (relaxed)
+
+- The **star floor and strict-license gates do not apply** — the reason to surface it is
+  personal, not popular.
+- Still required: **not archived**, **real code signal** (a genuine project, not an empty
+  or assets-only repo), and a **real personal/social reason** to surface it.
+- Empirically, even weak-README public repos are hard to find above 1k stars — essentially
+  every popular repo has a README. Track B is where the **no/stub-README** cases come from.
 
 ## Set composition
 
@@ -34,9 +54,10 @@ A candidate repository must be:
   **languages**, so the analysis is exercised across repo shapes
 
 > Note on the live feed vs the gold-standard set: the Sprint-1 live `/v1/feed` currently
-> serves four README-rich repos (excalidraw, pocketbase, cli/cli, starship). The
-> gold-standard set keeps README-rich coverage **and adds ≥2 README-poor repos** so both
-> cases are tested. Final picks are made in G12.
+> serves four README-rich **Track A** repos (excalidraw, pocketbase, cli/cli, starship).
+> The gold-standard set keeps that README-rich coverage **and adds ≥2 README-poor repos
+> drawn from Track B** (personal/known-author repos — e.g. from Declan's own profile),
+> since popular repos essentially never lack a README. Final picks are made in G12.
 
 ## Candidate record (fill one row per repo in G12)
 
