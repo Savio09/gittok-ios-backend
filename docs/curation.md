@@ -59,11 +59,19 @@ curation has two tracks:
 > drawn from Track B** (personal/known-author repos — e.g. from Declan's own profile),
 > since popular repos essentially never lack a README. Final picks are made in G12.
 
-## Candidate record (fill one row per repo in G12)
+## Selected set (G12 — recorded against the criteria, 2026-10-21)
 
-| owner/repo | stars | last push | license | kind | README strength | FE/BE | why it qualifies |
-|---|---|---|---|---|---|---|---|
-| … | … | … | … | web/service/lib/cli | none / stub / weak / strong | FE/BE | … |
+| owner/repo | track | stars | last push | license | kind | README | FE/BE | why it qualifies |
+|---|---|---|---|---|---|---|---|---|
+| `excalidraw/excalidraw` | A | 134k | 2026-10-17 | MIT | web app | strong | FE | README-rich, technically deep frontend; passes all Track A gates |
+| `pocketbase/pocketbase` | A | 61k | 2026-10-14 | MIT | backend service | strong | BE | README-rich, technically deep backend; passes all Track A gates |
+| `Savio09/plantly` | B | 0 | 2026-06-18 | none | mobile app | stub (678 B) | FE | personal repo, stub README → README-independence test (FE) |
+| `Savio09/face-recognition` | B | 1 | 2026-05-08 | none | ML / service | stub (330 B) | BE | personal repo, stub README → README-independence test (BE) |
+
+The two Track B repos deliberately trade architectural depth for the no/stub-README case;
+depth is covered by the Track A pair. Optional swap on record: `face-recognition` →
+`Savio09/twyntunes-backend` (a Go service — more technical, but has a ~4 KB README, so it
+would test depth rather than README-independence).
 
 ## Notes template — the gold-standard preview per repo (G13)
 
