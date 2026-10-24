@@ -1,9 +1,23 @@
 # Repository curation — selection criteria & notes template (G11)
 
 Status: **draft for Declan's review** (ticket SAV-14, `own:declan`, LO **#rightproblem**).
-Defines (1) which public repos qualify for the curated / gold-standard set, and (2) the
-notes template used to write each repo's reference ("gold standard") preview — the
-ground truth the backend's generated previews (M5, G14–G19) are measured against.
+Defines (1) which repos make up the curated set, and (2) the notes template used to write
+each repo's hand-made preview.
+
+**Primary purpose — user testing of the medium (from the proposal).** The four hand-made
+previews are the **stimulus material for the GitTok arm** of a user study that compares
+GitTok's medium against GitHub's native workflow, to find which better helps a developer
+reach a well-calibrated *"worth chasing or skip it"* decision, and with less effort. They
+are made **by hand now** because the preview *generator* (M5, G14–G19) does not exist yet,
+and validating the medium concept before automating it is deliberate sequencing. This is a
+`#medium` deliverable. For the comparison to be valid, each preview must faithfully embody
+GitTok's thesis (reader-relative, evidence-grounded, calibrated) — which is why the content
+is Declan's judgment, not generated.
+
+**Secondary / later reuse — gold standard for the automated eval (#outcomeanalysis).** Once
+G14–G19 produce machine previews, these same hand-made previews double as the **ground
+truth** those generated previews are measured against. The "a reference must not be written
+by an LLM" constraint applies at *that* later stage, not to making the stimulus now.
 
 ## Why README-independence
 
@@ -98,12 +112,18 @@ what makes the gold standard comparable to the backend's output file-for-file.
 8. **Evidence index** — the list of files/sources consulted (a "SOURCE INDEX"), so the gold
    standard is reproducible and the backend's cited files can be compared against it.
 
-## How the gold standard is used (feeds #outcomeanalysis)
+## How these previews are used
 
-- G13 fills this template **by hand** (plus a local run where feasible + a short recording)
-  → the **ground truth**.
-- The backend (G14–G19) generates previews into the same `apimodel` shape.
-- Evaluation compares generated vs gold standard on three axes:
+**Now — user-testing stimulus (#medium, primary).** G13 fills this template **by hand**
+(plus a local run where feasible + a short recording) to produce the GitTok-arm stimulus.
+The study shows participants each repo via GitTok (these previews) vs GitHub's native view
+and measures decision quality, confidence calibration, and effort/time on the
+*"worth chasing or skip"* call. Declan owns the study design, protocol, sessions, and
+interpretation.
+
+**Later — automated-eval ground truth (#outcomeanalysis, secondary reuse).** Once the
+backend (G14–G19) generates previews into the same `apimodel` shape, these hand-made
+previews become the reference it is scored against on three axes:
   - **Claim grounding** — does each cited file actually support its claim? (a blind
     LLM judge can score this, as GitDiagram's `diagram-evidence` eval does)
   - **Coverage** — are the important components/claims present?
