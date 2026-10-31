@@ -15,11 +15,18 @@ type TreeEntry struct {
 
 // FileTree is a repository's file listing, bounded by TreeLimits. Truncated is
 // true when the listing is incomplete — either GitHub truncated a very large
-// tree, or the entry cap clipped it. (Depth filtering is a deliberate scope and
-// does not set Truncated.)
+// tree, or the entry cap clipped it. DepthLimited is true when the MaxDepth
+// scope actually dropped one or more deeper entries.
+//
+// The two flags are kept distinct because they bound a reader differently:
+// Truncated means "there may be more at any depth"; DepthLimited means "the
+// shallow levels are complete but anything below MaxDepth was not listed". Both
+// mean an absence ("no main package anywhere") cannot be asserted from this
+// listing alone. (Depth filtering does not set Truncated.)
 type FileTree struct {
-	Entries   []TreeEntry
-	Truncated bool
+	Entries      []TreeEntry
+	Truncated    bool
+	DepthLimited bool
 }
 
 // TreeLimits bounds how much of a tree GetTree returns, so a huge repository
@@ -60,6 +67,7 @@ func (c *Client) GetTree(ctx context.Context, owner, name, ref string, limits Tr
 	entries := make([]TreeEntry, 0, len(p.Tree))
 	for _, e := range p.Tree {
 		if limits.MaxDepth > 0 && depth(e.Path) > limits.MaxDepth {
+			tree.DepthLimited = true
 			continue
 		}
 		entries = append(entries, TreeEntry{Path: e.Path, Type: e.Type, Size: e.Size})

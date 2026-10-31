@@ -142,14 +142,15 @@ func TestClassify(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			got := Classify(c.language, c.paths, c.manifests)
+			got := Classify(InspectionFromSources(c.language, c.paths, c.manifests))
+			evidence := got.Evidence()
 			if got.Kind != c.wantKind {
-				t.Errorf("Kind = %q, want %q (evidence: %v)", got.Kind, c.wantKind, got.Evidence)
+				t.Errorf("Kind = %q, want %q (evidence: %v)", got.Kind, c.wantKind, evidence)
 			}
-			if !evidenceContains(got.Evidence, c.wantEvidence) {
-				t.Errorf("evidence %v, want an entry containing %q", got.Evidence, c.wantEvidence)
+			if !evidenceContains(evidence, c.wantEvidence) {
+				t.Errorf("evidence %v, want an entry containing %q", evidence, c.wantEvidence)
 			}
-			if len(got.Evidence) == 0 {
+			if len(evidence) == 0 {
 				t.Errorf("Evidence is empty; every classification must name its signals")
 			}
 		})
@@ -158,7 +159,7 @@ func TestClassify(t *testing.T) {
 
 // TestClassifyKindIsValid guards that Classify only ever returns a known kind.
 func TestClassifyKindIsValid(t *testing.T) {
-	got := Classify("Go", []string{"go.mod", "lib.go"}, map[string]string{"go.mod": "module x\n"})
+	got := Classify(InspectionFromSources("Go", []string{"go.mod", "lib.go"}, map[string]string{"go.mod": "module x\n"}))
 	if !got.Kind.Valid() {
 		t.Errorf("Kind %q is not a valid apimodel.RepoKind", got.Kind)
 	}

@@ -3,33 +3,25 @@ package crawler
 import (
 	"encoding/json"
 	"path"
+	"sort"
 	"strings"
 
 	"github.com/Savio09/gittok-ios-backend/internal/apimodel"
 )
 
-// Classification is the crawler's verdict on what kind of project a repository
-// is, together with the evidence it rested on. It mirrors the project's claim
-// philosophy (see apimodel.Claim): the kind is never asserted on its own — the
-// Evidence names the manifest entries and file-tree facts that produced it, so
-// a reader can see the reasoning rather than trust a bare label.
-type Classification struct {
-	Kind     apimodel.RepoKind
-	Evidence []string
-}
-
 // Classify infers a repository's RepoKind from already-gathered evidence. It is
 // a pure, network-free function so it can be unit-tested with synthetic inputs:
+// the caller assembles an Inspection (the file tree, the files it managed to
+// read, and the scope that bounded the fetch), and Classify reasons only over
+// that. It never calls the GitHub API.
 //
-//   - language   the repo's primary language (GitHub's guess; may be empty),
-//   - paths      the file tree as a flat list of blob/dir paths,
-//   - manifests  a path->content map for the few files that carry the signal:
-//     package.json, go.mod, Cargo.toml, pyproject.toml, setup.py,
-//     pubspec.yaml, a Dockerfile, and — when available — a key entry
-//     source file (e.g. main.go, cmd/x/main.go) whose package/imports
-//     disambiguate a Go library from a Go binary or server.
-//
-// It never calls the GitHub API; the caller gathers the inputs first.
+// It returns a structured Classification (see evidence.go): the Kind, a Status
+// that is honest about abstention, the Observations that produced the verdict
+// (each tied to the actual source path it was read from), and the Limitations
+// that bounded the decision. The cardinal rule from the classification review is
+// that a *missing* signal is never silently a negative fact: if the tree was
+// truncated or an entry point's source was not read, that is recorded as a
+// limitation and the verdict abstains rather than guessing.
 //
 // # Precedence (#algorithms)
 //
@@ -39,24 +31,24 @@ type Classification struct {
 //
 //	mobile → frontend → backend → cli → library → other
 //
-// The ordering encodes which signal is the most specific / most salient for a
-// preview:
-//
 //   - mobile is first because react-native/expo apps also depend on react, so
 //     they would otherwise be mistaken for a web frontend.
 //   - frontend precedes backend so a client app that happens to ship a
 //     Dockerfile is labelled by its user-facing surface, not its container.
 //   - backend precedes cli so a server that exposes subcommands under cmd/ is
 //     still a backend; cli is reserved for tools with no server signal.
-//   - library is last among the positives: a repo that merely *could* be
-//     imported but also produces a runnable artifact is classified by the
-//     artifact (the more useful thing to preview). Pure importable code — a Go
-//     module with no package main (e.g. gin-gonic/gin), an npm package with a
-//     lib entry and no app — falls through to here.
-func Classify(language string, paths []string, manifests map[string]string) Classification {
-	ix := newRepoIndex(language, paths, manifests)
+//   - library is last among the positives: pure importable code — a Go module
+//     with no package main (e.g. gin-gonic/gin), an npm package with a lib entry
+//     and no app — falls through to here.
+//
+// When no detector finds decisive, inspected evidence, Classify returns
+// KindOther with VerdictInconclusive and the limitations that explain why — an
+// honest abstention, not a confident "other".
+func Classify(insp Inspection) Classification {
+	ix := newRepoIndex(insp)
+	limits := ix.limitations()
 
-	detectors := []func(*repoIndex) (apimodel.RepoKind, []string, bool){
+	detectors := []func(*repoIndex) (apimodel.RepoKind, []Observation, bool){
 		detectMobile,
 		detectFrontend,
 		detectBackend,
@@ -64,69 +56,158 @@ func Classify(language string, paths []string, manifests map[string]string) Clas
 		detectLibrary,
 	}
 	for _, detect := range detectors {
-		if kind, ev, ok := detect(ix); ok {
-			return Classification{Kind: kind, Evidence: ev}
+		if kind, obs, ok := detect(ix); ok {
+			return Classification{
+				Kind:         kind,
+				Status:       VerdictResolved,
+				Observations: obs,
+				Limitations:  limits,
+			}
 		}
 	}
+	limits = append(limits, "no decisive frontend / backend / library / CLI / mobile signal was found in the inspected manifests and file tree")
 	return Classification{
-		Kind:     apimodel.KindOther,
-		Evidence: []string{"no decisive frontend / backend / library / CLI / mobile signal in the manifests or file tree"},
+		Kind:        apimodel.KindOther,
+		Status:      VerdictInconclusive,
+		Limitations: limits,
 	}
 }
 
-// repoIndex is the pre-parsed, cheap-to-query view of the inputs. Parsing the
-// manifests once up front keeps the detectors readable and avoids re-walking
-// the (potentially large) path list for every predicate.
+// repoIndex is the pre-parsed, cheap-to-query view of an Inspection. Parsing the
+// manifests once up front keeps the detectors readable. Each manifest is chosen
+// deterministically (shallowest path, then lexical) and its path is retained so
+// an observation can cite the file it actually came from.
 type repoIndex struct {
-	language  string            // lowercased primary language
-	paths     []string          // original tree paths
-	lowerPath []string          // lowercased tree paths, index-aligned with paths
-	manifests map[string]string // original path -> content
+	language  string   // lowercased primary language
+	paths     []string // original tree paths
+	lowerPath []string // lowercased tree paths, index-aligned with paths
 
-	pkg        *packageJSON // parsed package.json, or nil
-	goMod      string       // go.mod content, or ""
-	cargo      string       // Cargo.toml content, or ""
-	pyproject  string       // pyproject.toml content, or ""
-	setupPy    string       // setup.py content, or ""
-	pubspec    string       // pubspec.yaml content, or ""
-	dockerfile string       // Dockerfile content, or ""
-	goSources  []string     // contents of any *.go files handed in via manifests
+	scope       TreeScope
+	unavailable []Unavailable
+
+	pkg         *packageJSON // parsed root-most package.json, or nil
+	pkgPath     string       // path the package.json was read from
+	pkgBad      bool         // a package.json was present but would not parse
+	goMod       string
+	goModPath   string
+	cargo       string
+	cargoPath   string
+	pyproject   string
+	pyprojPath  string
+	setupPy     string
+	setupPyPath string
+	pubspec     string
+	pubspecPath string
+	dockerfile  string
+	dockerPath  string
+	goFiles     []SourceFile // Go sources whose content was read, with their paths
 }
 
-func newRepoIndex(language string, paths []string, manifests map[string]string) *repoIndex {
+func newRepoIndex(insp Inspection) *repoIndex {
 	ix := &repoIndex{
-		language:  strings.ToLower(strings.TrimSpace(language)),
-		paths:     paths,
-		lowerPath: make([]string, len(paths)),
-		manifests: manifests,
+		language:    strings.ToLower(strings.TrimSpace(insp.Language)),
+		paths:       insp.Paths,
+		lowerPath:   make([]string, len(insp.Paths)),
+		scope:       insp.Scope,
+		unavailable: insp.Unavailable,
 	}
-	for i, p := range paths {
+	for i, p := range insp.Paths {
 		ix.lowerPath[i] = strings.ToLower(p)
 	}
-	for p, content := range manifests {
-		switch strings.ToLower(path.Base(p)) {
-		case "package.json":
-			if ix.pkg == nil { // first one wins; root is preferred by the caller's ordering
-				ix.pkg = parsePackageJSON(content)
-			}
-		case "go.mod":
-			ix.goMod = content
-		case "cargo.toml":
-			ix.cargo = content
-		case "pyproject.toml":
-			ix.pyproject = content
-		case "setup.py":
-			ix.setupPy = content
-		case "pubspec.yaml", "pubspec.yml":
-			ix.pubspec = content
-		case "dockerfile":
-			ix.dockerfile = content
+
+	// Choose each manifest deterministically from the read files: the shallowest
+	// path wins (root is preferred), ties broken lexically. Files are already
+	// path-sorted by the Inspection constructors, so this is stable regardless of
+	// how the content was gathered.
+	if c, p, ok := pickShallowest(insp.Files, "package.json"); ok {
+		ix.pkgPath = p
+		if ix.pkg = parsePackageJSON(c); ix.pkg == nil {
+			ix.pkgBad = true
 		}
-		if strings.HasSuffix(strings.ToLower(p), ".go") {
-			ix.goSources = append(ix.goSources, content)
+	}
+	ix.goMod, ix.goModPath = pick(insp.Files, "go.mod")
+	ix.cargo, ix.cargoPath = pick(insp.Files, "cargo.toml")
+	ix.pyproject, ix.pyprojPath = pick(insp.Files, "pyproject.toml")
+	ix.setupPy, ix.setupPyPath = pick(insp.Files, "setup.py")
+	if c, p, ok := pickShallowest(insp.Files, "pubspec.yaml"); ok {
+		ix.pubspec, ix.pubspecPath = c, p
+	} else if c, p, ok := pickShallowest(insp.Files, "pubspec.yml"); ok {
+		ix.pubspec, ix.pubspecPath = c, p
+	}
+	ix.dockerfile, ix.dockerPath = pick(insp.Files, "dockerfile")
+
+	for _, f := range insp.Files {
+		if strings.HasSuffix(strings.ToLower(f.Path), ".go") {
+			ix.goFiles = append(ix.goFiles, f)
 		}
 	}
 	return ix
+}
+
+// pick returns the shallowest-path content and path for a manifest base name.
+func pick(files []SourceFile, base string) (content, srcPath string) {
+	c, p, _ := pickShallowest(files, base)
+	return c, p
+}
+
+// pickShallowest returns the content and path of the file whose base name
+// matches (case-insensitively), preferring the shallowest path then the
+// lexically first, so the choice never depends on input order.
+func pickShallowest(files []SourceFile, base string) (content, srcPath string, ok bool) {
+	base = strings.ToLower(base)
+	bestDepth := -1
+	for _, f := range files {
+		if strings.ToLower(path.Base(f.Path)) != base {
+			continue
+		}
+		d := strings.Count(f.Path, "/")
+		if bestDepth == -1 || d < bestDepth || (d == bestDepth && f.Path < srcPath) {
+			bestDepth, content, srcPath, ok = d, f.Content, f.Path, true
+		}
+	}
+	return content, srcPath, ok
+}
+
+// limitations gathers the honest caveats on any verdict: manifests that would
+// not parse, a bounded listing, and Go entry points that were present in the
+// tree but whose source was never read (so a server could not be told from a
+// command). These are what keep a missing signal from becoming a negative fact.
+func (ix *repoIndex) limitations() []string {
+	var out []string
+	if ix.pkgBad {
+		out = append(out, "package.json at "+ix.pkgPath+" could not be parsed; its signals were not used")
+	}
+	if ix.scope.Truncated {
+		out = append(out, "the file listing was truncated; a signal absent from it cannot be treated as absent from the repository")
+	}
+	if ix.scope.DepthLimited {
+		out = append(out, "the file listing was depth-limited; files below the depth cap were not listed, so a deeper entry point may exist")
+	}
+	if unread := ix.unreadGoEntries(); len(unread) > 0 {
+		out = append(out, "Go entry point(s) present but their source was not inspected ("+strings.Join(unread, ", ")+"); a server could not be distinguished from a command")
+	}
+	return out
+}
+
+// unreadGoEntries lists main.go-style entry paths that appear in the tree but
+// whose content was not read. It only reports when the repo looks like Go, so
+// an unrelated main.go elsewhere does not raise a spurious caveat.
+func (ix *repoIndex) unreadGoEntries() []string {
+	if !ix.isGo() {
+		return nil
+	}
+	read := map[string]bool{}
+	for _, f := range ix.goFiles {
+		read[f.Path] = true
+	}
+	var unread []string
+	for _, p := range ix.paths {
+		if strings.ToLower(path.Base(p)) == "main.go" && !read[p] {
+			unread = append(unread, p)
+		}
+	}
+	sort.Strings(unread)
+	return unread
 }
 
 // hasBase reports whether any tree path has the given (lowercased) base name.
@@ -152,36 +233,36 @@ func (ix *repoIndex) hasPrefix(prefix string) bool {
 	return false
 }
 
-// firstPathWithBase returns the original-cased path whose base matches, for
-// readable evidence; "" if none.
-func (ix *repoIndex) firstPathWithBase(name string) string {
-	name = strings.ToLower(name)
+// firstPathWithBaseStem returns the original-cased path whose lowercased form
+// starts with stem (e.g. "src/app."), for readable evidence.
+func (ix *repoIndex) firstPathWithBaseStem(stem string) string {
+	stem = strings.ToLower(stem)
 	for i, lp := range ix.lowerPath {
-		if path.Base(lp) == name {
+		if strings.HasPrefix(lp, stem) {
 			return ix.paths[i]
 		}
 	}
-	return ""
+	return stem + "*"
 }
 
 // --- mobile -----------------------------------------------------------------
 
-func detectMobile(ix *repoIndex) (apimodel.RepoKind, []string, bool) {
-	var ev []string
+func detectMobile(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
+	var ev []Observation
 	if ix.pkg != nil {
 		for _, dep := range []string{"react-native", "expo"} {
 			if v := ix.pkg.dep(dep); v != "" {
-				ev = append(ev, "package.json: depends on "+quoteDep(dep, v)+" (mobile framework)")
+				ev = append(ev, Observation{Path: ix.pkgPath, Detail: "depends on " + quoteDep(dep, v) + " (mobile framework)"})
 			}
 		}
 	}
 	// Flutter projects are defined by a pubspec.yaml declaring the flutter SDK.
 	if ix.pubspec != "" && strings.Contains(strings.ToLower(ix.pubspec), "flutter") {
-		ev = append(ev, "pubspec.yaml: declares the Flutter SDK (mobile)")
+		ev = append(ev, Observation{Path: ix.pubspecPath, Detail: "declares the Flutter SDK (mobile)"})
 	}
 	// Native shells side by side are a strong mobile signal on their own.
-	if ix.hasPrefix("android/") && (ix.hasPrefix("ios/") || ix.hasPrefix("ios ")) {
-		ev = append(ev, "android/ and ios/ app directories both present (native mobile shells)")
+	if ix.hasPrefix("android/") && ix.hasPrefix("ios/") {
+		ev = append(ev, Observation{Detail: "android/ and ios/ app directories both present (native mobile shells)"})
 	}
 	if len(ev) > 0 {
 		return apimodel.KindMobile, ev, true
@@ -197,7 +278,7 @@ var webFrameworks = []string{
 	"next", "nuxt", "vite", "solid-js", "preact", "gatsby", "astro",
 }
 
-func detectFrontend(ix *repoIndex) (apimodel.RepoKind, []string, bool) {
+func detectFrontend(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 	if ix.pkg == nil {
 		return "", nil, false
 	}
@@ -212,49 +293,31 @@ func detectFrontend(ix *repoIndex) (apimodel.RepoKind, []string, bool) {
 		return "", nil, false
 	}
 
-	// An app entry distinguishes a runnable frontend from a published UI
-	// library (which ships only importable modules). index.html, a src/App.*
-	// root component, or a src/main.* bootstrap are the usual markers.
-	var entry string
+	// An app entry distinguishes a runnable frontend from a published UI library.
+	var entry Observation
 	switch {
 	case ix.hasBase("index.html"):
-		entry = "index.html present (web app entry)"
+		entry = Observation{Detail: "index.html present (web app entry)"}
 	case ix.hasPrefix("src/app."):
-		entry = ix.firstPathWithBaseStem("src/app.") + " present (root component)"
+		entry = Observation{Detail: ix.firstPathWithBaseStem("src/app.") + " present (root component)"}
 	case ix.hasPrefix("src/main."):
-		entry = ix.firstPathWithBaseStem("src/main.") + " present (app bootstrap)"
+		entry = Observation{Detail: ix.firstPathWithBaseStem("src/main.") + " present (app bootstrap)"}
 	case ix.pkg.scripts("dev") != "" || ix.pkg.scripts("start") != "":
-		entry = "package.json: has a dev/start script (runnable app)"
-	}
-	// A package that publishes a lib entry and has no app entry is a library,
-	// not a frontend — defer to detectLibrary.
-	if entry == "" {
+		entry = Observation{Path: ix.pkgPath, Detail: "has a dev/start script (runnable app)"}
+	default:
+		// No app entry: defer to detectLibrary.
 		return "", nil, false
 	}
 
-	ev := []string{"package.json: depends on " + quoteDep(framework, frameworkVer) + " (web framework)", entry}
+	ev := []Observation{{Path: ix.pkgPath, Detail: "depends on " + quoteDep(framework, frameworkVer) + " (web framework)"}, entry}
 	if ix.pkg.Private {
-		ev = append(ev, `package.json: "private": true (not a published package)`)
+		ev = append(ev, Observation{Path: ix.pkgPath, Detail: `"private": true (not a published package)`})
 	}
 	return apimodel.KindFrontend, ev, true
 }
 
-// firstPathWithBaseStem returns the original-cased path whose lowercased form
-// starts with stem (e.g. "src/app."), for readable evidence.
-func (ix *repoIndex) firstPathWithBaseStem(stem string) string {
-	stem = strings.ToLower(stem)
-	for i, lp := range ix.lowerPath {
-		if strings.HasPrefix(lp, stem) {
-			return ix.paths[i]
-		}
-	}
-	return stem + "*"
-}
-
 // --- backend -----------------------------------------------------------------
 
-// Server frameworks keyed by language ecosystem. These are the dependencies a
-// repo pulls in to *run* a server (not the frameworks themselves).
 var (
 	goServerDeps   = []string{"gin-gonic/gin", "labstack/echo", "gofiber/fiber", "go-chi/chi", "gorilla/mux"}
 	nodeServerDeps = []string{"express", "fastify", "koa", "@nestjs/core", "@hapi/hapi", "hapi"}
@@ -262,16 +325,16 @@ var (
 	rustServerDeps = []string{"axum", "actix-web", "rocket", "warp"}
 )
 
-func detectBackend(ix *repoIndex) (apimodel.RepoKind, []string, bool) {
-	var ev []string
+func detectBackend(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
+	var ev []Observation
 
-	// Go: only an actual command (package main) can be a backend *app*; an
-	// importable module that merely uses net/http (e.g. gin itself) is a
-	// library and must not match here.
+	// Go: a server needs both a command (package main) and a server signal. The
+	// main package may be confirmed from read source or seen in the tree; the
+	// server signal comes from read source or a declared server dependency.
 	if ix.isGo() {
-		if ok, where := ix.goMainPackage(); ok {
-			if se := ix.goServerSignal(); se != "" {
-				ev = append(ev, where, se)
+		if mainObs, ok := ix.goMainObservation(); ok {
+			if serverObs, ok := ix.goServerObservation(); ok {
+				ev = append(ev, mainObs, serverObs)
 			}
 		}
 	}
@@ -279,27 +342,27 @@ func detectBackend(ix *repoIndex) (apimodel.RepoKind, []string, bool) {
 	if ix.pkg != nil {
 		for _, dep := range nodeServerDeps {
 			if v := ix.pkg.dep(dep); v != "" {
-				ev = append(ev, "package.json: depends on "+quoteDep(dep, v)+" (server framework)")
+				ev = append(ev, Observation{Path: ix.pkgPath, Detail: "depends on " + quoteDep(dep, v) + " (server framework)"})
 				break
 			}
 		}
 	}
 	// Python web frameworks.
-	if py := ix.pyText(); py != "" {
+	if py, src := ix.pyText(); py != "" {
 		if dep := firstContains(py, pyServerDeps); dep != "" {
-			ev = append(ev, ix.pySourceName()+": depends on \""+dep+"\" (web framework)")
+			ev = append(ev, Observation{Path: src, Detail: "depends on \"" + dep + "\" (web framework)"})
 		}
 	}
 	// Rust web frameworks (an app, i.e. with a [[bin]] target).
 	if ix.cargo != "" && strings.Contains(ix.cargo, "[[bin]]") {
 		if dep := firstContains(ix.cargo, rustServerDeps); dep != "" {
-			ev = append(ev, "Cargo.toml: [[bin]] target depends on \""+dep+"\" (web framework)")
+			ev = append(ev, Observation{Path: ix.cargoPath, Detail: "[[bin]] target depends on \"" + dep + "\" (web framework)"})
 		}
 	}
-	// Containerized service that exposes a port. Frontend was already ruled
-	// out above, so EXPOSE here is a safe backend signal.
+	// Containerized service that exposes a port. Frontend was already ruled out
+	// above, so EXPOSE here is a safe backend signal.
 	if port := dockerExposedPort(ix.dockerfile); port != "" {
-		ev = append(ev, "Dockerfile: EXPOSE "+port+" (serves on a network port)")
+		ev = append(ev, Observation{Path: ix.dockerPath, Detail: "EXPOSE " + port + " (serves on a network port)"})
 	}
 
 	if len(ev) > 0 {
@@ -315,32 +378,36 @@ var (
 	rustCLIDeps = []string{"clap", "structopt", "argh"}
 )
 
-func detectCLI(ix *repoIndex) (apimodel.RepoKind, []string, bool) {
-	var ev []string
+func detectCLI(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
+	var ev []Observation
 
-	// Go: a binary (package main) wired to a command framework.
+	// Go: a binary (package main) wired to a command framework, or — only when
+	// the entry source was actually inspected — a main package under cmd/ with no
+	// server signal. The "no server signal" fallback must never fire on an
+	// unread entry, or a server would be mislabelled a command.
 	if ix.isGo() {
-		if ok, where := ix.goMainPackage(); ok {
+		if mainObs, ok := ix.goMainObservation(); ok {
 			if dep := ix.goDep(goCLIDeps); dep != "" {
-				ev = append(ev, where, "go.mod: requires \""+dep+"\" (CLI framework)")
-			} else if ix.hasPrefix("cmd/") {
-				// A main package under cmd/ with no server signal is a command.
-				ev = append(ev, where, "entry point under cmd/ with no server signal (produces a command)")
+				ev = append(ev, mainObs, Observation{Path: ix.goModPath, Detail: "requires \"" + dep + "\" (CLI framework)"})
+			} else if _, readable := ix.goMainReadablePath(); readable && ix.hasPrefix("cmd/") {
+				if _, server := ix.goServerObservation(); !server {
+					ev = append(ev, mainObs, Observation{Detail: "entry point under cmd/ with no server signal in the inspected source (produces a command)"})
+				}
 			}
 		}
 	}
 	// npm: a package that installs a command exposes a "bin" field.
 	if ix.pkg != nil && len(ix.pkg.Bin) > 0 && string(ix.pkg.Bin) != "null" {
-		ev = append(ev, `package.json: declares a "bin" field (installs a command)`)
+		ev = append(ev, Observation{Path: ix.pkgPath, Detail: `declares a "bin" field (installs a command)`})
 	}
 	// Python: console_scripts entry points produce commands.
-	if py := ix.pyText(); py != "" && strings.Contains(py, "console_scripts") {
-		ev = append(ev, ix.pySourceName()+": defines console_scripts (installs a command)")
+	if py, src := ix.pyText(); py != "" && strings.Contains(py, "console_scripts") {
+		ev = append(ev, Observation{Path: src, Detail: "defines console_scripts (installs a command)"})
 	}
 	// Rust: a [[bin]] target using a CLI argument parser.
 	if ix.cargo != "" && strings.Contains(ix.cargo, "[[bin]]") {
 		if dep := firstContains(ix.cargo, rustCLIDeps); dep != "" {
-			ev = append(ev, "Cargo.toml: [[bin]] target depends on \""+dep+"\" (CLI parser)")
+			ev = append(ev, Observation{Path: ix.cargoPath, Detail: "[[bin]] target depends on \"" + dep + "\" (CLI parser)"})
 		}
 	}
 
@@ -352,13 +419,15 @@ func detectCLI(ix *repoIndex) (apimodel.RepoKind, []string, bool) {
 
 // --- library -----------------------------------------------------------------
 
-func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []string, bool) {
-	var ev []string
+func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
+	var ev []Observation
 
-	// Go: a module with no package main is importable-only (e.g. gin).
+	// Go: a module with no package main is importable-only (e.g. gin). The
+	// absence of a main package is only conclusive when the listing is complete —
+	// a truncated or depth-limited tree could hide one.
 	if ix.isGo() && ix.goMod != "" {
-		if ok, _ := ix.goMainPackage(); !ok {
-			ev = append(ev, "go.mod present with no package main in the tree (importable Go module)")
+		if _, ok := ix.goMainObservation(); !ok && ix.scope.Complete() {
+			ev = append(ev, Observation{Path: ix.goModPath, Detail: "present with no package main in the tree (importable Go module)"})
 		}
 	}
 	// npm: a lib entry (main/module/exports) and no app entry or bin.
@@ -368,16 +437,16 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []string, bool) {
 		hasApp := ix.hasBase("index.html") || ix.hasPrefix("src/app.")
 		hasBin := len(ix.pkg.Bin) > 0 && string(ix.pkg.Bin) != "null"
 		if hasLibEntry && !hasApp && !hasBin {
-			ev = append(ev, `package.json: declares a lib entry ("main"/"module"/"exports") and no app or bin (importable package)`)
+			ev = append(ev, Observation{Path: ix.pkgPath, Detail: `declares a lib entry ("main"/"module"/"exports") and no app or bin (importable package)`})
 		}
 	}
 	// Rust: a [lib] crate with no [[bin]] target.
 	if ix.cargo != "" && strings.Contains(ix.cargo, "[lib]") && !strings.Contains(ix.cargo, "[[bin]]") {
-		ev = append(ev, "Cargo.toml: declares [lib] and no [[bin]] (importable crate)")
+		ev = append(ev, Observation{Path: ix.cargoPath, Detail: "declares [lib] and no [[bin]] (importable crate)"})
 	}
 	// Python: packaging metadata with no console_scripts.
-	if py := ix.pyText(); py != "" && !strings.Contains(py, "console_scripts") {
-		ev = append(ev, ix.pySourceName()+": packaging metadata with no console_scripts (importable package)")
+	if py, src := ix.pyText(); py != "" && !strings.Contains(py, "console_scripts") {
+		ev = append(ev, Observation{Path: src, Detail: "packaging metadata with no console_scripts (importable package)"})
 	}
 
 	if len(ev) > 0 {
@@ -392,36 +461,45 @@ func (ix *repoIndex) isGo() bool {
 	return ix.language == "go" || ix.goMod != "" || ix.hasBase("go.mod")
 }
 
-// goMainPackage reports whether the repo contains a Go command (package main),
-// with a short description of where the signal came from. It prefers a content
-// signal (a *.go source handed in declaring `package main`) and falls back to
-// the file tree (a main.go anywhere), which is the usual entry-point name.
-func (ix *repoIndex) goMainPackage() (bool, string) {
-	for src := range ix.manifests {
-		if !strings.HasSuffix(strings.ToLower(src), ".go") {
-			continue
-		}
-		if declaresGoPackageMain(ix.manifests[src]) {
-			return true, src + ": package main (produces a binary)"
+// goMainReadablePath returns the path of a Go source actually read that declares
+// `package main`, and whether one was found.
+func (ix *repoIndex) goMainReadablePath() (string, bool) {
+	for _, f := range ix.goFiles {
+		if declaresGoPackageMain(f.Content) {
+			return f.Path, true
 		}
 	}
-	if p := ix.firstPathWithBase("main.go"); p != "" {
-		return true, p + " present (Go command entry point)"
-	}
-	return false, ""
+	return "", false
 }
 
-// goServerSignal returns evidence that a Go command starts a server, or "".
-func (ix *repoIndex) goServerSignal() string {
-	for _, src := range ix.goSources {
-		if strings.Contains(src, "ListenAndServe") || strings.Contains(src, "http.Server{") {
-			return "Go source calls http.ListenAndServe (starts an HTTP server)"
+// goMainObservation reports that the repo contains a Go command, citing the read
+// source that declares `package main` when available, otherwise the main.go seen
+// in the tree (whose source was not inspected — noted in the Detail and, for the
+// absence case, in limitations()).
+func (ix *repoIndex) goMainObservation() (Observation, bool) {
+	if p, ok := ix.goMainReadablePath(); ok {
+		return Observation{Path: p, Detail: "package main (produces a binary)"}, true
+	}
+	for _, p := range ix.paths {
+		if strings.ToLower(path.Base(p)) == "main.go" {
+			return Observation{Path: p, Detail: "Go command entry point present (source not inspected)"}, true
+		}
+	}
+	return Observation{}, false
+}
+
+// goServerObservation returns evidence that a Go command starts a server: a read
+// source calling http.ListenAndServe, or a declared server-framework dependency.
+func (ix *repoIndex) goServerObservation() (Observation, bool) {
+	for _, f := range ix.goFiles {
+		if strings.Contains(f.Content, "ListenAndServe") || strings.Contains(f.Content, "http.Server{") {
+			return Observation{Path: f.Path, Detail: "calls http.ListenAndServe (starts an HTTP server)"}, true
 		}
 	}
 	if dep := ix.goDep(goServerDeps); dep != "" {
-		return "go.mod: requires \"" + dep + "\" (server framework)"
+		return Observation{Path: ix.goModPath, Detail: "requires \"" + dep + "\" (server framework)"}, true
 	}
-	return ""
+	return Observation{}, false
 }
 
 // goDep returns the first of wants that appears in a go.mod require directive
@@ -443,18 +521,12 @@ func (ix *repoIndex) goDep(wants []string) string {
 
 // --- Python helpers ----------------------------------------------------------
 
-func (ix *repoIndex) pyText() string {
+// pyText returns the preferred Python packaging text and the path it came from.
+func (ix *repoIndex) pyText() (text, srcPath string) {
 	if ix.pyproject != "" {
-		return ix.pyproject
+		return ix.pyproject, ix.pyprojPath
 	}
-	return ix.setupPy
-}
-
-func (ix *repoIndex) pySourceName() string {
-	if ix.pyproject != "" {
-		return "pyproject.toml"
-	}
-	return "setup.py"
+	return ix.setupPy, ix.setupPyPath
 }
 
 // --- small pure utilities ----------------------------------------------------
@@ -517,7 +589,8 @@ type packageJSON struct {
 }
 
 // parsePackageJSON decodes package.json best-effort; malformed JSON yields nil
-// so callers simply see "no package.json signal".
+// so callers record a parse limitation rather than reading absent content as a
+// negative fact.
 func parsePackageJSON(content string) *packageJSON {
 	var p packageJSON
 	if err := json.Unmarshal([]byte(content), &p); err != nil {
