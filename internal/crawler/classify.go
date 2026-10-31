@@ -101,6 +101,13 @@ type repoIndex struct {
 	dockerfile  string
 	dockerPath  string
 	goFiles     []SourceFile // Go sources whose content was read, with their paths
+
+	requirements     string // requirements.txt content, or ""
+	requirementsPath string
+	pyProj           pyProject         // parsed pyproject.toml (Project nil if absent)
+	pyHasProject     bool              // a [project] table was present
+	pyBad            bool              // a pyproject.toml was present but would not parse
+	pyDepSource      map[string]string // normalised python dep name -> the file it was declared in
 }
 
 func newRepoIndex(insp Inspection) *repoIndex {
@@ -135,6 +142,16 @@ func newRepoIndex(insp Inspection) *repoIndex {
 		ix.pubspec, ix.pubspecPath = c, p
 	}
 	ix.dockerfile, ix.dockerPath = pick(insp.Files, "dockerfile")
+	ix.requirements, ix.requirementsPath = pick(insp.Files, "requirements.txt")
+
+	// Parse Python declarations once. setup.py is deliberately not parsed for
+	// dependencies — its install_requires is dynamic Python we never execute.
+	if ix.pyproject != "" {
+		var parsed bool
+		ix.pyProj, ix.pyHasProject, parsed = parsePyProject(ix.pyproject)
+		ix.pyBad = !parsed
+	}
+	ix.pyDepSource = buildPyDepSource(ix.pyProj, ix.pyprojPath, ix.requirements, ix.requirementsPath)
 
 	for _, f := range insp.Files {
 		if strings.HasSuffix(strings.ToLower(f.Path), ".go") {
@@ -142,6 +159,24 @@ func newRepoIndex(insp Inspection) *repoIndex {
 		}
 	}
 	return ix
+}
+
+// buildPyDepSource maps each normalised Python dependency name to the file it
+// was declared in (pyproject.toml preferred over requirements.txt), so a server
+// dependency can be both detected and cited to its actual source.
+func buildPyDepSource(proj pyProject, projPath, reqs, reqsPath string) map[string]string {
+	m := map[string]string{}
+	for _, n := range pyProjectDependencyNames(proj) {
+		if _, ok := m[n]; !ok {
+			m[n] = projPath
+		}
+	}
+	for _, n := range pyRequirementNames(reqs) {
+		if _, ok := m[n]; !ok {
+			m[n] = reqsPath
+		}
+	}
+	return m
 }
 
 // pick returns the primary content and path for a manifest base name.
@@ -205,6 +240,9 @@ func (ix *repoIndex) limitations() []string {
 	var out []string
 	if ix.pkgBad {
 		out = append(out, "package.json at "+ix.pkgPath+" could not be parsed; its signals were not used")
+	}
+	if ix.pyBad {
+		out = append(out, "pyproject.toml at "+ix.pyprojPath+" could not be parsed; its signals were not used")
 	}
 	if ix.scope.Truncated {
 		out = append(out, "the file listing was truncated; a signal absent from it cannot be treated as absent from the repository")
@@ -376,11 +414,10 @@ func detectBackend(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 			}
 		}
 	}
-	// Python web frameworks.
-	if py, src := ix.pyText(); py != "" {
-		if dep := firstContains(py, pyServerDeps); dep != "" {
-			ev = append(ev, Observation{Path: src, Detail: "depends on \"" + dep + "\" (web framework)"})
-		}
+	// Python web frameworks, matched against parsed dependency names (not a
+	// substring of the file), so a project named "flask-utils" is not a Flask dep.
+	if obs, ok := ix.pyServerObservation(); ok {
+		ev = append(ev, obs)
 	}
 	// Rust web frameworks (an app, i.e. with a [[bin]] target).
 	if ix.cargo != "" && strings.Contains(ix.cargo, "[[bin]]") {
@@ -554,6 +591,19 @@ func (ix *repoIndex) pyText() (text, srcPath string) {
 		return ix.pyproject, ix.pyprojPath
 	}
 	return ix.setupPy, ix.setupPyPath
+}
+
+// pyServerObservation returns evidence that a declared Python dependency is a
+// web framework, citing the file (pyproject.toml or requirements.txt) it was
+// declared in. It iterates the framework list in fixed order so the result is
+// deterministic regardless of map iteration.
+func (ix *repoIndex) pyServerObservation() (Observation, bool) {
+	for _, want := range pyServerDeps {
+		if src, ok := ix.pyDepSource[pyDistName(want)]; ok {
+			return Observation{Path: src, Detail: "declares a dependency on \"" + want + "\" (web framework)"}, true
+		}
+	}
+	return Observation{}, false
 }
 
 // --- small pure utilities ----------------------------------------------------
