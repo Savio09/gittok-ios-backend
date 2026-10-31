@@ -105,12 +105,9 @@ func (c *Client) get(ctx context.Context, path string, v any) error {
 
 	for attempt := 0; attempt <= c.maxRetries; attempt++ {
 		if attempt > 0 {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
+			if err := c.waitBackoff(ctx, backoffDelay(attempt, retryAfter, c.backoffBase)); err != nil {
+				return err
 			}
-			c.sleep(backoffDelay(attempt, retryAfter, c.backoffBase))
 			retryAfter = 0
 		}
 
@@ -129,6 +126,28 @@ func (c *Client) get(ctx context.Context, path string, v any) error {
 		retryAfter = ra
 	}
 	return lastErr
+}
+
+// waitBackoff pauses for d before the next retry, but returns early with the
+// context's error if ctx is cancelled during the wait. The delay still runs
+// through the injectable sleep (so tests stay instant), but it is raced against
+// ctx.Done(), so a cancelled request no longer blocks for the full backoff —
+// which, at maxBackoff, could otherwise be 30s.
+func (c *Client) waitBackoff(ctx context.Context, d time.Duration) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	done := make(chan struct{})
+	go func() {
+		c.sleep(d)
+		close(done)
+	}()
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-done:
+		return nil
+	}
 }
 
 // doOnce performs a single GET. The caller is responsible for closing the
