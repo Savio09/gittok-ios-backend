@@ -14,9 +14,9 @@ func TestBackendWithAdminUIResolvesBackend(t *testing.T) {
 	insp := InspectionFromSources("Go",
 		[]string{"go.mod", "main.go", "ui/package.json", "ui/index.html"},
 		map[string]string{
-			"go.mod":           "module example.com/app\n",
-			"main.go":          "package main\nimport \"net/http\"\nfunc main() { http.ListenAndServe(\":8090\", nil) }\n",
-			"ui/package.json":  `{"name":"admin","dependencies":{"react":"^18.2.0"}}`,
+			"go.mod":          "module example.com/app\n",
+			"main.go":         "package main\nimport \"net/http\"\nfunc main() { http.ListenAndServe(\":8090\", nil) }\n",
+			"ui/package.json": `{"name":"admin","dependencies":{"react":"^18.2.0"}}`,
 		},
 	)
 	got := Classify(insp)

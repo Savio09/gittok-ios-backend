@@ -20,10 +20,10 @@ type cargoManifest struct {
 		Autobins *bool  `toml:"autobins"`
 		Autolib  *bool  `toml:"autolib"`
 	} `toml:"package"`
-	Lib          *struct{} `toml:"lib"`
-	Bin          []struct{} `toml:"bin"`
+	Lib          *struct{}      `toml:"lib"`
+	Bin          []struct{}     `toml:"bin"`
 	Dependencies map[string]any `toml:"dependencies"`
-	Workspace    *struct{} `toml:"workspace"`
+	Workspace    *struct{}      `toml:"workspace"`
 }
 
 // parseCargo parses Cargo.toml; parsed is false when the TOML is malformed.

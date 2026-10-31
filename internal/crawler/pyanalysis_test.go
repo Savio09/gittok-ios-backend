@@ -12,13 +12,13 @@ import (
 
 func TestPyDistNameExtractsDistribution(t *testing.T) {
 	cases := map[string]string{
-		"flask>=3.0":                    "flask",
-		"uvicorn[standard]":             "uvicorn",
-		"Django == 4.2":                 "django",
-		"pkg ; python_version>'3.8'":    "pkg",
-		"scikit-learn":                  "scikit-learn",
-		"flask_login":                   "flask-login",
-		"":                              "",
+		"flask>=3.0":                 "flask",
+		"uvicorn[standard]":          "uvicorn",
+		"Django == 4.2":              "django",
+		"pkg ; python_version>'3.8'": "pkg",
+		"scikit-learn":               "scikit-learn",
+		"flask_login":                "flask-login",
+		"":                           "",
 	}
 	for spec, want := range cases {
 		if got := pyDistName(spec); got != want {

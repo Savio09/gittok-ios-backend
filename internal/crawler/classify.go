@@ -29,17 +29,17 @@ import (
 // server; a Go server also lives under cmd/). Classify picks the dominant kind
 // by running detectors in a fixed order and returning the first match:
 //
-//	mobile → frontend → backend → cli → library → other
+//		mobile → frontend → backend → cli → library → other
 //
-//   - mobile is first because react-native/expo apps also depend on react, so
-//     they would otherwise be mistaken for a web frontend.
-//   - frontend precedes backend so a client app that happens to ship a
-//     Dockerfile is labelled by its user-facing surface, not its container.
-//   - backend precedes cli so a server that exposes subcommands under cmd/ is
-//     still a backend; cli is reserved for tools with no server signal.
-//   - library is last among the positives: pure importable code — a Go module
-//     with no package main (e.g. gin-gonic/gin), an npm package with a lib entry
-//     and no app — falls through to here.
+//	  - mobile is first because react-native/expo apps also depend on react, so
+//	    they would otherwise be mistaken for a web frontend.
+//	  - frontend precedes backend so a client app that happens to ship a
+//	    Dockerfile is labelled by its user-facing surface, not its container.
+//	  - backend precedes cli so a server that exposes subcommands under cmd/ is
+//	    still a backend; cli is reserved for tools with no server signal.
+//	  - library is last among the positives: pure importable code — a Go module
+//	    with no package main (e.g. gin-gonic/gin), an npm package with a lib entry
+//	    and no app — falls through to here.
 //
 // When no detector finds decisive, inspected evidence, Classify returns
 // KindOther with VerdictInconclusive and the limitations that explain why — an

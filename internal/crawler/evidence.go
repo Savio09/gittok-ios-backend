@@ -66,11 +66,11 @@ type Unavailable struct {
 // or a depth-limited listing is visible to the verdict instead of silently
 // reading as "feature absent".
 type Inspection struct {
-	Language    string       // GitHub's primary-language guess; may be empty
-	Revision    Revision     // the ref the evidence was gathered at
-	Paths       []string     // the file listing (blob and tree paths), original case
-	Scope       TreeScope    // the bounds that shaped Paths
-	Files       []SourceFile // files whose content was read, ordered by path
+	Language    string        // GitHub's primary-language guess; may be empty
+	Revision    Revision      // the ref the evidence was gathered at
+	Paths       []string      // the file listing (blob and tree paths), original case
+	Scope       TreeScope     // the bounds that shaped Paths
+	Files       []SourceFile  // files whose content was read, ordered by path
 	Unavailable []Unavailable // requested paths that could not be read, ordered by path
 }
 

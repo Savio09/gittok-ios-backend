@@ -53,8 +53,8 @@ func TestGoCommentsDoNotCreateBackend(t *testing.T) {
 			name:  "commented ListenAndServe is a plain command",
 			paths: []string{"go.mod", "cmd/tool/main.go"},
 			files: map[string]string{
-				"go.mod":            "module example.com/tool\n",
-				"cmd/tool/main.go":  "package main\n// ListenAndServe would be used for a future web mode.\nfunc main() {}\n",
+				"go.mod":           "module example.com/tool\n",
+				"cmd/tool/main.go": "package main\n// ListenAndServe would be used for a future web mode.\nfunc main() {}\n",
 			},
 			want: apimodel.KindCLI,
 		},
