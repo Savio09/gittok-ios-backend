@@ -76,35 +76,60 @@ func splitSlug(s string) (owner, name string, ok bool) {
 	return parts[0], parts[1], true
 }
 
-func buildPack(ctx context.Context, c *githubclient.Client, owner, name string) error {
+// analysis is the result of the read-only pipeline for one repo: the metadata,
+// the (bounded) tree, the files requested and fetched, the Inspection the
+// classifier saw, and its verdict. It is returned whole so the pack renderer and
+// the integration test work from exactly what the analyzer worked from.
+type analysis struct {
+	repo           githubclient.Repo
+	tree           githubclient.FileTree
+	requested      []string
+	fetched        githubclient.FetchedContents
+	insp           crawler.Inspection
+	classification crawler.Classification
+}
+
+// analyze runs the full read-only pipeline for one repo — metadata, bounded tree
+// retrieval, canonical file selection, bounded contents fetch, Inspection
+// construction and classification — on a single resolved ref. It writes nothing;
+// it is the one orchestration buildPack and the integration test both drive. The
+// ref is a branch name, not a pinned commit, so the Inspection's revision is
+// recorded as unresolved rather than mislabelled an immutable SHA.
+func analyze(ctx context.Context, c *githubclient.Client, owner, name string) (analysis, error) {
 	repo, err := c.GetRepo(ctx, owner, name)
 	if err != nil {
-		return fmt.Errorf("metadata: %w", err)
+		return analysis{}, fmt.Errorf("metadata: %w", err)
 	}
 	ref := repo.DefaultBranch
 	if ref == "" {
 		ref = "main"
 	}
-
 	tree, err := c.GetTree(ctx, owner, name, ref, githubclient.DefaultTreeLimits())
 	if err != nil {
-		return fmt.Errorf("tree: %w", err)
+		return analysis{}, fmt.Errorf("tree: %w", err)
 	}
-
 	keyFiles := keyFilePaths(tree.Entries)
 	fetched, err := c.GetFileContents(ctx, owner, name, ref, keyFiles, githubclient.DefaultContentLimits())
 	if err != nil {
-		return fmt.Errorf("contents: %w", err)
+		return analysis{}, fmt.Errorf("contents: %w", err)
 	}
-
-	// Run the same classification the analysis path uses, over an Inspection
-	// built from the real tree and fetch outcome — so the pack shows the verdict
-	// and its limitations (a skipped key file becomes a limitation, not a silent
-	// negative). The ref is a branch name, not a pinned commit, so Resolved=false.
 	insp := crawler.NewInspection(repo.Language, crawler.Revision{Ref: ref}, tree, fetched)
-	classification := crawler.Classify(insp)
+	return analysis{
+		repo:           repo,
+		tree:           tree,
+		requested:      keyFiles,
+		fetched:        fetched,
+		insp:           insp,
+		classification: crawler.Classify(insp),
+	}, nil
+}
 
-	md := renderPack(repo, tree, keyFiles, fetched, classification)
+func buildPack(ctx context.Context, c *githubclient.Client, owner, name string) error {
+	a, err := analyze(ctx, c, owner, name)
+	if err != nil {
+		return err
+	}
+	md := renderPack(a.repo, a.tree, a.requested, a.fetched, a.classification)
 	path := filepath.Join(outDir, owner+"__"+name+".md")
 	return os.WriteFile(path, []byte(md), 0o644)
 }
