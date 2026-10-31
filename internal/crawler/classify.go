@@ -119,7 +119,7 @@ func newRepoIndex(insp Inspection) *repoIndex {
 	// path wins (root is preferred), ties broken lexically. Files are already
 	// path-sorted by the Inspection constructors, so this is stable regardless of
 	// how the content was gathered.
-	if c, p, ok := pickShallowest(insp.Files, "package.json"); ok {
+	if c, p, ok := pickPrimary(insp.Files, "package.json"); ok {
 		ix.pkgPath = p
 		if ix.pkg = parsePackageJSON(c); ix.pkg == nil {
 			ix.pkgBad = true
@@ -129,9 +129,9 @@ func newRepoIndex(insp Inspection) *repoIndex {
 	ix.cargo, ix.cargoPath = pick(insp.Files, "cargo.toml")
 	ix.pyproject, ix.pyprojPath = pick(insp.Files, "pyproject.toml")
 	ix.setupPy, ix.setupPyPath = pick(insp.Files, "setup.py")
-	if c, p, ok := pickShallowest(insp.Files, "pubspec.yaml"); ok {
+	if c, p, ok := pickPrimary(insp.Files, "pubspec.yaml"); ok {
 		ix.pubspec, ix.pubspecPath = c, p
-	} else if c, p, ok := pickShallowest(insp.Files, "pubspec.yml"); ok {
+	} else if c, p, ok := pickPrimary(insp.Files, "pubspec.yml"); ok {
 		ix.pubspec, ix.pubspecPath = c, p
 	}
 	ix.dockerfile, ix.dockerPath = pick(insp.Files, "dockerfile")
@@ -144,28 +144,57 @@ func newRepoIndex(insp Inspection) *repoIndex {
 	return ix
 }
 
-// pick returns the shallowest-path content and path for a manifest base name.
+// pick returns the primary content and path for a manifest base name.
 func pick(files []SourceFile, base string) (content, srcPath string) {
-	c, p, _ := pickShallowest(files, base)
+	c, p, _ := pickPrimary(files, base)
 	return c, p
 }
 
-// pickShallowest returns the content and path of the file whose base name
-// matches (case-insensitively), preferring the shallowest path then the
-// lexically first, so the choice never depends on input order.
-func pickShallowest(files []SourceFile, base string) (content, srcPath string, ok bool) {
+// pickPrimary returns the content and path of the manifest that best represents
+// the repository's primary product among all files whose base name matches
+// (case-insensitively). Selection is deterministic and order-independent: it
+// prefers the manifest in the most primary component scope (root over a nested
+// component, and both over an example/docs/tooling scope), then the shallowest
+// path, then the lexically first. This keeps a nested example's manifest from
+// supplying the primary signal while still choosing it when it is the only one.
+func pickPrimary(files []SourceFile, base string) (content, srcPath string, ok bool) {
 	base = strings.ToLower(base)
-	bestDepth := -1
+	bestScope, bestDepth := 0, 0
 	for _, f := range files {
 		if strings.ToLower(path.Base(f.Path)) != base {
 			continue
 		}
+		s := scopeRank(f.Path)
 		d := strings.Count(f.Path, "/")
-		if bestDepth == -1 || d < bestDepth || (d == bestDepth && f.Path < srcPath) {
-			bestDepth, content, srcPath, ok = d, f.Content, f.Path, true
+		if !ok || s < bestScope ||
+			(s == bestScope && d < bestDepth) ||
+			(s == bestScope && d == bestDepth && f.Path < srcPath) {
+			bestScope, bestDepth, content, srcPath, ok = s, d, f.Content, f.Path, true
 		}
 	}
 	return content, srcPath, ok
+}
+
+// componentScope is a coarse, directory-derived guess at a manifest's role in
+// the repository, used only to prefer the primary product's manifest over a
+// manifest that clearly belongs to an example, the docs site or tooling. Folder
+// names are hints, not a full component model — the deeper role arbitration
+// lives in the role-resolution step, not here.
+func scopeRank(p string) int {
+	if !strings.Contains(p, "/") {
+		return 0 // root: the primary product's manifest usually sits here
+	}
+	first := strings.ToLower(p[:strings.IndexByte(p, '/')])
+	switch first {
+	case "examples", "example", "demo", "demos", "sample", "samples", "fixtures", "testdata":
+		return 4
+	case "docs", "doc", "website", "www", "site":
+		return 3
+	case "tools", "tool", "scripts", "script", ".github", "build", "ci":
+		return 2
+	default:
+		return 1 // some other subdirectory / component
+	}
 }
 
 // limitations gathers the honest caveats on any verdict: manifests that would
