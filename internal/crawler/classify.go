@@ -614,16 +614,43 @@ func parsePackageJSON(content string) *packageJSON {
 	return &p
 }
 
-// dep returns the version range declared for name across the dependency,
-// devDependency and peerDependency maps, or "" if absent. Peer dependencies are
-// checked last so a real (dev)dependency version is preferred for evidence.
-func (p *packageJSON) dep(name string) string {
-	for _, m := range []map[string]string{p.Dependencies, p.DevDependencies, p.PeerDependencies} {
-		if v, ok := m[name]; ok {
-			return v
+// depCategory names which dependency table a package was declared in, kept
+// distinct so a later role decision can tell a runtime dependency (evidence of
+// what the product uses) from a build-time dev dependency (evidence of how it is
+// built) — the two must not be conflated.
+type depCategory string
+
+const (
+	depRuntime depCategory = "dependencies"
+	depDev     depCategory = "devDependencies"
+	depPeer    depCategory = "peerDependencies"
+)
+
+// lookupDep returns the declared version and the category a dependency was found
+// in, checking runtime, then dev, then peer, so a real (dev)dependency is
+// preferred over a peer range. ok is false when the name is absent.
+func (p *packageJSON) lookupDep(name string) (version string, cat depCategory, ok bool) {
+	for _, e := range []struct {
+		m   map[string]string
+		cat depCategory
+	}{
+		{p.Dependencies, depRuntime},
+		{p.DevDependencies, depDev},
+		{p.PeerDependencies, depPeer},
+	} {
+		if v, found := e.m[name]; found {
+			return v, e.cat, true
 		}
 	}
-	return ""
+	return "", "", false
+}
+
+// dep returns the version range declared for name in any category, or "" if
+// absent. It is the category-agnostic lookup; use lookupDep when the category
+// (runtime vs dev vs peer) matters to the decision.
+func (p *packageJSON) dep(name string) string {
+	v, _, _ := p.lookupDep(name)
+	return v
 }
 
 // scripts returns the named npm script, or "".
