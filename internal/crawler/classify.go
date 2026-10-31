@@ -490,15 +490,22 @@ func (ix *repoIndex) isGo() bool {
 	return ix.language == "go" || ix.goMod != "" || ix.hasBase("go.mod")
 }
 
-// goMainReadablePath returns the path of a Go source actually read that declares
-// `package main`, and whether one was found.
-func (ix *repoIndex) goMainReadablePath() (string, bool) {
+// goMainReadable returns a Go source actually read that declares `package main`
+// (parsed, so a `package main` in a comment never counts), and whether one was
+// found.
+func (ix *repoIndex) goMainReadable() (SourceFile, bool) {
 	for _, f := range ix.goFiles {
-		if declaresGoPackageMain(f.Content) {
-			return f.Path, true
+		if goDeclaresPackageMain(f.Content) {
+			return f, true
 		}
 	}
-	return "", false
+	return SourceFile{}, false
+}
+
+// goMainReadablePath is goMainReadable reduced to the path.
+func (ix *repoIndex) goMainReadablePath() (string, bool) {
+	f, ok := ix.goMainReadable()
+	return f.Path, ok
 }
 
 // goMainObservation reports that the repo contains a Go command, citing the read
@@ -518,10 +525,12 @@ func (ix *repoIndex) goMainObservation() (Observation, bool) {
 }
 
 // goServerObservation returns evidence that a Go command starts a server: a read
-// source calling http.ListenAndServe, or a declared server-framework dependency.
+// source with a real http.ListenAndServe call (recognised from the AST, not a
+// substring, so a comment does not count), or a declared server-framework
+// dependency in go.mod.
 func (ix *repoIndex) goServerObservation() (Observation, bool) {
 	for _, f := range ix.goFiles {
-		if strings.Contains(f.Content, "ListenAndServe") || strings.Contains(f.Content, "http.Server{") {
+		if starts, _ := goStartsHTTPServer(f.Content); starts {
 			return Observation{Path: f.Path, Detail: "calls http.ListenAndServe (starts an HTTP server)"}, true
 		}
 	}
@@ -531,21 +540,10 @@ func (ix *repoIndex) goServerObservation() (Observation, bool) {
 	return Observation{}, false
 }
 
-// goDep returns the first of wants that appears in a go.mod require directive
-// (ignoring the module line so the repo's own path never counts as a dep).
+// goDep returns the first of wants required by go.mod (parsed with the official
+// module-file parser, so a module named only in a comment never counts).
 func (ix *repoIndex) goDep(wants []string) string {
-	for _, line := range strings.Split(ix.goMod, "\n") {
-		trimmed := strings.TrimSpace(line)
-		if strings.HasPrefix(trimmed, "module ") {
-			continue
-		}
-		for _, w := range wants {
-			if strings.Contains(trimmed, w) {
-				return w
-			}
-		}
-	}
-	return ""
+	return goRequiresAny(ix.goMod, wants)
 }
 
 // --- Python helpers ----------------------------------------------------------
@@ -559,18 +557,6 @@ func (ix *repoIndex) pyText() (text, srcPath string) {
 }
 
 // --- small pure utilities ----------------------------------------------------
-
-// declaresGoPackageMain reports whether Go source declares `package main`,
-// scanning line by line so a `package main` inside a string or comment on the
-// same line as other text does not false-positive.
-func declaresGoPackageMain(src string) bool {
-	for _, line := range strings.Split(src, "\n") {
-		if strings.TrimSpace(line) == "package main" {
-			return true
-		}
-	}
-	return false
-}
 
 // dockerExposedPort returns the first port from an EXPOSE directive, or "".
 func dockerExposedPort(dockerfile string) string {
