@@ -391,18 +391,6 @@ func (ix *repoIndex) hasPrefix(prefix string) bool {
 	return false
 }
 
-// firstPathWithBaseStem returns the original-cased path whose lowercased form
-// starts with stem (e.g. "src/app."), for readable evidence.
-func (ix *repoIndex) firstPathWithBaseStem(stem string) string {
-	stem = strings.ToLower(stem)
-	for i, lp := range ix.lowerPath {
-		if strings.HasPrefix(lp, stem) {
-			return ix.paths[i]
-		}
-	}
-	return stem + "*"
-}
-
 // --- mobile -----------------------------------------------------------------
 
 func detectMobile(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
@@ -442,9 +430,12 @@ func detectFrontend(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 	if ix.pkg == nil {
 		return "", nil, false
 	}
+	// A web framework establishes an application only as a *runtime* dependency.
+	// A build tool in devDependencies (vite) or a peer dependency (a UI
+	// library's react) does not make the package a frontend product.
 	var framework, frameworkVer string
 	for _, f := range webFrameworks {
-		if v := ix.pkg.dep(f); v != "" {
+		if v, cat, ok := ix.pkg.lookupDep(f); ok && cat == depRuntime {
 			framework, frameworkVer = f, v
 			break
 		}
@@ -452,20 +443,11 @@ func detectFrontend(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 	if framework == "" {
 		return "", nil, false
 	}
-
-	// An app entry distinguishes a runnable frontend from a published UI library.
-	var entry Observation
-	switch {
-	case ix.hasBase("index.html"):
-		entry = Observation{Detail: "index.html present (web app entry)"}
-	case ix.hasPrefix("src/app."):
-		entry = Observation{Detail: ix.firstPathWithBaseStem("src/app.") + " present (root component)"}
-	case ix.hasPrefix("src/main."):
-		entry = Observation{Detail: ix.firstPathWithBaseStem("src/main.") + " present (app bootstrap)"}
-	case ix.pkg.scripts("dev") != "" || ix.pkg.scripts("start") != "":
-		entry = Observation{Path: ix.pkgPath, Detail: "has a dev/start script (runnable app)"}
-	default:
-		// No app entry: defer to detectLibrary.
+	// The app entry must live in the primary component, so a nested example or
+	// demo does not turn a library into a frontend. A dev/start script alone is
+	// not an app entry. Without a primary app entry, defer to detectLibrary.
+	entry, ok := ix.frontendEntry()
+	if !ok {
 		return "", nil, false
 	}
 
@@ -474,6 +456,60 @@ func detectFrontend(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 		ev = append(ev, Observation{Path: ix.pkgPath, Detail: `"private": true (not a published package)`})
 	}
 	return apimodel.KindFrontend, ev, true
+}
+
+// frontendEntry finds a primary-component app entry: an index.html, a src/App
+// root component, a src/main bootstrap, or an app build config (vite/next/…).
+// Nested example/demo/docs paths are excluded, so a library's demo page does not
+// read as the product's entry.
+func (ix *repoIndex) frontendEntry() (Observation, bool) {
+	if p, ok := ix.firstPrimaryPath(func(lp string) bool { return path.Base(lp) == "index.html" }); ok {
+		return Observation{Path: p, Detail: "web app entry (index.html)"}, true
+	}
+	if p, ok := ix.firstPrimaryPath(func(lp string) bool { return strings.HasPrefix(lp, "src/app.") }); ok {
+		return Observation{Path: p, Detail: "root component (src/App)"}, true
+	}
+	if p, ok := ix.firstPrimaryPath(func(lp string) bool { return strings.HasPrefix(lp, "src/main.") }); ok {
+		return Observation{Path: p, Detail: "app bootstrap (src/main)"}, true
+	}
+	if p, ok := ix.firstPrimaryPath(isAppConfig); ok {
+		return Observation{Path: p, Detail: "app build configuration"}, true
+	}
+	return Observation{}, false
+}
+
+// hasPrimaryAppShell reports whether a primary-component app shell (index.html
+// or a src/App root component) exists — the stricter "this is an app" marker
+// detectLibrary uses, which deliberately excludes a build config a library also
+// ships.
+func (ix *repoIndex) hasPrimaryAppShell() bool {
+	if _, ok := ix.firstPrimaryPath(func(lp string) bool { return path.Base(lp) == "index.html" }); ok {
+		return true
+	}
+	_, ok := ix.firstPrimaryPath(func(lp string) bool { return strings.HasPrefix(lp, "src/app.") })
+	return ok
+}
+
+// firstPrimaryPath returns the first original-cased tree path at a primary
+// component scope whose lowercased form satisfies pred.
+func (ix *repoIndex) firstPrimaryPath(pred func(lower string) bool) (string, bool) {
+	for i, lp := range ix.lowerPath {
+		if scopeRank(ix.paths[i]) <= 1 && pred(lp) {
+			return ix.paths[i], true
+		}
+	}
+	return "", false
+}
+
+// isAppConfig reports whether a path is a web-app framework build config.
+func isAppConfig(lower string) bool {
+	switch path.Base(lower) {
+	case "vite.config.ts", "vite.config.js", "next.config.js", "next.config.mjs",
+		"nuxt.config.ts", "nuxt.config.js", "svelte.config.js", "astro.config.mjs",
+		"angular.json":
+		return true
+	}
+	return false
 }
 
 // --- backend -----------------------------------------------------------------
@@ -594,7 +630,7 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 	if ix.pkg != nil {
 		hasLibEntry := ix.pkg.Main != "" || ix.pkg.Module != "" ||
 			(len(ix.pkg.Exports) > 0 && string(ix.pkg.Exports) != "null")
-		hasApp := ix.hasBase("index.html") || ix.hasPrefix("src/app.")
+		hasApp := ix.hasPrimaryAppShell()
 		hasBin := len(ix.pkg.Bin) > 0 && string(ix.pkg.Bin) != "null"
 		if hasLibEntry && !hasApp && !hasBin {
 			ev = append(ev, Observation{Path: ix.pkgPath, Detail: `declares a lib entry ("main"/"module"/"exports") and no app or bin (importable package)`})
@@ -809,9 +845,4 @@ func (p *packageJSON) lookupDep(name string) (version string, cat depCategory, o
 func (p *packageJSON) dep(name string) string {
 	v, _, _ := p.lookupDep(name)
 	return v
-}
-
-// scripts returns the named npm script, or "".
-func (p *packageJSON) scripts(name string) string {
-	return p.Scripts[name]
 }
