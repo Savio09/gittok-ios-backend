@@ -48,6 +48,10 @@ func Classify(insp Inspection) Classification {
 	ix := newRepoIndex(insp)
 	limits := ix.limitations()
 
+	// Run every detector and keep each hit as a candidate tagged with the
+	// component scope of its evidence, rather than taking the first match. The
+	// detectors are listed in precedence order (the tie-breaker among candidates
+	// in the same scope).
 	detectors := []func(*repoIndex) (apimodel.RepoKind, []Observation, bool){
 		detectMobile,
 		detectFrontend,
@@ -55,22 +59,109 @@ func Classify(insp Inspection) Classification {
 		detectCLI,
 		detectLibrary,
 	}
+	type candidate struct {
+		kind  apimodel.RepoKind
+		obs   []Observation
+		scope int
+	}
+	var candidates []candidate
 	for _, detect := range detectors {
 		if kind, obs, ok := detect(ix); ok {
-			return Classification{
-				Kind:         kind,
-				Status:       VerdictResolved,
-				Observations: obs,
-				Limitations:  limits,
+			candidates = append(candidates, candidate{kind: kind, obs: obs, scope: candidateScope(obs)})
+		}
+	}
+	if len(candidates) == 0 {
+		limits = append(limits, "no decisive frontend / backend / library / CLI / mobile signal was found in the inspected manifests and file tree")
+		return Classification{Kind: apimodel.KindOther, Status: VerdictInconclusive, Limitations: limits}
+	}
+
+	// The primary product is whatever has evidence in the most primary component
+	// scope (lowest rank). A signal from a less primary component — an admin UI
+	// under ui/, a server under examples/ — cannot override it; it is recorded as
+	// a secondary component instead. Detectors already ran in precedence order,
+	// so the first candidate at the primary scope wins the tie.
+	primaryScope := candidates[0].scope
+	for _, c := range candidates[1:] {
+		if c.scope < primaryScope {
+			primaryScope = c.scope
+		}
+	}
+	chosen := 0
+	for i := range candidates {
+		if candidates[i].scope == primaryScope {
+			chosen = i
+			break
+		}
+	}
+
+	// Abstain when a Go entry point at least as primary as the chosen candidate
+	// was never inspected: it could itself be the primary product (a backend
+	// whose decisive source we did not read), so picking a less-primary signal
+	// such as an admin UI would be a guess.
+	if unread := ix.unreadGoEntries(); len(unread) > 0 && primaryScope >= minScopeOfPaths(unread) {
+		for _, c := range candidates {
+			for _, o := range c.obs {
+				if o.Path != "" {
+					limits = append(limits, "candidate ("+string(c.kind)+"): "+o.Path+": "+o.Detail)
+				}
+			}
+		}
+		limits = append(limits, "an uninspected Go entry point could be the primary product; verdict withheld")
+		return Classification{Kind: apimodel.KindOther, Status: VerdictInconclusive, Limitations: limits}
+	}
+
+	for i := range candidates {
+		if i == chosen {
+			continue
+		}
+		for _, o := range candidates[i].obs {
+			if o.Path != "" {
+				limits = append(limits, "secondary component ("+string(candidates[i].kind)+"): "+o.Path+": "+o.Detail)
 			}
 		}
 	}
-	limits = append(limits, "no decisive frontend / backend / library / CLI / mobile signal was found in the inspected manifests and file tree")
 	return Classification{
-		Kind:        apimodel.KindOther,
-		Status:      VerdictInconclusive,
-		Limitations: limits,
+		Kind:         candidates[chosen].kind,
+		Status:       VerdictResolved,
+		Observations: candidates[chosen].obs,
+		Limitations:  limits,
 	}
+}
+
+// minScopeOfPaths is the most primary (lowest) scope among the given paths, or 0
+// when there are none.
+func minScopeOfPaths(paths []string) int {
+	best := -1
+	for _, p := range paths {
+		if s := scopeRank(p); best == -1 || s < best {
+			best = s
+		}
+	}
+	if best == -1 {
+		return 0
+	}
+	return best
+}
+
+// candidateScope is the component scope a candidate speaks for: the most primary
+// (lowest) scope among its evidence paths. Whole-tree structural observations
+// (no path) do not pull the scope toward root, so a nested component's manifest
+// still reads as nested; a candidate with only structural evidence is treated as
+// primary (scope 0).
+func candidateScope(obs []Observation) int {
+	best := -1
+	for _, o := range obs {
+		if o.Path == "" {
+			continue
+		}
+		if s := scopeRank(o.Path); best == -1 || s < best {
+			best = s
+		}
+	}
+	if best == -1 {
+		return 0
+	}
+	return best
 }
 
 // repoIndex is the pre-parsed, cheap-to-query view of an Inspection. Parsing the
@@ -269,7 +360,7 @@ func (ix *repoIndex) unreadGoEntries() []string {
 	}
 	var unread []string
 	for _, p := range ix.paths {
-		if strings.ToLower(path.Base(p)) == "main.go" && !read[p] {
+		if strings.ToLower(path.Base(p)) == "main.go" && scopeRank(p) <= 1 && !read[p] {
 			unread = append(unread, p)
 		}
 	}
@@ -530,11 +621,25 @@ func (ix *repoIndex) isGo() bool {
 	return ix.language == "go" || ix.goMod != "" || ix.hasBase("go.mod")
 }
 
-// goMainReadable returns a Go source actually read that declares `package main`
-// (parsed, so a `package main` in a comment never counts), and whether one was
-// found.
-func (ix *repoIndex) goMainReadable() (SourceFile, bool) {
+// primaryGoFiles are the read Go sources that belong to the primary product —
+// root or an ordinary subdirectory (cmd/, internal/, …) — excluding example,
+// docs and tooling scopes. A main or server call inside examples/ is a property
+// of the example, not of the repository's primary kind.
+func (ix *repoIndex) primaryGoFiles() []SourceFile {
+	var out []SourceFile
 	for _, f := range ix.goFiles {
+		if scopeRank(f.Path) <= 1 {
+			out = append(out, f)
+		}
+	}
+	return out
+}
+
+// goMainReadable returns a primary-scope Go source actually read that declares
+// `package main` (parsed, so a `package main` in a comment never counts), and
+// whether one was found.
+func (ix *repoIndex) goMainReadable() (SourceFile, bool) {
+	for _, f := range ix.primaryGoFiles() {
 		if goDeclaresPackageMain(f.Content) {
 			return f, true
 		}
@@ -557,7 +662,7 @@ func (ix *repoIndex) goMainObservation() (Observation, bool) {
 		return Observation{Path: p, Detail: "package main (produces a binary)"}, true
 	}
 	for _, p := range ix.paths {
-		if strings.ToLower(path.Base(p)) == "main.go" {
+		if strings.ToLower(path.Base(p)) == "main.go" && scopeRank(p) <= 1 {
 			return Observation{Path: p, Detail: "Go command entry point present (source not inspected)"}, true
 		}
 	}
@@ -569,7 +674,7 @@ func (ix *repoIndex) goMainObservation() (Observation, bool) {
 // substring, so a comment does not count), or a declared server-framework
 // dependency in go.mod.
 func (ix *repoIndex) goServerObservation() (Observation, bool) {
-	for _, f := range ix.goFiles {
+	for _, f := range ix.primaryGoFiles() {
 		if starts, _ := goStartsHTTPServer(f.Content); starts {
 			return Observation{Path: f.Path, Detail: "calls http.ListenAndServe (starts an HTTP server)"}, true
 		}
