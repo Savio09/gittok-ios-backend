@@ -323,9 +323,11 @@ func detectMobile(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 			}
 		}
 	}
-	// Flutter projects are defined by a pubspec.yaml declaring the flutter SDK.
-	if ix.pubspec != "" && strings.Contains(strings.ToLower(ix.pubspec), "flutter") {
-		ev = append(ev, Observation{Path: ix.pubspecPath, Detail: "declares the Flutter SDK (mobile)"})
+	// Flutter projects declare a Flutter SDK dependency in pubspec.yaml — checked
+	// from the parsed dependency tables, so the word "flutter" in a comment does
+	// not count.
+	if ix.pubspec != "" && pubspecUsesFlutter(ix.pubspec) {
+		ev = append(ev, Observation{Path: ix.pubspecPath, Detail: "declares a Flutter SDK dependency (mobile)"})
 	}
 	// Native shells side by side are a strong mobile signal on their own.
 	if ix.hasPrefix("android/") && ix.hasPrefix("ios/") {
@@ -425,10 +427,11 @@ func detectBackend(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 			ev = append(ev, Observation{Path: ix.cargoPath, Detail: "[[bin]] target depends on \"" + dep + "\" (web framework)"})
 		}
 	}
-	// Containerized service that exposes a port. Frontend was already ruled out
-	// above, so EXPOSE here is a safe backend signal.
+	// Containerized service that declares a network port. Frontend was already
+	// ruled out above. The wording stays a declaration: EXPOSE records a port the
+	// container intends to publish; it is not observed listening behaviour.
 	if port := dockerExposedPort(ix.dockerfile); port != "" {
-		ev = append(ev, Observation{Path: ix.dockerPath, Detail: "EXPOSE " + port + " (serves on a network port)"})
+		ev = append(ev, Observation{Path: ix.dockerPath, Detail: "declares EXPOSE " + port + " (a container network port)"})
 	}
 
 	if len(ev) > 0 {
