@@ -35,11 +35,29 @@ type TreeScope struct {
 	// DepthLimited: entries deeper than the configured MaxDepth were dropped, so
 	// the shallow levels are complete but deeper paths were not listed.
 	DepthLimited bool
+	// MaxDepth is the depth bound behind DepthLimited (path segments; 0 when
+	// unknown). With it, a depth-limited listing still proves absence for paths
+	// at or above the bound; without it, nothing below the root is provable.
+	MaxDepth int
 }
 
 // Complete reports whether the listing is whole, so an absence claim over the
 // tree is defensible.
 func (s TreeScope) Complete() bool { return !s.Truncated && !s.DepthLimited }
+
+// Covers reports whether the listing is complete for paths with the given
+// number of segments ("a/b.go" has 2), i.e. whether a path that deep would have
+// been listed if it existed. A truncated listing covers nothing; a depth-limited
+// one covers only paths at or above a known MaxDepth.
+func (s TreeScope) Covers(segments int) bool {
+	if s.Truncated {
+		return false
+	}
+	if s.DepthLimited {
+		return s.MaxDepth > 0 && segments <= s.MaxDepth
+	}
+	return true
+}
 
 // SourceFile is one file whose content the analyzer actually read. Size is the
 // byte count GitHub reported (what was retrieved); Truncated is true when the
@@ -100,7 +118,7 @@ func NewInspection(language string, rev Revision, tree githubclient.FileTree, co
 		Language:    language,
 		Revision:    rev,
 		Paths:       paths,
-		Scope:       TreeScope{Truncated: tree.Truncated, DepthLimited: tree.DepthLimited},
+		Scope:       TreeScope{Truncated: tree.Truncated, DepthLimited: tree.DepthLimited, MaxDepth: tree.MaxDepth},
 		Files:       files,
 		Unavailable: unavail,
 	}

@@ -27,6 +27,9 @@ type FileTree struct {
 	Entries      []TreeEntry
 	Truncated    bool
 	DepthLimited bool
+	// MaxDepth is the depth bound that was applied (0 when unbounded), so a
+	// reader can tell exactly which paths a depth-limited listing still covers.
+	MaxDepth int
 }
 
 // TreeLimits bounds how much of a tree GetTree returns, so a huge repository
@@ -63,7 +66,7 @@ func (c *Client) GetTree(ctx context.Context, owner, name, ref string, limits Tr
 		return FileTree{}, err
 	}
 
-	tree := FileTree{Truncated: p.Truncated}
+	tree := FileTree{Truncated: p.Truncated, MaxDepth: max(limits.MaxDepth, 0)}
 	entries := make([]TreeEntry, 0, len(p.Tree))
 	for _, e := range p.Tree {
 		if limits.MaxDepth > 0 && depth(e.Path) > limits.MaxDepth {
