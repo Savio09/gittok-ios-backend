@@ -609,8 +609,12 @@ func detectCLI(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 	if ix.pkg != nil && len(ix.pkg.Bin) > 0 && string(ix.pkg.Bin) != "null" {
 		ev = append(ev, Observation{Path: ix.pkgPath, Detail: `declares a "bin" field (installs a command)`})
 	}
-	// Python: console_scripts entry points produce commands.
-	if py, src := ix.pyText(); py != "" && strings.Contains(py, "console_scripts") {
+	// Python: command entry points produce commands — a modern [project.scripts]
+	// table, or the legacy console_scripts in setup.py/setup.cfg. GUI entry
+	// points ([project.gui-scripts]) are deliberately not treated as a CLI.
+	if ix.pyHasProject && len(ix.pyProj.Project.Scripts) > 0 {
+		ev = append(ev, Observation{Path: ix.pyprojPath, Detail: "defines [project.scripts] (installs a command)"})
+	} else if py, src := ix.pyText(); py != "" && strings.Contains(py, "console_scripts") {
 		ev = append(ev, Observation{Path: src, Detail: "defines console_scripts (installs a command)"})
 	}
 	// Rust: a binary target (explicit or implicit). A CLI-parser dependency is
@@ -659,9 +663,12 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 	if ix.rustHasLibTarget() && !ix.rustHasBinTarget() {
 		ev = append(ev, Observation{Path: ix.cargoPath, Detail: "a library target and no binary target (importable crate)"})
 	}
-	// Python: packaging metadata with no console_scripts.
-	if py, src := ix.pyText(); py != "" && !strings.Contains(py, "console_scripts") {
-		ev = append(ev, Observation{Path: src, Detail: "packaging metadata with no console_scripts (importable package)"})
+	// Python: real packaging metadata — a [project] table or a setup.py — with no
+	// command entry points is an importable package. A pyproject.toml carrying
+	// only tool configuration ([tool.*]) is not packaging metadata and is not a
+	// library.
+	if src, ok := ix.pyPackageSource(); ok && !ix.pyHasCommandEntry() {
+		ev = append(ev, Observation{Path: src, Detail: "packaging metadata with no command entry points (importable package)"})
 	}
 
 	if len(ev) > 0 {
@@ -791,6 +798,29 @@ func (ix *repoIndex) pyText() (text, srcPath string) {
 		return ix.pyproject, ix.pyprojPath
 	}
 	return ix.setupPy, ix.setupPyPath
+}
+
+// pyPackageSource reports the file that marks the repo as a real Python package
+// — a pyproject.toml with a [project] table, or a setup.py — and whether one was
+// found. A pyproject with only [tool.*] tables does not count.
+func (ix *repoIndex) pyPackageSource() (string, bool) {
+	if ix.pyHasProject {
+		return ix.pyprojPath, true
+	}
+	if ix.setupPy != "" {
+		return ix.setupPyPath, true
+	}
+	return "", false
+}
+
+// pyHasCommandEntry reports whether the package installs a command, via a modern
+// [project.scripts] table or legacy console_scripts.
+func (ix *repoIndex) pyHasCommandEntry() bool {
+	if ix.pyHasProject && len(ix.pyProj.Project.Scripts) > 0 {
+		return true
+	}
+	py, _ := ix.pyText()
+	return py != "" && strings.Contains(py, "console_scripts")
 }
 
 // pyServerObservation returns evidence that a declared Python dependency is a
