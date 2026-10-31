@@ -199,6 +199,10 @@ type repoIndex struct {
 	pyHasProject     bool              // a [project] table was present
 	pyBad            bool              // a pyproject.toml was present but would not parse
 	pyDepSource      map[string]string // normalised python dep name -> the file it was declared in
+
+	cargoM   cargoManifest // parsed Cargo.toml
+	cargoOK  bool          // Cargo.toml parsed
+	cargoBad bool          // a Cargo.toml was present but would not parse
 }
 
 func newRepoIndex(insp Inspection) *repoIndex {
@@ -243,6 +247,11 @@ func newRepoIndex(insp Inspection) *repoIndex {
 		ix.pyBad = !parsed
 	}
 	ix.pyDepSource = buildPyDepSource(ix.pyProj, ix.pyprojPath, ix.requirements, ix.requirementsPath)
+
+	if ix.cargo != "" {
+		ix.cargoM, ix.cargoOK = parseCargo(ix.cargo)
+		ix.cargoBad = !ix.cargoOK
+	}
 
 	for _, f := range insp.Files {
 		if strings.HasSuffix(strings.ToLower(f.Path), ".go") {
@@ -334,6 +343,9 @@ func (ix *repoIndex) limitations() []string {
 	}
 	if ix.pyBad {
 		out = append(out, "pyproject.toml at "+ix.pyprojPath+" could not be parsed; its signals were not used")
+	}
+	if ix.cargoBad {
+		out = append(out, "Cargo.toml at "+ix.cargoPath+" could not be parsed; its signals were not used")
 	}
 	if ix.scope.Truncated {
 		out = append(out, "the file listing was truncated; a signal absent from it cannot be treated as absent from the repository")
@@ -548,10 +560,11 @@ func detectBackend(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 	if obs, ok := ix.pyServerObservation(); ok {
 		ev = append(ev, obs)
 	}
-	// Rust web frameworks (an app, i.e. with a [[bin]] target).
-	if ix.cargo != "" && strings.Contains(ix.cargo, "[[bin]]") {
-		if dep := firstContains(ix.cargo, rustServerDeps); dep != "" {
-			ev = append(ev, Observation{Path: ix.cargoPath, Detail: "[[bin]] target depends on \"" + dep + "\" (web framework)"})
+	// Rust: a binary target (explicit or Cargo's implicit src/main.rs) that
+	// depends on a web framework.
+	if ix.rustHasBinTarget() {
+		if dep := cargoDep(ix.cargoM, rustServerDeps); dep != "" {
+			ev = append(ev, Observation{Path: ix.cargoPath, Detail: "a binary target depends on \"" + dep + "\" (web framework)"})
 		}
 	}
 	// Containerized service that declares a network port. Frontend was already
@@ -600,10 +613,15 @@ func detectCLI(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 	if py, src := ix.pyText(); py != "" && strings.Contains(py, "console_scripts") {
 		ev = append(ev, Observation{Path: src, Detail: "defines console_scripts (installs a command)"})
 	}
-	// Rust: a [[bin]] target using a CLI argument parser.
-	if ix.cargo != "" && strings.Contains(ix.cargo, "[[bin]]") {
-		if dep := firstContains(ix.cargo, rustCLIDeps); dep != "" {
-			ev = append(ev, Observation{Path: ix.cargoPath, Detail: "[[bin]] target depends on \"" + dep + "\" (CLI parser)"})
+	// Rust: a binary target (explicit or implicit). A CLI-parser dependency is
+	// cited when present, but the binary target — not the parser alone — is what
+	// makes it a command. A binary with a web framework was already taken as a
+	// backend above, so reaching here means no server dependency.
+	if ix.rustHasBinTarget() {
+		if dep := cargoDep(ix.cargoM, rustCLIDeps); dep != "" {
+			ev = append(ev, Observation{Path: ix.cargoPath, Detail: "a binary target depends on \"" + dep + "\" (CLI parser)"})
+		} else if cargoDep(ix.cargoM, rustServerDeps) == "" {
+			ev = append(ev, Observation{Path: ix.cargoPath, Detail: "a binary target with no web-framework dependency (produces a command)"})
 		}
 	}
 
@@ -636,9 +654,10 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 			ev = append(ev, Observation{Path: ix.pkgPath, Detail: `declares a lib entry ("main"/"module"/"exports") and no app or bin (importable package)`})
 		}
 	}
-	// Rust: a [lib] crate with no [[bin]] target.
-	if ix.cargo != "" && strings.Contains(ix.cargo, "[lib]") && !strings.Contains(ix.cargo, "[[bin]]") {
-		ev = append(ev, Observation{Path: ix.cargoPath, Detail: "declares [lib] and no [[bin]] (importable crate)"})
+	// Rust: a library target (explicit [lib] or implicit src/lib.rs) and no
+	// binary target — an importable crate.
+	if ix.rustHasLibTarget() && !ix.rustHasBinTarget() {
+		ev = append(ev, Observation{Path: ix.cargoPath, Detail: "a library target and no binary target (importable crate)"})
 	}
 	// Python: packaging metadata with no console_scripts.
 	if py, src := ix.pyText(); py != "" && !strings.Contains(py, "console_scripts") {
@@ -727,6 +746,43 @@ func (ix *repoIndex) goDep(wants []string) string {
 	return goRequiresAny(ix.goMod, wants)
 }
 
+// --- Rust helpers ------------------------------------------------------------
+
+// rustHasBinTarget reports whether the primary crate has a binary target, from
+// an explicit [[bin]] table or — when autobins is on — Cargo's implicit
+// src/main.rs or src/bin/*.rs in the primary component.
+func (ix *repoIndex) rustHasBinTarget() bool {
+	if !ix.cargoOK {
+		return false
+	}
+	if len(ix.cargoM.Bin) > 0 {
+		return true
+	}
+	if !cargoAutobins(ix.cargoM) {
+		return false
+	}
+	_, ok := ix.firstPrimaryPath(func(lp string) bool {
+		return lp == "src/main.rs" || (strings.HasPrefix(lp, "src/bin/") && strings.HasSuffix(lp, ".rs"))
+	})
+	return ok
+}
+
+// rustHasLibTarget reports whether the primary crate has a library target, from
+// an explicit [lib] table or — when autolib is on — Cargo's implicit src/lib.rs.
+func (ix *repoIndex) rustHasLibTarget() bool {
+	if !ix.cargoOK {
+		return false
+	}
+	if ix.cargoM.Lib != nil {
+		return true
+	}
+	if !cargoAutolib(ix.cargoM) {
+		return false
+	}
+	_, ok := ix.firstPrimaryPath(func(lp string) bool { return lp == "src/lib.rs" })
+	return ok
+}
+
 // --- Python helpers ----------------------------------------------------------
 
 // pyText returns the preferred Python packaging text and the path it came from.
@@ -758,17 +814,6 @@ func dockerExposedPort(dockerfile string) string {
 		fields := strings.Fields(strings.TrimSpace(line))
 		if len(fields) >= 2 && strings.EqualFold(fields[0], "EXPOSE") {
 			return fields[1]
-		}
-	}
-	return ""
-}
-
-// firstContains returns the first of wants found (case-insensitively) in text.
-func firstContains(text string, wants []string) string {
-	lower := strings.ToLower(text)
-	for _, w := range wants {
-		if strings.Contains(lower, strings.ToLower(w)) {
-			return w
 		}
 	}
 	return ""
