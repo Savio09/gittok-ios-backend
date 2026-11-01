@@ -13,6 +13,8 @@ func TestFrameworkRequirementsUseCanonicalModuleIdentities(t *testing.T) {
 		framework       bool
 	}{
 		{"github.com/gin-gonic/gin", "v1.9.1", apimodel.KindBackend, true},
+		{"github.com/gin-gonic/gin", "v1.9", apimodel.KindBackend, true},
+		{"github.com/gin-gonic/gin", "v1.9.1+build", apimodel.KindBackend, true},
 		{"github.com/labstack/echo/v4", "v4.12.0", apimodel.KindBackend, true},
 		{"github.com/go-chi/chi/v5", "v5.0.0", apimodel.KindBackend, true},
 		{"github.com/gofiber/fiber/v2", "v2.0.0", apimodel.KindBackend, true},
@@ -47,5 +49,17 @@ func TestFrameworkRequirementsUseCanonicalModuleIdentities(t *testing.T) {
 				t.Errorf("framework cited=%t, want %t: %v", cited, tc.framework, got.Evidence())
 			}
 		})
+	}
+}
+
+func TestMalformedModuleVersionsCannotEstablishAFramework(t *testing.T) {
+	for _, version := range []string{"banana", "v1..9", "v1.9.1.2"} {
+		got := Classify(InspectionFromSources("Go", []string{"go.mod", "main.go"}, map[string]string{
+			"go.mod":  "module example.com/tool\nrequire github.com/gin-gonic/gin " + version + "\n",
+			"main.go": "package main\nfunc main(){}\n",
+		}))
+		if got.Status != VerdictInconclusive || !limitationsContain(got.Limitations, "could not be parsed") {
+			t.Errorf("invalid version %q established a result: %s/%s: %v", version, got.Kind, got.Status, got.Evidence())
+		}
 	}
 }

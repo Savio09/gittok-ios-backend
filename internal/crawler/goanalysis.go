@@ -10,7 +10,6 @@ import (
 	"strings"
 	"sync"
 
-	"golang.org/x/mod/modfile"
 	"golang.org/x/mod/module"
 )
 
@@ -81,7 +80,7 @@ func analyzeGoFile(f SourceFile) goFile {
 // goModulePath returns the module path a go.mod declares, or "" if it will not
 // parse or declares none.
 func goModulePath(goMod string) string {
-	f, err := modfile.Parse("go.mod", []byte(goMod), nil)
+	f, err := parseGoModSource("go.mod", goMod)
 	if err != nil || f.Module == nil {
 		return ""
 	}
@@ -218,7 +217,7 @@ func scanServerCalls(fset *token.FileSet, file *ast.File, src string) (calls []g
 // replace/exclude blocks are handled correctly — a module named only in a
 // comment is never returned. A go.mod that will not parse yields no paths.
 func goModRequiredPaths(goMod string) []string {
-	f, err := modfile.Parse("go.mod", []byte(goMod), nil)
+	f, err := parseGoModSource("go.mod", goMod)
 	if err != nil {
 		return nil
 	}

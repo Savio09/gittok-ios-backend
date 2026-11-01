@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	toml "github.com/pelletier/go-toml/v2"
-	"golang.org/x/mod/modfile"
 	"gopkg.in/yaml.v3"
 )
 
@@ -322,7 +321,7 @@ func manifestTree(p, content string) (map[string]any, error) {
 		err := yaml.Unmarshal([]byte(content), &tree)
 		return tree, err
 	case kindGoMod:
-		f, err := modfile.Parse(p, []byte(content), nil)
+		f, err := parseGoModSource(p, content)
 		if err != nil {
 			return nil, err
 		}

@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/Savio09/gittok-ios-backend/internal/apimodel"
-	"golang.org/x/mod/modfile"
 )
 
 // This file holds the per-component layer of classification: a view of one
@@ -997,7 +996,7 @@ func (ix *repoIndex) goRequirement(wants []string) (modPath, version string) {
 	if !ix.goMod.readable() {
 		return "", ""
 	}
-	f, err := modfile.Parse(ix.goMod.path, []byte(ix.goMod.content), nil)
+	f, err := parseGoModSource(ix.goMod.path, ix.goMod.content)
 	if err != nil {
 		return "", ""
 	}

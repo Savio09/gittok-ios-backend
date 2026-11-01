@@ -5,7 +5,6 @@ import (
 	"sort"
 	"strings"
 
-	"golang.org/x/mod/modfile"
 	"gopkg.in/yaml.v3"
 )
 
@@ -219,7 +218,7 @@ func manifestDeps(m manifestRef) []depDecl {
 			}
 		}
 	case kindGoMod:
-		if f, err := modfile.Parse(m.path, []byte(m.content), nil); err == nil {
+		if f, err := parseGoModSource(m.path, m.content); err == nil {
 			for _, r := range f.Require {
 				cat := "require"
 				if r.Indirect {
