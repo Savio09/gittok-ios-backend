@@ -955,6 +955,11 @@ func (ix *repoIndex) unreadGoSample() string {
 // the server was observed running.
 func (ix *repoIndex) goServerObservation() (Observation, bool) {
 	for _, g := range ix.primaryGoFiles() {
+		// go build excludes _test.go; test calls are not product-role evidence.
+		// https://pkg.go.dev/cmd/go@go1.25.5#hdr-Compile_packages_and_dependencies
+		if g.test {
+			continue
+		}
 		if len(g.serverCalls) > 0 {
 			c := g.serverCalls[0]
 			what := "net/http package function"
