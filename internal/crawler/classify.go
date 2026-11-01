@@ -789,6 +789,7 @@ func (ix *repoIndex) commandObservations() []Observation {
 // inspected source. Its scope is the command's own package and the module's
 // declared requirements:
 //
+//   - the listing covers every file at the command directory's depth;
 //   - every non-test Go file listed in (or read from) the command's directory was
 //     read in full and parsed;
 //   - go.mod was read in full and parsed, so no server framework requirement is
@@ -800,6 +801,9 @@ func (ix *repoIndex) commandObservations() []Observation {
 // inspected; that bound is part of the documented policy.
 func (ix *repoIndex) goNoServerPremise(cmd goFile) (bool, []string) {
 	var why []string
+	if err := validateGoPackageListing(ix.st, ix.noServerScope(cmd)); err != nil {
+		why = append(why, err.Error())
+	}
 	dir := path.Dir(cmd.path)
 	seen := map[string]bool{}
 	check := func(p string) {
@@ -871,7 +875,7 @@ func (ix *repoIndex) goImportablePackage() (goFile, bool) {
 //   - the module root's package clause to be known from a read file (or the
 //     listing to show no root Go files at all);
 //   - the listing to cover cmd/<name>/ and every Go file listed under cmd/ to
-//     have been read;
+//     have an established package clause;
 //   - every listed main.go to have been read (enforced by the unread-entry block).
 //
 // A command placed in some other directory, under a file name other than
@@ -901,8 +905,14 @@ func (ix *repoIndex) goNoCommandPremise() (bool, []string) {
 		why = append(why, "the listing does not cover cmd/<name>/; a command there cannot be ruled out")
 	}
 	for _, p := range ix.goCandidatePaths() {
-		if strings.HasPrefix(strings.ToLower(ix.comp.rel(p)), "cmd/") && !ix.isRead(p) {
-			why = append(why, ix.st.describe(p)+"; it may be a command")
+		if strings.HasPrefix(strings.ToLower(ix.comp.rel(p)), "cmd/") {
+			g, read := ix.goFileAt(p)
+			switch {
+			case !read:
+				why = append(why, ix.st.describe(p)+"; it may be a command")
+			case g.pkg == "":
+				why = append(why, p+" has no established package clause; it may be a command")
+			}
 		}
 	}
 	return len(why) == 0, dedupe(why)

@@ -14,7 +14,7 @@ const witnessMain = "package main\n\nimport \"net/http\"\n\n// http.ListenAndSer
 
 func witnessIndex() *inspIndex {
 	return indexInspection(Inspection{
-		Paths: []string{"package.json", "go.mod", "cmd/api/main.go", "cmd/api/util.go", "cmd/api/imports.go", "pyproject.toml", "requirements.txt",
+		Paths: []string{"package.json", "go.mod", "cmd/api/main.go", "cmd/api/util.go", "cmd/api/imports.go", "cmd/safe/main.go", "pyproject.toml", "requirements.txt",
 			"Dockerfile", "big.go", "index.html", "android/app/build.gradle", "ios/Runner/Info.plist", "unread.go"},
 		Files: []SourceFile{
 			{Path: "package.json", Content: `{"dependencies":{"express":"^4.19.0"},"bin":"cli.js","private":true}`},
@@ -22,6 +22,7 @@ func witnessIndex() *inspIndex {
 			{Path: "cmd/api/main.go", Content: witnessMain},
 			{Path: "cmd/api/util.go", Content: "package main\n\nfunc helper() {}\n"},
 			{Path: "cmd/api/imports.go", Content: "package main\n\nimport \"example.com/api/internal/srv\"\n\nvar _ = srv.Run\n"},
+			{Path: "cmd/safe/main.go", Content: "package main\nfunc main(){}\n"},
 			{Path: "pyproject.toml", Content: "[project]\nname='svc'\ndependencies=['flask>=3.0']\n[project.optional-dependencies]\ndocs=['sphinx']\n[project.scripts]\nsvc='svc:main'\n"},
 			{Path: "requirements.txt", Content: "Flask==3.0.0\n"},
 			{Path: "Dockerfile", Content: "FROM alpine\nEXPOSE 8080\n"},
@@ -59,7 +60,7 @@ func TestValidWitnessesAreAccepted(t *testing.T) {
 		"dockerfile EXPOSE":        {Kind: WitnessSpan, Path: "Dockerfile", Start: expose, End: expose + len("EXPOSE 8080"), Construct: constructDockerExpose},
 		"index.html listing":       {Kind: WitnessListing, Paths: []string{"index.html"}, Construct: constructIndexHTML},
 		"native shells listing":    {Kind: WitnessListing, Paths: []string{"android/app/build.gradle", "ios/Runner/Info.plist"}, Construct: constructNativeShells},
-		"no-server scope":          {Kind: WitnessScope, Paths: []string{"go.mod", "cmd/api/util.go"}, Construct: constructGoNoServer},
+		"no-server scope":          {Kind: WitnessScope, Paths: []string{"go.mod", "cmd/safe/main.go"}, Construct: constructGoNoServer},
 		"complete-read scope":      {Kind: WitnessScope, Paths: []string{"pyproject.toml"}, Construct: constructCompleteReads},
 	}
 	for name, w := range valid {

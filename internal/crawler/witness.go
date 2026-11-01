@@ -272,7 +272,7 @@ func validateScope(st *inspIndex, w Witness) error {
 				return fmt.Errorf("%s has a server-like call of unestablished identity", p)
 			}
 		}
-		return nil
+		return validateGoPackageListing(st, w.Paths)
 	}
 	return fmt.Errorf("unknown scope construct %q", w.Construct)
 }
