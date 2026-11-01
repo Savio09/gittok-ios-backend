@@ -306,11 +306,11 @@ func (ix *repoIndex) firstPrimaryPath(pred func(lowerRel string) bool) (string, 
 
 func detectMobile(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 	var ev []Observation
-	if ix.pkg != nil {
-		for _, dep := range []string{"react-native", "expo"} {
-			if v := ix.pkg.dep(dep); v != "" {
-				ev = append(ev, Observation{Path: ix.pkgRef.path, Detail: "depends on " + quoteDep(dep, v) + " (mobile framework)"})
-			}
+	// A mobile framework establishes a mobile app only as a runtime dependency; a
+	// development or peer declaration describes tooling or an integration.
+	for _, dep := range []string{"react-native", "expo"} {
+		if obs, ok := ix.runtimeDep(dep, "mobile framework"); ok {
+			ev = append(ev, obs)
 		}
 	}
 	// Flutter projects declare a Flutter SDK dependency in pubspec.yaml — checked
@@ -351,6 +351,29 @@ func (ix *repoIndex) runtimeWebFramework() (name, version string) {
 	return "", ""
 }
 
+// runtimeDep returns an observation when name is a runtime dependency of the
+// component's package.json, citing the declaring field. A declaration found
+// only among devDependencies or peerDependencies is recorded as a note that
+// names its table: it describes tooling or an integration a host provides, and
+// does not by itself establish what the component is.
+func (ix *repoIndex) runtimeDep(name, what string) (Observation, bool) {
+	if ix.pkg == nil {
+		return Observation{}, false
+	}
+	v, cat, ok := ix.pkg.lookupDep(name)
+	switch {
+	case !ok:
+		return Observation{}, false
+	case cat == depRuntime:
+		return Observation{Path: ix.pkgRef.path, Detail: "declares " + quoteDep(name, v) + " in dependencies (" + what + ")"}, true
+	case cat == depDev:
+		ix.note(ix.pkgRef.path + " declares " + quoteDep(name, v) + " only in devDependencies — development tooling, which does not establish a " + what + " in the product")
+	default:
+		ix.note(ix.pkgRef.path + " declares " + quoteDep(name, v) + " only in peerDependencies — an integration the host application provides, which does not establish a " + what + " in this package")
+	}
+	return Observation{}, false
+}
+
 func detectFrontend(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 	// A web framework establishes an application only as a *runtime* dependency.
 	// A build tool in devDependencies (vite) or a peer dependency (a UI
@@ -366,7 +389,7 @@ func detectFrontend(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 	if !ok {
 		return "", nil, false
 	}
-	ev := []Observation{{Path: ix.pkgRef.path, Detail: "depends on " + quoteDep(framework, version) + " (web framework)"}, entry}
+	ev := []Observation{{Path: ix.pkgRef.path, Detail: "declares " + quoteDep(framework, version) + " in dependencies (web framework)"}, entry}
 	if ix.pkg.Private {
 		ev = append(ev, Observation{Path: ix.pkgRef.path, Detail: `"private": true (not a published package)`})
 	}
@@ -434,13 +457,12 @@ func detectBackend(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 			ev = append(ev, Observation{Path: cmd.path, Detail: "package main (produces a binary)"}, serverObs)
 		}
 	}
-	// Node server frameworks.
-	if ix.pkg != nil {
-		for _, dep := range nodeServerDeps {
-			if v := ix.pkg.dep(dep); v != "" {
-				ev = append(ev, Observation{Path: ix.pkgRef.path, Detail: "depends on " + quoteDep(dep, v) + " (server framework)"})
-				break
-			}
+	// Node server frameworks, as runtime dependencies only: a development or peer
+	// declaration describes tooling or an integration, not the product's server.
+	for _, dep := range nodeServerDeps {
+		if obs, ok := ix.runtimeDep(dep, "server framework"); ok {
+			ev = append(ev, obs)
+			break
 		}
 	}
 	// Python web frameworks, matched against parsed dependency names.
@@ -1022,12 +1044,4 @@ func (p *packageJSON) lookupDep(name string) (version string, cat depCategory, o
 		}
 	}
 	return "", "", false
-}
-
-// dep returns the version range declared for name in any category, or "" if
-// absent. It is the category-agnostic lookup; use lookupDep when the category
-// (runtime vs dev vs peer) matters to the decision.
-func (p *packageJSON) dep(name string) string {
-	v, _, _ := p.lookupDep(name)
-	return v
 }
