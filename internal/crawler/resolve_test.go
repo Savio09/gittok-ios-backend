@@ -2,6 +2,7 @@ package crawler
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/Savio09/gittok-ios-backend/internal/apimodel"
@@ -239,6 +240,48 @@ func TestClassificationIsOrderStableAcrossComponents(t *testing.T) {
 		}
 		if got := Classify(shuffled); !reflect.DeepEqual(got, want) {
 			t.Fatalf("rotation %d changed the result:\n got  %+v\n want %+v", i, got, want)
+		}
+	}
+}
+
+// Task 7 (R5): a Dockerfile's EXPOSE is a deployment port, not a product role.
+// Alone it stays inconclusive and is surfaced; beside independent backend
+// evidence it is kept as supporting context. Neither wording claims the
+// container was observed listening or run.
+func TestDockerPortIsDeploymentEvidenceOnly(t *testing.T) {
+	dockerfile := "FROM alpine\nEXPOSE 8080\n"
+	alone := Classify(InspectionFromSources("", []string{"Dockerfile"}, map[string]string{"Dockerfile": dockerfile}))
+	if alone.Kind == apimodel.KindBackend || alone.Status != VerdictInconclusive {
+		t.Errorf("a port alone resolved %q/%q, want an abstention", alone.Kind, alone.Status)
+	}
+	if !limitationsContain(alone.Limitations, "Dockerfile declares EXPOSE 8080") {
+		t.Errorf("the declared port should stay visible: %v", alone.Limitations)
+	}
+
+	withServer := Classify(InspectionFromSources("Go", []string{"Dockerfile", "go.mod", "main.go"}, map[string]string{
+		"Dockerfile": dockerfile,
+		"go.mod":     "module example.com/api\n",
+		"main.go":    "package main\nimport \"net/http\"\nfunc main(){ http.ListenAndServe(\":8080\", nil) }\n",
+	}))
+	if withServer.Kind != apimodel.KindBackend || withServer.Status != VerdictResolved {
+		t.Fatalf("independent backend + Dockerfile: got %q/%q", withServer.Kind, withServer.Status)
+	}
+	kept := false
+	for _, o := range withServer.Observations {
+		if o.Path == "Dockerfile" && strings.Contains(o.Detail, "EXPOSE 8080") {
+			kept = true
+		}
+	}
+	if !kept {
+		t.Errorf("the deployment port was not kept beside the backend evidence: %+v", withServer.Observations)
+	}
+
+	for _, line := range append(alone.Evidence(), withServer.Evidence()...) {
+		low := strings.ToLower(line)
+		for _, claim := range []string{"serves on", "is listening", "listens on", "was run", "is running", "starts an http server"} {
+			if strings.Contains(low, claim) {
+				t.Errorf("evidence claims runtime behaviour (%q): %s", claim, line)
+			}
 		}
 	}
 }

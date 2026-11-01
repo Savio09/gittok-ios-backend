@@ -473,11 +473,17 @@ func detectBackend(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 			ev = append(ev, Observation{Path: ix.cargo.path, Detail: "a binary target depends on \"" + dep + "\" (web framework)"})
 		}
 	}
-	// Containerized service that declares a network port. The wording stays a
-	// declaration: EXPOSE records a port the container intends to publish.
+	// A Dockerfile's EXPOSE is deployment metadata: a port the image declares it
+	// intends to publish, not evidence of what the product is or that anything
+	// listens on it. It is kept as supporting context beside independent backend
+	// evidence and otherwise surfaced as a note; it never decides the role.
 	if ix.docker.readable() {
 		if port := dockerExposedPort(ix.docker.content); port != "" {
-			ev = append(ev, Observation{Path: ix.docker.path, Detail: "declares EXPOSE " + port + " (a container network port)"})
+			if len(ev) > 0 {
+				ev = append(ev, Observation{Path: ix.docker.path, Detail: "declares EXPOSE " + port + " (a deployment port the image declares; not observed listening)"})
+			} else {
+				ix.note(ix.docker.path + " declares EXPOSE " + port + " — a deployment port the image declares, which does not by itself establish a backend")
+			}
 		}
 	}
 

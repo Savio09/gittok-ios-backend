@@ -130,12 +130,14 @@ func TestClassify(t *testing.T) {
 			wantEvidence: "Flutter",
 		},
 		{
-			name:     "dockerfile exposing a port is a backend",
+			name:     "a backend keeps its Dockerfile port as deployment evidence",
 			language: "Go",
 			paths:    []string{"Dockerfile", "go.mod", "cmd/app/main.go"},
 			manifests: map[string]string{
-				"go.mod":          "module example.com/app\n\ngo 1.21\n",
-				"cmd/app/main.go": "package main\n\nfunc main() {}\n",
+				"go.mod": "module example.com/app\n\ngo 1.21\n",
+				// EXPOSE alone never decides the role (R5): the server call does, and
+				// the declared port is kept beside it as deployment evidence.
+				"cmd/app/main.go": "package main\n\nimport \"net/http\"\n\nfunc main() { http.ListenAndServe(\":8080\", nil) }\n",
 				"Dockerfile":      "FROM golang:1.21\nEXPOSE 8080\nCMD [\"/app\"]\n",
 			},
 			wantKind:     apimodel.KindBackend,
