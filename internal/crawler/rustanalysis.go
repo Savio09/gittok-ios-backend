@@ -17,6 +17,7 @@ import (
 type cargoManifest struct {
 	Package *struct {
 		Name     string `toml:"name"`
+		Edition  string `toml:"edition"`
 		Autobins *bool  `toml:"autobins"`
 		Autolib  *bool  `toml:"autolib"`
 	} `toml:"package"`
@@ -38,13 +39,32 @@ func parseCargo(content string) (m cargoManifest, parsed bool) {
 	return m, true
 }
 
-// cargoAutobins / cargoAutolib report whether Cargo's implicit target discovery
-// is on (the default) — a package may disable it with autobins/autolib = false.
+// cargoAutobins / cargoAutolib report whether Cargo discovers binary / library
+// targets from the file layout. Per the Cargo book (Target auto-discovery): an
+// explicit autobins / autolib setting wins; otherwise discovery is on, except
+// that in the 2015 edition — the edition Cargo assumes when none is declared —
+// it is off as soon as any target is declared manually.
 func cargoAutobins(m cargoManifest) bool {
-	return m.Package == nil || m.Package.Autobins == nil || *m.Package.Autobins
+	if m.Package != nil && m.Package.Autobins != nil {
+		return *m.Package.Autobins
+	}
+	return cargoAutoDefault(m)
 }
+
 func cargoAutolib(m cargoManifest) bool {
-	return m.Package == nil || m.Package.Autolib == nil || *m.Package.Autolib
+	if m.Package != nil && m.Package.Autolib != nil {
+		return *m.Package.Autolib
+	}
+	return cargoAutoDefault(m)
+}
+
+func cargoAutoDefault(m cargoManifest) bool {
+	edition := ""
+	if m.Package != nil {
+		edition = m.Package.Edition
+	}
+	manual := m.Lib != nil || len(m.Bin) > 0
+	return !(manual && (edition == "" || edition == "2015"))
 }
 
 // cargoDep returns the declared name of the first of wants found in

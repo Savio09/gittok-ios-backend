@@ -120,3 +120,31 @@ func TestPythonDependencyDetection(t *testing.T) {
 		})
 	}
 }
+
+// pip's requirements file format: whitespace (space or tab) before "#" starts a
+// comment, a trailing backslash continues the line, and a line that is not a
+// named requirement — a local project path or a bare archive URL — is reported
+// rather than read as a distribution name.
+func TestRequirementsFollowPipFormat(t *testing.T) {
+	reqs := "flask>=3\t# tab comment\nrequests \\\n  >=2.31\n./libs/shared\n-e ./libs/other\n.\nhttps://example.com/pkg-1.0.whl\nmypkg @ https://example.com/mypkg.zip#sha256=abc\n"
+	specs, unsupported := parseRequirements(reqs)
+	var names []string
+	for _, s := range specs {
+		names = append(names, pyDistName(s))
+	}
+	if got := strings.Join(names, ","); got != "flask,requests,mypkg" {
+		t.Errorf("names = %q, want flask,requests,mypkg (specs %q)", got, specs)
+	}
+	for _, want := range []string{"./libs/shared", "-e ./libs/other", "https://example.com/pkg-1.0.whl"} {
+		found := false
+		for _, u := range unsupported {
+			found = found || strings.Contains(u, want)
+		}
+		if !found {
+			t.Errorf("unsupported %v should report %q", unsupported, want)
+		}
+	}
+	if pyDistName("./libs/shared") != "" || pyDistName("/abs/path") != "" {
+		t.Errorf("a path is not a PEP 508 distribution name")
+	}
+}

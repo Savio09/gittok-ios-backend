@@ -1,6 +1,7 @@
 package crawler
 
 import (
+	"regexp"
 	"strings"
 
 	toml "github.com/pelletier/go-toml/v2"
@@ -67,6 +68,9 @@ func parsePyProject(content string) (proj pyProject, hasProject, parsed bool) {
 	return proj, proj.Project != nil, true
 }
 
+// pep508Name is the distribution-name grammar of PEP 508 (case-insensitive).
+var pep508Name = regexp.MustCompile(`(?i)^([a-z0-9]|[a-z0-9][a-z0-9._-]*[a-z0-9])$`)
+
 // pyDistName extracts the distribution name from a PEP 508 dependency specifier
 // (e.g. "flask>=3.0", "uvicorn[standard]", "pkg ; python_version>'3.8'") and
 // normalises it (lower-case, runs of -_. collapsed to a single -) so names
@@ -83,7 +87,11 @@ func pyDistName(spec string) string {
 	if i >= 0 {
 		s = s[:i]
 	}
-	s = strings.ToLower(strings.TrimSpace(s))
+	s = strings.TrimSpace(s)
+	if !pep508Name.MatchString(s) {
+		return "" // not a distribution name (e.g. a local path), so not a requirement
+	}
+	s = strings.ToLower(s)
 	// PEP 503 normalisation: collapse runs of -, _ and . to a single -.
 	var b strings.Builder
 	prevSep := false
@@ -110,12 +118,11 @@ func pyDistName(spec string) string {
 // unsupported, so a caller cannot read the inspected lines as the whole set.
 // Includes are never fetched and nothing is installed or evaluated.
 func parseRequirements(content string) (specs, unsupported []string) {
+	// pip joins a line ending in a backslash with the next before parsing.
+	content = strings.ReplaceAll(strings.ReplaceAll(content, "\\\r\n", ""), "\\\n", "")
 	for line := range strings.SplitSeq(content, "\n") {
-		line = strings.TrimSpace(line)
-		if i := strings.Index(line, " #"); i >= 0 {
-			line = strings.TrimSpace(line[:i])
-		}
-		if line == "" || strings.HasPrefix(line, "#") {
+		line = stripRequirementComment(line)
+		if line == "" {
 			continue
 		}
 		fields := strings.Fields(line)
@@ -136,11 +143,28 @@ func parseRequirements(content string) (specs, unsupported []string) {
 			unsupported = append(unsupported, "declares the URL or VCS requirement \""+line+"\", whose distribution name was not resolved")
 			continue
 		}
-		if pyDistName(line) != "" {
+		switch {
+		case line == ".":
+			// The project itself, whose own metadata is read separately.
+		case pyDistName(line) != "":
 			specs = append(specs, line)
+		default:
+			unsupported = append(unsupported, "declares \""+line+"\", which is not a named requirement (for example a local project path); its dependencies were not evaluated")
 		}
 	}
 	return specs, unsupported
+}
+
+// stripRequirementComment removes a pip comment: a "#" at the start of a line
+// or preceded by whitespace runs to the end of the line ("#" inside a URL, as in
+// "#egg=", is not a comment).
+func stripRequirementComment(line string) string {
+	for i := 0; i < len(line); i++ {
+		if line[i] == '#' && (i == 0 || line[i-1] == ' ' || line[i-1] == '\t') {
+			return strings.TrimSpace(line[:i])
+		}
+	}
+	return strings.TrimSpace(line)
 }
 
 // isDirectReference reports whether a requirement is a PEP 508 direct reference,

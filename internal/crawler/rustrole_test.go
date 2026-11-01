@@ -67,3 +67,29 @@ func TestRustClapWithoutBinaryIsNotCLI(t *testing.T) {
 		t.Errorf("Kind = %q, want %q (clap in a library is not a CLI)", got.Kind, apimodel.KindLibrary)
 	}
 }
+
+// Cargo book, "Target auto-discovery": an explicit autobins/autolib setting
+// wins; otherwise discovery is on, except in the 2015 edition (assumed when no
+// edition is declared), where declaring any target manually turns it off.
+func TestCargoAutoDiscoveryFollowsTheEdition(t *testing.T) {
+	cases := []struct {
+		name  string
+		cargo string
+		want  apimodel.RepoKind
+	}{
+		{"2015 edition (implicit): a manual [lib] stops src/main.rs being discovered",
+			"[package]\nname='x'\n[lib]\npath='src/lib.rs'\n[dependencies]\nclap='4'\n", apimodel.KindLibrary},
+		{"2021 edition: src/main.rs is still discovered beside a manual [lib]",
+			"[package]\nname='x'\nedition='2021'\n[lib]\npath='src/lib.rs'\n[dependencies]\nclap='4'\n", apimodel.KindCLI},
+		{"an explicit autobins = true overrides the 2015 default",
+			"[package]\nname='x'\nautobins=true\n[lib]\npath='src/lib.rs'\n[dependencies]\nclap='4'\n", apimodel.KindCLI},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			got := Classify(InspectionFromSources("Rust", []string{"Cargo.toml", "src/lib.rs", "src/main.rs"}, map[string]string{"Cargo.toml": c.cargo}))
+			if got.Kind != c.want || got.Status != VerdictResolved {
+				t.Errorf("got %q/%q, want %q/resolved: %v", got.Kind, got.Status, c.want, got.Evidence())
+			}
+		})
+	}
+}
