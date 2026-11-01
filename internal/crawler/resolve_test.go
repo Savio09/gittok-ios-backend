@@ -285,3 +285,58 @@ func TestDockerPortIsDeploymentEvidenceOnly(t *testing.T) {
 		}
 	}
 }
+
+// With no product at the root, one executable member beside importable
+// libraries is the product (an artifact outranks a library, as within a
+// component); members that are all libraries make a library; two different
+// executable roles still abstain (see TestNestedCandidatesWithoutARootProduct).
+func TestWorkspaceExecutableOutranksLibraries(t *testing.T) {
+	appAndLibs := Classify(InspectionFromSources("TypeScript",
+		[]string{"package.json", "app/package.json", "app/index.html", "packages/utils/package.json"},
+		map[string]string{
+			"package.json":                `{"private":true,"workspaces":["app","packages/*"]}`,
+			"app/package.json":            `{"name":"app","private":true,"dependencies":{"react":"18"}}`,
+			"packages/utils/package.json": `{"name":"@acme/utils","main":"dist/index.js"}`,
+		}))
+	if appAndLibs.Kind != apimodel.KindFrontend || appAndLibs.Status != VerdictResolved {
+		t.Errorf("app + standalone library: got %q/%q, want frontend", appAndLibs.Kind, appAndLibs.Status)
+	}
+	kept := false
+	for _, o := range appAndLibs.Secondary {
+		if o.Component == "packages/utils" && o.Role == apimodel.KindLibrary {
+			kept = true
+		}
+	}
+	if !kept {
+		t.Errorf("the published library should stay attributable: %+v", appAndLibs.Secondary)
+	}
+
+	libsOnly := Classify(InspectionFromSources("TypeScript",
+		[]string{"package.json", "packages/a/package.json", "packages/b/package.json"},
+		map[string]string{
+			"package.json":            `{"private":true,"workspaces":["packages/*"]}`,
+			"packages/a/package.json": `{"name":"a","main":"index.js"}`,
+			"packages/b/package.json": `{"name":"b","main":"index.js"}`,
+		}))
+	if libsOnly.Kind != apimodel.KindLibrary || libsOnly.Status != VerdictResolved {
+		t.Errorf("a library-only workspace: got %q/%q, want library", libsOnly.Kind, libsOnly.Status)
+	}
+}
+
+// Comparing nested components needs a complete listing: an omitted component
+// could itself be a product. A resolved root does not need it.
+func TestNestedComparisonNeedsACompleteListing(t *testing.T) {
+	nested := InspectionFromSources("", []string{"apps/mobile/package.json"},
+		map[string]string{"apps/mobile/package.json": `{"dependencies":{"expo":"51"}}`})
+	nested.Scope.Truncated = true
+	if got := Classify(nested); got.Status != VerdictInconclusive || !limitationsContain(got.Limitations, "the listing is incomplete") {
+		t.Errorf("nested-only over a truncated listing: got %q/%q: %v", got.Kind, got.Status, got.Limitations)
+	}
+
+	root := InspectionFromSources("", []string{"package.json", "apps/web/package.json"},
+		map[string]string{"package.json": `{"dependencies":{"expo":"51"}}`, "apps/web/package.json": `{"dependencies":{"react":"18"}}`})
+	root.Scope.Truncated = true
+	if got := Classify(root); got.Kind != apimodel.KindMobile || got.Status != VerdictResolved {
+		t.Errorf("a resolved root speaks for the repository whatever the listing omits: got %q/%q", got.Kind, got.Status)
+	}
+}

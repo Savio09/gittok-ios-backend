@@ -259,12 +259,20 @@ func tag(obs []Observation, root string, role apimodel.RepoKind) []Observation {
 //     aggregator, not a product, and is set aside.
 //   - An unresolved root makes the repository inconclusive: whatever the root
 //     declares could not be determined, so no nested component may stand in.
-//   - With no product at the root, the nested components are compared. Those
+//   - With no product at the root, the nested components are compared — but
+//     only over a complete listing, since an omitted component could itself be
+//     a product. Those
 //     that are supporting — under an examples/docs/tooling directory, or named
 //     as a dependency by another component in the repository — are set aside.
 //     If the remaining ones are all resolved and agree on one kind, that is the
-//     repository's kind; if any is unresolved, or they disagree, the result is
-//     an explained abstention listing every candidate.
+//     repository's kind. If they disagree only in that some are importable
+//     libraries and the rest share one executable role, the executable role is
+//     the product — the within-component rule that an artifact outranks a
+//     library — and the libraries are packages published alongside it. Any
+//     unresolved member, or two different executable roles, is an explained
+//     abstention listing every candidate. Known limit: a library monorepo with a
+//     single playground or demo app outside the examples/docs/tooling hints is
+//     reported by that app.
 func resolveRepository(st *inspIndex, vs []compVerdict) Classification {
 	var limits []string
 	if st.scope.Truncated {
@@ -292,6 +300,14 @@ func resolveRepository(st *inspIndex, vs []compVerdict) Classification {
 		}
 	}
 
+	// Comparing nested components assumes every component is known. A truncated
+	// or depth-limited listing can omit one that would itself be a product, so
+	// that comparison needs a complete listing; the root-resolved case above does
+	// not, because the root manifest speaks for the repository regardless.
+	if !st.scope.Complete() {
+		return abstain(vs, limits, "the repository root declares no product of its own, and the listing is incomplete, so components it omits could also be products; nested components were not compared")
+	}
+
 	supporting := supportingComponents(vs)
 	var top []*compVerdict
 	for i := 1; i < len(vs); i++ {
@@ -302,15 +318,34 @@ func resolveRepository(st *inspIndex, vs []compVerdict) Classification {
 	if len(top) == 0 {
 		return abstain(vs, limits, "no decisive frontend / backend / library / CLI / mobile signal was found in the inspected manifests and file tree")
 	}
+	var executables []*compVerdict
 	for _, t := range top {
 		if t.status == roleUnresolved {
 			return abstain(vs, limits, "component "+t.comp.root+" could not be resolved, and with no product at the repository root it could be the primary one")
 		}
-		if t.kind != top[0].kind {
-			return abstain(vs, limits, "independent components declare different roles: "+strings.Join(componentRoles(top), ", "))
+		if t.kind != apimodel.KindLibrary {
+			executables = append(executables, t)
 		}
 	}
-	return decided(top[0], vs, limits)
+	switch {
+	case allKind(top, top[0].kind):
+		return decided(top[0], vs, limits)
+	case len(executables) > 0 && allKind(executables, executables[0].kind):
+		// One executable role beside importable libraries: the same rule as
+		// within a component — an artifact outranks a library — so the libraries
+		// are packages published alongside the product.
+		return decided(executables[0], vs, limits)
+	}
+	return abstain(vs, limits, "independent components declare different roles: "+strings.Join(componentRoles(top), ", "))
+}
+
+func allKind(vs []*compVerdict, k apimodel.RepoKind) bool {
+	for _, v := range vs {
+		if v.kind != k {
+			return false
+		}
+	}
+	return true
 }
 
 func componentRoles(top []*compVerdict) []string {

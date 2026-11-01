@@ -845,7 +845,12 @@ func (ix *repoIndex) goNoServerPremise(cmd goFile) (bool, []string) {
 // package is importable from outside the module: not main and not under an
 // internal/ or cmd/ directory.
 func (ix *repoIndex) goImportablePackage() (goFile, bool) {
-	for _, g := range ix.primaryGoFiles() {
+	// Prefer the module root's own package — the one the module path imports.
+	files := ix.primaryGoFiles()
+	sort.SliceStable(files, func(i, j int) bool {
+		return dirOf(files[i].path) == ix.comp.root && dirOf(files[j].path) != ix.comp.root
+	})
+	for _, g := range files {
 		if g.test || g.pkg == "" || g.pkg == "main" || strings.HasSuffix(g.pkg, "_test") {
 			continue
 		}
