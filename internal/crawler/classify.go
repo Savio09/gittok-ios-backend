@@ -131,6 +131,7 @@ func newRepoIndex(st *inspIndex, comp *component, language string) *repoIndex {
 
 	ix.blockUninspectedManifests()
 	ix.blockUninspectedPythonDependencies()
+	ix.blockUninspectedPythonEntries()
 	if unread := ix.unreadGoEntries(); len(unread) > 0 {
 		ix.block(apimodel.KindBackend, "Go entry point(s) present but their source was not inspected ("+strings.Join(unread, ", ")+"); a server could not be distinguished from a command")
 	}
@@ -524,13 +525,14 @@ func detectCLI(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 	if ix.pkg != nil && len(ix.pkg.Bin) > 0 && string(ix.pkg.Bin) != "null" {
 		ev = append(ev, Observation{Path: ix.pkgRef.path, Detail: `declares a "bin" field (installs a command)`})
 	}
-	// Python: command entry points produce commands — a modern [project.scripts]
-	// table, or the legacy console_scripts in setup.py/setup.cfg. GUI entry
-	// points ([project.gui-scripts]) are deliberately not treated as a CLI.
+	// Python: a static [project.scripts] table installs commands. GUI entry
+	// points ([project.gui-scripts]) are deliberately not a CLI. Legacy
+	// entry_points in setup.py are never read as a command: setup.py is
+	// executable Python that is not evaluated, so its entry points are recorded
+	// as uninspected (see blockUninspectedPythonEntries), and a comment or string
+	// that mentions console_scripts can never establish one.
 	if ix.pyHasProject && len(ix.pyProj.Project.Scripts) > 0 {
-		ev = append(ev, Observation{Path: ix.pyproj.path, Detail: "defines [project.scripts] (installs a command)"})
-	} else if py, src := ix.pyText(); py != "" && strings.Contains(py, "console_scripts") {
-		ev = append(ev, Observation{Path: src, Detail: "defines console_scripts (installs a command)"})
+		ev = append(ev, Observation{Path: ix.pyproj.path, Detail: "declares [project.scripts] entries " + strings.Join(sortedKeys(ix.pyProj.Project.Scripts), ", ") + " (installs a command)"})
 	}
 	// Rust: a binary target. A CLI-parser dependency is cited when present; a
 	// binary with no web-framework dependency is a command only when the full
@@ -613,17 +615,21 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 			ix.block(apimodel.KindBackend, "a library target is present, but "+why)
 		}
 	}
-	// Python: real packaging metadata — a [project] table or a setup.py — with no
-	// command entry points. "No command entry" needs the manifest read in full.
-	if src, ok := ix.pyPackageSource(); ok && !ix.pyHasCommandEntry() {
-		ref := ix.pyproj
-		if src != ix.pyproj.path {
-			ref = ix.setupPy
-		}
-		if ref.complete() {
-			ev = append(ev, Observation{Path: src, Detail: "packaging metadata with no command entry points (importable package)"})
-		} else {
-			ix.block(apimodel.KindCLI, "cannot conclude the package declares no command entry: "+ix.st.describe(src)+"; entry points may lie in the unread remainder")
+	// Python: a static [project] table declaring no command or GUI entry points
+	// is an importable package. "No entry points" needs the full pyproject.toml
+	// and entry points that are not marked dynamic; a setup.py-only package's
+	// entry points are never evaluated, so it is not concluded importable-only
+	// (see blockUninspectedPythonEntries). A package with GUI entry points is an
+	// application, not importable-only; the taxonomy has no desktop-app kind, so
+	// it gets no role rather than a wrong one.
+	if ix.pyHasProject && len(ix.pyProj.Project.Scripts) == 0 {
+		switch {
+		case len(ix.pyProj.Project.GUIScripts) > 0:
+			ix.note(ix.pyproj.path + " declares [project.gui-scripts] entries " + strings.Join(sortedKeys(ix.pyProj.Project.GUIScripts), ", ") + " — a GUI application, which is neither a CLI nor an importable-only package")
+		case !ix.pyproj.complete():
+			ix.block(apimodel.KindCLI, "cannot conclude the package declares no command entry: "+ix.st.describe(ix.pyproj.path)+"; entry points may lie in the unread remainder")
+		case !ix.pyProj.dynamicEntryPoints():
+			ev = append(ev, Observation{Path: ix.pyproj.path, Detail: "a static [project] table with no command or GUI entry points (importable package)"})
 		}
 	}
 
@@ -914,35 +920,17 @@ func (ix *repoIndex) rustHasLibTarget() bool {
 
 // --- Python helpers ----------------------------------------------------------
 
-// pyText returns the preferred Python packaging text and the path it came from.
-func (ix *repoIndex) pyText() (text, srcPath string) {
-	if ix.pyproj.readable() {
-		return ix.pyproj.content, ix.pyproj.path
+// blockUninspectedPythonEntries records Python entry-point metadata the parser
+// does not read, so it can neither establish a command nor justify "no
+// commands": entry points pyproject marks dynamic, and the entry_points of a
+// setup.py-only package (executable Python that is never evaluated).
+func (ix *repoIndex) blockUninspectedPythonEntries() {
+	if ix.pyHasProject && ix.pyProj.dynamicEntryPoints() {
+		ix.block(apimodel.KindCLI, ix.pyproj.path+" declares its entry points dynamic; they are computed at build time and were not evaluated")
 	}
-	return ix.setupPy.content, ix.setupPy.path
-}
-
-// pyPackageSource reports the file that marks the component as a real Python
-// package — a pyproject.toml with a [project] table, or a setup.py — and whether
-// one was found. A pyproject with only [tool.*] tables does not count.
-func (ix *repoIndex) pyPackageSource() (string, bool) {
-	if ix.pyHasProject {
-		return ix.pyproj.path, true
+	if ix.setupPy.present() && !ix.pyHasProject {
+		ix.block(apimodel.KindCLI, ix.setupPy.path+" may declare entry_points (e.g. console_scripts) in its setup() call, which is executable Python and was not evaluated")
 	}
-	if ix.setupPy.readable() {
-		return ix.setupPy.path, true
-	}
-	return "", false
-}
-
-// pyHasCommandEntry reports whether the package installs a command, via a modern
-// [project.scripts] table or legacy console_scripts.
-func (ix *repoIndex) pyHasCommandEntry() bool {
-	if ix.pyHasProject && len(ix.pyProj.Project.Scripts) > 0 {
-		return true
-	}
-	py, _ := ix.pyText()
-	return py != "" && strings.Contains(py, "console_scripts")
 }
 
 // pyServerObservation returns evidence that the component requires a Python web

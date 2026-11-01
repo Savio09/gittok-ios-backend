@@ -29,6 +29,20 @@ type pyProject struct {
 	} `toml:"project"`
 }
 
+// dynamicEntryPoints reports whether [project] marks its scripts, GUI scripts or
+// entry points dynamic, so the static tables are not authoritative.
+func (p pyProject) dynamicEntryPoints() bool {
+	if p.Project == nil {
+		return false
+	}
+	for _, f := range p.Project.Dynamic {
+		if f == "scripts" || f == "gui-scripts" || f == "entry-points" {
+			return true
+		}
+	}
+	return false
+}
+
 // dynamicDependencies reports whether [project] declares its dependencies (or
 // optional dependencies) dynamic, so the static lists are not authoritative.
 func (p pyProject) dynamicDependencies() bool {
