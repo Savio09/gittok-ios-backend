@@ -201,3 +201,27 @@ func TestAnalyzeCancellationOnFinalContentsRequest(t *testing.T) {
 		})
 	}
 }
+
+// The rendered pack shows exactly the validated facts the verdict used, each
+// with its witness.
+func TestAnalyzeRenderedPackCarriesWitnesses(t *testing.T) {
+	m := &mockGitHub{
+		defaultBranch: "main", language: "Go",
+		entries: blobEntries("go.mod", "cmd/api/main.go"),
+		files: map[string]string{
+			"go.mod":          "module example.com/api\n",
+			"cmd/api/main.go": "package main\nimport \"net/http\"\nfunc main() { http.ListenAndServe(\":80\", nil) }\n",
+		},
+	}
+	c := githubclient.New("t", githubclient.WithBaseURL(m.server(t).URL))
+	a, err := analyze(context.Background(), c, "o", "r")
+	if err != nil {
+		t.Fatal(err)
+	}
+	md := renderPack(a.repo, a.tree, a.requested, a.fetched, a.classification)
+	for _, want := range []string{"**Kind:** backend", "witness: cmd/api/main.go bytes", "(go.server-call)", "(go.package-main)"} {
+		if !strings.Contains(md, want) {
+			t.Errorf("rendered pack missing %q", want)
+		}
+	}
+}

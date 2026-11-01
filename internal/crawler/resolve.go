@@ -24,12 +24,25 @@ import (
 // that is honest about abstention, the Observations that produced the verdict,
 // the Secondary evidence of other components, and the Limitations that bounded
 // the decision.
-func Classify(insp Inspection) Classification {
+func Classify(insp Inspection) Classification { return classify(insp, nil) }
+
+// candidateHook lets a test replace a component's extracted candidates before
+// validation, to show that evidence which fails its witness never reaches the
+// verdict. Production code passes nil.
+type candidateHook func(root string, cands []candidate) []candidate
+
+// classify is Classify with an optional hook between extraction and validation.
+func classify(insp Inspection, hook candidateHook) Classification {
 	st := indexInspection(insp)
 	comps := buildInventory(st)
 	verdicts := make([]compVerdict, 0, len(comps))
 	for _, c := range comps {
-		verdicts = append(verdicts, classifyComponent(newRepoIndex(st, c, insp.Language)))
+		ix := newRepoIndex(st, c, insp.Language)
+		cands := extractCandidates(ix)
+		if hook != nil {
+			cands = hook(c.root, cands)
+		}
+		verdicts = append(verdicts, classifyComponent(ix, validateCandidates(ix, cands)))
 	}
 	return resolveRepository(st, verdicts)
 }
@@ -49,7 +62,7 @@ func Classify(insp Inspection) Classification {
 //   - backend before cli: a server that exposes subcommands is still a server.
 //   - library last: an importable package that also produces a runnable
 //     artifact is classified by the artifact.
-var detectors = []func(*repoIndex) (apimodel.RepoKind, []Observation, bool){
+var detectors = []func(*repoIndex) (apimodel.RepoKind, []evidenceGroup){
 	detectMobile,
 	detectFrontend,
 	detectBackend,
@@ -101,24 +114,101 @@ type compVerdict struct {
 	limits    []string
 }
 
-// classifyComponent resolves one component's role. The first candidate in
-// precedence order is the role unless some uninspected evidence could establish
-// a role that outranks it — an unreadable manifest, an unread Go entry point, a
-// withheld absence premise — in which case the component is unresolved. A block
-// that can only establish the same or a lower-precedence role does not change
-// the verdict; it stays a limitation.
-func classifyComponent(ix *repoIndex) compVerdict {
-	v := compVerdict{comp: ix.comp, name: ix.componentName(), workspace: ix.isWorkspace()}
-	type candidate struct {
-		kind apimodel.RepoKind
-		obs  []Observation
-	}
+// candidate is one role a component's evidence may support: a disjunction of
+// evidence groups, each a conjunction of witnessed observations.
+type candidate struct {
+	kind   apimodel.RepoKind
+	groups []evidenceGroup
+}
+
+// extractCandidates runs every detector over the component, in precedence
+// order, attributing each observation to the component and role.
+func extractCandidates(ix *repoIndex) []candidate {
 	var cands []candidate
 	for _, detect := range detectors {
-		if kind, obs, ok := detect(ix); ok {
-			cands = append(cands, candidate{kind: kind, obs: tag(obs, ix.comp.root, kind)})
+		kind, groups := detect(ix)
+		if len(groups) == 0 {
+			continue
+		}
+		for i := range groups {
+			groups[i] = tag(groups[i], ix.comp.root, kind)
+		}
+		cands = append(cands, candidate{kind: kind, groups: groups})
+	}
+	return cands
+}
+
+// validateCandidates checks every observation's witness against the inspection
+// (see witness.go) before it can affect a verdict. A group survives only if all
+// of its observations validate; a candidate survives only if at least one of
+// its non-context groups does, and its rejected groups are recorded with the
+// reason. Context observations are kept only when they validate and their
+// candidate is supported. What survives is exactly what resolution — and the
+// rendered pack — may use.
+func validateCandidates(ix *repoIndex, cands []candidate) []candidate {
+	var out []candidate
+	for _, c := range cands {
+		var kept, context []evidenceGroup
+		for _, g := range c.groups {
+			failure := ""
+			for _, o := range g {
+				if err := validateWitness(ix.st, o.Witness); err != nil {
+					failure = o.describe() + ": " + err.Error()
+					break
+				}
+			}
+			switch {
+			case failure != "" && g.isContext():
+				ix.note("rejected supporting " + string(c.kind) + " evidence " + failure)
+			case failure != "":
+				ix.note("rejected " + string(c.kind) + " evidence " + failure)
+			case g.isContext():
+				context = append(context, g)
+			default:
+				kept = append(kept, g)
+			}
+		}
+		if len(kept) == 0 {
+			continue
+		}
+		out = append(out, candidate{kind: c.kind, groups: append(kept, context...)})
+	}
+	return out
+}
+
+// isContext reports whether every observation in the group is supporting
+// context, so the group cannot support a role on its own.
+func (g evidenceGroup) isContext() bool {
+	for _, o := range g {
+		if !o.Context {
+			return false
 		}
 	}
+	return len(g) > 0
+}
+
+// flatten lists a candidate's observations in group order.
+func (c candidate) flatten() []Observation {
+	var out []Observation
+	for _, g := range c.groups {
+		out = append(out, g...)
+	}
+	return out
+}
+
+// describe names an observation and its witness, for limitations.
+func (o Observation) describe() string {
+	return "(" + o.Detail + "; witness " + o.Witness.String() + ")"
+}
+
+// classifyComponent resolves one component's role from its validated
+// candidates. The first in precedence order is the role unless some uninspected
+// evidence could establish a role that outranks it — an unreadable manifest, an
+// unread Go entry point, a withheld absence premise — in which case the
+// component is unresolved. A block that can only establish the same or a
+// lower-precedence role does not change the verdict; it stays a limitation.
+func classifyComponent(ix *repoIndex, cands []candidate) compVerdict {
+	v := compVerdict{comp: ix.comp, name: ix.componentName(), workspace: ix.isWorkspace()}
 	switch {
 	case len(cands) > 0:
 		chosen := cands[0]
@@ -132,12 +222,12 @@ func classifyComponent(ix *repoIndex) compVerdict {
 			v.status = roleUnresolved
 			ix.note("uninspected evidence could establish a " + strings.Join(dedupe(outranking), "/") + " role, which would outrank the inspected " + string(chosen.kind) + " evidence")
 			for _, c := range cands {
-				v.others = append(v.others, c.obs...)
+				v.others = append(v.others, c.flatten()...)
 			}
 		} else {
-			v.status, v.kind, v.obs = roleResolved, chosen.kind, chosen.obs
+			v.status, v.kind, v.obs = roleResolved, chosen.kind, chosen.flatten()
 			for _, c := range cands[1:] {
-				v.others = append(v.others, c.obs...)
+				v.others = append(v.others, c.flatten()...)
 			}
 		}
 	case len(ix.blocks) > 0:

@@ -234,12 +234,12 @@ func renderPack(
 	b.WriteString("## Classification (crawler, for reference)\n\n")
 	fmt.Fprintf(&b, "- **Kind:** %s\n- **Status:** %s\n\n", class.Kind, class.Status)
 	if len(class.Observations) > 0 {
-		b.WriteString("Observations:\n")
+		b.WriteString("Observations (each validated against its witness):\n")
 		for _, o := range class.Observations {
 			if o.Path != "" {
-				fmt.Fprintf(&b, "- `%s` — %s\n", o.Path, o.Detail)
+				fmt.Fprintf(&b, "- `%s` — %s _(witness: %s)_\n", o.Path, o.Detail, o.Witness)
 			} else {
-				fmt.Fprintf(&b, "- %s\n", o.Detail)
+				fmt.Fprintf(&b, "- %s _(witness: %s)_\n", o.Detail, o.Witness)
 			}
 		}
 		b.WriteString("\n")
@@ -256,9 +256,9 @@ func renderPack(
 				owner = "`" + o.Component + "`"
 			}
 			if o.Path != "" {
-				fmt.Fprintf(&b, "- %s (%s): `%s` — %s\n", owner, o.Role, o.Path, o.Detail)
+				fmt.Fprintf(&b, "- %s (%s): `%s` — %s _(witness: %s)_\n", owner, o.Role, o.Path, o.Detail, o.Witness)
 			} else {
-				fmt.Fprintf(&b, "- %s (%s): %s\n", owner, o.Role, o.Detail)
+				fmt.Fprintf(&b, "- %s (%s): %s _(witness: %s)_\n", owner, o.Role, o.Detail, o.Witness)
 			}
 		}
 		b.WriteString("\n")

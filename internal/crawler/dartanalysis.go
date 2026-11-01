@@ -16,19 +16,23 @@ type pubspec struct {
 	DevDependencies map[string]any `yaml:"dev_dependencies"`
 }
 
-// pubspecUsesFlutter reports whether a pubspec.yaml declares a Flutter SDK
-// dependency (a "flutter" entry under dependencies or dev_dependencies), parsed
-// from YAML so a comment mentioning flutter never counts.
-func pubspecUsesFlutter(content string) bool {
+// pubspecFlutterTable returns the table ("dependencies" or "dev_dependencies")
+// in which a pubspec.yaml declares the Flutter SDK, or "" when it does not —
+// parsed from YAML, so a comment mentioning flutter never counts.
+func pubspecFlutterTable(content string) string {
 	var p pubspec
 	if err := yaml.Unmarshal([]byte(content), &p); err != nil {
-		return false
+		return ""
 	}
 	if _, ok := p.Dependencies["flutter"]; ok {
-		return true
+		return "dependencies"
 	}
 	if _, ok := p.DevDependencies["flutter"]; ok {
-		return true
+		return "dev_dependencies"
 	}
-	return false
+	return ""
 }
+
+// pubspecUsesFlutter reports whether a pubspec.yaml declares a Flutter SDK
+// dependency in either table.
+func pubspecUsesFlutter(content string) bool { return pubspecFlutterTable(content) != "" }

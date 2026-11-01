@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/Savio09/gittok-ios-backend/internal/apimodel"
+	"golang.org/x/mod/modfile"
 )
 
 // This file holds the per-component layer of classification: a view of one
@@ -301,31 +302,82 @@ func (ix *repoIndex) firstPrimaryPath(pred func(lowerRel string) bool) (string, 
 	return "", false
 }
 
+// --- witnessed evidence ------------------------------------------------------
+
+// evidenceGroup is a conjunction of observations that together support a role:
+// a Go command and its server call, a binary target and its CLI parser. A
+// candidate role is a disjunction of groups — any group whose observations all
+// validate supports it. A group whose observations are all Context supports
+// nothing on its own; it accompanies a supported role.
+type evidenceGroup []Observation
+
+// fieldObs, spanObs, listingObs and scopeObs build an observation together with
+// the witness that ties it to the inspection (see witness.go).
+func fieldObs(file string, field []string, value, detail string) Observation {
+	return Observation{Path: file, Detail: detail, Witness: Witness{Kind: WitnessField, Path: file, Field: field, Value: value}}
+}
+
+func spanObs(file string, start, end int, quote, construct, detail string) Observation {
+	return Observation{Path: file, Detail: detail, Witness: Witness{Kind: WitnessSpan, Path: file, Start: start, End: end, Quote: quote, Construct: construct}}
+}
+
+func listingObs(paths []string, construct, detail string) Observation {
+	o := Observation{Detail: detail, Witness: Witness{Kind: WitnessListing, Paths: paths, Construct: construct}}
+	if len(paths) == 1 {
+		o.Path = paths[0]
+	}
+	return o
+}
+
+func scopeObs(file string, paths []string, construct string, depth int, detail string) Observation {
+	return Observation{Path: file, Detail: detail, Witness: Witness{Kind: WitnessScope, Paths: paths, Construct: construct, Depth: depth}}
+}
+
+func contextObs(o Observation) Observation {
+	o.Context = true
+	return o
+}
+
+// commandObs cites a Go command by its package clause.
+func commandObs(g goFile) Observation {
+	return spanObs(g.path, g.pkgStart, g.pkgEnd, "main", constructGoPackageMain, "package main (produces a binary)")
+}
+
+// firstRelPrefix returns the first owned path whose component-relative form
+// starts with prefix, or "".
+func (ix *repoIndex) firstRelPrefix(prefix string) string {
+	for i, lp := range ix.lowerRel {
+		if strings.HasPrefix(lp, prefix) {
+			return ix.paths[i]
+		}
+	}
+	return ""
+}
+
 // --- mobile -----------------------------------------------------------------
 
-func detectMobile(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
-	var ev []Observation
+func detectMobile(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
+	var groups []evidenceGroup
 	// A mobile framework establishes a mobile app only as a runtime dependency; a
 	// development or peer declaration describes tooling or an integration.
 	for _, dep := range []string{"react-native", "expo"} {
 		if obs, ok := ix.runtimeDep(dep, "mobile framework"); ok {
-			ev = append(ev, obs)
+			groups = append(groups, evidenceGroup{obs})
 		}
 	}
-	// Flutter projects declare a Flutter SDK dependency in pubspec.yaml — checked
-	// from the parsed dependency tables, so the word "flutter" in a comment does
-	// not count.
-	if ix.pubspec.readable() && pubspecUsesFlutter(ix.pubspec.content) {
-		ev = append(ev, Observation{Path: ix.pubspec.path, Detail: "declares a Flutter SDK dependency (mobile)"})
+	// Flutter projects declare a Flutter SDK dependency in pubspec.yaml — read
+	// from the parsed dependency tables, so the word in a comment does not count.
+	if ix.pubspec.readable() {
+		if table := pubspecFlutterTable(ix.pubspec.content); table != "" {
+			groups = append(groups, evidenceGroup{fieldObs(ix.pubspec.path, []string{table, "flutter"}, "", "declares a Flutter SDK dependency in "+table+" (mobile)")})
+		}
 	}
-	// Native shells side by side are a strong mobile signal on their own.
-	if ix.hasRelPrefix("android/") && ix.hasRelPrefix("ios/") {
-		ev = append(ev, Observation{Detail: "android/ and ios/ app directories both present (native mobile shells)"})
+	// Native shells side by side are a strong mobile signal on their own; the
+	// witness is the listed paths that establish both directories.
+	if android, ios := ix.firstRelPrefix("android/"), ix.firstRelPrefix("ios/"); android != "" && ios != "" {
+		groups = append(groups, evidenceGroup{listingObs([]string{android, ios}, constructNativeShells, "android/ and ios/ app directories both present (native mobile shells)")})
 	}
-	if len(ev) > 0 {
-		return apimodel.KindMobile, ev, true
-	}
-	return "", nil, false
+	return apimodel.KindMobile, groups
 }
 
 // --- frontend ----------------------------------------------------------------
@@ -350,11 +402,11 @@ func (ix *repoIndex) runtimeWebFramework() (name, version string) {
 	return "", ""
 }
 
-// runtimeDep returns an observation when name is a runtime dependency of the
-// component's package.json, citing the declaring field. A declaration found
-// only among devDependencies or peerDependencies is recorded as a note that
-// names its table: it describes tooling or an integration a host provides, and
-// does not by itself establish what the component is.
+// runtimeDep returns a witnessed observation when name is a runtime dependency
+// of the component's package.json. A declaration found only among
+// devDependencies or peerDependencies is recorded as a note that names its
+// table: it describes tooling or an integration a host provides, and does not
+// by itself establish what the component is.
 func (ix *repoIndex) runtimeDep(name, what string) (Observation, bool) {
 	if ix.pkg == nil {
 		return Observation{}, false
@@ -364,7 +416,7 @@ func (ix *repoIndex) runtimeDep(name, what string) (Observation, bool) {
 	case !ok:
 		return Observation{}, false
 	case cat == depRuntime:
-		return Observation{Path: ix.pkgRef.path, Detail: "declares " + quoteDep(name, v) + " in dependencies (" + what + ")"}, true
+		return fieldObs(ix.pkgRef.path, []string{string(depRuntime), name}, v, "declares "+quoteDep(name, v)+" in dependencies ("+what+")"), true
 	case cat == depDev:
 		ix.note(ix.pkgRef.path + " declares " + quoteDep(name, v) + " only in devDependencies — development tooling, which does not establish a " + what + " in the product")
 	default:
@@ -373,42 +425,46 @@ func (ix *repoIndex) runtimeDep(name, what string) (Observation, bool) {
 	return Observation{}, false
 }
 
-func detectFrontend(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
+func detectFrontend(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 	// A web framework establishes an application only as a *runtime* dependency.
 	// A build tool in devDependencies (vite) or a peer dependency (a UI
 	// library's react) does not make the package a frontend product.
 	framework, version := ix.runtimeWebFramework()
 	if framework == "" {
-		return "", nil, false
+		return apimodel.KindFrontend, nil
 	}
 	// The app entry must live in this component's primary scope, so a nested
 	// example or demo does not turn a library into a frontend. A dev/start
 	// script alone is not an app entry. Without an entry, defer to detectLibrary.
 	entry, ok := ix.frontendEntry()
 	if !ok {
-		return "", nil, false
+		return apimodel.KindFrontend, nil
 	}
-	ev := []Observation{{Path: ix.pkgRef.path, Detail: "declares " + quoteDep(framework, version) + " in dependencies (web framework)"}, entry}
+	groups := []evidenceGroup{{
+		fieldObs(ix.pkgRef.path, []string{string(depRuntime), framework}, version, "declares "+quoteDep(framework, version)+" in dependencies (web framework)"),
+		entry,
+	}}
 	if ix.pkg.Private {
-		ev = append(ev, Observation{Path: ix.pkgRef.path, Detail: `"private": true (not a published package)`})
+		groups = append(groups, evidenceGroup{contextObs(fieldObs(ix.pkgRef.path, []string{"private"}, "true", `"private": true (not a published package)`))})
 	}
-	return apimodel.KindFrontend, ev, true
+	return apimodel.KindFrontend, groups
 }
 
 // frontendEntry finds an app entry in the component: an index.html, a src/App
-// root component, a src/main bootstrap, or an app build config (vite/next/…).
+// root component, a src/main bootstrap, or an app build config (vite/next/…),
+// witnessed by the listed path.
 func (ix *repoIndex) frontendEntry() (Observation, bool) {
 	if p, ok := ix.firstPrimaryPath(func(lp string) bool { return path.Base(lp) == "index.html" }); ok {
-		return Observation{Path: p, Detail: "web app entry (index.html)"}, true
+		return listingObs([]string{p}, constructIndexHTML, "web app entry (index.html)"), true
 	}
 	if p, ok := ix.firstPrimaryPath(func(lp string) bool { return strings.HasPrefix(lp, "src/app.") }); ok {
-		return Observation{Path: p, Detail: "root component (src/App)"}, true
+		return listingObs([]string{p}, constructSrcApp, "root component (src/App)"), true
 	}
 	if p, ok := ix.firstPrimaryPath(func(lp string) bool { return strings.HasPrefix(lp, "src/main.") }); ok {
-		return Observation{Path: p, Detail: "app bootstrap (src/main)"}, true
+		return listingObs([]string{p}, constructSrcMain, "app bootstrap (src/main)"), true
 	}
 	if p, ok := ix.firstPrimaryPath(isAppConfig); ok {
-		return Observation{Path: p, Detail: "app build configuration"}, true
+		return listingObs([]string{p}, constructAppConfig, "app build configuration"), true
 	}
 	return Observation{}, false
 }
@@ -445,33 +501,31 @@ var (
 	rustServerDeps = []string{"axum", "actix-web", "rocket", "warp"}
 )
 
-func detectBackend(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
-	var ev []Observation
+func detectBackend(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
+	var groups []evidenceGroup
 
-	// Go: a server needs both a command (a read file whose package clause is
-	// main) and a server signal (a server call in read source, or a declared
-	// server framework).
+	// Go: a server needs both a command (a package clause naming main) and a
+	// server signal (a resolved server call, or a declared server framework).
 	if cmd, ok := ix.goCommand(); ok {
 		if serverObs, ok := ix.goServerObservation(); ok {
-			ev = append(ev, Observation{Path: cmd.path, Detail: "package main (produces a binary)"}, serverObs)
+			groups = append(groups, evidenceGroup{commandObs(cmd), serverObs})
 		}
 	}
-	// Node server frameworks, as runtime dependencies only: a development or peer
-	// declaration describes tooling or an integration, not the product's server.
+	// Node server frameworks, as runtime dependencies only.
 	for _, dep := range nodeServerDeps {
 		if obs, ok := ix.runtimeDep(dep, "server framework"); ok {
-			ev = append(ev, obs)
+			groups = append(groups, evidenceGroup{obs})
 			break
 		}
 	}
-	// Python web frameworks, matched against parsed dependency names.
+	// Python web frameworks, as mandatory or requirements declarations only.
 	if obs, ok := ix.pyServerObservation(); ok {
-		ev = append(ev, obs)
+		groups = append(groups, evidenceGroup{obs})
 	}
 	// Rust: a binary target that depends on a web framework.
-	if bin, _ := ix.rustBinTarget(); bin == yes {
+	if bin, binObs, _ := ix.rustBinTarget(); bin == yes {
 		if dep := cargoDep(ix.cargoM, rustServerDeps); dep != "" {
-			ev = append(ev, Observation{Path: ix.cargo.path, Detail: "a binary target depends on \"" + dep + "\" (web framework)"})
+			groups = append(groups, evidenceGroup{binObs, fieldObs(ix.cargo.path, []string{"dependencies", dep}, "", "a binary target depends on \""+dep+"\" (web framework)")})
 		}
 	}
 	// A Dockerfile's EXPOSE is deployment metadata: a port the image declares it
@@ -479,19 +533,15 @@ func detectBackend(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 	// listens on it. It is kept as supporting context beside independent backend
 	// evidence and otherwise surfaced as a note; it never decides the role.
 	if ix.docker.readable() {
-		if port := dockerExposedPort(ix.docker.content); port != "" {
-			if len(ev) > 0 {
-				ev = append(ev, Observation{Path: ix.docker.path, Detail: "declares EXPOSE " + port + " (a deployment port the image declares; not observed listening)"})
+		if start, end, port := dockerExposeSpan(ix.docker.content); port != "" {
+			if len(groups) > 0 {
+				groups = append(groups, evidenceGroup{contextObs(spanObs(ix.docker.path, start, end, "", constructDockerExpose, "declares EXPOSE "+port+" (a deployment port the image declares; not observed listening)"))})
 			} else {
 				ix.note(ix.docker.path + " declares EXPOSE " + port + " — a deployment port the image declares, which does not by itself establish a backend")
 			}
 		}
 	}
-
-	if len(ev) > 0 {
-		return apimodel.KindBackend, ev, true
-	}
-	return "", nil, false
+	return apimodel.KindBackend, groups
 }
 
 // --- cli ---------------------------------------------------------------------
@@ -501,19 +551,19 @@ var (
 	rustCLIDeps = []string{"clap", "structopt", "argh"}
 )
 
-func detectCLI(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
-	var ev []Observation
+func detectCLI(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
+	var groups []evidenceGroup
 
 	// Go: a command wired to a CLI framework, or a command shown to start no
 	// server. The latter is an absence premise; see goNoServerPremise for the
-	// scope it requires.
+	// scope it requires, which its scope witness re-checks.
 	if cmd, ok := ix.goCommand(); ok {
-		mainObs := Observation{Path: cmd.path, Detail: "package main (produces a binary)"}
-		if dep := ix.goDep(goCLIDeps); dep != "" {
-			ev = append(ev, mainObs, Observation{Path: ix.goMod.path, Detail: "requires \"" + dep + "\" (CLI framework)"})
+		if req, ver := ix.goRequirement(goCLIDeps); req != "" {
+			groups = append(groups, evidenceGroup{commandObs(cmd), fieldObs(ix.goMod.path, []string{"require", req}, ver, "requires \""+req+"\" (CLI framework)")})
 		} else if _, server := ix.goServerObservation(); !server {
 			if ok, why := ix.goNoServerPremise(cmd); ok {
-				ev = append(ev, mainObs, Observation{Path: cmd.path, Detail: "the command's package was inspected in full and contains no server call (produces a command)"})
+				groups = append(groups, evidenceGroup{commandObs(cmd), scopeObs(cmd.path, ix.noServerScope(cmd), constructGoNoServer, 0,
+					"the command's package was inspected in full and contains no server call (produces a command)")})
 			} else {
 				for _, w := range why {
 					ix.block(apimodel.KindBackend, "cannot conclude the command starts no server: "+w)
@@ -523,7 +573,7 @@ func detectCLI(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 	}
 	// npm: a package that installs a command exposes a "bin" field.
 	if ix.pkg != nil && len(ix.pkg.Bin) > 0 && string(ix.pkg.Bin) != "null" {
-		ev = append(ev, Observation{Path: ix.pkgRef.path, Detail: `declares a "bin" field (installs a command)`})
+		groups = append(groups, evidenceGroup{fieldObs(ix.pkgRef.path, []string{"bin"}, "", `declares a "bin" field (installs a command)`)})
 	}
 	// Python: a static [project.scripts] table installs commands. GUI entry
 	// points ([project.gui-scripts]) are deliberately not a CLI. Legacy
@@ -532,35 +582,34 @@ func detectCLI(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 	// as uninspected (see blockUninspectedPythonEntries), and a comment or string
 	// that mentions console_scripts can never establish one.
 	if ix.pyHasProject && len(ix.pyProj.Project.Scripts) > 0 {
-		ev = append(ev, Observation{Path: ix.pyproj.path, Detail: "declares [project.scripts] entries " + strings.Join(sortedKeys(ix.pyProj.Project.Scripts), ", ") + " (installs a command)"})
+		names := sortedKeys(ix.pyProj.Project.Scripts)
+		groups = append(groups, evidenceGroup{fieldObs(ix.pyproj.path, []string{"project", "scripts", names[0]}, ix.pyProj.Project.Scripts[names[0]],
+			"declares [project.scripts] entries "+strings.Join(names, ", ")+" (installs a command)")})
 	}
 	// Rust: a binary target. A CLI-parser dependency is cited when present; a
 	// binary with no web-framework dependency is a command only when the full
 	// Cargo.toml was read, so the dependency's absence is real.
-	if bin, _ := ix.rustBinTarget(); bin == yes {
+	if bin, binObs, _ := ix.rustBinTarget(); bin == yes {
 		cliDep, serverDep := cargoDep(ix.cargoM, rustCLIDeps), cargoDep(ix.cargoM, rustServerDeps)
 		switch {
 		case cliDep != "":
-			ev = append(ev, Observation{Path: ix.cargo.path, Detail: "a binary target depends on \"" + cliDep + "\" (CLI parser)"})
+			groups = append(groups, evidenceGroup{binObs, fieldObs(ix.cargo.path, []string{"dependencies", cliDep}, "", "a binary target depends on \""+cliDep+"\" (CLI parser)")})
 		case serverDep != "":
 			// a server binary; detectBackend owns it
 		case ix.cargo.complete():
-			ev = append(ev, Observation{Path: ix.cargo.path, Detail: "a binary target with no web-framework dependency (produces a command)"})
+			groups = append(groups, evidenceGroup{binObs, scopeObs(ix.cargo.path, []string{ix.cargo.path}, constructCompleteReads, 0,
+				"a binary target with no web-framework dependency (produces a command)")})
 		default:
 			ix.block(apimodel.KindBackend, "cannot conclude the binary target is a command: "+ix.st.describe(ix.cargo.path)+"; a web-framework dependency may lie in the unread remainder")
 		}
 	}
-
-	if len(ev) > 0 {
-		return apimodel.KindCLI, ev, true
-	}
-	return "", nil, false
+	return apimodel.KindCLI, groups
 }
 
 // --- library -----------------------------------------------------------------
 
-func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
-	var ev []Observation
+func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
+	var groups []evidenceGroup
 
 	// Go: an importable package, read from source, and no command at the
 	// conventional command locations (see goNoCommandPremise).
@@ -576,9 +625,12 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 					ix.block(apimodel.KindBackend, "cannot conclude the Go module has no command: "+w)
 				}
 			default:
-				ev = append(ev,
-					Observation{Path: ix.goMod.path, Detail: "declares module " + ix.modPath + "; no package main at the conventional command locations (module root, cmd/)"},
-					Observation{Path: pkgFile.path, Detail: "declares package " + pkgFile.pkg + " (importable)"})
+				groups = append(groups, evidenceGroup{
+					fieldObs(ix.goMod.path, []string{"module"}, ix.modPath, "declares module "+ix.modPath),
+					spanObs(pkgFile.path, pkgFile.pkgStart, pkgFile.pkgEnd, pkgFile.pkg, constructGoPackageName, "declares package "+pkgFile.pkg+" (importable)"),
+					scopeObs(ix.goMod.path, []string{ix.goMod.path}, constructCoveringListing, ix.base+3,
+						"no package main at the conventional command locations (module root, cmd/)"),
+				})
 			}
 		}
 	}
@@ -587,30 +639,49 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 	// matters only when a runtime web framework is declared, and then needs a
 	// listing that covers the conventional entry locations.
 	if ix.pkg != nil {
-		hasLibEntry := ix.pkg.Main != "" || ix.pkg.Module != "" ||
-			(len(ix.pkg.Exports) > 0 && string(ix.pkg.Exports) != "null")
+		entryField := ""
+		switch {
+		case ix.pkg.Main != "":
+			entryField = "main"
+		case ix.pkg.Module != "":
+			entryField = "module"
+		case len(ix.pkg.Exports) > 0 && string(ix.pkg.Exports) != "null":
+			entryField = "exports"
+		}
 		hasBin := len(ix.pkg.Bin) > 0 && string(ix.pkg.Bin) != "null"
-		if hasLibEntry && !hasBin && !ix.hasPrimaryAppShell() {
+		if entryField != "" && !hasBin && !ix.hasPrimaryAppShell() {
 			ok := true
 			if !ix.pkgRef.complete() {
 				ix.block(apimodel.KindCLI, "cannot conclude the package installs no command: "+ix.st.describe(ix.pkgRef.path))
 				ok = false
 			}
-			if fw, _ := ix.runtimeWebFramework(); fw != "" && !ix.covers(2) {
+			fw, _ := ix.runtimeWebFramework()
+			if fw != "" && !ix.covers(2) {
 				ix.block(apimodel.KindFrontend, "cannot rule out an app entry for runtime dependency \""+fw+"\": the listing does not cover index.html, src/App or src/main")
 				ok = false
 			}
 			if ok {
-				ev = append(ev, Observation{Path: ix.pkgRef.path, Detail: `declares a lib entry ("main"/"module"/"exports") and no app or bin (importable package)`})
+				premise := scopeObs(ix.pkgRef.path, []string{ix.pkgRef.path}, constructCompleteReads, 0, "declares no \"bin\" field and the component has no app shell")
+				if fw != "" {
+					premise = scopeObs(ix.pkgRef.path, []string{ix.pkgRef.path}, constructCoveringListing, ix.base+2, "declares no \"bin\" field and the listing shows no app entry for runtime dependency \""+fw+"\"")
+				}
+				groups = append(groups, evidenceGroup{
+					fieldObs(ix.pkgRef.path, []string{entryField}, "", `declares a lib entry ("`+entryField+`") and no app or bin (importable package)`),
+					premise,
+				})
 			}
 		}
 	}
 	// Rust: a library target and no binary target. The binary's absence needs
 	// the full Cargo.toml and a listing that covers Cargo's implicit targets.
-	if ix.rustHasLibTarget() {
-		switch bin, why := ix.rustBinTarget(); bin {
+	if libObs, ok := ix.rustLibTarget(); ok {
+		switch bin, _, why := ix.rustBinTarget(); bin {
 		case no:
-			ev = append(ev, Observation{Path: ix.cargo.path, Detail: "a library target and no binary target (importable crate)"})
+			premise := scopeObs(ix.cargo.path, []string{ix.cargo.path}, constructCompleteReads, 0, "no binary target (importable crate)")
+			if cargoAutobins(ix.cargoM) {
+				premise = scopeObs(ix.cargo.path, []string{ix.cargo.path}, constructCoveringListing, ix.base+3, "no [[bin]] table and no src/main.rs or src/bin/ in a covering listing (importable crate)")
+			}
+			groups = append(groups, evidenceGroup{libObs, premise})
 		case unknown:
 			ix.block(apimodel.KindBackend, "a library target is present, but "+why)
 		}
@@ -629,14 +700,13 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 		case !ix.pyproj.complete():
 			ix.block(apimodel.KindCLI, "cannot conclude the package declares no command entry: "+ix.st.describe(ix.pyproj.path)+"; entry points may lie in the unread remainder")
 		case !ix.pyProj.dynamicEntryPoints():
-			ev = append(ev, Observation{Path: ix.pyproj.path, Detail: "a static [project] table with no command or GUI entry points (importable package)"})
+			groups = append(groups, evidenceGroup{
+				fieldObs(ix.pyproj.path, []string{"project"}, "", "declares a static [project] table"),
+				scopeObs(ix.pyproj.path, []string{ix.pyproj.path}, constructCompleteReads, 0, "with no command or GUI entry points (importable package)"),
+			})
 		}
 	}
-
-	if len(ev) > 0 {
-		return apimodel.KindLibrary, ev, true
-	}
-	return "", nil, false
+	return apimodel.KindLibrary, groups
 }
 
 // --- language / Go helpers ---------------------------------------------------
@@ -834,9 +904,10 @@ func (ix *repoIndex) unreadGoSample() string {
 
 // goServerObservation returns evidence that a Go component is a server: a read
 // source containing a call the type checker resolved to a net/http server entry
-// point (see scanServerCalls), or a declared server-framework dependency in
-// go.mod. Both are positive static facts, so they may come from a partial file;
-// neither says the server was observed running.
+// point (see scanServerCalls), witnessed by the call's exact span; or a declared
+// server-framework requirement in go.mod, witnessed by the require field. Both
+// are positive static facts, so they may come from a partial file; neither says
+// the server was observed running.
 func (ix *repoIndex) goServerObservation() (Observation, bool) {
 	for _, g := range ix.primaryGoFiles() {
 		if len(g.serverCalls) > 0 {
@@ -845,22 +916,50 @@ func (ix *repoIndex) goServerObservation() (Observation, bool) {
 			if c.method {
 				what = "method on *net/http.Server"
 			}
-			return Observation{Path: g.path, Detail: "contains a call expression " + c.callee + "(…) at line " + strconv.Itoa(c.line) + ", resolved to the " + what + " " + c.callee[strings.LastIndex(c.callee, ".")+1:] + " (static syntax, not observed running)"}, true
+			detail := "contains a call expression " + c.callee + "(…) at line " + strconv.Itoa(c.line) + ", resolved to the " + what + " " +
+				c.callee[strings.LastIndex(c.callee, ".")+1:] + " (static syntax, not observed running)"
+			return spanObs(g.path, c.start, c.end, g.content[c.start:c.end], constructGoServerCall, detail), true
 		}
 	}
-	if dep := ix.goDep(goServerDeps); dep != "" {
-		return Observation{Path: ix.goMod.path, Detail: "requires \"" + dep + "\" (server framework)"}, true
+	if req, ver := ix.goRequirement(goServerDeps); req != "" {
+		return fieldObs(ix.goMod.path, []string{"require", req}, ver, "requires \""+req+"\" (server framework)"), true
 	}
 	return Observation{}, false
 }
 
-// goDep returns the first of wants required by go.mod (parsed with the official
-// module-file parser, so a module named only in a comment never counts).
-func (ix *repoIndex) goDep(wants []string) string {
+// goRequirement returns the full module path and version of the first go.mod
+// requirement matching one of wants (partial paths such as "spf13/cobra"),
+// parsed with the official module-file parser so a module named only in a
+// comment never counts.
+func (ix *repoIndex) goRequirement(wants []string) (modPath, version string) {
 	if !ix.goMod.readable() {
-		return ""
+		return "", ""
 	}
-	return goRequiresAny(ix.goMod.content, wants)
+	f, err := modfile.Parse(ix.goMod.path, []byte(ix.goMod.content), nil)
+	if err != nil {
+		return "", ""
+	}
+	for _, w := range wants {
+		for _, r := range f.Require {
+			if strings.Contains(r.Mod.Path, w) {
+				return r.Mod.Path, r.Mod.Version
+			}
+		}
+	}
+	return "", ""
+}
+
+// noServerScope is the basis of the no-server premise: go.mod and every non-test
+// Go file the component lists in the command's directory.
+func (ix *repoIndex) noServerScope(cmd goFile) []string {
+	paths := []string{ix.goMod.path}
+	dir := path.Dir(cmd.path)
+	for _, p := range ix.paths {
+		if path.Dir(p) == dir && isGoSource(p) {
+			paths = append(paths, p)
+		}
+	}
+	return paths
 }
 
 // --- Rust helpers ------------------------------------------------------------
@@ -874,48 +973,50 @@ const (
 	no
 )
 
-// rustBinTarget reports whether the crate has a binary target: yes from an
-// explicit [[bin]] table or Cargo's implicit src/main.rs / src/bin/*.rs; no only
-// when the full Cargo.toml was read and the listing covers those implicit
-// locations; unknown otherwise, with the reason.
-func (ix *repoIndex) rustBinTarget() (tristate, string) {
+// rustBinTarget reports whether the crate has a binary target: yes, with the
+// witnessed observation, from an explicit [[bin]] table or Cargo's implicit
+// src/main.rs / src/bin/*.rs; no only when the full Cargo.toml was read and the
+// listing covers those implicit locations; unknown otherwise, with the reason.
+func (ix *repoIndex) rustBinTarget() (tristate, Observation, string) {
 	if !ix.cargo.readable() || !ix.cargoOK {
-		return unknown, "Cargo.toml was not read and parsed"
+		return unknown, Observation{}, "Cargo.toml was not read and parsed"
 	}
 	if len(ix.cargoM.Bin) > 0 {
-		return yes, ""
+		return yes, fieldObs(ix.cargo.path, []string{"bin"}, "", "declares a [[bin]] target"), ""
 	}
 	auto := cargoAutobins(ix.cargoM)
 	if auto {
-		if _, ok := ix.firstPrimaryPath(func(lp string) bool {
+		if p, ok := ix.firstPrimaryPath(func(lp string) bool {
 			return lp == "src/main.rs" || (strings.HasPrefix(lp, "src/bin/") && strings.HasSuffix(lp, ".rs"))
 		}); ok {
-			return yes, ""
+			return yes, listingObs([]string{p}, constructRustBinTarget, p+" (Cargo's implicit binary target)"), ""
 		}
 	}
 	if !ix.cargo.complete() {
-		return unknown, ix.st.describe(ix.cargo.path) + "; a [[bin]] table may lie in the unread remainder"
+		return unknown, Observation{}, ix.st.describe(ix.cargo.path) + "; a [[bin]] table may lie in the unread remainder"
 	}
 	if auto && !ix.covers(3) {
-		return unknown, "the listing does not cover src/main.rs and src/bin/, so a binary target cannot be ruled out"
+		return unknown, Observation{}, "the listing does not cover src/main.rs and src/bin/, so a binary target cannot be ruled out"
 	}
-	return no, ""
+	return no, Observation{}, ""
 }
 
-// rustHasLibTarget reports whether the crate has a library target, from an
-// explicit [lib] table or — when autolib is on — Cargo's implicit src/lib.rs.
-func (ix *repoIndex) rustHasLibTarget() bool {
+// rustLibTarget returns the crate's library target, witnessed by an explicit
+// [lib] table or — when autolib is on — Cargo's implicit src/lib.rs.
+func (ix *repoIndex) rustLibTarget() (Observation, bool) {
 	if !ix.cargoOK {
-		return false
+		return Observation{}, false
 	}
 	if ix.cargoM.Lib != nil {
-		return true
+		return fieldObs(ix.cargo.path, []string{"lib"}, "", "declares a [lib] target"), true
 	}
 	if !cargoAutolib(ix.cargoM) {
-		return false
+		return Observation{}, false
 	}
-	_, ok := ix.firstPrimaryPath(func(lp string) bool { return lp == "src/lib.rs" })
-	return ok
+	if p, ok := ix.firstPrimaryPath(func(lp string) bool { return lp == "src/lib.rs" }); ok {
+		return listingObs([]string{p}, constructRustLibTarget, p+" (Cargo's implicit library target)"), true
+	}
+	return Observation{}, false
 }
 
 // --- Python helpers ----------------------------------------------------------
@@ -947,9 +1048,10 @@ func (ix *repoIndex) pyServerObservation() (Observation, bool) {
 			if d.Name != name {
 				continue
 			}
+			field := append(strings.Split(d.Category, "."), d.Name)
 			switch {
 			case d.Category == "project.dependencies" || d.Category == "requirements":
-				return Observation{Path: d.Source, Detail: "declares \"" + d.Spec + "\" in " + d.Category + " (web framework)"}, true
+				return fieldObs(d.Source, field, d.Spec, "declares \""+d.Spec+"\" in "+d.Category+" (web framework)"), true
 			case strings.HasPrefix(d.Category, "project.optional-dependencies."):
 				ix.note(d.Source + " declares \"" + d.Spec + "\" only in the optional group " + d.Category + " — an extra installed on request, which does not establish a web application")
 			}
@@ -960,15 +1062,19 @@ func (ix *repoIndex) pyServerObservation() (Observation, bool) {
 
 // --- small pure utilities ----------------------------------------------------
 
-// dockerExposedPort returns the first port from an EXPOSE directive, or "".
-func dockerExposedPort(dockerfile string) string {
+// dockerExposeSpan returns the byte span of the first EXPOSE instruction in a
+// Dockerfile and the first port it declares; port is "" when there is none.
+func dockerExposeSpan(dockerfile string) (start, end int, port string) {
+	offset := 0
 	for line := range strings.SplitSeq(dockerfile, "\n") {
-		fields := strings.Fields(strings.TrimSpace(line))
-		if len(fields) >= 2 && strings.EqualFold(fields[0], "EXPOSE") {
-			return fields[1]
+		trimmed := strings.TrimSpace(line)
+		if fields := strings.Fields(trimmed); len(fields) >= 2 && strings.EqualFold(fields[0], "EXPOSE") {
+			s := offset + strings.Index(line, trimmed)
+			return s, s + len(trimmed), fields[1]
 		}
+		offset += len(line) + 1
 	}
-	return ""
+	return 0, 0, ""
 }
 
 // quoteDep formats a dependency and its version range for evidence, e.g.

@@ -14,13 +14,14 @@ const witnessMain = "package main\n\nimport \"net/http\"\n\n// http.ListenAndSer
 
 func witnessIndex() *inspIndex {
 	return indexInspection(Inspection{
-		Paths: []string{"package.json", "go.mod", "cmd/api/main.go", "cmd/api/util.go", "pyproject.toml", "requirements.txt",
+		Paths: []string{"package.json", "go.mod", "cmd/api/main.go", "cmd/api/util.go", "cmd/api/imports.go", "pyproject.toml", "requirements.txt",
 			"Dockerfile", "big.go", "index.html", "android/app/build.gradle", "ios/Runner/Info.plist", "unread.go"},
 		Files: []SourceFile{
 			{Path: "package.json", Content: `{"dependencies":{"express":"^4.19.0"},"bin":"cli.js","private":true}`},
 			{Path: "go.mod", Content: "module example.com/api\n\nrequire github.com/spf13/cobra v1.8.0\n"},
 			{Path: "cmd/api/main.go", Content: witnessMain},
 			{Path: "cmd/api/util.go", Content: "package main\n\nfunc helper() {}\n"},
+			{Path: "cmd/api/imports.go", Content: "package main\n\nimport \"example.com/api/internal/srv\"\n\nvar _ = srv.Run\n"},
 			{Path: "pyproject.toml", Content: "[project]\nname='svc'\ndependencies=['flask>=3.0']\n[project.optional-dependencies]\ndocs=['sphinx']\n[project.scripts]\nsvc='svc:main'\n"},
 			{Path: "requirements.txt", Content: "Flask==3.0.0\n"},
 			{Path: "Dockerfile", Content: "FROM alpine\nEXPOSE 8080\n"},
@@ -107,8 +108,12 @@ func TestInvalidWitnessesAreRejected(t *testing.T) {
 			"do not establish"},
 		"scope over a clipped file": {Witness{Kind: WitnessScope, Paths: []string{"big.go"}, Construct: constructCompleteReads},
 			"read in full"},
-		"no-server scope over a file with a server call": {Witness{Kind: WitnessScope, Paths: []string{"cmd/api/main.go"}, Construct: constructGoNoServer},
+		"no-server scope over a file with a server call": {Witness{Kind: WitnessScope, Paths: []string{"go.mod", "cmd/api/main.go"}, Construct: constructGoNoServer},
 			"contains a server call"},
+		"no-server scope without its go.mod": {Witness{Kind: WitnessScope, Paths: []string{"cmd/api/util.go"}, Construct: constructGoNoServer},
+			"needs the module's go.mod"},
+		"no-server scope over an own-module import": {Witness{Kind: WitnessScope, Paths: []string{"go.mod", "cmd/api/imports.go"}, Construct: constructGoNoServer},
+			"from its own module"},
 	}
 	for name, c := range cases {
 		err := validateWitness(st, c.w)
@@ -132,4 +137,147 @@ func TestCoveringListingScopeIsRechecked(t *testing.T) {
 	if err := validateWitness(indexInspection(Inspection{Paths: []string{"Cargo.toml"}, Files: files, Scope: TreeScope{Truncated: true}}), w); err == nil {
 		t.Errorf("a truncated listing cannot back a covering premise")
 	}
+}
+
+// Task 10b: every observation the classifier emits — primary or secondary —
+// carries a witness, and that witness validates against the inspection it came
+// from. Run over a spread of fixtures covering each detector.
+func TestEveryEmittedObservationHasAValidWitness(t *testing.T) {
+	fixtures := map[string]Inspection{
+		"go backend + ui": InspectionFromSources("Go", []string{"go.mod", "main.go", "ui/package.json", "ui/index.html", "Dockerfile"}, map[string]string{
+			"go.mod": "module example.com/app\n", "main.go": "package main\nimport \"net/http\"\nfunc main(){http.ListenAndServe(\":80\",nil)}\n",
+			"ui/package.json": `{"private":true,"dependencies":{"react":"18"}}`, "Dockerfile": "FROM alpine\nEXPOSE 80\n"}),
+		"go cli (cobra)": InspectionFromSources("Go", []string{"go.mod", "main.go"}, map[string]string{
+			"go.mod": "module example.com/t\n\nrequire github.com/spf13/cobra v1.8.0\n", "main.go": "package main\nfunc main(){}\n"}),
+		"go cli (no server)": InspectionFromSources("Go", []string{"go.mod", "cmd/t/main.go"}, map[string]string{
+			"go.mod": "module example.com/t\n", "cmd/t/main.go": "package main\nfunc main(){}\n"}),
+		"go library": InspectionFromSources("Go", []string{"go.mod", "lib.go"}, map[string]string{"go.mod": "module example.com/l\n", "lib.go": "package l\n"}),
+		"go server via gin": InspectionFromSources("Go", []string{"go.mod", "main.go"}, map[string]string{
+			"go.mod": "module example.com/s\n\nrequire github.com/gin-gonic/gin v1.9.1\n", "main.go": "package main\nfunc main(){}\n"}),
+		"expo + flutter + shells": InspectionFromSources("", []string{"package.json", "app/pubspec.yaml", "android/x", "ios/y"}, map[string]string{
+			"package.json": `{"dependencies":{"expo":"51","react-native":"0.74"}}`, "app/pubspec.yaml": "name: a\ndependencies:\n  flutter:\n    sdk: flutter\n"}),
+		"npm library + cli": InspectionFromSources("TypeScript", []string{"package.json", "tools/cli/package.json"}, map[string]string{
+			"package.json": `{"main":"dist/index.js","peerDependencies":{"react":"18"}}`, "tools/cli/package.json": `{"bin":"cli.js"}`}),
+		"node backend": InspectionFromSources("", []string{"package.json"}, map[string]string{"package.json": `{"dependencies":{"express":"^4"}}`}),
+		"python": InspectionFromSources("Python", []string{"pyproject.toml", "svc/requirements.txt", "cli/pyproject.toml"}, map[string]string{
+			"pyproject.toml": "[project]\nname='lib'\n", "svc/requirements.txt": "Flask==3.0.0\n", "cli/pyproject.toml": "[project]\nname='c'\n[project.scripts]\nc='c:main'\n"}),
+		"rust": InspectionFromSources("Rust", []string{"Cargo.toml", "src/lib.rs", "bin/Cargo.toml", "bin/src/main.rs", "api/Cargo.toml", "api/src/main.rs"}, map[string]string{
+			"Cargo.toml": "[package]\nname='core'\n", "bin/Cargo.toml": "[package]\nname='b'\n[dependencies]\nclap='4'\n",
+			"api/Cargo.toml": "[package]\nname='api'\n[dependencies]\naxum='0.7'\n"}),
+	}
+	for name, insp := range fixtures {
+		st := indexInspection(insp)
+		got := Classify(insp)
+		all := append(append([]Observation(nil), got.Observations...), got.Secondary...)
+		if len(all) == 0 {
+			t.Errorf("%s: no observations emitted", name)
+		}
+		for _, o := range all {
+			if err := validateWitness(st, o.Witness); err != nil {
+				t.Errorf("%s: emitted observation %q does not validate: %v", name, o.Detail, err)
+			}
+		}
+	}
+}
+
+// Invalid support never reaches the verdict: a mutated decisive witness
+// withdraws its evidence group and the verdict is re-resolved, an injected
+// fabricated candidate is rejected without affecting anything else, and an
+// invalid context observation is dropped while its supported role stands.
+func TestRejectedEvidenceIsReResolved(t *testing.T) {
+	server := InspectionFromSources("Go", []string{"go.mod", "main.go", "Dockerfile"}, map[string]string{
+		"go.mod":     "module example.com/api\n",
+		"main.go":    "package main\nimport \"net/http\"\nfunc main(){ http.ListenAndServe(\":80\", nil) }\n",
+		"Dockerfile": "FROM alpine\nEXPOSE 80\n",
+	})
+	mutate := func(kind string, f func(*Observation)) candidateHook {
+		return func(root string, cands []candidate) []candidate {
+			for ci := range cands {
+				for gi := range cands[ci].groups {
+					for oi := range cands[ci].groups[gi] {
+						o := &cands[ci].groups[gi][oi]
+						if o.Witness.Construct == kind || strings.Join(o.Witness.Field, ".") == kind {
+							f(o)
+						}
+					}
+				}
+			}
+			return cands
+		}
+	}
+
+	if base := Classify(server); base.Kind != "backend" || base.Status != VerdictResolved {
+		t.Fatalf("baseline: got %q/%q", base.Kind, base.Status)
+	}
+
+	cases := map[string]candidateHook{
+		"mismatched quote":     mutate(constructGoServerCall, func(o *Observation) { o.Witness.Quote = "http.Serve(l, nil)" }),
+		"out-of-range span":    mutate(constructGoServerCall, func(o *Observation) { o.Witness.End = 10_000 }),
+		"invalid path":         mutate(constructGoServerCall, func(o *Observation) { o.Witness.Path = "cmd/other/main.go" }),
+		"missing span":         mutate(constructGoServerCall, func(o *Observation) { o.Witness.Start, o.Witness.End = 0, 0 }),
+		"missing witness":      mutate(constructGoServerCall, func(o *Observation) { o.Witness = Witness{} }),
+		"unrelated construct":  mutate(constructGoServerCall, func(o *Observation) { o.Witness.Start, o.Witness.End, o.Witness.Quote = 0, 7, "package" }),
+		"wrong package clause": mutate(constructGoPackageMain, func(o *Observation) { o.Witness.Start++ }),
+	}
+	for name, hook := range cases {
+		t.Run("decisive "+name, func(t *testing.T) {
+			got := classify(server, hook)
+			if got.Kind == "backend" && got.Status == VerdictResolved {
+				t.Fatalf("backend survived invalid decisive evidence: %v", got.Evidence())
+			}
+			if !limitationsContain(got.Limitations, "rejected backend evidence") {
+				t.Errorf("the rejection was not recorded: %v", got.Limitations)
+			}
+			for _, o := range append(got.Observations, got.Secondary...) {
+				if o.Witness.Construct == constructGoServerCall {
+					t.Errorf("rejected evidence leaked into the result: %+v", o)
+				}
+			}
+		})
+	}
+
+	t.Run("fabricated candidate is rejected and changes nothing", func(t *testing.T) {
+		fake := func(root string, cands []candidate) []candidate {
+			o := fieldObs("package.json", []string{"dependencies", "react"}, "18", "declares \"react\" in dependencies")
+			o.Component, o.Role = root, "frontend"
+			return append([]candidate{{kind: "frontend", groups: []evidenceGroup{{o}}}}, cands...)
+		}
+		got := classify(server, fake)
+		if got.Kind != "backend" || got.Status != VerdictResolved {
+			t.Errorf("a fabricated frontend candidate changed the verdict: %q/%q", got.Kind, got.Status)
+		}
+		if !limitationsContain(got.Limitations, "rejected frontend evidence") {
+			t.Errorf("the fabricated candidate's rejection was not recorded: %v", got.Limitations)
+		}
+	})
+
+	t.Run("invalid context is dropped; the role stands", func(t *testing.T) {
+		got := classify(server, mutate(constructDockerExpose, func(o *Observation) { o.Witness.Start, o.Witness.End = 0, 4 }))
+		if got.Kind != "backend" || got.Status != VerdictResolved {
+			t.Fatalf("an invalid context observation changed the verdict: %q/%q", got.Kind, got.Status)
+		}
+		for _, o := range got.Observations {
+			if o.Path == "Dockerfile" {
+				t.Errorf("rejected context leaked into the result: %+v", o)
+			}
+		}
+		if !limitationsContain(got.Limitations, "rejected supporting backend evidence") {
+			t.Errorf("the context rejection was not recorded: %v", got.Limitations)
+		}
+	})
+
+	t.Run("one rejected support of several leaves the others", func(t *testing.T) {
+		mobile := InspectionFromSources("", []string{"package.json"}, map[string]string{
+			"package.json": `{"dependencies":{"expo":"51","react-native":"0.74"}}`,
+		})
+		got := classify(mobile, mutate("dependencies.expo", func(o *Observation) { o.Witness.Value = "49" }))
+		if got.Kind != "mobile" || got.Status != VerdictResolved {
+			t.Fatalf("react-native alone should still support mobile: %q/%q", got.Kind, got.Status)
+		}
+		for _, o := range got.Observations {
+			if strings.Contains(o.Detail, `"expo"`) {
+				t.Errorf("the rejected expo evidence leaked: %+v", o)
+			}
+		}
+	})
 }

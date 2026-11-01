@@ -244,11 +244,25 @@ func validateScope(st *inspIndex, w Witness) error {
 		}
 		return nil
 	case constructGoNoServer:
+		module := ""
+		for _, p := range w.Paths {
+			if k, _ := manifestKindOf(p); k == kindGoMod {
+				module = goModulePath(st.files[p].Content)
+			}
+		}
+		if module == "" {
+			return fmt.Errorf("the no-server premise needs the module's go.mod read in full and parsed")
+		}
 		for _, p := range w.Paths {
 			if !isGoSource(p) {
 				continue // go.mod belongs to the premise's basis but holds no calls
 			}
 			g := analyzeGoFile(st.files[p])
+			for _, im := range g.imports {
+				if im == module || strings.HasPrefix(im, module+"/") {
+					return fmt.Errorf("%s imports %s from its own module, which the premise does not cover", p, im)
+				}
+			}
 			switch {
 			case !g.parsed:
 				return fmt.Errorf("%s does not parse, so it cannot show the absence of a server call", p)

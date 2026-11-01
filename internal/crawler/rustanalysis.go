@@ -47,14 +47,14 @@ func cargoAutolib(m cargoManifest) bool {
 	return m.Package == nil || m.Package.Autolib == nil || *m.Package.Autolib
 }
 
-// cargoDep returns the first of wants declared as a dependency (an exact,
-// case-insensitive crate-name match, not a substring), or "". Iterating wants in
-// their fixed order keeps the result independent of map iteration.
+// cargoDep returns the declared name of the first of wants found in
+// [dependencies] (an exact, case-insensitive crate-name match, not a substring),
+// or "". Iterating wants in fixed order keeps the result independent of map order.
 func cargoDep(m cargoManifest, wants []string) string {
 	for _, w := range wants {
-		for name := range m.Dependencies {
+		for _, name := range sortedKeys(m.Dependencies) {
 			if strings.EqualFold(name, w) {
-				return w
+				return name
 			}
 		}
 	}
