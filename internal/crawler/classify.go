@@ -131,6 +131,11 @@ func newRepoIndex(st *inspIndex, comp *component, language string) *repoIndex {
 	sort.Slice(ix.goFiles, func(i, j int) bool { return ix.goFiles[i].path < ix.goFiles[j].path })
 
 	ix.blockUninspectedManifests()
+	if ix.pkg != nil {
+		if _, state := ix.pkg.commandEntry(); state == unknown {
+			ix.block(apimodel.KindCLI, ix.pkgRef.path+" declares malformed or unsupported bin metadata; its command entries could not be established")
+		}
+	}
 	ix.blockUninspectedPythonDependencies()
 	ix.blockUninspectedPythonEntries()
 	if unread := ix.unreadGoEntries(); len(unread) > 0 {
@@ -581,9 +586,11 @@ func detectCLI(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 			}
 		}
 	}
-	// npm: a package that installs a command exposes a "bin" field.
-	if ix.pkg != nil && len(ix.pkg.Bin) > 0 && string(ix.pkg.Bin) != "null" {
-		groups = append(groups, evidenceGroup{fieldObs(ix.pkgRef.path, []string{"bin"}, "", `declares a "bin" field (installs a command)`)})
+	// npm: a supported executable declaration, not merely the presence of bin.
+	if ix.pkg != nil {
+		if cmd, state := ix.pkg.commandEntry(); state == yes {
+			groups = append(groups, evidenceGroup{fieldObs(ix.pkgRef.path, cmd.field, cmd.target, `declares a "bin" field with an executable entry (installs a command)`)})
+		}
 	}
 	// Python: a static [project.scripts] table installs commands. GUI entry
 	// points ([project.gui-scripts]) are deliberately not a CLI. Legacy
@@ -660,8 +667,8 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 		case len(ix.pkg.Exports) > 0 && string(ix.pkg.Exports) != "null":
 			entryField = "exports"
 		}
-		hasBin := len(ix.pkg.Bin) > 0 && string(ix.pkg.Bin) != "null"
-		if entryField != "" && !hasBin && !ix.hasPrimaryAppShell() {
+		_, binState := ix.pkg.commandEntry()
+		if entryField != "" && binState == no && !ix.hasPrimaryAppShell() {
 			ok := true
 			if !ix.pkgRef.complete() {
 				ix.block(apimodel.KindCLI, "cannot conclude the package installs no command: "+ix.st.describe(ix.pkgRef.path))
@@ -673,12 +680,12 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 				ok = false
 			}
 			if ok {
-				premise := scopeObs(ix.pkgRef.path, []string{ix.pkgRef.path}, constructCompleteReads, 0, "declares no \"bin\" field and the component has no app shell")
+				premise := scopeObs(ix.pkgRef.path, []string{ix.pkgRef.path}, constructCompleteReads, 0, "declares no executable command entry in \"bin\" and the component has no app shell")
 				if fw != "" {
-					premise = scopeObs(ix.pkgRef.path, []string{ix.pkgRef.path}, constructCoveringListing, ix.base+2, "declares no \"bin\" field and the listing shows no app entry for runtime dependency \""+fw+"\"")
+					premise = scopeObs(ix.pkgRef.path, []string{ix.pkgRef.path}, constructCoveringListing, ix.base+2, "declares no executable command entry in \"bin\" and the listing shows no app entry for runtime dependency \""+fw+"\"")
 				}
 				groups = append(groups, evidenceGroup{
-					fieldObs(ix.pkgRef.path, []string{entryField}, "", `declares a lib entry ("`+entryField+`") and no app or bin (importable package)`),
+					fieldObs(ix.pkgRef.path, []string{entryField}, "", `declares a lib entry ("`+entryField+`") and no app or executable command (importable package)`),
 					premise,
 				})
 			}
