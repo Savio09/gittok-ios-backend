@@ -254,9 +254,9 @@ func tag(obs []Observation, root string, role apimodel.RepoKind) []Observation {
 //   - The root manifest is the repository's declared package, so a resolved
 //     repository root is the primary product and every other component is
 //     secondary. This follows each ecosystem's manifest semantics, not location
-//     alone: a root that declares a workspace (a private npm package with
-//     "workspaces", a Cargo virtual manifest, a go.work without a module) is an
-//     aggregator, not a product, and is set aside.
+//     alone: a workspace root aggregates members, and can also declare its own
+//     product. Its supported role participates in the workspace comparison;
+//     an artifact-free aggregator contributes no product candidate.
 //   - An unresolved root makes the repository inconclusive: whatever the root
 //     declares could not be determined, so no nested component may stand in.
 //   - With no product at the root, the nested components are compared — but
@@ -310,6 +310,13 @@ func resolveRepository(st *inspIndex, vs []compVerdict) Classification {
 
 	supporting := supportingComponents(vs)
 	var top []*compVerdict
+	// npm workspaces manage linked packages; they do not exclude an application
+	// in the root package. Compare that artifact with members instead of dropping
+	// it, including uncertainty that could change the workspace's primary role.
+	// https://docs.npmjs.com/cli/v11/using-npm/workspaces/
+	if root.workspace && root.status != roleNone {
+		top = append(top, root)
+	}
 	for i := 1; i < len(vs); i++ {
 		if !supporting[i] && vs[i].status != roleNone {
 			top = append(top, &vs[i])

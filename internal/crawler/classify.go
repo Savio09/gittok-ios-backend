@@ -205,8 +205,8 @@ func (ix *repoIndex) componentName() string {
 	return ""
 }
 
-// isWorkspace reports whether the component's manifest declares a workspace that
-// aggregates other components rather than a product of its own: a private npm
+// isWorkspace reports whether the component's manifest aggregates other
+// components, possibly alongside a product of its own: a private npm
 // package with "workspaces", a Cargo virtual manifest ([workspace] without
 // [package]), or a go.work file with no module of its own.
 func (ix *repoIndex) isWorkspace() bool {
