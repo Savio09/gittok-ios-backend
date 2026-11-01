@@ -506,9 +506,9 @@ func detectBackend(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 
 	// Go: a server needs both a command (a package clause naming main) and a
 	// server signal (a resolved server call, or a declared server framework).
-	if cmd, ok := ix.goCommand(); ok {
+	if _, ok := ix.goCommand(); ok {
 		if serverObs, ok := ix.goServerObservation(); ok {
-			groups = append(groups, evidenceGroup{commandObs(cmd), serverObs})
+			groups = append(groups, append(evidenceGroup(ix.commandObservations()), serverObs))
 		}
 	}
 	// Node server frameworks, as runtime dependencies only.
@@ -557,17 +557,24 @@ func detectCLI(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 	// Go: a command wired to a CLI framework, or a command shown to start no
 	// server. The latter is an absence premise; see goNoServerPremise for the
 	// scope it requires, which its scope witness re-checks.
-	if cmd, ok := ix.goCommand(); ok {
+	if _, ok := ix.goCommand(); ok {
 		if req, ver := ix.goRequirement(goCLIDeps); req != "" {
-			groups = append(groups, evidenceGroup{commandObs(cmd), fieldObs(ix.goMod.path, []string{"require", req}, ver, "requires \""+req+"\" (CLI framework)")})
+			groups = append(groups, append(evidenceGroup(ix.commandObservations()),
+				fieldObs(ix.goMod.path, []string{"require", req}, ver, "requires \""+req+"\" (CLI framework)")))
 		} else if _, server := ix.goServerObservation(); !server {
-			if ok, why := ix.goNoServerPremise(cmd); ok {
-				groups = append(groups, evidenceGroup{commandObs(cmd), scopeObs(cmd.path, ix.noServerScope(cmd), constructGoNoServer, 0,
-					"the command's package was inspected in full and contains no server call (produces a command)")})
-			} else {
+			// Every command must be shown to start no server, not just one.
+			group, held := evidenceGroup{}, true
+			for _, cmd := range ix.goCommands() {
+				ok, why := ix.goNoServerPremise(cmd)
 				for _, w := range why {
 					ix.block(apimodel.KindBackend, "cannot conclude the command starts no server: "+w)
 				}
+				held = held && ok
+				group = append(group, commandObs(cmd), scopeObs(cmd.path, ix.noServerScope(cmd), constructGoNoServer, 0,
+					"the command's package was inspected in full and contains no server call (produces a command)"))
+			}
+			if held {
+				groups = append(groups, group)
 			}
 		}
 	}
@@ -747,12 +754,35 @@ func (ix *repoIndex) goFileAt(p string) (goFile, bool) {
 // main. The clause is read from the file itself, so a clipped file still counts
 // as a command — the clause is a positive fact.
 func (ix *repoIndex) goCommand() (goFile, bool) {
+	cmds := ix.goCommands()
+	if len(cmds) == 0 {
+		return goFile{}, false
+	}
+	return cmds[0], true
+}
+
+// goCommands returns one read file per primary-scope command directory (a
+// package clause naming main), path-sorted, so evidence cites every command the
+// inspection saw rather than only the first.
+func (ix *repoIndex) goCommands() []goFile {
+	var out []goFile
+	seen := map[string]bool{}
 	for _, g := range ix.primaryGoFiles() {
-		if !g.test && g.pkg == "main" {
-			return g, true
+		if dir := path.Dir(g.path); !g.test && g.pkg == "main" && !seen[dir] {
+			seen[dir] = true
+			out = append(out, g)
 		}
 	}
-	return goFile{}, false
+	return out
+}
+
+// commandObservations cites every read command.
+func (ix *repoIndex) commandObservations() []Observation {
+	var out []Observation
+	for _, c := range ix.goCommands() {
+		out = append(out, commandObs(c))
+	}
+	return out
 }
 
 // goNoServerPremise reports whether "this command starts no server" is backed by

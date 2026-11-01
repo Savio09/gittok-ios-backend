@@ -159,3 +159,42 @@ func TestGoCommentsDoNotCreateBackend(t *testing.T) {
 		})
 	}
 }
+
+// A module with several commands cites every read command, and the no-server
+// premise must hold for each of them (cli/cli has cmd/gh and cmd/gen-docs).
+func TestEveryReadCommandIsCited(t *testing.T) {
+	paths := []string{"go.mod", "cmd/gen-docs/main.go", "cmd/gh/main.go"}
+	cobra := Classify(InspectionFromSources("Go", paths, map[string]string{
+		"go.mod":               "module example.com/cli\n\nrequire github.com/spf13/cobra v1.8.0\n",
+		"cmd/gen-docs/main.go": "package main\nfunc main(){}\n",
+		"cmd/gh/main.go":       "package main\nfunc main(){}\n",
+	}))
+	cited := map[string]bool{}
+	for _, o := range cobra.Observations {
+		cited[o.Path] = true
+	}
+	if cobra.Kind != apimodel.KindCLI || !cited["cmd/gen-docs/main.go"] || !cited["cmd/gh/main.go"] {
+		t.Errorf("got %q citing %v, want cli citing both commands", cobra.Kind, cited)
+	}
+
+	oneServes := Classify(InspectionFromSources("Go", paths, map[string]string{
+		"go.mod":               "module example.com/cli\n",
+		"cmd/gen-docs/main.go": "package main\nfunc main(){}\n",
+		"cmd/gh/main.go":       "package main\nimport \"net/http\"\nfunc main(){ http.ListenAndServe(\":80\", nil) }\n",
+	}))
+	if oneServes.Kind != apimodel.KindBackend {
+		t.Errorf("a server call in any command makes it a backend; got %q", oneServes.Kind)
+	}
+
+	oneUnread := Classify(Inspection{
+		Language: "Go", Paths: paths,
+		Files: []SourceFile{
+			{Path: "go.mod", Content: "module example.com/cli\n"},
+			{Path: "cmd/gen-docs/main.go", Content: "package main\nfunc main(){}\n"},
+		},
+		Unavailable: []Unavailable{{Path: "cmd/gh/main.go", Reason: "fetch error"}},
+	})
+	if oneUnread.Kind == apimodel.KindCLI && oneUnread.Status == VerdictResolved {
+		t.Errorf("an unread command could be the server; got a resolved CLI")
+	}
+}
