@@ -157,6 +157,13 @@ type Observation struct {
 	// an observation stays attributable to its owner wherever it is reported.
 	Component string
 	Role      apimodel.RepoKind
+	// Witness ties the observation to the inspected bytes or parsed field that
+	// support it; it is validated against the inspection before the observation
+	// may affect a verdict (see witness.go).
+	Witness Witness
+	// Context marks supporting context (a declared container port, "private":
+	// true) that accompanies a role's evidence but does not establish it.
+	Context bool
 }
 
 // VerdictStatus says whether the classifier reached a supported conclusion or

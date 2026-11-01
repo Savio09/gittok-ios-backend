@@ -27,6 +27,8 @@ import (
 type goFile struct {
 	path     string
 	pkg      string // package clause; "" when even the clause is unreadable
+	pkgStart int    // byte offsets of the package name in the original file
+	pkgEnd   int
 	test     bool   // *_test.go
 	complete bool   // content read in full
 	parsed   bool   // the whole file parsed
@@ -56,6 +58,7 @@ func analyzeGoFile(f SourceFile) goFile {
 	if file != nil {
 		if file.Name != nil {
 			g.pkg = file.Name.Name
+			g.pkgStart, g.pkgEnd = fset.Position(file.Name.Pos()).Offset, fset.Position(file.Name.End()).Offset
 		}
 		for _, im := range file.Imports {
 			if ip, uerr := strconv.Unquote(im.Path.Value); uerr == nil {
@@ -65,8 +68,10 @@ func analyzeGoFile(f SourceFile) goFile {
 		g.serverCalls, g.uncertain = scanServerCalls(fset, file, f.Content)
 	}
 	if g.pkg == "" { // a broken body can still have a readable package clause
-		if pf, _ := parser.ParseFile(fset, "", f.Content, parser.PackageClauseOnly); pf != nil && pf.Name != nil {
+		pfset := token.NewFileSet()
+		if pf, _ := parser.ParseFile(pfset, "", f.Content, parser.PackageClauseOnly); pf != nil && pf.Name != nil {
 			g.pkg = pf.Name.Name
+			g.pkgStart, g.pkgEnd = pfset.Position(pf.Name.Pos()).Offset, pfset.Position(pf.Name.End()).Offset
 		}
 	}
 	return g
