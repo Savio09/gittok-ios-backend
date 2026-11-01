@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/Savio09/gittok-ios-backend/internal/apimodel"
 	"github.com/Savio09/gittok-ios-backend/internal/crawler"
@@ -22,8 +22,10 @@ import (
 // branch ref is never recorded as a pinned commit.
 
 // mockGitHub serves the three endpoints the pipeline uses. missing is the set of
-// paths whose contents fetch should 404 (to simulate a failed read). hang, when
-// set, blocks the contents endpoint until the test cancels the context.
+// paths whose contents fetch should 404 (to simulate a failed read). A path in
+// block is held open until the request's context ends; arrived, when set,
+// receives each contents path as its request arrives, so a test can cancel at
+// an exact point without relying on timing.
 type mockGitHub struct {
 	defaultBranch string
 	language      string
@@ -31,7 +33,8 @@ type mockGitHub struct {
 	truncated     bool
 	files         map[string]string
 	missing       map[string]bool
-	hang          chan struct{}
+	block         map[string]bool
+	arrived       chan string
 }
 
 func (m *mockGitHub) server(t *testing.T) *httptest.Server {
@@ -55,10 +58,14 @@ func (m *mockGitHub) server(t *testing.T) *httptest.Server {
 		_ = json.NewEncoder(w).Encode(map[string]any{"truncated": m.truncated, "tree": tree})
 	})
 	mux.HandleFunc("/repos/o/r/contents/", func(w http.ResponseWriter, req *http.Request) {
-		if m.hang != nil {
-			<-m.hang // block until released/cancelled
-		}
 		path := strings.TrimPrefix(req.URL.Path, "/repos/o/r/contents/")
+		if m.arrived != nil {
+			m.arrived <- path
+		}
+		if m.block[path] {
+			<-req.Context().Done()
+			return
+		}
 		if m.missing[path] {
 			http.Error(w, `{"message":"Not Found"}`, http.StatusNotFound)
 			return
@@ -155,25 +162,42 @@ func TestAnalyzeTruncatedTreeDoesNotAssertAbsence(t *testing.T) {
 	}
 }
 
-func TestAnalyzeCancellationStopsCollection(t *testing.T) {
-	m := &mockGitHub{
-		defaultBranch: "main", language: "Go",
-		entries: blobEntries("go.mod", "main.go"),
-		files:   map[string]string{"go.mod": "module x\n", "main.go": "package main\nfunc main(){}\n"},
-		hang:    make(chan struct{}),
+// Cancellation during the final — or only — contents request stops the whole
+// analysis with the context error, rather than reporting a skipped file and a
+// verdict built on it. The test cancels exactly when that request arrives.
+func TestAnalyzeCancellationOnFinalContentsRequest(t *testing.T) {
+	cases := []struct {
+		name    string
+		entries []githubclient.TreeEntry
+		files   map[string]string
+		last    string
+	}{
+		{"only file", blobEntries("go.mod"), map[string]string{"go.mod": "module x\n"}, "go.mod"},
+		{"final file", blobEntries("go.mod", "main.go"), map[string]string{"go.mod": "module x\n", "main.go": "package main\nfunc main(){}\n"}, "main.go"},
 	}
-	defer close(m.hang)
-	c := githubclient.New("t", githubclient.WithBaseURL(m.server(t).URL))
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			m := &mockGitHub{
+				defaultBranch: "main", language: "Go", entries: c.entries, files: c.files,
+				block: map[string]bool{c.last: true}, arrived: make(chan string, 8),
+			}
+			cl := githubclient.New("t", githubclient.WithBaseURL(m.server(t).URL), githubclient.WithMaxRetries(0))
 
-	ctx, cancel := context.WithCancel(context.Background())
-	go func() { time.Sleep(20 * time.Millisecond); cancel() }()
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			go func() {
+				for p := range m.arrived {
+					if p == c.last {
+						cancel()
+						return
+					}
+				}
+			}()
 
-	start := time.Now()
-	_, err := analyze(ctx, c, "o", "r")
-	if err == nil {
-		t.Fatal("expected an error when the context was cancelled mid-fetch")
-	}
-	if time.Since(start) > 2*time.Second {
-		t.Errorf("analyze did not stop promptly on cancellation")
+			a, err := analyze(ctx, cl, "o", "r")
+			if !errors.Is(err, context.Canceled) {
+				t.Errorf("err = %v (verdict %q/%q), want context.Canceled", err, a.classification.Kind, a.classification.Status)
+			}
+		})
 	}
 }

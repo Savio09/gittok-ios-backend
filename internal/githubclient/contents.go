@@ -55,7 +55,9 @@ type contentsPayload struct {
 // GetFileContents reads the given paths from a repository at ref, bounded by
 // limits. Oversized files are truncated or skipped and missing files are
 // recorded rather than failing the batch, so ingestion degrades gracefully. It
-// returns an error only if the context is cancelled.
+// returns an error only when the context is cancelled or its deadline passes —
+// immediately, even during the final request — together with the files read so
+// far.
 func (c *Client) GetFileContents(
 	ctx context.Context,
 	owner, name, ref string,
@@ -85,6 +87,12 @@ func (c *Client) GetFileContents(
 
 		payload, err := c.getContents(ctx, owner, name, ref, path)
 		if err != nil {
+			// A cancelled or expired context ends the batch now — including on the
+			// last or only path — rather than being recorded as one more skipped
+			// file and noticed, if at all, on a next iteration that never comes.
+			if ctxErr := ctx.Err(); ctxErr != nil {
+				return result, ctxErr
+			}
 			if errors.Is(err, ErrNotFound) {
 				skip(path, "not found")
 			} else {
