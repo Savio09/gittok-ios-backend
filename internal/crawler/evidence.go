@@ -152,6 +152,11 @@ type Observation struct {
 	Path     string // actual source path; empty for a whole-tree structural fact
 	Detail   string // what was inspected and what it shows
 	Supports string // optional: what the observation legitimately establishes
+	// Component is the root of the component that owns the evidence ("" for the
+	// repository root), and Role the role it supports within that component, so
+	// an observation stays attributable to its owner wherever it is reported.
+	Component string
+	Role      apimodel.RepoKind
 }
 
 // VerdictStatus says whether the classifier reached a supported conclusion or
@@ -176,7 +181,11 @@ type Classification struct {
 	Kind         apimodel.RepoKind
 	Status       VerdictStatus
 	Observations []Observation
-	Limitations  []string
+	// Secondary holds evidence from components other than the one that decided
+	// the verdict — an admin UI beside a backend, an example beside a library —
+	// or, for an abstention, the competing candidates. Each keeps its owner.
+	Secondary   []Observation
+	Limitations []string
 }
 
 // Evidence renders the structured verdict as human-readable lines, so existing
@@ -184,13 +193,28 @@ type Classification struct {
 // storing a duplicate copy. Observations render as "path: detail" (or just the
 // detail for a whole-tree fact); limitations render with a "limitation:" prefix.
 func (c Classification) Evidence() []string {
-	out := make([]string, 0, len(c.Observations)+len(c.Limitations))
+	out := make([]string, 0, len(c.Observations)+len(c.Secondary)+len(c.Limitations))
 	for _, o := range c.Observations {
 		if o.Path != "" {
 			out = append(out, o.Path+": "+o.Detail)
 		} else {
 			out = append(out, o.Detail)
 		}
+	}
+	label := "secondary"
+	if c.Status == VerdictInconclusive {
+		label = "candidate"
+	}
+	for _, o := range c.Secondary {
+		where := "repository root"
+		if o.Component != "" {
+			where = "component " + o.Component
+		}
+		line := label + " (" + string(o.Role) + ", " + where + "): "
+		if o.Path != "" {
+			line += o.Path + ": "
+		}
+		out = append(out, line+o.Detail)
 	}
 	for _, l := range c.Limitations {
 		out = append(out, "limitation: "+l)

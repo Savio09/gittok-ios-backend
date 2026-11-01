@@ -48,12 +48,13 @@ func TestRenderPackShowsClassificationAndLimitations(t *testing.T) {
 		Kind:         "other",
 		Status:       crawler.VerdictInconclusive,
 		Observations: []crawler.Observation{{Path: "go.mod", Detail: "present"}},
+		Secondary:    []crawler.Observation{{Path: "ui/package.json", Detail: "depends on react", Component: "ui", Role: "frontend"}},
 		Limitations:  []string{"cmd/service/main.go was not inspected"},
 	}
 
 	md := renderPack(repo, tree, []string{"go.mod"}, fetched, class)
 
-	for _, want := range []string{"Classification", "inconclusive", "cmd/service/main.go was not inspected"} {
+	for _, want := range []string{"Classification", "inconclusive", "cmd/service/main.go was not inspected", "`ui` (frontend): `ui/package.json`"} {
 		if !strings.Contains(md, want) {
 			t.Errorf("rendered pack missing %q", want)
 		}

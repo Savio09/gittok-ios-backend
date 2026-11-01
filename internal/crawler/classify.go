@@ -9,16 +9,10 @@ import (
 	"github.com/Savio09/gittok-ios-backend/internal/apimodel"
 )
 
-// Classify infers a repository's RepoKind from already-gathered evidence. It is
-// a pure, network-free function so it can be unit-tested with synthetic inputs:
-// the caller assembles an Inspection (the file tree, the files it managed to
-// read, and the scope that bounded the fetch), and Classify reasons only over
-// that. It never calls the GitHub API.
-//
-// It returns a structured Classification (see evidence.go): the Kind, a Status
-// that is honest about abstention, the Observations that produced the verdict
-// (each tied to the actual source path it was read from), and the Limitations
-// that bounded the decision.
+// This file holds the per-component layer of classification: a view of one
+// component (see inventory.go) and the detectors that extract role evidence from
+// it. Paths inside a component are interpreted relative to its root, so a nested
+// app's "src/main.rs" or "index.html" is its own, never the repository's.
 //
 // # Absence premises
 //
@@ -27,128 +21,12 @@ import (
 // premise names the inspected scope it needs (see the per-detector comments) and
 // is only used when that scope was actually inspected: a file read in full and
 // parsed, or a listing that covers the paths in question. When the scope was not
-// inspected the premise is withheld and a limitation names the missing path or
-// region. A limitation never validates an unsupported verdict on its own.
-//
-// # Precedence (#algorithms)
-//
-// A repo often carries several signals at once (a Next.js app also runs a Node
-// server; a Go server also lives under cmd/). Every detector runs and each hit
-// becomes a candidate; the candidate whose evidence sits in the most primary
-// component scope wins, and detector order — mobile → frontend → backend → cli
-// → library — breaks ties within a scope:
-//
-//   - mobile before frontend: react-native/expo apps also depend on react.
-//   - frontend before backend: a client app that ships a Dockerfile is labelled
-//     by its user-facing surface, not its container.
-//   - backend before cli: a server that exposes subcommands is still a server.
-//   - library last: an importable package that also produces a runnable
-//     artifact is classified by the artifact.
-//
-// When no detector finds decisive, inspected evidence, Classify returns
-// KindOther with VerdictInconclusive and the limitations that explain why — an
-// honest abstention, not a confident "other".
-func Classify(insp Inspection) Classification {
-	ix := newRepoIndex(insp)
+// inspected the premise is withheld, a limitation names the missing path or
+// region, and a block records the highest role the uninspected evidence could
+// have produced (see resolve.go for how blocks affect the verdict).
 
-	detectors := []func(*repoIndex) (apimodel.RepoKind, []Observation, bool){
-		detectMobile,
-		detectFrontend,
-		detectBackend,
-		detectCLI,
-		detectLibrary,
-	}
-	type candidate struct {
-		kind  apimodel.RepoKind
-		obs   []Observation
-		scope int
-	}
-	var candidates []candidate
-	for _, detect := range detectors {
-		if kind, obs, ok := detect(ix); ok {
-			candidates = append(candidates, candidate{kind: kind, obs: obs, scope: candidateScope(obs)})
-		}
-	}
-	// Limitations are gathered after the detectors ran, so they include the
-	// premises each detector had to withhold.
-	limits := ix.limitations()
-	if len(candidates) == 0 {
-		limits = append(limits, "no decisive frontend / backend / library / CLI / mobile signal was found in the inspected manifests and file tree")
-		return Classification{Kind: apimodel.KindOther, Status: VerdictInconclusive, Limitations: limits}
-	}
-
-	primaryScope := candidates[0].scope
-	for _, c := range candidates[1:] {
-		if c.scope < primaryScope {
-			primaryScope = c.scope
-		}
-	}
-	chosen := 0
-	for i := range candidates {
-		if candidates[i].scope == primaryScope {
-			chosen = i
-			break
-		}
-	}
-
-	// Withhold the verdict when something at least as primary as the chosen
-	// candidate could not be inspected — an unreadable manifest or an unread Go
-	// entry point. It could itself define the primary product, so picking a
-	// less-primary signal would be a guess.
-	if s, ok := ix.unresolvedScope(); ok && primaryScope >= s {
-		for _, c := range candidates {
-			for _, o := range c.obs {
-				if o.Path != "" {
-					limits = append(limits, "candidate ("+string(c.kind)+"): "+o.Path+": "+o.Detail)
-				}
-			}
-		}
-		limits = append(limits, "evidence at least as primary as every candidate could not be inspected; verdict withheld")
-		return Classification{Kind: apimodel.KindOther, Status: VerdictInconclusive, Limitations: limits}
-	}
-
-	for i := range candidates {
-		if i == chosen {
-			continue
-		}
-		for _, o := range candidates[i].obs {
-			if o.Path != "" {
-				limits = append(limits, "secondary component ("+string(candidates[i].kind)+"): "+o.Path+": "+o.Detail)
-			}
-		}
-	}
-	return Classification{
-		Kind:         candidates[chosen].kind,
-		Status:       VerdictResolved,
-		Observations: candidates[chosen].obs,
-		Limitations:  limits,
-	}
-}
-
-// candidateScope is the component scope a candidate speaks for: the most primary
-// (lowest) scope among its evidence paths. Whole-tree structural observations
-// (no path) do not pull the scope toward root, so a nested component's manifest
-// still reads as nested; a candidate with only structural evidence is treated as
-// primary (scope 0).
-func candidateScope(obs []Observation) int {
-	best := -1
-	for _, o := range obs {
-		if o.Path == "" {
-			continue
-		}
-		if s := scopeRank(o.Path); best == -1 || s < best {
-			best = s
-		}
-	}
-	if best == -1 {
-		return 0
-	}
-	return best
-}
-
-// manifestRef is one manifest the repository's primary product declares, with
-// what acquisition managed to do with it. Content is set only when the manifest
-// was read (in full or in part).
+// manifestRef is one manifest a component owns, with what acquisition managed to
+// do with it. Content is set only when the manifest was read (in full or part).
 type manifestRef struct {
 	path    string
 	kind    manifestKind
@@ -161,16 +39,23 @@ func (m manifestRef) present() bool  { return m.path != "" }
 func (m manifestRef) readable() bool { return m.state == StateRead || m.state == StateTruncated }
 func (m manifestRef) complete() bool { return m.state == StateRead }
 
-// repoIndex is the pre-parsed, cheap-to-query view of an Inspection. Each
-// manifest is chosen deterministically among every listed, read or failed
-// instance (most primary scope, then shallowest, then lexical), keeping its read
-// state — so a failed root manifest stays visible instead of being silently
-// replaced by a nested one.
+// block records evidence that could not be inspected and the highest-precedence
+// role it could have established, so resolution can tell whether it could change
+// a verdict.
+type block struct {
+	role   apimodel.RepoKind
+	reason string
+}
+
+// repoIndex is the pre-parsed, cheap-to-query view of one component.
 type repoIndex struct {
-	st        *inspIndex
-	language  string   // lowercased primary language
-	paths     []string // original tree paths
-	lowerPath []string // lowercased tree paths, index-aligned with paths
+	st       *inspIndex
+	comp     *component
+	isRoot   bool
+	language string   // lowercased primary language of the repository
+	paths    []string // paths the component owns, original case
+	lowerRel []string // lowercased paths relative to the component root, index-aligned
+	base     int      // path segments in the component root
 
 	pkgRef       manifestRef
 	pkg          *packageJSON // parsed package.json, or nil
@@ -189,104 +74,150 @@ type repoIndex struct {
 	pubspec      manifestRef
 	docker       manifestRef
 	reqs         manifestRef
+	goWork       manifestRef
 
 	pyDepSource map[string]string // normalised python dep name -> the file it was declared in
-	goFiles     []goFile          // every read Go source, path-sorted
+	goFiles     []goFile          // read Go sources the component owns, path-sorted
 
-	notes []string // premises the detectors had to withhold, in detection order
+	notes  []string // limitations, in the order they were found
+	blocks []block  // uninspected evidence and the role it could have established
 }
 
-func newRepoIndex(insp Inspection) *repoIndex {
-	st := indexInspection(insp)
+func newRepoIndex(st *inspIndex, comp *component, language string) *repoIndex {
 	ix := &repoIndex{
-		st:        st,
-		language:  strings.ToLower(strings.TrimSpace(insp.Language)),
-		paths:     insp.Paths,
-		lowerPath: make([]string, len(insp.Paths)),
+		st:       st,
+		comp:     comp,
+		isRoot:   comp.root == "",
+		language: strings.ToLower(strings.TrimSpace(language)),
+		paths:    comp.paths,
+		lowerRel: make([]string, len(comp.paths)),
+		base:     segments(comp.root),
 	}
-	for i, p := range insp.Paths {
-		ix.lowerPath[i] = strings.ToLower(p)
+	for i, p := range comp.paths {
+		ix.lowerRel[i] = strings.ToLower(comp.rel(p))
 	}
 
-	ix.pkgRef = pickManifest(st, "package.json")
+	ix.pkgRef = comp.manifest(kindNPM)
 	if ix.pkgRef.readable() {
 		if ix.pkg = parsePackageJSON(ix.pkgRef.content); ix.pkg == nil {
 			ix.pkgBad = true
 		}
 	}
-	ix.goMod = pickManifest(st, "go.mod")
+	ix.goMod = comp.manifest(kindGoMod)
 	if ix.goMod.readable() {
 		ix.modPath = goModulePath(ix.goMod.content)
 		ix.goModOK = ix.modPath != ""
 	}
-	ix.cargo = pickManifest(st, "cargo.toml")
+	ix.cargo = comp.manifest(kindCargo)
 	if ix.cargo.readable() {
 		ix.cargoM, ix.cargoOK = parseCargo(ix.cargo.content)
 	}
-	ix.pyproj = pickManifest(st, "pyproject.toml")
+	ix.pyproj = comp.manifest(kindPyProject)
 	if ix.pyproj.readable() {
 		ix.pyProj, ix.pyHasProject, ix.pyOK = parsePyProject(ix.pyproj.content)
 	}
-	ix.setupPy = pickManifest(st, "setup.py")
-	ix.pubspec = pickManifest(st, "pubspec.yaml", "pubspec.yml")
-	ix.docker = pickManifest(st, "dockerfile")
-	ix.reqs = pickManifest(st, "requirements.txt")
+	ix.setupPy = comp.manifest(kindSetupPy)
+	ix.pubspec = comp.manifest(kindPubspec)
+	ix.docker = comp.manifest(kindDocker)
+	ix.reqs = comp.manifest(kindRequirements)
+	ix.goWork = comp.manifest(kindGoWork)
 
 	// setup.py is deliberately not parsed for dependencies — its install_requires
 	// is dynamic Python we never execute.
 	ix.pyDepSource = buildPyDepSource(ix.pyProj, ix.pyproj.path, ix.reqs.content, ix.reqs.path)
 
-	for _, f := range insp.Files {
-		if strings.HasSuffix(strings.ToLower(f.Path), ".go") {
+	for _, p := range comp.paths {
+		if f, ok := st.files[p]; ok && strings.HasSuffix(strings.ToLower(p), ".go") {
 			ix.goFiles = append(ix.goFiles, analyzeGoFile(f))
 		}
 	}
 	sort.Slice(ix.goFiles, func(i, j int) bool { return ix.goFiles[i].path < ix.goFiles[j].path })
+
+	ix.blockUninspectedManifests()
+	if unread := ix.unreadGoEntries(); len(unread) > 0 {
+		ix.block(apimodel.KindBackend, "Go entry point(s) present but their source was not inspected ("+strings.Join(unread, ", ")+"); a server could not be distinguished from a command")
+	}
 	return ix
 }
 
-// pickManifest chooses, among every listed, read or unavailable path whose base
-// name is one of bases, the one that best represents the repository's primary
-// product: the most primary component scope (root over a nested component, both
-// over example/docs/tooling), then the shallowest path, then the lexically first.
-// The order is total, so the choice does not depend on input order. The chosen
-// manifest keeps its read state even when it could not be read.
-func pickManifest(x *inspIndex, bases ...string) manifestRef {
-	var best manifestRef
-	bestScope, bestDepth, found := 0, 0, false
-	consider := func(p string) {
-		b := strings.ToLower(path.Base(p))
-		match := false
-		for _, w := range bases {
-			if b == w {
-				match = true
-			}
-		}
-		if !match {
-			return
-		}
-		s, d := scopeRank(p), strings.Count(p, "/")
-		if found && (s > bestScope || (s == bestScope && d > bestDepth) ||
-			(s == bestScope && d == bestDepth && p >= best.path)) {
-			return
-		}
-		found, bestScope, bestDepth = true, s, d
-		state, reason := x.state(p)
-		best = manifestRef{path: p, state: state, reason: reason}
-		if f, ok := x.files[p]; ok {
-			best.content = f.Content
+// maxRoleOf is the highest-precedence role a manifest of this kind could
+// establish on its own, used to bound what an unreadable manifest could change.
+func maxRoleOf(k manifestKind) apimodel.RepoKind {
+	switch k {
+	case kindNPM, kindPubspec:
+		return apimodel.KindMobile
+	default:
+		return apimodel.KindBackend
+	}
+}
+
+// blockUninspectedManifests records each role-bearing manifest that could not be
+// read or parsed: its declarations are unknown, so the roles it could establish
+// cannot be ruled out.
+func (ix *repoIndex) blockUninspectedManifests() {
+	for _, m := range []manifestRef{ix.pkgRef, ix.goMod, ix.cargo, ix.pyproj, ix.setupPy, ix.pubspec, ix.reqs} {
+		if m.present() && !m.readable() {
+			ix.block(maxRoleOf(m.kind), ix.st.describe(m.path)+"; its declarations are unknown")
 		}
 	}
-	for _, p := range x.paths {
-		consider(p)
+	unparsed := func(m manifestRef, ok bool) {
+		if m.readable() && !ok {
+			ix.block(maxRoleOf(m.kind), string(m.kind)+" at "+m.path+" could not be parsed; its signals were not used")
+		}
 	}
-	for p := range x.files {
-		consider(p)
+	unparsed(ix.pkgRef, !ix.pkgBad)
+	unparsed(ix.pyproj, ix.pyOK)
+	unparsed(ix.cargo, ix.cargoOK)
+	unparsed(ix.goMod, ix.goModOK)
+}
+
+// scope is the directory-hint rank of a path within this component (see
+// scopeRank): 0 at the component root, 1 in an ordinary subdirectory, higher in
+// tooling, docs or example directories.
+func (ix *repoIndex) scope(p string) int { return scopeRank(ix.comp.rel(p)) }
+
+// covers reports whether the listing would show a path with n segments below
+// the component root.
+func (ix *repoIndex) covers(n int) bool { return ix.st.covers(ix.base + n) }
+
+// note records a limitation; block records one that hides a role.
+func (ix *repoIndex) note(s string) { ix.notes = append(ix.notes, s) }
+func (ix *repoIndex) block(role apimodel.RepoKind, reason string) {
+	ix.blocks = append(ix.blocks, block{role: role, reason: reason})
+	ix.note(reason)
+}
+
+// limitations returns the component's limitations, in order, without repeats.
+func (ix *repoIndex) limitations() []string { return dedupe(ix.notes) }
+
+// componentName is the name the component's manifest declares for it, used to
+// recognise when another component depends on this one.
+func (ix *repoIndex) componentName() string {
+	switch {
+	case ix.pkg != nil && ix.pkg.Name != "":
+		return ix.pkg.Name
+	case ix.modPath != "":
+		return ix.modPath
+	case ix.cargoOK && ix.cargoM.Package != nil && ix.cargoM.Package.Name != "":
+		return ix.cargoM.Package.Name
+	case ix.pyHasProject && ix.pyProj.Project.Name != "":
+		return pyDistName(ix.pyProj.Project.Name)
 	}
-	for p := range x.unavail {
-		consider(p)
+	return ""
+}
+
+// isWorkspace reports whether the component's manifest declares a workspace that
+// aggregates other components rather than a product of its own: a private npm
+// package with "workspaces", a Cargo virtual manifest ([workspace] without
+// [package]), or a go.work file with no module of its own.
+func (ix *repoIndex) isWorkspace() bool {
+	if ix.pkg != nil && ix.pkg.Private && len(ix.pkg.Workspaces) > 0 && string(ix.pkg.Workspaces) != "null" {
+		return true
 	}
-	return best
+	if ix.cargoOK && ix.cargoM.Workspace != nil && ix.cargoM.Package == nil {
+		return true
+	}
+	return ix.goWork.present() && !ix.goMod.present()
 }
 
 // buildPyDepSource maps each normalised Python dependency name to the file it
@@ -307,12 +238,12 @@ func buildPyDepSource(proj pyProject, projPath, reqs, reqsPath string) map[strin
 	return m
 }
 
-// scopeRank is a coarse, directory-derived guess at a path's role in the
-// repository, used to prefer the primary product over an example, the docs site
-// or tooling. Folder names are hints, not a component model.
+// scopeRank is a coarse, directory-derived hint at a path's role, used to keep
+// examples, docs and tooling from standing in for a product. It looks at the
+// first path segment only; folder names are hints, not a component model.
 func scopeRank(p string) int {
 	if !strings.Contains(p, "/") {
-		return 0 // root: the primary product's manifest usually sits here
+		return 0
 	}
 	first := strings.ToLower(p[:strings.IndexByte(p, '/')])
 	switch first {
@@ -323,83 +254,19 @@ func scopeRank(p string) int {
 	case "tools", "tool", "scripts", "script", ".github", "build", "ci":
 		return 2
 	default:
-		return 1 // some other subdirectory / component
+		return 1
 	}
 }
 
-// manifests lists the chosen manifests in a fixed order, for limitations.
-func (ix *repoIndex) manifests() []manifestRef {
-	return []manifestRef{ix.pkgRef, ix.goMod, ix.cargo, ix.pyproj, ix.setupPy, ix.pubspec, ix.reqs, ix.docker}
-}
-
-// note records a premise a detector had to withhold, naming the missing scope.
-func (ix *repoIndex) note(s string) { ix.notes = append(ix.notes, s) }
-
-// limitations gathers the honest caveats on any verdict: manifests that could
-// not be read or parsed, a bounded listing, unread Go entry points, and every
-// premise a detector had to withhold. Order is fixed and duplicates are dropped.
-func (ix *repoIndex) limitations() []string {
-	var out []string
-	for _, m := range ix.manifests() {
-		if m.present() && !m.readable() {
-			out = append(out, ix.st.describe(m.path)+"; its declarations are unknown")
-		}
-	}
-	if ix.pkgBad {
-		out = append(out, "package.json at "+ix.pkgRef.path+" could not be parsed; its signals were not used")
-	}
-	if ix.pyproj.readable() && !ix.pyOK {
-		out = append(out, "pyproject.toml at "+ix.pyproj.path+" could not be parsed; its signals were not used")
-	}
-	if ix.cargo.readable() && !ix.cargoOK {
-		out = append(out, "Cargo.toml at "+ix.cargo.path+" could not be parsed; its signals were not used")
-	}
-	if ix.goMod.readable() && !ix.goModOK {
-		out = append(out, "go.mod at "+ix.goMod.path+" could not be parsed; its signals were not used")
-	}
-	if ix.st.scope.Truncated {
-		out = append(out, "the file listing was truncated; a signal absent from it cannot be treated as absent from the repository")
-	}
-	if ix.st.scope.DepthLimited {
-		out = append(out, "the file listing was depth-limited; files below the depth cap were not listed, so a deeper entry point may exist")
-	}
-	if unread := ix.unreadGoEntries(); len(unread) > 0 {
-		out = append(out, "Go entry point(s) present but their source was not inspected ("+strings.Join(unread, ", ")+"); a server could not be distinguished from a command")
-	}
-	out = append(out, ix.notes...)
-	return dedupe(out)
-}
-
-// unresolvedScope is the most primary scope holding evidence that could define
-// the primary product but could not be inspected: an unreadable manifest, or a
-// listed Go entry point whose source was not read.
-func (ix *repoIndex) unresolvedScope() (int, bool) {
-	best, ok := 0, false
-	consider := func(p string) {
-		if s := scopeRank(p); !ok || s < best {
-			best, ok = s, true
-		}
-	}
-	for _, m := range ix.manifests() {
-		if m.present() && !m.readable() {
-			consider(m.path)
-		}
-	}
-	for _, p := range ix.unreadGoEntries() {
-		consider(p)
-	}
-	return best, ok
-}
-
-// unreadGoEntries lists primary-scope main.go paths that appear in the tree but
-// whose content was not read. It only reports when the repo looks like Go.
+// unreadGoEntries lists primary-scope main.go paths the component owns whose
+// content was not read.
 func (ix *repoIndex) unreadGoEntries() []string {
 	if !ix.isGo() {
 		return nil
 	}
 	var unread []string
 	for _, p := range ix.paths {
-		if strings.ToLower(path.Base(p)) == "main.go" && scopeRank(p) <= 1 && !ix.isRead(p) {
+		if strings.ToLower(path.Base(p)) == "main.go" && ix.scope(p) <= 1 && !ix.isRead(p) {
 			unread = append(unread, p)
 		}
 	}
@@ -412,16 +279,26 @@ func (ix *repoIndex) isRead(p string) bool {
 	return s == StateRead || s == StateTruncated
 }
 
-// hasPrefix reports whether any tree path starts with the given (lowercased)
-// prefix — used for directory ("android/") checks.
-func (ix *repoIndex) hasPrefix(prefix string) bool {
-	prefix = strings.ToLower(prefix)
-	for _, p := range ix.lowerPath {
-		if strings.HasPrefix(p, prefix) {
+// hasRelPrefix reports whether any owned path, relative to the component root,
+// starts with the given (lowercased) prefix — used for "android/" and "ios/".
+func (ix *repoIndex) hasRelPrefix(prefix string) bool {
+	for _, lp := range ix.lowerRel {
+		if strings.HasPrefix(lp, prefix) {
 			return true
 		}
 	}
 	return false
+}
+
+// firstPrimaryPath returns the first owned path at a primary scope whose
+// lowercased component-relative form satisfies pred.
+func (ix *repoIndex) firstPrimaryPath(pred func(lowerRel string) bool) (string, bool) {
+	for i, lp := range ix.lowerRel {
+		if ix.scope(ix.paths[i]) <= 1 && pred(lp) {
+			return ix.paths[i], true
+		}
+	}
+	return "", false
 }
 
 // --- mobile -----------------------------------------------------------------
@@ -442,7 +319,7 @@ func detectMobile(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 		ev = append(ev, Observation{Path: ix.pubspec.path, Detail: "declares a Flutter SDK dependency (mobile)"})
 	}
 	// Native shells side by side are a strong mobile signal on their own.
-	if ix.hasPrefix("android/") && ix.hasPrefix("ios/") {
+	if ix.hasRelPrefix("android/") && ix.hasRelPrefix("ios/") {
 		ev = append(ev, Observation{Detail: "android/ and ios/ app directories both present (native mobile shells)"})
 	}
 	if len(ev) > 0 {
@@ -481,9 +358,9 @@ func detectFrontend(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 	if framework == "" {
 		return "", nil, false
 	}
-	// The app entry must live in the primary component, so a nested example or
-	// demo does not turn a library into a frontend. A dev/start script alone is
-	// not an app entry. Without a primary app entry, defer to detectLibrary.
+	// The app entry must live in this component's primary scope, so a nested
+	// example or demo does not turn a library into a frontend. A dev/start
+	// script alone is not an app entry. Without an entry, defer to detectLibrary.
 	entry, ok := ix.frontendEntry()
 	if !ok {
 		return "", nil, false
@@ -495,7 +372,7 @@ func detectFrontend(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 	return apimodel.KindFrontend, ev, true
 }
 
-// frontendEntry finds a primary-component app entry: an index.html, a src/App
+// frontendEntry finds an app entry in the component: an index.html, a src/App
 // root component, a src/main bootstrap, or an app build config (vite/next/…).
 func (ix *repoIndex) frontendEntry() (Observation, bool) {
 	if p, ok := ix.firstPrimaryPath(func(lp string) bool { return path.Base(lp) == "index.html" }); ok {
@@ -513,8 +390,8 @@ func (ix *repoIndex) frontendEntry() (Observation, bool) {
 	return Observation{}, false
 }
 
-// hasPrimaryAppShell reports whether a primary-component app shell (index.html
-// or a src/App root component) exists — the stricter "this is an app" marker
+// hasPrimaryAppShell reports whether the component has an app shell (index.html
+// or a src/App root component) — the stricter "this is an app" marker
 // detectLibrary uses, which deliberately excludes a build config a library also
 // ships.
 func (ix *repoIndex) hasPrimaryAppShell() bool {
@@ -523,17 +400,6 @@ func (ix *repoIndex) hasPrimaryAppShell() bool {
 	}
 	_, ok := ix.firstPrimaryPath(func(lp string) bool { return strings.HasPrefix(lp, "src/app.") })
 	return ok
-}
-
-// firstPrimaryPath returns the first original-cased tree path at a primary
-// component scope whose lowercased form satisfies pred.
-func (ix *repoIndex) firstPrimaryPath(pred func(lower string) bool) (string, bool) {
-	for i, lp := range ix.lowerPath {
-		if scopeRank(ix.paths[i]) <= 1 && pred(lp) {
-			return ix.paths[i], true
-		}
-	}
-	return "", false
 }
 
 // isAppConfig reports whether a path is a web-app framework build config.
@@ -622,7 +488,7 @@ func detectCLI(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 				ev = append(ev, mainObs, Observation{Path: cmd.path, Detail: "the command's package was inspected in full and contains no server call (produces a command)"})
 			} else {
 				for _, w := range why {
-					ix.note("cannot conclude the command starts no server: " + w)
+					ix.block(apimodel.KindBackend, "cannot conclude the command starts no server: "+w)
 				}
 			}
 		}
@@ -652,7 +518,7 @@ func detectCLI(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 		case ix.cargo.complete():
 			ev = append(ev, Observation{Path: ix.cargo.path, Detail: "a binary target with no web-framework dependency (produces a command)"})
 		default:
-			ix.note("cannot conclude the binary target is a command: " + ix.st.describe(ix.cargo.path) + "; a web-framework dependency may lie in the unread remainder")
+			ix.block(apimodel.KindBackend, "cannot conclude the binary target is a command: "+ix.st.describe(ix.cargo.path)+"; a web-framework dependency may lie in the unread remainder")
 		}
 	}
 
@@ -675,10 +541,10 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 			ok, why := ix.goNoCommandPremise()
 			switch {
 			case !importable:
-				ix.note("no importable Go package clause was inspected" + ix.unreadGoSample() + "; the module's packages are unknown")
+				ix.block(apimodel.KindBackend, "no importable Go package clause was inspected"+ix.unreadGoSample()+"; the module's packages are unknown")
 			case !ok:
 				for _, w := range why {
-					ix.note("cannot conclude the Go module has no command: " + w)
+					ix.block(apimodel.KindBackend, "cannot conclude the Go module has no command: "+w)
 				}
 			default:
 				ev = append(ev,
@@ -698,11 +564,11 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 		if hasLibEntry && !hasBin && !ix.hasPrimaryAppShell() {
 			ok := true
 			if !ix.pkgRef.complete() {
-				ix.note("cannot conclude the package installs no command: " + ix.st.describe(ix.pkgRef.path))
+				ix.block(apimodel.KindCLI, "cannot conclude the package installs no command: "+ix.st.describe(ix.pkgRef.path))
 				ok = false
 			}
-			if fw, _ := ix.runtimeWebFramework(); fw != "" && !ix.st.covers(2) {
-				ix.note("cannot rule out an app entry for runtime dependency \"" + fw + "\": the listing does not cover index.html, src/App or src/main")
+			if fw, _ := ix.runtimeWebFramework(); fw != "" && !ix.covers(2) {
+				ix.block(apimodel.KindFrontend, "cannot rule out an app entry for runtime dependency \""+fw+"\": the listing does not cover index.html, src/App or src/main")
 				ok = false
 			}
 			if ok {
@@ -717,7 +583,7 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 		case no:
 			ev = append(ev, Observation{Path: ix.cargo.path, Detail: "a library target and no binary target (importable crate)"})
 		case unknown:
-			ix.note("a library target is present, but " + why)
+			ix.block(apimodel.KindBackend, "a library target is present, but "+why)
 		}
 	}
 	// Python: real packaging metadata — a [project] table or a setup.py — with no
@@ -730,7 +596,7 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 		if ref.complete() {
 			ev = append(ev, Observation{Path: src, Detail: "packaging metadata with no command entry points (importable package)"})
 		} else {
-			ix.note("cannot conclude the package declares no command entry: " + ix.st.describe(src) + "; entry points may lie in the unread remainder")
+			ix.block(apimodel.KindCLI, "cannot conclude the package declares no command entry: "+ix.st.describe(src)+"; entry points may lie in the unread remainder")
 		}
 	}
 
@@ -742,16 +608,10 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []Observation, bool) {
 
 // --- language / Go helpers ---------------------------------------------------
 
+// isGo reports whether the component is a Go module (or, for the repository
+// root, a Go repository without a module file).
 func (ix *repoIndex) isGo() bool {
-	if ix.language == "go" || ix.goMod.present() {
-		return true
-	}
-	for _, lp := range ix.lowerPath {
-		if path.Base(lp) == "go.mod" {
-			return true
-		}
-	}
-	return false
+	return ix.goMod.present() || (ix.isRoot && ix.language == "go")
 }
 
 func isGoSource(p string) bool {
@@ -759,13 +619,12 @@ func isGoSource(p string) bool {
 	return strings.HasSuffix(lp, ".go") && !strings.HasSuffix(lp, "_test.go")
 }
 
-// primaryGoFiles are the read Go sources that belong to the primary product —
-// root or an ordinary subdirectory (cmd/, internal/, …) — excluding example,
-// docs and tooling scopes.
+// primaryGoFiles are the read Go sources in the component's primary scope —
+// excluding example, docs and tooling directories.
 func (ix *repoIndex) primaryGoFiles() []goFile {
 	var out []goFile
 	for _, g := range ix.goFiles {
-		if scopeRank(g.path) <= 1 {
+		if ix.scope(g.path) <= 1 {
 			out = append(out, g)
 		}
 	}
@@ -828,9 +687,6 @@ func (ix *repoIndex) goNoServerPremise(cmd goFile) (bool, []string) {
 	for _, p := range ix.paths {
 		check(p)
 	}
-	for _, g := range ix.goFiles {
-		check(g.path)
-	}
 	if !ix.goMod.complete() || !ix.goModOK {
 		why = append(why, "go.mod was not read in full and parsed; a server framework requirement cannot be ruled out")
 	}
@@ -857,7 +713,7 @@ func (ix *repoIndex) goImportablePackage() (goFile, bool) {
 		if g.test || g.pkg == "" || g.pkg == "main" || strings.HasSuffix(g.pkg, "_test") {
 			continue
 		}
-		dir := "/" + path.Dir(g.path) + "/"
+		dir := "/" + path.Dir(ix.comp.rel(g.path)) + "/"
 		if strings.Contains(dir, "/internal/") || strings.HasPrefix(dir, "/cmd/") {
 			continue
 		}
@@ -875,7 +731,7 @@ func (ix *repoIndex) goImportablePackage() (goFile, bool) {
 //     listing to show no root Go files at all);
 //   - the listing to cover cmd/<name>/ and every Go file listed under cmd/ to
 //     have been read;
-//   - every listed main.go to have been read (enforced by the unread-entry veto).
+//   - every listed main.go to have been read (enforced by the unread-entry block).
 //
 // A command placed in some other directory, under a file name other than
 // main.go, is outside this bounded scope; that blind spot is documented here
@@ -884,7 +740,7 @@ func (ix *repoIndex) goNoCommandPremise() (bool, []string) {
 	var why []string
 	rootListed, rootKnown, rootExample := false, false, ""
 	for _, p := range ix.goCandidatePaths() {
-		if path.Dir(p) != "." {
+		if dirOf(p) != ix.comp.root {
 			continue
 		}
 		rootListed = true
@@ -897,39 +753,29 @@ func (ix *repoIndex) goNoCommandPremise() (bool, []string) {
 	switch {
 	case rootListed && !rootKnown:
 		why = append(why, "the module root's package clause was not inspected ("+ix.st.describe(rootExample)+"); the root could be a command")
-	case !rootListed && !ix.st.covers(1):
+	case !rootListed && !ix.covers(1):
 		why = append(why, "the listing may omit Go files at the module root; the root could be a command")
 	}
-	if !ix.st.covers(3) {
+	if !ix.covers(3) {
 		why = append(why, "the listing does not cover cmd/<name>/; a command there cannot be ruled out")
 	}
 	for _, p := range ix.goCandidatePaths() {
-		if strings.HasPrefix(strings.ToLower(p), "cmd/") && !ix.isRead(p) {
+		if strings.HasPrefix(strings.ToLower(ix.comp.rel(p)), "cmd/") && !ix.isRead(p) {
 			why = append(why, ix.st.describe(p)+"; it may be a command")
 		}
 	}
 	return len(why) == 0, dedupe(why)
 }
 
-// goCandidatePaths lists every primary-scope, non-test Go source that is listed
-// or read, path-sorted.
+// goCandidatePaths lists every primary-scope, non-test Go source the component
+// owns, path-sorted.
 func (ix *repoIndex) goCandidatePaths() []string {
-	set := map[string]bool{}
+	var out []string
 	for _, p := range ix.paths {
-		if isGoSource(p) && scopeRank(p) <= 1 {
-			set[p] = true
+		if isGoSource(p) && ix.scope(p) <= 1 {
+			out = append(out, p)
 		}
 	}
-	for _, g := range ix.goFiles {
-		if isGoSource(g.path) && scopeRank(g.path) <= 1 {
-			set[g.path] = true
-		}
-	}
-	out := make([]string, 0, len(set))
-	for p := range set {
-		out = append(out, p)
-	}
-	sort.Strings(out)
 	return out
 }
 
@@ -986,9 +832,9 @@ const (
 	no
 )
 
-// rustBinTarget reports whether the primary crate has a binary target: yes from
-// an explicit [[bin]] table or Cargo's implicit src/main.rs / src/bin/*.rs; no
-// only when the full Cargo.toml was read and the listing covers those implicit
+// rustBinTarget reports whether the crate has a binary target: yes from an
+// explicit [[bin]] table or Cargo's implicit src/main.rs / src/bin/*.rs; no only
+// when the full Cargo.toml was read and the listing covers those implicit
 // locations; unknown otherwise, with the reason.
 func (ix *repoIndex) rustBinTarget() (tristate, string) {
 	if !ix.cargo.readable() || !ix.cargoOK {
@@ -1008,14 +854,14 @@ func (ix *repoIndex) rustBinTarget() (tristate, string) {
 	if !ix.cargo.complete() {
 		return unknown, ix.st.describe(ix.cargo.path) + "; a [[bin]] table may lie in the unread remainder"
 	}
-	if auto && !ix.st.covers(3) {
+	if auto && !ix.covers(3) {
 		return unknown, "the listing does not cover src/main.rs and src/bin/, so a binary target cannot be ruled out"
 	}
 	return no, ""
 }
 
-// rustHasLibTarget reports whether the primary crate has a library target, from
-// an explicit [lib] table or — when autolib is on — Cargo's implicit src/lib.rs.
+// rustHasLibTarget reports whether the crate has a library target, from an
+// explicit [lib] table or — when autolib is on — Cargo's implicit src/lib.rs.
 func (ix *repoIndex) rustHasLibTarget() bool {
 	if !ix.cargoOK {
 		return false
@@ -1040,9 +886,9 @@ func (ix *repoIndex) pyText() (text, srcPath string) {
 	return ix.setupPy.content, ix.setupPy.path
 }
 
-// pyPackageSource reports the file that marks the repo as a real Python package
-// — a pyproject.toml with a [project] table, or a setup.py — and whether one was
-// found. A pyproject with only [tool.*] tables does not count.
+// pyPackageSource reports the file that marks the component as a real Python
+// package — a pyproject.toml with a [project] table, or a setup.py — and whether
+// one was found. A pyproject with only [tool.*] tables does not count.
 func (ix *repoIndex) pyPackageSource() (string, bool) {
 	if ix.pyHasProject {
 		return ix.pyproj.path, true
@@ -1114,6 +960,7 @@ func dedupe(in []string) []string {
 // --- package.json ------------------------------------------------------------
 
 type packageJSON struct {
+	Name             string            `json:"name"`
 	Private          bool              `json:"private"`
 	Main             string            `json:"main"`
 	Module           string            `json:"module"`

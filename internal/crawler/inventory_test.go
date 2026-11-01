@@ -11,39 +11,32 @@ import (
 // A nested example's manifest can never supply the primary signal or overwrite
 // the root's provenance, and the choice must not depend on input ordering.
 
-// pickManifest prefers the root-scoped manifest over nested, example and docs
-// scopes, regardless of the order it sees the files in; when the root manifest
-// could not be read it stays the chosen one, with its state, rather than being
-// silently replaced by a nested manifest.
-func TestPickManifestPrefersRootScope(t *testing.T) {
-	x := indexInspection(Inspection{
-		Paths: []string{"docs/package.json", "examples/mobile/package.json", "package.json", "packages/pkg-a/package.json"},
-		Files: []SourceFile{
-			{Path: "docs/package.json", Content: `{"name":"docs"}`},
-			{Path: "examples/mobile/package.json", Content: `{"name":"ex"}`},
-			{Path: "package.json", Content: `{"name":"root"}`},
-			{Path: "packages/pkg-a/package.json", Content: `{"name":"a"}`},
-		},
-	})
-	if m := pickManifest(x, "package.json"); m.path != "package.json" || m.state != StateRead {
-		t.Errorf("pickManifest chose %+v, want the root package.json, read", m)
+// The root manifest speaks for the repository even when nested components
+// carry their own manifests; when it could not be read, the nested example is
+// not promoted in its place (see TestAbsencePremisesNeedInspectedScope).
+func TestRootManifestSpeaksForTheRepository(t *testing.T) {
+	got := Classify(InspectionFromSources("TypeScript",
+		[]string{"package.json", "docs/package.json", "examples/mobile/package.json", "packages/pkg-a/package.json"},
+		map[string]string{
+			"package.json":                 `{"name":"root","main":"dist/index.js"}`,
+			"docs/package.json":            `{"name":"docs","dependencies":{"react":"18"}}`,
+			"examples/mobile/package.json": `{"dependencies":{"expo":"51"}}`,
+			"packages/pkg-a/package.json":  `{"name":"a","bin":"cli.js"}`,
+		}))
+	if got.Kind != apimodel.KindLibrary || got.Status != VerdictResolved {
+		t.Fatalf("root library: got %q/%q: %v", got.Kind, got.Status, got.Evidence())
 	}
-
-	onlyNested := indexInspection(Inspection{
-		Paths: []string{"apps/mobile/package.json"},
-		Files: []SourceFile{{Path: "apps/mobile/package.json", Content: `{"name":"m"}`}},
-	})
-	if m := pickManifest(onlyNested, "package.json"); m.path != "apps/mobile/package.json" {
-		t.Errorf("pickManifest chose %q, want the only (nested) package.json", m.path)
+	for _, o := range got.Observations {
+		if o.Component != "" {
+			t.Errorf("a primary observation came from component %q", o.Component)
+		}
 	}
-
-	failedRoot := indexInspection(Inspection{
-		Paths:       []string{"package.json", "examples/mobile/package.json"},
-		Files:       []SourceFile{{Path: "examples/mobile/package.json", Content: `{"dependencies":{"expo":"51"}}`}},
-		Unavailable: []Unavailable{{Path: "package.json", Reason: "fetch error"}},
-	})
-	if m := pickManifest(failedRoot, "package.json"); m.path != "package.json" || m.state != StateUnavailable || m.content != "" {
-		t.Errorf("a failed root manifest must stay chosen with its state; got %+v", m)
+	owners := map[string]bool{}
+	for _, o := range got.Secondary {
+		owners[o.Component] = true
+	}
+	if !owners["examples/mobile"] || !owners["packages/pkg-a"] {
+		t.Errorf("nested components must stay attributable as secondary evidence: %v", got.Secondary)
 	}
 }
 

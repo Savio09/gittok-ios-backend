@@ -244,6 +244,25 @@ func renderPack(
 		}
 		b.WriteString("\n")
 	}
+	if len(class.Secondary) > 0 {
+		label := "Secondary components:"
+		if class.Status == crawler.VerdictInconclusive {
+			label = "Candidates:"
+		}
+		b.WriteString(label + "\n")
+		for _, o := range class.Secondary {
+			owner := "repository root"
+			if o.Component != "" {
+				owner = "`" + o.Component + "`"
+			}
+			if o.Path != "" {
+				fmt.Fprintf(&b, "- %s (%s): `%s` — %s\n", owner, o.Role, o.Path, o.Detail)
+			} else {
+				fmt.Fprintf(&b, "- %s (%s): %s\n", owner, o.Role, o.Detail)
+			}
+		}
+		b.WriteString("\n")
+	}
 	if len(class.Limitations) > 0 {
 		b.WriteString("Limitations:\n")
 		for _, l := range class.Limitations {
