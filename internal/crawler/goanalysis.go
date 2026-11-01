@@ -4,6 +4,7 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"strconv"
 	"strings"
 
 	"golang.org/x/mod/modfile"
@@ -24,12 +25,63 @@ func parseGo(src string) (file *ast.File, parsed bool) {
 	return f, err == nil
 }
 
-// goDeclaresPackageMain reports whether the source's package clause is `main`.
-// It reads the parsed package name, so `package main` inside a comment or string
-// never counts.
-func goDeclaresPackageMain(src string) bool {
-	f, _ := parseGo(src)
-	return f != nil && f.Name != nil && f.Name.Name == "main"
+// goFile is what the classifier knows about one read Go source: its package
+// clause, whether it was read in full and parsed, and what it imports. The
+// package clause sits at the top of the file, so it is usually known even for a
+// clipped or broken file; a *positive* fact read from a partial file is real,
+// but an absence inside it is only trustworthy when complete and parsed.
+type goFile struct {
+	path     string
+	pkg      string // package clause; "" when even the clause is unreadable
+	test     bool   // *_test.go
+	complete bool   // content read in full
+	parsed   bool   // the whole file parsed
+	parseErr string // first parse error, when !parsed
+	imports  []string
+	content  string
+}
+
+// analyzeGoFile parses one read source into a goFile.
+func analyzeGoFile(f SourceFile) goFile {
+	g := goFile{
+		path:     f.Path,
+		test:     strings.HasSuffix(strings.ToLower(f.Path), "_test.go"),
+		complete: !f.Truncated,
+		content:  f.Content,
+	}
+	fset := token.NewFileSet()
+	file, err := parser.ParseFile(fset, "", f.Content, parser.SkipObjectResolution)
+	if err == nil {
+		g.parsed = true
+	} else {
+		g.parseErr = strings.SplitN(err.Error(), "\n", 2)[0]
+	}
+	if file != nil {
+		if file.Name != nil {
+			g.pkg = file.Name.Name
+		}
+		for _, im := range file.Imports {
+			if ip, uerr := strconv.Unquote(im.Path.Value); uerr == nil {
+				g.imports = append(g.imports, ip)
+			}
+		}
+	}
+	if g.pkg == "" { // a broken body can still have a readable package clause
+		if pf, _ := parser.ParseFile(fset, "", f.Content, parser.PackageClauseOnly); pf != nil && pf.Name != nil {
+			g.pkg = pf.Name.Name
+		}
+	}
+	return g
+}
+
+// goModulePath returns the module path a go.mod declares, or "" if it will not
+// parse or declares none.
+func goModulePath(goMod string) string {
+	f, err := modfile.Parse("go.mod", []byte(goMod), nil)
+	if err != nil || f.Module == nil {
+		return ""
+	}
+	return f.Module.Mod.Path
 }
 
 // goStartsHTTPServer reports whether the source contains a real call that starts

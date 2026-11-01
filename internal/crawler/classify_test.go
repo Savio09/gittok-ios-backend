@@ -43,6 +43,9 @@ func TestClassify(t *testing.T) {
 			paths:    []string{"go.mod", "gin.go", "context.go", "routergroup.go", "errors.go"},
 			manifests: map[string]string{
 				"go.mod": "module github.com/gin-gonic/gin\n\ngo 1.21\n\nrequire github.com/goccy/go-json v0.10.2\n",
+				// The library verdict rests on an inspected package clause, not on
+				// the mere listing of gin.go.
+				"gin.go": "package gin\n",
 			},
 			wantKind:     apimodel.KindLibrary,
 			wantEvidence: "no package main",

@@ -74,7 +74,11 @@ func TestLibraryByAbsenceRequiresCompleteTree(t *testing.T) {
 	base := Inspection{
 		Language: "Go",
 		Paths:    []string{"go.mod", "pkg/calc/calc.go"},
-		Files:    []SourceFile{{Path: "go.mod", Content: "module example.com/calc\n", Size: 24}},
+		Files: []SourceFile{
+			{Path: "go.mod", Content: "module example.com/calc\n", Size: 24},
+			// An inspected package clause: the positive evidence a library needs.
+			{Path: "pkg/calc/calc.go", Content: "package calc\n", Size: 13},
+		},
 	}
 
 	complete := base // Scope zero value is complete

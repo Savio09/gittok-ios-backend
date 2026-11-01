@@ -11,25 +11,39 @@ import (
 // A nested example's manifest can never supply the primary signal or overwrite
 // the root's provenance, and the choice must not depend on input ordering.
 
-// pickPrimary prefers the root-scoped manifest over nested, example and docs
-// scopes, regardless of the order it sees the files in.
-func TestPickPrimaryPrefersRootScope(t *testing.T) {
-	files := []SourceFile{
-		{Path: "docs/package.json", Content: `{"name":"docs"}`},
-		{Path: "examples/mobile/package.json", Content: `{"name":"ex"}`},
-		{Path: "package.json", Content: `{"name":"root"}`},
-		{Path: "packages/pkg-a/package.json", Content: `{"name":"a"}`},
-	}
-	_, p, ok := pickPrimary(files, "package.json")
-	if !ok || p != "package.json" {
-		t.Errorf("pickPrimary chose %q (ok=%v), want the root package.json", p, ok)
+// pickManifest prefers the root-scoped manifest over nested, example and docs
+// scopes, regardless of the order it sees the files in; when the root manifest
+// could not be read it stays the chosen one, with its state, rather than being
+// silently replaced by a nested manifest.
+func TestPickManifestPrefersRootScope(t *testing.T) {
+	x := indexInspection(Inspection{
+		Paths: []string{"docs/package.json", "examples/mobile/package.json", "package.json", "packages/pkg-a/package.json"},
+		Files: []SourceFile{
+			{Path: "docs/package.json", Content: `{"name":"docs"}`},
+			{Path: "examples/mobile/package.json", Content: `{"name":"ex"}`},
+			{Path: "package.json", Content: `{"name":"root"}`},
+			{Path: "packages/pkg-a/package.json", Content: `{"name":"a"}`},
+		},
+	})
+	if m := pickManifest(x, "package.json"); m.path != "package.json" || m.state != StateRead {
+		t.Errorf("pickManifest chose %+v, want the root package.json, read", m)
 	}
 
-	// When the only manifest is nested, it is the primary by default.
-	onlyNested := []SourceFile{{Path: "apps/mobile/package.json", Content: `{"name":"m"}`}}
-	_, p, ok = pickPrimary(onlyNested, "package.json")
-	if !ok || p != "apps/mobile/package.json" {
-		t.Errorf("pickPrimary chose %q (ok=%v), want the only (nested) package.json", p, ok)
+	onlyNested := indexInspection(Inspection{
+		Paths: []string{"apps/mobile/package.json"},
+		Files: []SourceFile{{Path: "apps/mobile/package.json", Content: `{"name":"m"}`}},
+	})
+	if m := pickManifest(onlyNested, "package.json"); m.path != "apps/mobile/package.json" {
+		t.Errorf("pickManifest chose %q, want the only (nested) package.json", m.path)
+	}
+
+	failedRoot := indexInspection(Inspection{
+		Paths:       []string{"package.json", "examples/mobile/package.json"},
+		Files:       []SourceFile{{Path: "examples/mobile/package.json", Content: `{"dependencies":{"expo":"51"}}`}},
+		Unavailable: []Unavailable{{Path: "package.json", Reason: "fetch error"}},
+	})
+	if m := pickManifest(failedRoot, "package.json"); m.path != "package.json" || m.state != StateUnavailable || m.content != "" {
+		t.Errorf("a failed root manifest must stay chosen with its state; got %+v", m)
 	}
 }
 
@@ -77,7 +91,9 @@ func TestNestedManifestDoesNotOverwriteRootProvenance(t *testing.T) {
 		Paths:    []string{"go.mod", "calc.go", "packages/helper/go.mod", "packages/helper/helper.go"},
 		Files: []SourceFile{
 			{Path: "go.mod", Content: "module example.com/calc\n"},
+			{Path: "calc.go", Content: "package calc\n"},
 			{Path: "packages/helper/go.mod", Content: "module example.com/calc/helper\n"},
+			{Path: "packages/helper/helper.go", Content: "package helper\n"},
 		},
 	}
 	got := Classify(insp)
