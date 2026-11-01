@@ -151,6 +151,7 @@ func candidateScope(obs []Observation) int {
 // was read (in full or in part).
 type manifestRef struct {
 	path    string
+	kind    manifestKind
 	state   ReadState
 	reason  string
 	content string
@@ -1118,6 +1119,7 @@ type packageJSON struct {
 	Module           string            `json:"module"`
 	Exports          json.RawMessage   `json:"exports"`
 	Bin              json.RawMessage   `json:"bin"`
+	Workspaces       json.RawMessage   `json:"workspaces"`
 	Scripts          map[string]string `json:"scripts"`
 	Dependencies     map[string]string `json:"dependencies"`
 	DevDependencies  map[string]string `json:"devDependencies"`

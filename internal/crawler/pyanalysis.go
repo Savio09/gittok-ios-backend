@@ -92,23 +92,32 @@ func pyProjectDependencyNames(p pyProject) []string {
 	return names
 }
 
-// pyRequirementNames returns the normalised distribution names declared in a
-// requirements.txt. Comments, blank lines, option lines (-r, -e, --hash) and
-// inline comments are ignored; environment markers and extras are stripped by
-// pyDistName. Remote includes are never fetched.
-func pyRequirementNames(content string) []string {
-	var names []string
-	for _, line := range strings.Split(content, "\n") {
+// pyRequirementLines returns the requirement specifiers in a requirements.txt.
+// Comments, blank lines, option lines (-r, -e, --hash) and inline comments are
+// ignored; remote includes are never fetched.
+func pyRequirementLines(content string) []string {
+	var lines []string
+	for line := range strings.SplitSeq(content, "\n") {
 		line = strings.TrimSpace(line)
 		if line == "" || strings.HasPrefix(line, "#") || strings.HasPrefix(line, "-") {
 			continue
 		}
 		if i := strings.Index(line, " #"); i >= 0 {
-			line = line[:i]
+			line = strings.TrimSpace(line[:i])
 		}
-		if n := pyDistName(line); n != "" {
-			names = append(names, n)
+		if pyDistName(line) != "" {
+			lines = append(lines, line)
 		}
+	}
+	return lines
+}
+
+// pyRequirementNames returns the normalised distribution names declared in a
+// requirements.txt; environment markers and extras are stripped by pyDistName.
+func pyRequirementNames(content string) []string {
+	var names []string
+	for _, line := range pyRequirementLines(content) {
+		names = append(names, pyDistName(line))
 	}
 	return names
 }
