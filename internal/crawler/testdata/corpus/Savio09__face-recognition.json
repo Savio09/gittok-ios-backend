@@ -1,0 +1,56 @@
+{
+ "repo": "Savio09/face-recognition",
+ "source_url": "https://github.com/Savio09/face-recognition",
+ "captured_at": "2026-11-01",
+ "requested_ref": "main",
+ "resolved_sha": "90750d921bed3768bd59328109e90f66b593eb86",
+ "language": "Python",
+ "archived": false,
+ "tree_limits": {
+  "MaxEntries": 5000,
+  "MaxDepth": 12
+ },
+ "content_limits": {
+  "MaxFileBytes": 65536,
+  "MaxTotalBytes": 524288,
+  "MaxFiles": 40
+ },
+ "tree": {
+  "truncated": false,
+  "depth_limited": false,
+  "max_depth": 12,
+  "entries": [
+   {
+    "p": "README.md",
+    "t": "blob",
+    "s": 330
+   },
+   {
+    "p": "face_detection.py",
+    "t": "blob",
+    "s": 1005
+   },
+   {
+    "p": "haarcascade_frontalface_default.xml",
+    "t": "blob",
+    "s": 930127
+   }
+  ]
+ },
+ "selected": [
+  "README.md",
+  "face_detection.py"
+ ],
+ "extras": {},
+ "files": {
+  "README.md": {
+   "content": "This is the Face Detection model that was built easily in Python. \n\nTechnologies:\n\n- Python\n- Open CV\n\n\nWith this implementation, I learned about the Haarcascade algorithm which was talked about in one of the videos which I watched to be able to go about with the implementation of this project. Here is what that looks like here.",
+   "size": 330
+  },
+  "face_detection.py": {
+   "content": "import cv2\n\nface_cascade = cv2.CascadeClassifier(\"haarcascade_frontalface_default.xml\")\n\nprint(\"Successfully loaded cascade classifier\")\n\nscreen_width = 1280\nscreen_height = 720\n\n# open the default camera\nstream = cv2.VideoCapture(0)\n\nwhile True:\n    # capture frame-by-frame\n    (grabbed, frame) = stream.read()\n    rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)\n\n    # now try to detect faces with the camera\n\n    faces = face_cascade.detectMultiScale(\n        rgb,\n        scaleFactor=1.3,\n        minNeighbors=5,\n    )\n\n    for x, y, w, h in faces:\n        # Draw a rectangle around the faces\n        color = (0, 255, 255)\n        stroke = 5\n        cv2.rectangle(frame, (x, y), (x + w, y + h), color, stroke)\n\n    # show the frame\n    cv2.imshow(\"Frame\", frame)\n    key = cv2.waitKey(1) \u0026 0xFF\n    if key == ord(\"q\"):\n        break\n# if the `q` key was pressed, break from the loop\n\n# cleanup the camera and close any open windows\nstream.release()\ncv2.waitKey(1)\ncv2.destroyAllWindows()\ncv2.waitKey(1)\n",
+   "size": 1005
+  }
+ },
+ "skipped": {}
+}
