@@ -4,8 +4,11 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"go/types"
+	"path"
 	"strconv"
 	"strings"
+	"sync"
 
 	"golang.org/x/mod/modfile"
 )
@@ -15,15 +18,6 @@ import (
 // rather than from a substring. The classification review (Slice 3a) showed the
 // old string matching turning a `// ListenAndServe` comment into a server and a
 // `// no longer uses …/gin` comment into a dependency; parsing closes both.
-
-// parseGo parses Go source into an AST. It returns the file (which may be a
-// partial tree when the source was clipped) and whether parsing fully
-// succeeded. A positive signal found in a partial tree is real; an *absence* is
-// only trustworthy when parsed is true.
-func parseGo(src string) (file *ast.File, parsed bool) {
-	f, err := parser.ParseFile(token.NewFileSet(), "", src, parser.SkipObjectResolution)
-	return f, err == nil
-}
 
 // goFile is what the classifier knows about one read Go source: its package
 // clause, whether it was read in full and parsed, and what it imports. The
@@ -39,6 +33,9 @@ type goFile struct {
 	parseErr string // first parse error, when !parsed
 	imports  []string
 	content  string
+
+	serverCalls []goServerCall // HTTP server-starting calls whose identity resolved to net/http
+	uncertain   []string       // server-like calls whose identity could not be established
 }
 
 // analyzeGoFile parses one read source into a goFile.
@@ -50,7 +47,7 @@ func analyzeGoFile(f SourceFile) goFile {
 		content:  f.Content,
 	}
 	fset := token.NewFileSet()
-	file, err := parser.ParseFile(fset, "", f.Content, parser.SkipObjectResolution)
+	file, err := parser.ParseFile(fset, f.Path, f.Content, parser.SkipObjectResolution)
 	if err == nil {
 		g.parsed = true
 	} else {
@@ -65,6 +62,7 @@ func analyzeGoFile(f SourceFile) goFile {
 				g.imports = append(g.imports, ip)
 			}
 		}
+		g.serverCalls, g.uncertain = scanServerCalls(fset, file, f.Content)
 	}
 	if g.pkg == "" { // a broken body can still have a readable package clause
 		if pf, _ := parser.ParseFile(fset, "", f.Content, parser.PackageClauseOnly); pf != nil && pf.Name != nil {
@@ -84,36 +82,129 @@ func goModulePath(goMod string) string {
 	return f.Module.Mod.Path
 }
 
-// goStartsHTTPServer reports whether the source contains a real call that starts
-// an HTTP server — http.ListenAndServe / ListenAndServeTLS, or a composite
-// literal http.Server{…} — and whether the file parsed cleanly. Only AST call
-// and literal nodes count, so a mention in a comment or string does not. A false
-// result is trustworthy only when parsed is true: a clipped, unparseable file
-// cannot prove the absence of a server call.
-func goStartsHTTPServer(src string) (starts, parsed bool) {
-	f, ok := parseGo(src)
-	if f == nil {
-		return false, false
-	}
-	ast.Inspect(f, func(n ast.Node) bool {
-		switch node := n.(type) {
-		case *ast.CallExpr:
-			if sel, isSel := node.Fun.(*ast.SelectorExpr); isSel {
-				switch sel.Sel.Name {
-				case "ListenAndServe", "ListenAndServeTLS":
-					starts = true
-				}
-			}
-		case *ast.CompositeLit:
-			if sel, isSel := node.Type.(*ast.SelectorExpr); isSel && sel.Sel.Name == "Server" {
-				if pkg, isID := sel.X.(*ast.Ident); isID && pkg.Name == "http" {
-					starts = true
-				}
-			}
+// goServerCall is one call expression, found in source, that the type checker
+// resolved to a net/http server-starting function or *http.Server method. It is
+// static syntax: it shows the program contains the call, not that it ran.
+type goServerCall struct {
+	start, end int    // byte offsets of the whole call expression in the original file
+	line       int    // 1-based line of the call
+	callee     string // the callee as written, e.g. "http.ListenAndServe" or "srv.ListenAndServe"
+	method     bool   // a method on *http.Server rather than a package function
+}
+
+// serverCallNames are the net/http entry points that start serving HTTP, as
+// package functions and as methods on *http.Server.
+var serverCallNames = []string{"ListenAndServe", "ListenAndServeTLS", "Serve", "ServeTLS"}
+
+func isServerCallName(name string) bool {
+	for _, n := range serverCallNames {
+		if n == name {
+			return true
 		}
-		return !starts // stop walking once a server signal is found
+	}
+	return false
+}
+
+// netHTTPStub is a minimal stand-in for the part of net/http that starts a
+// server: the four package functions above and a Server type carrying the same
+// four methods. With it the type checker can resolve call identity — imports,
+// aliases, dot imports, shadowing, receivers declared as *http.Server — without
+// loading the standard library. Parameters are variadic `any`, so argument
+// mismatches never hide a call.
+var netHTTPStub = sync.OnceValue(func() *types.Package {
+	pkg := types.NewPackage("net/http", "http")
+	errT := types.Universe.Lookup("error").Type()
+	anyT := types.Universe.Lookup("any").Type()
+	sig := func(recv *types.Var) *types.Signature {
+		params := types.NewTuple(types.NewParam(token.NoPos, pkg, "args", types.NewSlice(anyT)))
+		results := types.NewTuple(types.NewParam(token.NoPos, pkg, "", errT))
+		return types.NewSignatureType(recv, nil, nil, params, results, true)
+	}
+	server := types.NewNamed(types.NewTypeName(token.NoPos, pkg, "Server", nil), types.NewStruct(nil, nil), nil)
+	pkg.Scope().Insert(server.Obj())
+	recv := types.NewVar(token.NoPos, pkg, "srv", types.NewPointer(server))
+	for _, name := range serverCallNames {
+		pkg.Scope().Insert(types.NewFunc(token.NoPos, pkg, name, sig(nil)))
+		server.AddMethod(types.NewFunc(token.NoPos, pkg, name, sig(recv)))
+	}
+	pkg.MarkComplete()
+	return pkg
+})
+
+// stubImporter serves netHTTPStub for net/http and an empty package for every
+// other import path, so a file type-checks in isolation and offline.
+type stubImporter map[string]*types.Package
+
+func (m stubImporter) Import(importPath string) (*types.Package, error) {
+	if importPath == "net/http" {
+		return netHTTPStub(), nil
+	}
+	if p, ok := m[importPath]; ok {
+		return p, nil
+	}
+	name := path.Base(importPath)
+	if i := strings.LastIndex(name, ".v"); i > 0 { // gopkg.in/yaml.v3 -> yaml
+		name = name[:i]
+	}
+	name = strings.NewReplacer("-", "_", ".", "_").Replace(name)
+	p := types.NewPackage(importPath, name)
+	p.MarkComplete()
+	m[importPath] = p
+	return p, nil
+}
+
+// scanServerCalls type-checks one file against the stubs and returns the calls
+// that resolve to net/http server entry points, plus the server-like calls —
+// a callee named like one — whose identity could not be established. A method
+// on a local type (logger{}.ListenAndServe()) resolves to that type and is
+// neither; an http.Server composite literal is a value, not a call, and is
+// neither. Type errors from the stubs or from other files are expected and
+// ignored: only resolved identities count.
+func scanServerCalls(fset *token.FileSet, file *ast.File, src string) (calls []goServerCall, uncertain []string) {
+	info := &types.Info{
+		Uses:       map[*ast.Ident]types.Object{},
+		Selections: map[*ast.SelectorExpr]*types.Selection{},
+	}
+	conf := types.Config{Importer: stubImporter{}, Error: func(error) {}, FakeImportC: true}
+	_, _ = conf.Check(file.Name.Name, fset, []*ast.File{file}, info)
+
+	ast.Inspect(file, func(n ast.Node) bool {
+		call, ok := n.(*ast.CallExpr)
+		if !ok {
+			return true
+		}
+		fun := ast.Unparen(call.Fun)
+		var name string
+		var obj types.Object
+		method := false
+		switch f := fun.(type) {
+		case *ast.SelectorExpr:
+			name = f.Sel.Name
+			if sel, ok := info.Selections[f]; ok {
+				obj, method = sel.Obj(), true
+			} else {
+				obj = info.Uses[f.Sel]
+			}
+		case *ast.Ident:
+			name, obj = f.Name, info.Uses[f]
+		default:
+			return true
+		}
+		if !isServerCallName(name) {
+			return true
+		}
+		start, end := fset.Position(call.Pos()), fset.Position(call.End())
+		callee := src[fset.Position(fun.Pos()).Offset:fset.Position(fun.End()).Offset]
+		fn, isFunc := obj.(*types.Func)
+		switch {
+		case isFunc && fn.Pkg() != nil && fn.Pkg().Path() == "net/http":
+			calls = append(calls, goServerCall{start: start.Offset, end: end.Offset, line: start.Line, callee: callee, method: method})
+		case obj == nil:
+			uncertain = append(uncertain, "line "+strconv.Itoa(start.Line)+": "+callee+"(…) — its package or receiver type was not established, so it is neither counted as an HTTP server call nor ruled out")
+		}
+		return true
 	})
-	return starts, ok
+	return calls, uncertain
 }
 
 // goModRequiredPaths returns the module paths required by a go.mod, parsed with

@@ -10,20 +10,57 @@ import (
 // server call or a dependency mentioned only in a comment must not count, while
 // the real construct still does.
 
-func TestGoStartsHTTPServerIgnoresComments(t *testing.T) {
-	commented := "package main\n// ListenAndServe would be used for a future web mode.\nfunc main() {}\n"
-	if starts, parsed := goStartsHTTPServer(commented); starts {
-		t.Errorf("a commented ListenAndServe was read as a server call (parsed=%v)", parsed)
-	}
+// Task 4 (R3): a server call counts only when the type checker resolves it to
+// net/http — through the real import, an alias or a dot import, or a receiver
+// whose type is *http.Server. A same-named method on another type is not one; an
+// http.Server literal is a value, not a call; and a receiver or package whose
+// identity is not established is recorded as uncertain rather than guessed.
+func TestServerCallIdentity(t *testing.T) {
+	cases := []struct {
+		name      string
+		src       string
+		calls     int // resolved net/http server calls
+		uncertain int // server-like calls whose identity was not established
+	}{
+		{"direct package call", "package main\nimport \"net/http\"\nfunc main() { http.ListenAndServe(\":80\", nil) }\n", 1, 0},
+		{"aliased import", "package main\nimport h \"net/http\"\nfunc main() { h.ListenAndServeTLS(\":443\", \"c\", \"k\", nil) }\n", 1, 0},
+		{"dot import", "package main\nimport . \"net/http\"\nfunc main() { ListenAndServe(\":80\", nil) }\n", 1, 0},
+		{"pointer literal receiver", "package main\nimport \"net/http\"\nfunc main() { srv := &http.Server{Addr: \":80\"}; srv.ListenAndServe() }\n", 1, 0},
+		{"value receiver", "package main\nimport \"net/http\"\nfunc main() { var srv http.Server; srv.ListenAndServe() }\n", 1, 0},
+		{"parameter typed *http.Server", "package main\nimport \"net/http\"\nfunc run(s *http.Server) { s.Serve(nil) }\nfunc main() {}\n", 1, 0},
+		{"inline literal receiver", "package main\nimport \"net/http\"\nfunc main() { (&http.Server{}).ListenAndServe() }\n", 1, 0},
 
-	real := "package main\nimport \"net/http\"\nfunc main() { http.ListenAndServe(\":8000\", nil) }\n"
-	if starts, _ := goStartsHTTPServer(real); !starts {
-		t.Errorf("a real http.ListenAndServe call was not detected")
-	}
+		{"method on a local type", "package main\ntype logger struct{}\nfunc (logger) ListenAndServe() {}\nfunc main() { logger{}.ListenAndServe() }\n", 0, 0},
+		{"unused http.Server literal", "package main\nimport \"net/http\"\nfunc main() { _ = http.Server{} }\n", 0, 0},
+		{"import without a call", "package main\nimport \"net/http\"\nvar _ = http.StatusOK\nfunc main() {}\n", 0, 0},
+		{"comment mention", "package main\n// ListenAndServe would be used for a future web mode.\nfunc main() {}\n", 0, 0},
+		{"string mention", "package main\nfunc main() { _ = \"ListenAndServe\" }\n", 0, 0},
 
-	stringLit := "package main\nfunc main() { _ = \"ListenAndServe\" }\n"
-	if starts, _ := goStartsHTTPServer(stringLit); starts {
-		t.Errorf("a string literal \"ListenAndServe\" was read as a server call")
+		{"shadowed package name", "package main\nimport \"net/http\"\nfunc main() { http := struct{ ListenAndServe func() }{}; http.ListenAndServe(); _ = http }\nvar _ = http.StatusOK\n", 0, 0},
+		{"receiver from another file", "package main\nfunc main() { srv := newServer(); srv.ListenAndServe() }\n", 0, 1},
+		{"another package's ListenAndServe", "package main\nimport \"github.com/valyala/fasthttp\"\nfunc main() { fasthttp.ListenAndServe(\":80\", nil) }\n", 0, 1},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			g := analyzeGoFile(SourceFile{Path: "main.go", Content: c.src})
+			if len(g.serverCalls) != c.calls || len(g.uncertain) != c.uncertain {
+				t.Errorf("calls=%d uncertain=%d, want %d/%d (calls %+v, uncertain %v)",
+					len(g.serverCalls), len(g.uncertain), c.calls, c.uncertain, g.serverCalls, g.uncertain)
+			}
+		})
+	}
+}
+
+// A resolved call keeps its construct's location in the original file.
+func TestServerCallKeepsItsSpan(t *testing.T) {
+	src := "package main\n\nimport \"net/http\"\n\nfunc main() {\n\thttp.ListenAndServe(\":80\", nil)\n}\n"
+	g := analyzeGoFile(SourceFile{Path: "cmd/api/main.go", Content: src})
+	if len(g.serverCalls) != 1 {
+		t.Fatalf("calls = %+v", g.serverCalls)
+	}
+	c := g.serverCalls[0]
+	if got := src[c.start:c.end]; got != `http.ListenAndServe(":80", nil)` || c.line != 6 {
+		t.Errorf("span = %q at line %d, want the call expression at line 6", got, c.line)
 	}
 }
 
@@ -66,6 +103,33 @@ func TestGoCommentsDoNotCreateBackend(t *testing.T) {
 				"cmd/tool/main.go": "package main\nfunc main() {}\n",
 			},
 			want: apimodel.KindCLI,
+		},
+		{
+			name:  "a same-named method on a local type is not an HTTP server (R3)",
+			paths: []string{"go.mod", "cmd/tool/main.go"},
+			files: map[string]string{
+				"go.mod":           "module example.com/tool\n",
+				"cmd/tool/main.go": "package main\ntype logger struct{}\nfunc (logger) ListenAndServe(){}\nfunc main(){ logger{}.ListenAndServe() }\n",
+			},
+			want: apimodel.KindCLI,
+		},
+		{
+			name:  "an unused http.Server literal is not a start call (R3)",
+			paths: []string{"go.mod", "cmd/tool/main.go"},
+			files: map[string]string{
+				"go.mod":           "module example.com/tool\n",
+				"cmd/tool/main.go": "package main\nimport \"net/http\"\nfunc main(){ _ = http.Server{} }\n",
+			},
+			want: apimodel.KindCLI,
+		},
+		{
+			name:  "an aliased net/http server call is a backend",
+			paths: []string{"go.mod", "cmd/api/main.go"},
+			files: map[string]string{
+				"go.mod":          "module example.com/api\n",
+				"cmd/api/main.go": "package main\nimport web \"net/http\"\nfunc main(){ srv := &web.Server{}; srv.ListenAndServe() }\n",
+			},
+			want: apimodel.KindBackend,
 		},
 		{
 			name:  "real ListenAndServe under cmd/ is a backend",

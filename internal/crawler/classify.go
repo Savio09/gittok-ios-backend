@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"path"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/Savio09/gittok-ios-backend/internal/apimodel"
@@ -683,6 +684,9 @@ func (ix *repoIndex) goNoServerPremise(cmd goFile) (bool, []string) {
 		case !g.parsed:
 			why = append(why, p+" could not be parsed ("+g.parseErr+"); a server call cannot be ruled out")
 		}
+		for _, u := range g.uncertain {
+			why = append(why, p+" "+u)
+		}
 	}
 	for _, p := range ix.paths {
 		check(p)
@@ -796,14 +800,20 @@ func (ix *repoIndex) unreadGoSample() string {
 	return " (listed but not read: " + strings.Join(unread, ", ") + ")"
 }
 
-// goServerObservation returns evidence that a Go command starts a server: a read
-// source with a server call (recognised from the AST, not a substring), or a
-// declared server-framework dependency in go.mod. Both are positive facts, so
-// they may come from a partial file.
+// goServerObservation returns evidence that a Go component is a server: a read
+// source containing a call the type checker resolved to a net/http server entry
+// point (see scanServerCalls), or a declared server-framework dependency in
+// go.mod. Both are positive static facts, so they may come from a partial file;
+// neither says the server was observed running.
 func (ix *repoIndex) goServerObservation() (Observation, bool) {
 	for _, g := range ix.primaryGoFiles() {
-		if starts, _ := goStartsHTTPServer(g.content); starts {
-			return Observation{Path: g.path, Detail: "calls http.ListenAndServe (starts an HTTP server)"}, true
+		if len(g.serverCalls) > 0 {
+			c := g.serverCalls[0]
+			what := "net/http package function"
+			if c.method {
+				what = "method on *net/http.Server"
+			}
+			return Observation{Path: g.path, Detail: "contains a call expression " + c.callee + "(…) at line " + strconv.Itoa(c.line) + ", resolved to the " + what + " " + c.callee[strings.LastIndex(c.callee, ".")+1:] + " (static syntax, not observed running)"}, true
 		}
 	}
 	if dep := ix.goDep(goServerDeps); dep != "" {
