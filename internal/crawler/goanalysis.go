@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	"golang.org/x/mod/modfile"
+	"golang.org/x/mod/module"
 )
 
 // This file holds the syntax-aware Go analysis the classifier relies on, so a
@@ -228,16 +229,25 @@ func goModRequiredPaths(goMod string) []string {
 	return paths
 }
 
-// goRequiresAny returns the first of wants (partial module paths such as
-// "gin-gonic/gin") that is a substring of some required module path, or "".
+// goRequiresAny returns the first canonical module family in wants that is
+// required, accounting for Go's major-version suffixes, or "".
 func goRequiresAny(goMod string, wants []string) string {
 	paths := goModRequiredPaths(goMod)
 	for _, w := range wants {
 		for _, p := range paths {
-			if strings.Contains(p, w) {
+			if matchesGoModule(p, w) {
 				return w
 			}
 		}
 	}
 	return ""
+}
+
+// Compare complete module identities, never host/path substrings or arbitrary
+// submodules. SplitPathVersion also handles gopkg.in's .vN spelling.
+// https://go.dev/ref/mod#major-version-suffixes
+func matchesGoModule(required, canonical string) bool {
+	prefix, _, ok := module.SplitPathVersion(required)
+	family, _, known := module.SplitPathVersion(canonical)
+	return ok && known && prefix == family
 }

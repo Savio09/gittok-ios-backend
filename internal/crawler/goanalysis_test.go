@@ -71,7 +71,7 @@ func TestGoModRequiresIgnoresComments(t *testing.T) {
 	}
 
 	real := "module example.com/svc\n\nrequire github.com/gin-gonic/gin v1.9.1\n"
-	if dep := goRequiresAny(real, goServerDeps); dep != "gin-gonic/gin" {
+	if dep := goRequiresAny(real, goServerDeps); dep != "github.com/gin-gonic/gin" {
 		t.Errorf("goRequiresAny = %q, want the real gin requirement", dep)
 	}
 }

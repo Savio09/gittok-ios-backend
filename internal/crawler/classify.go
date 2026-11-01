@@ -495,7 +495,7 @@ func isAppConfig(lower string) bool {
 // --- backend -----------------------------------------------------------------
 
 var (
-	goServerDeps   = []string{"gin-gonic/gin", "labstack/echo", "gofiber/fiber", "go-chi/chi", "gorilla/mux"}
+	goServerDeps   = []string{"github.com/gin-gonic/gin", "github.com/labstack/echo", "github.com/gofiber/fiber", "github.com/go-chi/chi", "github.com/gorilla/mux"}
 	nodeServerDeps = []string{"express", "fastify", "koa", "@nestjs/core", "@hapi/hapi", "hapi"}
 	pyServerDeps   = []string{"fastapi", "flask", "django", "starlette", "uvicorn", "sanic", "aiohttp", "tornado"}
 	rustServerDeps = []string{"axum", "actix-web", "rocket", "warp"}
@@ -547,7 +547,10 @@ func detectBackend(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 // --- cli ---------------------------------------------------------------------
 
 var (
-	goCLIDeps   = []string{"spf13/cobra", "urfave/cli", "spf13/pflag", "alecthomas/kong", "alecthomas/kingpin"}
+	goCLIDeps = []string{
+		"github.com/spf13/cobra", "github.com/urfave/cli", "gopkg.in/urfave/cli.v1",
+		"github.com/spf13/pflag", "github.com/alecthomas/kong", "github.com/alecthomas/kingpin", "gopkg.in/alecthomas/kingpin.v2",
+	}
 	rustCLIDeps = []string{"clap", "structopt", "argh"}
 )
 
@@ -980,7 +983,7 @@ func (ix *repoIndex) goServerObservation() (Observation, bool) {
 }
 
 // goRequirement returns the full module path and version of the first go.mod
-// requirement matching one of wants (partial paths such as "spf13/cobra"),
+// requirement matching one of wants (canonical module families),
 // parsed with the official module-file parser so a module named only in a
 // comment never counts.
 func (ix *repoIndex) goRequirement(wants []string) (modPath, version string) {
@@ -993,7 +996,7 @@ func (ix *repoIndex) goRequirement(wants []string) (modPath, version string) {
 	}
 	for _, w := range wants {
 		for _, r := range f.Require {
-			if strings.Contains(r.Mod.Path, w) {
+			if matchesGoModule(r.Mod.Path, w) {
 				return r.Mod.Path, r.Mod.Version
 			}
 		}
