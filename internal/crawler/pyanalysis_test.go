@@ -1,6 +1,7 @@
 package crawler
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/Savio09/gittok-ios-backend/internal/apimodel"
@@ -28,43 +29,57 @@ func TestPyDistNameExtractsDistribution(t *testing.T) {
 }
 
 func TestPyProjectDependenciesVsName(t *testing.T) {
-	// The project is *named* flask-utils but declares no dependencies.
-	proj, hasProject, parsed := parsePyProject("[project]\nname = \"flask-utils\"\nversion = \"0.1.0\"\ndependencies = []\n")
-	if !parsed || !hasProject {
-		t.Fatalf("parse: parsed=%v hasProject=%v", parsed, hasProject)
+	deps := func(content string) []depDecl {
+		return manifestDeps(manifestRef{path: "pyproject.toml", kind: kindPyProject, state: StateRead, content: content})
 	}
-	if names := pyProjectDependencyNames(proj); len(names) != 0 {
-		t.Errorf("project name leaked into dependencies: %v", names)
+	// The project is *named* flask-utils but declares no dependencies.
+	if got := deps("[project]\nname = \"flask-utils\"\nversion = \"0.1.0\"\ndependencies = []\n"); len(got) != 0 {
+		t.Errorf("project name leaked into dependencies: %+v", got)
 	}
 
 	// A tooling-only file has no [project] table at all.
-	_, hasProject, parsed = parsePyProject("[tool.ruff]\nline-length = 88\n")
-	if !parsed {
-		t.Fatal("tooling-only pyproject should still parse")
-	}
-	if hasProject {
-		t.Errorf("a [tool.*]-only file reported a [project] table")
+	_, hasProject, parsed := parsePyProject("[tool.ruff]\nline-length = 88\n")
+	if !parsed || hasProject {
+		t.Errorf("tooling-only pyproject: parsed=%v hasProject=%v, want parsed without a [project] table", parsed, hasProject)
 	}
 
-	// A real dependency is extracted.
-	proj, _, _ = parsePyProject("[project]\nname = \"svc\"\ndependencies = [\"flask>=3.0\", \"uvicorn[standard]\"]\n")
-	got := pyProjectDependencyNames(proj)
-	if len(got) != 2 || got[0] != "flask" || got[1] != "uvicorn" {
-		t.Errorf("dependency names = %v, want [flask uvicorn]", got)
+	// A real dependency is extracted, keeping its full specifier and table.
+	got := deps("[project]\nname = \"svc\"\ndependencies = [\"flask>=3.0\", \"uvicorn[standard]\"]\n")
+	if len(got) != 2 || got[0].Name != "flask" || got[0].Spec != "flask>=3.0" || got[1].Name != "uvicorn" ||
+		got[0].Category != "project.dependencies" {
+		t.Errorf("dependencies = %+v, want flask and uvicorn in project.dependencies", got)
 	}
 }
 
-func TestPyRequirementNames(t *testing.T) {
-	reqs := "# runtime deps\nFlask==3.0.0\nrequests>=2  # http\n-r other.txt\n--hash=sha256:abc\n\ngunicorn\n"
-	got := pyRequirementNames(reqs)
-	want := []string{"flask", "requests", "gunicorn"}
-	if len(got) != len(want) {
-		t.Fatalf("requirement names = %v, want %v", got, want)
+// Task 6: requirements.txt is read within a bounded subset; anything that
+// declares requirements the file does not itself contain is reported, never
+// silently treated as "no such requirement".
+func TestParseRequirements(t *testing.T) {
+	reqs := "# runtime deps\nFlask==3.0.0\nrequests>=2  # http\n-r other.txt\n--hash=sha256:abc\n\ngunicorn\n" +
+		"uvicorn[standard] ; python_version >= '3.9'\nmypkg @ https://example.com/mypkg-1.0.whl\n" +
+		"git+https://github.com/acme/tool.git#egg=tool\n-c constraints.txt\n-e .\n"
+	specs, unsupported := parseRequirements(reqs)
+
+	var names []string
+	for _, s := range specs {
+		names = append(names, pyDistName(s))
 	}
-	for i := range want {
-		if got[i] != want[i] {
-			t.Errorf("requirement[%d] = %q, want %q", i, got[i], want[i])
+	if want := []string{"flask", "requests", "gunicorn", "uvicorn", "mypkg"}; strings.Join(names, ",") != strings.Join(want, ",") {
+		t.Errorf("names = %v, want %v", names, want)
+	}
+	for _, want := range []string{"-r other.txt", "git+https://github.com/acme/tool.git", "-c constraints.txt"} {
+		found := false
+		for _, u := range unsupported {
+			if strings.Contains(u, want) {
+				found = true
+			}
 		}
+		if !found {
+			t.Errorf("unsupported = %v, want an entry for %q", unsupported, want)
+		}
+	}
+	if len(unsupported) != 3 {
+		t.Errorf("unsupported = %v, want exactly the include, the VCS line and the constraints file", unsupported)
 	}
 }
 

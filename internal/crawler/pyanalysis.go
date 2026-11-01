@@ -23,7 +23,24 @@ type pyProject struct {
 		OptionalDependencies map[string][]string `toml:"optional-dependencies"`
 		Scripts              map[string]string   `toml:"scripts"`
 		GUIScripts           map[string]string   `toml:"gui-scripts"`
+		// Dynamic lists fields a build backend computes at build time; a
+		// dynamic "dependencies" means the static list is not the real one.
+		Dynamic []string `toml:"dynamic"`
 	} `toml:"project"`
+}
+
+// dynamicDependencies reports whether [project] declares its dependencies (or
+// optional dependencies) dynamic, so the static lists are not authoritative.
+func (p pyProject) dynamicDependencies() bool {
+	if p.Project == nil {
+		return false
+	}
+	for _, f := range p.Project.Dynamic {
+		if f == "dependencies" || f == "optional-dependencies" {
+			return true
+		}
+	}
+	return false
 }
 
 // parsePyProject parses pyproject.toml. parsed is false when the TOML is
@@ -70,54 +87,58 @@ func pyDistName(spec string) string {
 	return strings.Trim(b.String(), "-")
 }
 
-// pyProjectDependencyNames returns the normalised distribution names declared in
-// a parsed pyproject's [project].dependencies and [project.optional-dependencies].
-func pyProjectDependencyNames(p pyProject) []string {
-	if p.Project == nil {
-		return nil
-	}
-	var names []string
-	for _, spec := range p.Project.Dependencies {
-		if n := pyDistName(spec); n != "" {
-			names = append(names, n)
-		}
-	}
-	for _, group := range p.Project.OptionalDependencies {
-		for _, spec := range group {
-			if n := pyDistName(spec); n != "" {
-				names = append(names, n)
-			}
-		}
-	}
-	return names
-}
-
-// pyRequirementLines returns the requirement specifiers in a requirements.txt.
-// Comments, blank lines, option lines (-r, -e, --hash) and inline comments are
-// ignored; remote includes are never fetched.
-func pyRequirementLines(content string) []string {
-	var lines []string
+// parseRequirements reads a requirements.txt within a bounded, documented
+// subset: one PEP 508 requirement per line, with extras, version specifiers,
+// environment markers and direct "name @ url" references. Comments, blank lines
+// and index/hash options are ignored. Anything that declares requirements the
+// file itself does not contain — an include (-r/--requirement), a constraints
+// file (-c/--constraint), or a bare URL/VCS requirement — is returned as
+// unsupported, so a caller cannot read the inspected lines as the whole set.
+// Includes are never fetched and nothing is installed or evaluated.
+func parseRequirements(content string) (specs, unsupported []string) {
 	for line := range strings.SplitSeq(content, "\n") {
 		line = strings.TrimSpace(line)
-		if line == "" || strings.HasPrefix(line, "#") || strings.HasPrefix(line, "-") {
-			continue
-		}
 		if i := strings.Index(line, " #"); i >= 0 {
 			line = strings.TrimSpace(line[:i])
 		}
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		fields := strings.Fields(line)
+		switch opt := fields[0]; {
+		case opt == "-r" || opt == "--requirement" || opt == "-c" || opt == "--constraint" ||
+			strings.HasPrefix(opt, "--requirement=") || strings.HasPrefix(opt, "--constraint="):
+			unsupported = append(unsupported, "includes \""+line+"\", which was not followed")
+			continue
+		case opt == "-e" || opt == "--editable":
+			if len(fields) > 1 && fields[1] != "." {
+				unsupported = append(unsupported, "declares the editable requirement \""+line+"\", which was not resolved")
+			}
+			continue
+		case strings.HasPrefix(opt, "-"):
+			continue // index, hash and other options declare no requirement
+		}
+		if strings.Contains(line, "://") && !isDirectReference(line) {
+			unsupported = append(unsupported, "declares the URL or VCS requirement \""+line+"\", whose distribution name was not resolved")
+			continue
+		}
 		if pyDistName(line) != "" {
-			lines = append(lines, line)
+			specs = append(specs, line)
 		}
 	}
-	return lines
+	return specs, unsupported
 }
 
-// pyRequirementNames returns the normalised distribution names declared in a
-// requirements.txt; environment markers and extras are stripped by pyDistName.
-func pyRequirementNames(content string) []string {
-	var names []string
-	for _, line := range pyRequirementLines(content) {
-		names = append(names, pyDistName(line))
-	}
-	return names
+// isDirectReference reports whether a requirement is a PEP 508 direct reference,
+// "name[extras] @ url", whose distribution name precedes the URL.
+func isDirectReference(line string) bool {
+	at := strings.Index(line, "@")
+	return at > 0 && !strings.Contains(line[:at], "://") && pyDistName(line[:at]) != ""
+}
+
+// pyRequirementLines returns the supported requirement specifiers in a
+// requirements.txt (see parseRequirements).
+func pyRequirementLines(content string) []string {
+	specs, _ := parseRequirements(content)
+	return specs
 }

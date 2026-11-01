@@ -77,8 +77,7 @@ type repoIndex struct {
 	reqs         manifestRef
 	goWork       manifestRef
 
-	pyDepSource map[string]string // normalised python dep name -> the file it was declared in
-	goFiles     []goFile          // read Go sources the component owns, path-sorted
+	goFiles []goFile // read Go sources the component owns, path-sorted
 
 	notes  []string // limitations, in the order they were found
 	blocks []block  // uninspected evidence and the role it could have established
@@ -123,10 +122,6 @@ func newRepoIndex(st *inspIndex, comp *component, language string) *repoIndex {
 	ix.reqs = comp.manifest(kindRequirements)
 	ix.goWork = comp.manifest(kindGoWork)
 
-	// setup.py is deliberately not parsed for dependencies — its install_requires
-	// is dynamic Python we never execute.
-	ix.pyDepSource = buildPyDepSource(ix.pyProj, ix.pyproj.path, ix.reqs.content, ix.reqs.path)
-
 	for _, p := range comp.paths {
 		if f, ok := st.files[p]; ok && strings.HasSuffix(strings.ToLower(p), ".go") {
 			ix.goFiles = append(ix.goFiles, analyzeGoFile(f))
@@ -135,6 +130,7 @@ func newRepoIndex(st *inspIndex, comp *component, language string) *repoIndex {
 	sort.Slice(ix.goFiles, func(i, j int) bool { return ix.goFiles[i].path < ix.goFiles[j].path })
 
 	ix.blockUninspectedManifests()
+	ix.blockUninspectedPythonDependencies()
 	if unread := ix.unreadGoEntries(); len(unread) > 0 {
 		ix.block(apimodel.KindBackend, "Go entry point(s) present but their source was not inspected ("+strings.Join(unread, ", ")+"); a server could not be distinguished from a command")
 	}
@@ -221,22 +217,24 @@ func (ix *repoIndex) isWorkspace() bool {
 	return ix.goWork.present() && !ix.goMod.present()
 }
 
-// buildPyDepSource maps each normalised Python dependency name to the file it
-// was declared in (pyproject.toml preferred over requirements.txt), so a server
-// dependency can be both detected and cited to its actual source.
-func buildPyDepSource(proj pyProject, projPath, reqs, reqsPath string) map[string]string {
-	m := map[string]string{}
-	for _, n := range pyProjectDependencyNames(proj) {
-		if _, ok := m[n]; !ok {
-			m[n] = projPath
+// blockUninspectedPythonDependencies records Python dependency declarations the
+// bounded parser does not read, so an empty or partial list can never stand in
+// for "declares no web framework": dependencies declared dynamic in pyproject,
+// requirement includes, constraints and URL/VCS requirements, and a setup.py
+// whose install_requires is executable Python that is never evaluated.
+func (ix *repoIndex) blockUninspectedPythonDependencies() {
+	if ix.pyHasProject && ix.pyProj.dynamicDependencies() {
+		ix.block(apimodel.KindBackend, ix.pyproj.path+" declares its dependencies dynamic; they are computed at build time and were not evaluated")
+	}
+	if ix.reqs.readable() {
+		_, unsupported := parseRequirements(ix.reqs.content)
+		for _, u := range unsupported {
+			ix.block(apimodel.KindBackend, ix.reqs.path+" "+u)
 		}
 	}
-	for _, n := range pyRequirementNames(reqs) {
-		if _, ok := m[n]; !ok {
-			m[n] = reqsPath
-		}
+	if ix.setupPy.present() && !ix.pyHasProject {
+		ix.block(apimodel.KindBackend, ix.setupPy.path+" is executable Python; its install_requires was not evaluated, so its dependencies are unknown")
 	}
-	return m
 }
 
 // scopeRank is a coarse, directory-derived hint at a path's role, used to keep
@@ -941,14 +939,26 @@ func (ix *repoIndex) pyHasCommandEntry() bool {
 	return py != "" && strings.Contains(py, "console_scripts")
 }
 
-// pyServerObservation returns evidence that a declared Python dependency is a
-// web framework, citing the file (pyproject.toml or requirements.txt) it was
-// declared in. It iterates the framework list in fixed order so the result is
-// deterministic regardless of map iteration.
+// pyServerObservation returns evidence that the component requires a Python web
+// framework at runtime: a declaration in [project].dependencies or
+// requirements.txt, cited with its declaring field and specifier. A framework
+// found only in an optional group ([project.optional-dependencies].<group>) is
+// installed only on request — for docs, tests or an integration — so it is
+// recorded as a note naming the group, not as role evidence. The framework list
+// is iterated in fixed order, so the result never depends on map order.
 func (ix *repoIndex) pyServerObservation() (Observation, bool) {
 	for _, want := range pyServerDeps {
-		if src, ok := ix.pyDepSource[pyDistName(want)]; ok {
-			return Observation{Path: src, Detail: "declares a dependency on \"" + want + "\" (web framework)"}, true
+		name := pyDistName(want)
+		for _, d := range ix.comp.deps {
+			if d.Name != name {
+				continue
+			}
+			switch {
+			case d.Category == "project.dependencies" || d.Category == "requirements":
+				return Observation{Path: d.Source, Detail: "declares \"" + d.Spec + "\" in " + d.Category + " (web framework)"}, true
+			case strings.HasPrefix(d.Category, "project.optional-dependencies."):
+				ix.note(d.Source + " declares \"" + d.Spec + "\" only in the optional group " + d.Category + " — an extra installed on request, which does not establish a web application")
+			}
 		}
 	}
 	return Observation{}, false
