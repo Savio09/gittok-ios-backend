@@ -211,17 +211,46 @@ func validateListing(st *inspIndex, w Witness) error {
 		})
 	case constructAppConfig:
 		ok = some(isAppConfig)
-	case constructRustBinTarget:
-		ok = some(func(l string) bool {
-			return strings.HasSuffix(l, "src/main.rs") || (strings.Contains(l, "src/bin/") && strings.HasSuffix(l, ".rs"))
-		})
-	case constructRustLibTarget:
-		ok = some(func(l string) bool { return strings.HasSuffix(l, "src/lib.rs") })
+	case constructRustBinTarget, constructRustLibTarget:
+		return validateImplicitCargoTarget(st, w)
 	default:
 		return fmt.Errorf("unknown listing construct %q", w.Construct)
 	}
 	if !ok {
 		return fmt.Errorf("the listed paths %v do not establish %s", w.Paths, w.Construct)
+	}
+	return nil
+}
+
+func validateImplicitCargoTarget(st *inspIndex, w Witness) error {
+	if kind, _ := manifestKindOf(w.Path); kind != kindCargo {
+		return fmt.Errorf("an implicit Cargo target needs its owning Cargo.toml")
+	}
+	content, err := consumed(st, w.Path)
+	if err != nil {
+		return err
+	}
+	m, parsed := parseCargo(content)
+	if !parsed {
+		return fmt.Errorf("the owning manifest %s could not be parsed", w.Path)
+	}
+	bin := w.Construct == constructRustBinTarget
+	if (bin && (!cargoBinDiscoveryKnown(m, st.complete(w.Path)) || !cargoAutobins(m))) ||
+		(!bin && (!cargoLibDiscoveryKnown(m, st.complete(w.Path)) || !cargoAutolib(m))) {
+		return fmt.Errorf("%s does not establish enabled target autodiscovery", w.Path)
+	}
+	root := dirOf(w.Path)
+	for _, p := range w.Paths {
+		rel := p
+		if root != "" {
+			if !strings.HasPrefix(p, root+"/") {
+				return fmt.Errorf("%s is outside the owning crate %s", p, w.Path)
+			}
+			rel = strings.TrimPrefix(p, root+"/")
+		}
+		if (bin && !cargoImplicitBin(rel)) || (!bin && rel != "src/lib.rs") {
+			return fmt.Errorf("%s is not the claimed implicit target of %s", p, w.Path)
+		}
 	}
 	return nil
 }

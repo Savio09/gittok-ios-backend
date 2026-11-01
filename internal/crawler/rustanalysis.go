@@ -45,6 +45,9 @@ func parseCargo(content string) (m cargoManifest, parsed bool) {
 // that in the 2015 edition — the edition Cargo assumes when none is declared —
 // it is off as soon as any target is declared manually.
 func cargoAutobins(m cargoManifest) bool {
+	if m.Package == nil {
+		return false // a virtual workspace has no root package to discover targets for
+	}
 	if m.Package != nil && m.Package.Autobins != nil {
 		return *m.Package.Autobins
 	}
@@ -52,6 +55,9 @@ func cargoAutobins(m cargoManifest) bool {
 }
 
 func cargoAutolib(m cargoManifest) bool {
+	if m.Package == nil {
+		return false
+	}
 	if m.Package != nil && m.Package.Autolib != nil {
 		return *m.Package.Autolib
 	}
@@ -79,4 +85,22 @@ func cargoDep(m cargoManifest, wants []string) string {
 		}
 	}
 	return ""
+}
+
+// Cargo's implicit binary entries are direct files or main.rs in one named
+// subdirectory, never arbitrary helper modules below src/bin/.
+// https://doc.rust-lang.org/cargo/guide/project-layout.html
+func cargoImplicitBin(p string) bool {
+	parts := strings.Split(p, "/")
+	return p == "src/main.rs" ||
+		(len(parts) == 3 && parts[0] == "src" && parts[1] == "bin" && strings.HasSuffix(parts[2], ".rs")) ||
+		(len(parts) == 4 && parts[0] == "src" && parts[1] == "bin" && parts[3] == "main.rs")
+}
+
+func cargoBinDiscoveryKnown(m cargoManifest, complete bool) bool {
+	return complete || (m.Package != nil && m.Package.Autobins != nil)
+}
+
+func cargoLibDiscoveryKnown(m cargoManifest, complete bool) bool {
+	return complete || (m.Package != nil && m.Package.Autolib != nil)
 }

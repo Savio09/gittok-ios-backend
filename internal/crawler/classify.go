@@ -596,7 +596,9 @@ func detectCLI(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 	// Rust: a binary target. A CLI-parser dependency is cited when present; a
 	// binary with no web-framework dependency is a command only when the full
 	// Cargo.toml was read, so the dependency's absence is real.
-	if bin, binObs, _ := ix.rustBinTarget(); bin == yes {
+	if bin, binObs, why := ix.rustBinTarget(); bin == unknown && ix.cargo.present() {
+		ix.block(apimodel.KindBackend, why)
+	} else if bin == yes {
 		cliDep, serverDep := cargoDep(ix.cargoM, rustCLIDeps), cargoDep(ix.cargoM, rustServerDeps)
 		switch {
 		case cliDep != "":
@@ -686,7 +688,7 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 		case no:
 			premise := scopeObs(ix.cargo.path, []string{ix.cargo.path}, constructCompleteReads, 0, "no binary target (importable crate)")
 			if cargoAutobins(ix.cargoM) {
-				premise = scopeObs(ix.cargo.path, []string{ix.cargo.path}, constructCoveringListing, ix.base+3, "no [[bin]] table and no src/main.rs or src/bin/ in a covering listing (importable crate)")
+				premise = scopeObs(ix.cargo.path, []string{ix.cargo.path}, constructCoveringListing, ix.base+4, "no [[bin]] table or implicit binary entry in a covering listing (importable crate)")
 			}
 			groups = append(groups, evidenceGroup{libObs, premise})
 		case unknown:
@@ -1025,8 +1027,8 @@ const (
 
 // rustBinTarget reports whether the crate has a binary target: yes, with the
 // witnessed observation, from an explicit [[bin]] table or Cargo's implicit
-// src/main.rs / src/bin/*.rs; no only when the full Cargo.toml was read and the
-// listing covers those implicit locations; unknown otherwise, with the reason.
+// src/main.rs, src/bin/<name>.rs or src/bin/<name>/main.rs; no only when the full
+// Cargo.toml was read and the listing covers those locations; unknown otherwise.
 func (ix *repoIndex) rustBinTarget() (tristate, Observation, string) {
 	if !ix.cargo.readable() || !ix.cargoOK {
 		return unknown, Observation{}, "Cargo.toml was not read and parsed"
@@ -1034,18 +1036,23 @@ func (ix *repoIndex) rustBinTarget() (tristate, Observation, string) {
 	if len(ix.cargoM.Bin) > 0 {
 		return yes, fieldObs(ix.cargo.path, []string{"bin"}, "", "declares a [[bin]] target"), ""
 	}
+	if !cargoBinDiscoveryKnown(ix.cargoM, ix.cargo.complete()) {
+		return unknown, Observation{}, ix.st.describe(ix.cargo.path) + "; binary autodiscovery settings are unknown"
+	}
 	auto := cargoAutobins(ix.cargoM)
 	if auto {
-		if p, ok := ix.firstPrimaryPath(func(lp string) bool {
-			return lp == "src/main.rs" || (strings.HasPrefix(lp, "src/bin/") && strings.HasSuffix(lp, ".rs"))
-		}); ok {
-			return yes, listingObs([]string{p}, constructRustBinTarget, p+" (Cargo's implicit binary target)"), ""
+		for _, p := range ix.paths {
+			if cargoImplicitBin(ix.comp.rel(p)) {
+				o := listingObs([]string{p}, constructRustBinTarget, p+" (Cargo's implicit binary target)")
+				o.Witness.Path = ix.cargo.path
+				return yes, o, ""
+			}
 		}
 	}
 	if !ix.cargo.complete() {
 		return unknown, Observation{}, ix.st.describe(ix.cargo.path) + "; a [[bin]] table may lie in the unread remainder"
 	}
-	if auto && !ix.covers(3) {
+	if auto && !ix.covers(4) {
 		return unknown, Observation{}, "the listing does not cover src/main.rs and src/bin/, so a binary target cannot be ruled out"
 	}
 	return no, Observation{}, ""
@@ -1060,11 +1067,13 @@ func (ix *repoIndex) rustLibTarget() (Observation, bool) {
 	if ix.cargoM.Lib != nil {
 		return fieldObs(ix.cargo.path, []string{"lib"}, "", "declares a [lib] target"), true
 	}
-	if !cargoAutolib(ix.cargoM) {
+	if !cargoLibDiscoveryKnown(ix.cargoM, ix.cargo.complete()) || !cargoAutolib(ix.cargoM) {
 		return Observation{}, false
 	}
 	if p, ok := ix.firstPrimaryPath(func(lp string) bool { return lp == "src/lib.rs" }); ok {
-		return listingObs([]string{p}, constructRustLibTarget, p+" (Cargo's implicit library target)"), true
+		o := listingObs([]string{p}, constructRustLibTarget, p+" (Cargo's implicit library target)")
+		o.Witness.Path = ix.cargo.path
+		return o, true
 	}
 	return Observation{}, false
 }
