@@ -1,0 +1,1692 @@
+{
+  "metadata": {
+    "Owner": "rack",
+    "Name": "rack",
+    "FullName": "rack/rack",
+    "Description": "A modular Ruby web server interface.",
+    "Language": "Ruby",
+    "Stars": 5135,
+    "License": "",
+    "HTMLURL": "https://github.com/rack/rack",
+    "PushedAt": "2026-10-31T21:26:25Z",
+    "Topics": [
+      "rack",
+      "ruby",
+      "web"
+    ],
+    "DefaultBranch": "main",
+    "Archived": false,
+    "Fork": false,
+    "Public": true,
+    "Metadata": {
+      "archived": {
+        "Value": "false",
+        "Null": false
+      },
+      "description": {
+        "Value": "A modular Ruby web server interface.",
+        "Null": false
+      },
+      "fork": {
+        "Value": "false",
+        "Null": false
+      },
+      "full_name": {
+        "Value": "rack/rack",
+        "Null": false
+      },
+      "language": {
+        "Value": "Ruby",
+        "Null": false
+      },
+      "license.spdx_id": {
+        "Value": "NOASSERTION",
+        "Null": false
+      },
+      "pushed_at": {
+        "Value": "2026-10-31T21:26:25Z",
+        "Null": false
+      },
+      "stargazers_count": {
+        "Value": "5135",
+        "Null": false
+      }
+    }
+  },
+  "captured_at": "2026-11-02T13:10:04.927744Z",
+  "revision": {
+    "Ref": "da90464e3fa93e3cb49dc2d4ede798e6c6b70b4f",
+    "Resolved": true
+  },
+  "tree": {
+    "Entries": [
+      {
+        "Path": ".agents",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "2d43e27bd222441ada7df28a45315992a1f018ec"
+      },
+      {
+        "Path": ".agents/skills",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "86eafbbdea76417e4fddcc6a40e1f7f291dc9666"
+      },
+      {
+        "Path": ".agents/skills/release",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "ef3f48c4db247988fa529adfc30373ff1428c05c"
+      },
+      {
+        "Path": ".agents/skills/release/SKILL.md",
+        "Type": "blob",
+        "Size": 11270,
+        "Mode": "100644",
+        "SHA": "15006c590d80c0247f3a255237449f56a01304e8"
+      },
+      {
+        "Path": ".agents/skills/security-triage",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "ac49f592ee39b71f3fe135750374717a724b02e3"
+      },
+      {
+        "Path": ".agents/skills/security-triage/SKILL.md",
+        "Type": "blob",
+        "Size": 12610,
+        "Mode": "100644",
+        "SHA": "98e01af07b5be737cbb7c18d4d988e0aa53ce920"
+      },
+      {
+        "Path": ".agents/skills/security-triage/advisory-template.md",
+        "Type": "blob",
+        "Size": 1240,
+        "Mode": "100644",
+        "SHA": "db00ad7d300d32c5cd778fa4dad0ad001929880a"
+      },
+      {
+        "Path": ".editorconfig",
+        "Type": "blob",
+        "Size": 115,
+        "Mode": "100644",
+        "SHA": "ee510310dfdab43538ef3d38d1257198f13274b3"
+      },
+      {
+        "Path": ".github",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "4d7eec31000cdb0490d60f37fdfd2005fa25960e"
+      },
+      {
+        "Path": ".github/dependabot.yml",
+        "Type": "blob",
+        "Size": 118,
+        "Mode": "100644",
+        "SHA": "5ace4600a1f26e6892982f3e2f069ebfab108d87"
+      },
+      {
+        "Path": ".github/workflows",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "d017ee89cb2a6ddbfad27339cbcf104be05a0eb9"
+      },
+      {
+        "Path": ".github/workflows/depsreview.yaml",
+        "Type": "blob",
+        "Size": 296,
+        "Mode": "100644",
+        "SHA": "02467c39a85dd48cb69a9aaff8a251c26e4e7547"
+      },
+      {
+        "Path": ".github/workflows/documentation.yaml",
+        "Type": "blob",
+        "Size": 2550,
+        "Mode": "100644",
+        "SHA": "4b2555db410b0551e9de2cfce333c85b6ea5cc55"
+      },
+      {
+        "Path": ".github/workflows/test-external.yaml",
+        "Type": "blob",
+        "Size": 594,
+        "Mode": "100644",
+        "SHA": "a8fba1ca9d8e7efb136477bd68e7951a5845bec6"
+      },
+      {
+        "Path": ".github/workflows/test.yaml",
+        "Type": "blob",
+        "Size": 712,
+        "Mode": "100644",
+        "SHA": "dcc390eefa66ecf4528f4a180691ba3cfd5a70a0"
+      },
+      {
+        "Path": ".gitignore",
+        "Type": "blob",
+        "Size": 118,
+        "Mode": "100644",
+        "SHA": "9c6100421bc8e386223a150f06314224a9909209"
+      },
+      {
+        "Path": ".mailmap",
+        "Type": "blob",
+        "Size": 756,
+        "Mode": "100644",
+        "SHA": "8e448cfcb51c167f8062382772726a058409f9b1"
+      },
+      {
+        "Path": ".rdoc_options",
+        "Type": "blob",
+        "Size": 42,
+        "Mode": "100644",
+        "SHA": "271180f5de8d7d3824403fb9d760b68828e5a750"
+      },
+      {
+        "Path": ".rubocop.yml",
+        "Type": "blob",
+        "Size": 1072,
+        "Mode": "100644",
+        "SHA": "3607348288dfd588f78268187a3eefe041283019"
+      },
+      {
+        "Path": ".yardopts",
+        "Type": "blob",
+        "Size": 12,
+        "Mode": "100644",
+        "SHA": "06b7cada7a8d7b665714d1c3544eff601b351b10"
+      },
+      {
+        "Path": "CHANGELOG.md",
+        "Type": "blob",
+        "Size": 90450,
+        "Mode": "100644",
+        "SHA": "f49ab7ca4ec37d1b705732b60d3505801246a271"
+      },
+      {
+        "Path": "CONTRIBUTING.md",
+        "Type": "blob",
+        "Size": 3030,
+        "Mode": "100644",
+        "SHA": "007f4f63631113bb9cae5adaf3da80030d1bf33a"
+      },
+      {
+        "Path": "GETTING-STARTED.md",
+        "Type": "blob",
+        "Size": 7307,
+        "Mode": "100644",
+        "SHA": "227d18f6675f949ba6d1c81107fa38e536e1a0dd"
+      },
+      {
+        "Path": "Gemfile",
+        "Type": "blob",
+        "Size": 400,
+        "Mode": "100644",
+        "SHA": "ee1668bda186cfda86e6475fcb2a82f36c83c693"
+      },
+      {
+        "Path": "MIT-LICENSE",
+        "Type": "blob",
+        "Size": 1108,
+        "Mode": "100644",
+        "SHA": "fb33b7fee10e84cef0e3278583b19fc940f0daf6"
+      },
+      {
+        "Path": "README.md",
+        "Type": "blob",
+        "Size": 14906,
+        "Mode": "100644",
+        "SHA": "57ac2509770dd68315bc3ed063c39b3e51bfb5c8"
+      },
+      {
+        "Path": "Rakefile",
+        "Type": "blob",
+        "Size": 3913,
+        "Mode": "100644",
+        "SHA": "8661f02c77ce9cefc506e0974665e77f513e5c60"
+      },
+      {
+        "Path": "SECURITY.md",
+        "Type": "blob",
+        "Size": 1422,
+        "Mode": "100644",
+        "SHA": "7914d41e0b2a29becc844e1eed5acf711e3d15b5"
+      },
+      {
+        "Path": "SPEC.rdoc",
+        "Type": "blob",
+        "Size": 18489,
+        "Mode": "100644",
+        "SHA": "42a82be8b79f39fc8e7fce688aaae20f1b091a92"
+      },
+      {
+        "Path": "UPGRADE-GUIDE.md",
+        "Type": "blob",
+        "Size": 12197,
+        "Mode": "100644",
+        "SHA": "5bc39a03d351d320435d8f19daa94bf731021957"
+      },
+      {
+        "Path": "config",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "b8bf70ac27a02a37f31b541db22638ca0c4976c6"
+      },
+      {
+        "Path": "config/external.yaml",
+        "Type": "blob",
+        "Size": 631,
+        "Mode": "100644",
+        "SHA": "9cfac835fbddc120e690d4a898e18d50ac9496d9"
+      },
+      {
+        "Path": "contrib",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "74cc0bc88f241b788bca18311b7a12fd10479969"
+      },
+      {
+        "Path": "contrib/LICENSE.md",
+        "Type": "blob",
+        "Size": 240,
+        "Mode": "100644",
+        "SHA": "fc9e093b9124e963a30ae484aa34932653b3aa6f"
+      },
+      {
+        "Path": "contrib/logo-lossless.webp",
+        "Type": "blob",
+        "Size": 3451122,
+        "Mode": "100644",
+        "SHA": "3bedeb5d1b0906b032510695f4aecdc7bbb29339"
+      },
+      {
+        "Path": "contrib/logo.webp",
+        "Type": "blob",
+        "Size": 667850,
+        "Mode": "100644",
+        "SHA": "393f06041ca5ea1d06d62569b488cf8720f84718"
+      },
+      {
+        "Path": "contrib/rdoc.css",
+        "Type": "blob",
+        "Size": 30,
+        "Mode": "100644",
+        "SHA": "958ffa63b11ca46ff22195ba580016a4b5b5f59f"
+      },
+      {
+        "Path": "docs",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "59394343894f7051790b0de69feff5e02e1add1a"
+      },
+      {
+        "Path": "docs/index.html",
+        "Type": "blob",
+        "Size": 998,
+        "Mode": "100644",
+        "SHA": "69c6a2dc96b20de04a7123c69e996e91c49b7a87"
+      },
+      {
+        "Path": "lib",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "a28b9209c1758fdd5dd0a7cdbb3e0ca642955d2e"
+      },
+      {
+        "Path": "lib/rack.rb",
+        "Type": "blob",
+        "Size": 2344,
+        "Mode": "100644",
+        "SHA": "5cc52ba408d5e2a26a4084c7429a311ca71766db"
+      },
+      {
+        "Path": "lib/rack",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "4c343be10a568bf5f0c597864ae06af65a049bd9"
+      },
+      {
+        "Path": "lib/rack/auth",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "c7e3a0ab14448d0741467a6526084d581144c096"
+      },
+      {
+        "Path": "lib/rack/auth/abstract",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "e92a4f76ec6989a167255d30b0735e21d81594e5"
+      },
+      {
+        "Path": "lib/rack/auth/abstract/handler.rb",
+        "Type": "blob",
+        "Size": 850,
+        "Mode": "100644",
+        "SHA": "4731ee8c85d7b9f3474a90a459db5ec770422241"
+      },
+      {
+        "Path": "lib/rack/auth/abstract/request.rb",
+        "Type": "blob",
+        "Size": 860,
+        "Mode": "100644",
+        "SHA": "5efd8944af3030479f89d463f5a5a9ff02637fd0"
+      },
+      {
+        "Path": "lib/rack/auth/basic.rb",
+        "Type": "blob",
+        "Size": 1180,
+        "Mode": "100644",
+        "SHA": "67ffc49c1acac1962c11a1e36a64a7bc553b9e7e"
+      },
+      {
+        "Path": "lib/rack/bad_request.rb",
+        "Type": "blob",
+        "Size": 164,
+        "Mode": "100644",
+        "SHA": "8eaa94e671dc63480ea643a0547da1906b5092c4"
+      },
+      {
+        "Path": "lib/rack/body_proxy.rb",
+        "Type": "blob",
+        "Size": 1486,
+        "Mode": "100644",
+        "SHA": "c32b5a0eb7aa23626f5c1492d9f32b82dcb338ab"
+      },
+      {
+        "Path": "lib/rack/builder.rb",
+        "Type": "blob",
+        "Size": 9136,
+        "Mode": "100644",
+        "SHA": "ecd7335e6f03d0f0ed7866e10a9d59b4e5fb8d99"
+      },
+      {
+        "Path": "lib/rack/cascade.rb",
+        "Type": "blob",
+        "Size": 2212,
+        "Mode": "100644",
+        "SHA": "9c952fd769c1f188cb75c4e1a6596b1fcaf52b8b"
+      },
+      {
+        "Path": "lib/rack/common_logger.rb",
+        "Type": "blob",
+        "Size": 3210,
+        "Mode": "100644",
+        "SHA": "940b8beade59a28be255867232fd034ed7e929e6"
+      },
+      {
+        "Path": "lib/rack/conditional_get.rb",
+        "Type": "blob",
+        "Size": 3041,
+        "Mode": "100644",
+        "SHA": "4e83381057897cbf791d12f3a52cc401edfc09c3"
+      },
+      {
+        "Path": "lib/rack/config.rb",
+        "Type": "blob",
+        "Size": 410,
+        "Mode": "100644",
+        "SHA": "41f6f7dd57314bea3092932a04c104570cded304"
+      },
+      {
+        "Path": "lib/rack/constants.rb",
+        "Type": "blob",
+        "Size": 2818,
+        "Mode": "100644",
+        "SHA": "777291b17ac4584140a20585c20a413d79de5fa0"
+      },
+      {
+        "Path": "lib/rack/content_length.rb",
+        "Type": "blob",
+        "Size": 806,
+        "Mode": "100644",
+        "SHA": "cbac93abcf37ec442babf308794206d2ff1524e7"
+      },
+      {
+        "Path": "lib/rack/content_type.rb",
+        "Type": "blob",
+        "Size": 695,
+        "Mode": "100644",
+        "SHA": "19f07824f563bc197c6f92a695d50f29f687ee55"
+      },
+      {
+        "Path": "lib/rack/deflater.rb",
+        "Type": "blob",
+        "Size": 6323,
+        "Mode": "100644",
+        "SHA": "92c2ee05961aa7ca71a13699f7510a413edba5b4"
+      },
+      {
+        "Path": "lib/rack/directory.rb",
+        "Type": "blob",
+        "Size": 6638,
+        "Mode": "100644",
+        "SHA": "7557f66285517c111104f6706615e0ace4644e89"
+      },
+      {
+        "Path": "lib/rack/etag.rb",
+        "Type": "blob",
+        "Size": 1971,
+        "Mode": "100644",
+        "SHA": "d9701d3ca88b60b576242f5f98b925ede10e0698"
+      },
+      {
+        "Path": "lib/rack/events.rb",
+        "Type": "blob",
+        "Size": 5296,
+        "Mode": "100644",
+        "SHA": "1e73c9d9d8edfbd13c9db37b1c20ec96e030029f"
+      },
+      {
+        "Path": "lib/rack/files.rb",
+        "Type": "blob",
+        "Size": 6284,
+        "Mode": "100644",
+        "SHA": "e5fdcfe51ee8c48e3476fc548d0ffcf731603f6b"
+      },
+      {
+        "Path": "lib/rack/head.rb",
+        "Type": "blob",
+        "Size": 457,
+        "Mode": "100644",
+        "SHA": "83d4b4a97ce331a94aae589c44504e78e97760c2"
+      },
+      {
+        "Path": "lib/rack/headers.rb",
+        "Type": "blob",
+        "Size": 4754,
+        "Mode": "100644",
+        "SHA": "54f0c16c2d726ea2b1225d118f86d12c5f37c0c6"
+      },
+      {
+        "Path": "lib/rack/lint.rb",
+        "Type": "blob",
+        "Size": 44990,
+        "Mode": "100644",
+        "SHA": "9ff32179f794f86fd8b69d662ab33ccc2a0d0a67"
+      },
+      {
+        "Path": "lib/rack/lock.rb",
+        "Type": "blob",
+        "Size": 573,
+        "Mode": "100644",
+        "SHA": "342123a0f0880ea806888d4ddf787c1ff40b4419"
+      },
+      {
+        "Path": "lib/rack/media_type.rb",
+        "Type": "blob",
+        "Size": 1885,
+        "Mode": "100644",
+        "SHA": "29ad11790739822e69667a48695acdc4a1bff40b"
+      },
+      {
+        "Path": "lib/rack/method_override.rb",
+        "Type": "blob",
+        "Size": 1817,
+        "Mode": "100644",
+        "SHA": "e58201caadb62a91a55a5fc6781a8f4fa0a43d16"
+      },
+      {
+        "Path": "lib/rack/mime.rb",
+        "Type": "blob",
+        "Size": 33420,
+        "Mode": "100644",
+        "SHA": "0d7b643a4cc1ba157402076672a97caab624662f"
+      },
+      {
+        "Path": "lib/rack/mock.rb",
+        "Type": "blob",
+        "Size": 63,
+        "Mode": "100644",
+        "SHA": "5e5c457c728c42850d78c86aaa448af261569207"
+      },
+      {
+        "Path": "lib/rack/mock_request.rb",
+        "Type": "blob",
+        "Size": 5539,
+        "Mode": "100644",
+        "SHA": "7078a933216c84f367c1123ccfe512c1ac77073e"
+      },
+      {
+        "Path": "lib/rack/mock_response.rb",
+        "Type": "blob",
+        "Size": 3994,
+        "Mode": "100644",
+        "SHA": "88e7f222acd163ea915382bc262d368fc5764690"
+      },
+      {
+        "Path": "lib/rack/multipart.rb",
+        "Type": "blob",
+        "Size": 1379,
+        "Mode": "100644",
+        "SHA": "a4eb00e0f5b5f6c1f1d4471a320285ef24a7c1ac"
+      },
+      {
+        "Path": "lib/rack/multipart",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "fc4fa384d50cf26ed2c057f69a4dd42c230b42d0"
+      },
+      {
+        "Path": "lib/rack/multipart/generator.rb",
+        "Type": "blob",
+        "Size": 2502,
+        "Mode": "100644",
+        "SHA": "30d7f51dd1983ffce6b70ffda01ae42607321411"
+      },
+      {
+        "Path": "lib/rack/multipart/parser.rb",
+        "Type": "blob",
+        "Size": 23319,
+        "Mode": "100644",
+        "SHA": "8e86a9083a1947859d182c2196e6a696a5c06da7"
+      },
+      {
+        "Path": "lib/rack/multipart/uploaded_file.rb",
+        "Type": "blob",
+        "Size": 3547,
+        "Mode": "100644",
+        "SHA": "d9a111827f7b0c123d9991c63621139fe297a5af"
+      },
+      {
+        "Path": "lib/rack/null_logger.rb",
+        "Type": "blob",
+        "Size": 1213,
+        "Mode": "100644",
+        "SHA": "52fc125c3dc4cf9e21e551cf15f0836d0b5c4dd3"
+      },
+      {
+        "Path": "lib/rack/query_parser.rb",
+        "Type": "blob",
+        "Size": 8809,
+        "Mode": "100644",
+        "SHA": "e815f455eb9a05e8a253ebcd085c43b4f00f1bb4"
+      },
+      {
+        "Path": "lib/rack/ractorize.rb",
+        "Type": "blob",
+        "Size": 760,
+        "Mode": "100644",
+        "SHA": "aa465cc9f0272038cde2759350672f6a43c339af"
+      },
+      {
+        "Path": "lib/rack/recursive.rb",
+        "Type": "blob",
+        "Size": 1822,
+        "Mode": "100644",
+        "SHA": "0945d3227814b952ddf4993590569c84f04ef8c6"
+      },
+      {
+        "Path": "lib/rack/reloader.rb",
+        "Type": "blob",
+        "Size": 3095,
+        "Mode": "100644",
+        "SHA": "a15064acc498b2b02e29d0399b514f0182912e38"
+      },
+      {
+        "Path": "lib/rack/request.rb",
+        "Type": "blob",
+        "Size": 29107,
+        "Mode": "100644",
+        "SHA": "d5c3085aa54cea2c0706c5bd1e142c0598e1a666"
+      },
+      {
+        "Path": "lib/rack/response.rb",
+        "Type": "blob",
+        "Size": 11981,
+        "Mode": "100644",
+        "SHA": "ece451db118ca89ffeee7d23ac15c0a85ae51afe"
+      },
+      {
+        "Path": "lib/rack/rewindable_input.rb",
+        "Type": "blob",
+        "Size": 3259,
+        "Mode": "100644",
+        "SHA": "99c45e8cb2be5c748259e240802a8d0ff9509904"
+      },
+      {
+        "Path": "lib/rack/runtime.rb",
+        "Type": "blob",
+        "Size": 870,
+        "Mode": "100644",
+        "SHA": "a1bfa696e3fae923385777b6bbb953ec0c205395"
+      },
+      {
+        "Path": "lib/rack/sendfile.rb",
+        "Type": "blob",
+        "Size": 7020,
+        "Mode": "100644",
+        "SHA": "e3bd35ec32c0c9e682fd2918177a1a20d2d26942"
+      },
+      {
+        "Path": "lib/rack/show_exceptions.rb",
+        "Type": "blob",
+        "Size": 14459,
+        "Mode": "100644",
+        "SHA": "90deee4a397bfa2d7fa72d6ecb0b1b2626101655"
+      },
+      {
+        "Path": "lib/rack/show_status.rb",
+        "Type": "blob",
+        "Size": 3644,
+        "Mode": "100644",
+        "SHA": "7b1a62ff8ceab3bba6e2d18a5a0e91e9073e67a6"
+      },
+      {
+        "Path": "lib/rack/static.rb",
+        "Type": "blob",
+        "Size": 6429,
+        "Mode": "100644",
+        "SHA": "b65b93e825e90a65d05b101311fb145d6b6133a6"
+      },
+      {
+        "Path": "lib/rack/tempfile_reaper.rb",
+        "Type": "blob",
+        "Size": 1055,
+        "Mode": "100644",
+        "SHA": "12e3cc781c8d6ff485baa93ce53148753d6ebc64"
+      },
+      {
+        "Path": "lib/rack/urlmap.rb",
+        "Type": "blob",
+        "Size": 2886,
+        "Mode": "100644",
+        "SHA": "c48776c26aa01d279176eab8097b7a6fd24b856f"
+      },
+      {
+        "Path": "lib/rack/utils.rb",
+        "Type": "blob",
+        "Size": 24304,
+        "Mode": "100644",
+        "SHA": "d8bc3fc65f62acc715d9f15c91add232f7bfaaea"
+      },
+      {
+        "Path": "lib/rack/version.rb",
+        "Type": "blob",
+        "Size": 391,
+        "Mode": "100644",
+        "SHA": "1635d4eab18f561253a6f06a23030a54c9efdf69"
+      },
+      {
+        "Path": "rack.gemspec",
+        "Type": "blob",
+        "Size": 1425,
+        "Mode": "100644",
+        "SHA": "28a6617ca4eda7d0f0dd4e18cac3493ff83e17e7"
+      },
+      {
+        "Path": "test.rb",
+        "Type": "blob",
+        "Size": 1543,
+        "Mode": "100755",
+        "SHA": "5c01a76e33b3ecb952ba2fb7864f95915e5a5538"
+      },
+      {
+        "Path": "test",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "f4beb1d706d7014dc17596c83c5e2c66e8645053"
+      },
+      {
+        "Path": "test/.bacon",
+        "Type": "blob",
+        "Size": 0,
+        "Mode": "100644",
+        "SHA": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      {
+        "Path": "test/builder",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "83bcb10ae2f06c68d15fc36d1ace25ed45b9ba54"
+      },
+      {
+        "Path": "test/builder/an_underscore_app.rb",
+        "Type": "blob",
+        "Size": 138,
+        "Mode": "100644",
+        "SHA": "4f6e87e50349a03914e95ef75b9d7ae16672fa7d"
+      },
+      {
+        "Path": "test/builder/bom.ru",
+        "Type": "blob",
+        "Size": 70,
+        "Mode": "100644",
+        "SHA": "6f491f0f7fa3aaec4dbb5db1bbcb690ec38d9f71"
+      },
+      {
+        "Path": "test/builder/comment.ru",
+        "Type": "blob",
+        "Size": 115,
+        "Mode": "100644",
+        "SHA": "7d03db8bfaea2d922e37617aca9c72cfdca8d2e2"
+      },
+      {
+        "Path": "test/builder/end.ru",
+        "Type": "blob",
+        "Size": 154,
+        "Mode": "100644",
+        "SHA": "f1dcf5660b619f1003786a2d9f464538769b5160"
+      },
+      {
+        "Path": "test/builder/frozen.ru",
+        "Type": "blob",
+        "Size": 164,
+        "Mode": "100644",
+        "SHA": "71ccc54d7f0e7527d5b020fa3d48e2f769d906b3"
+      },
+      {
+        "Path": "test/builder/line.ru",
+        "Type": "blob",
+        "Size": 110,
+        "Mode": "100644",
+        "SHA": "03a8e017c5b1ff8d50157cee0b3d47081c491cf8"
+      },
+      {
+        "Path": "test/builder/options.ru",
+        "Type": "blob",
+        "Size": 127,
+        "Mode": "100644",
+        "SHA": "5b3b42b6b7175ac5cd5643a78ceb82f189d916da"
+      },
+      {
+        "Path": "test/cgi",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "18e8fdf2a7771edf8b663a9a6d939ba3e79ae89e"
+      },
+      {
+        "Path": "test/cgi/assets",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "5fe7306609a4730b5cfa54d9490a524a5e797e28"
+      },
+      {
+        "Path": "test/cgi/assets/folder",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "7914c527714cba09a8757393282324b4919643cd"
+      },
+      {
+        "Path": "test/cgi/assets/folder/test.js",
+        "Type": "blob",
+        "Size": 17,
+        "Mode": "100644",
+        "SHA": "6874e45ae29e4208cdeb582134ae3c733a45ee7e"
+      },
+      {
+        "Path": "test/cgi/assets/fonts",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "b1173e2063a7f29d8a36bc326512465ccdcb3f65"
+      },
+      {
+        "Path": "test/cgi/assets/fonts/font.eot",
+        "Type": "blob",
+        "Size": 17,
+        "Mode": "100644",
+        "SHA": "6874e45ae29e4208cdeb582134ae3c733a45ee7e"
+      },
+      {
+        "Path": "test/cgi/assets/images",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "6754a9d961c679682e8e6b1a169638d50dd8d1fb"
+      },
+      {
+        "Path": "test/cgi/assets/images/favicon.ico",
+        "Type": "blob",
+        "Size": 0,
+        "Mode": "100644",
+        "SHA": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      {
+        "Path": "test/cgi/assets/images/image.png",
+        "Type": "blob",
+        "Size": 17,
+        "Mode": "100644",
+        "SHA": "6874e45ae29e4208cdeb582134ae3c733a45ee7e"
+      },
+      {
+        "Path": "test/cgi/assets/index.html",
+        "Type": "blob",
+        "Size": 17,
+        "Mode": "100644",
+        "SHA": "6874e45ae29e4208cdeb582134ae3c733a45ee7e"
+      },
+      {
+        "Path": "test/cgi/assets/javascripts",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "4d062957773c9e540986a279f4e20645cd385303"
+      },
+      {
+        "Path": "test/cgi/assets/javascripts/app.js",
+        "Type": "blob",
+        "Size": 17,
+        "Mode": "100644",
+        "SHA": "6874e45ae29e4208cdeb582134ae3c733a45ee7e"
+      },
+      {
+        "Path": "test/cgi/assets/stylesheets",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "aef70c83fd30c6be6cc8cd1fa1e4816d91313d35"
+      },
+      {
+        "Path": "test/cgi/assets/stylesheets/app.css",
+        "Type": "blob",
+        "Size": 17,
+        "Mode": "100644",
+        "SHA": "6874e45ae29e4208cdeb582134ae3c733a45ee7e"
+      },
+      {
+        "Path": "test/cgi/rackup_stub.rb",
+        "Type": "blob",
+        "Size": 108,
+        "Mode": "100644",
+        "SHA": "5f0e4365e6d74b4a3bb712f5541669920cefb618"
+      },
+      {
+        "Path": "test/cgi/sample_rackup.ru",
+        "Type": "blob",
+        "Size": 94,
+        "Mode": "100644",
+        "SHA": "ec154da3a078eda35e7be2c6920c92e125a1be5c"
+      },
+      {
+        "Path": "test/cgi/test",
+        "Type": "blob",
+        "Size": 209,
+        "Mode": "100644",
+        "SHA": "546ad906194fbc9e43921e4b690f4b2db7bc54dd"
+      },
+      {
+        "Path": "test/cgi/test+directory",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "99ac02f5ea1b07f24ab25cb50b93e8db29102b01"
+      },
+      {
+        "Path": "test/cgi/test+directory/test+file",
+        "Type": "blob",
+        "Size": 23,
+        "Mode": "100644",
+        "SHA": "f4273fb83e884e7396ee8f0813f8c45fe3d3cb26"
+      },
+      {
+        "Path": "test/cgi/test.gz",
+        "Type": "blob",
+        "Size": 187,
+        "Mode": "100644",
+        "SHA": "a23c856c8e9f2b68ace458f61f8343e6c7f0d131"
+      },
+      {
+        "Path": "test/cgi/test.ru",
+        "Type": "blob",
+        "Size": 112,
+        "Mode": "100644",
+        "SHA": "d13f288fbda950c1d8f26a2b1fea96efa6af423d"
+      },
+      {
+        "Path": "test/gemloader.rb",
+        "Type": "blob",
+        "Size": 329,
+        "Mode": "100644",
+        "SHA": "f38c803607cb95a8eb599a6de01c775ba17d5433"
+      },
+      {
+        "Path": "test/helper.rb",
+        "Type": "blob",
+        "Size": 1065,
+        "Mode": "100644",
+        "SHA": "7b22f2c8434e0fd0d07c7b101f41574db0d18bb5"
+      },
+      {
+        "Path": "test/multipart",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "b779625783e27dd146d13fbeeaf3fd89189f5da8"
+      },
+      {
+        "Path": "test/multipart/bad_robots",
+        "Type": "blob",
+        "Size": 17746,
+        "Mode": "100644",
+        "SHA": "c4b8258f024d1d7ceff0bae2264bbc6b72f32644"
+      },
+      {
+        "Path": "test/multipart/binary",
+        "Type": "blob",
+        "Size": 26667,
+        "Mode": "100644",
+        "SHA": "ee2e7de2dea352ab65ca72d14e6831c494cb0afa"
+      },
+      {
+        "Path": "test/multipart/content_type_and_no_disposition",
+        "Type": "blob",
+        "Size": 78,
+        "Mode": "100644",
+        "SHA": "7b8fcb8c109b4357a6e6af92a55abd8f864e89be"
+      },
+      {
+        "Path": "test/multipart/content_type_and_no_filename",
+        "Type": "blob",
+        "Size": 123,
+        "Mode": "100644",
+        "SHA": "05ce5041b6cae8c5d901fe32512630e453ed0e56"
+      },
+      {
+        "Path": "test/multipart/content_type_and_unknown_charset",
+        "Type": "blob",
+        "Size": 127,
+        "Mode": "100644",
+        "SHA": "cf9c14c7744b1fa0d8aa9567b44dceeeb98381be"
+      },
+      {
+        "Path": "test/multipart/empty",
+        "Type": "blob",
+        "Size": 191,
+        "Mode": "100644",
+        "SHA": "d0f22e578c2c00ebe261145c6fc2ad5da682b5b6"
+      },
+      {
+        "Path": "test/multipart/end_boundary_first",
+        "Type": "blob",
+        "Size": 150,
+        "Mode": "100644",
+        "SHA": "282c7ff777248705a355f6560cac9a8679a65d85"
+      },
+      {
+        "Path": "test/multipart/fail_16384_nofile",
+        "Type": "blob",
+        "Size": 27258,
+        "Mode": "100644",
+        "SHA": "b10ac5bafe128dee35458c124eead7e7b9883168"
+      },
+      {
+        "Path": "test/multipart/file1.txt",
+        "Type": "blob",
+        "Size": 8,
+        "Mode": "100644",
+        "SHA": "0839b2e9412b314cb8bb9a20f587aa13752ae310"
+      },
+      {
+        "Path": "test/multipart/filename_and_modification_param",
+        "Type": "blob",
+        "Size": 240,
+        "Mode": "100644",
+        "SHA": "e9af861846c74954d59103ef548ab3bc61570494"
+      },
+      {
+        "Path": "test/multipart/filename_and_no_name",
+        "Type": "blob",
+        "Size": 114,
+        "Mode": "100644",
+        "SHA": "88953d3fe648c976463d0773792513824ad04e51"
+      },
+      {
+        "Path": "test/multipart/filename_multi",
+        "Type": "blob",
+        "Size": 158,
+        "Mode": "100644",
+        "SHA": "9ab5e1ef5f933f8dcab00b20eee8eed3cfd7db19"
+      },
+      {
+        "Path": "test/multipart/filename_with_encoded_words",
+        "Type": "blob",
+        "Size": 199,
+        "Mode": "100644",
+        "SHA": "09b3d91a3dd8daa9a36b07262f6a3f43652d22f6"
+      },
+      {
+        "Path": "test/multipart/filename_with_escaped_quotes",
+        "Type": "blob",
+        "Size": 148,
+        "Mode": "100644",
+        "SHA": "f096db5feac6985cb6b09481cc7c476a07efe539"
+      },
+      {
+        "Path": "test/multipart/filename_with_escaped_quotes_and_modification_param",
+        "Type": "blob",
+        "Size": 252,
+        "Mode": "100644",
+        "SHA": "a1b1ed0c006e6819b2c2e5dfc7631f2a2853d9fb"
+      },
+      {
+        "Path": "test/multipart/filename_with_null_byte",
+        "Type": "blob",
+        "Size": 195,
+        "Mode": "100644",
+        "SHA": "26e28674dbc99da29da9836f62cf0c23d8af1862"
+      },
+      {
+        "Path": "test/multipart/filename_with_percent_escaped_quotes",
+        "Type": "blob",
+        "Size": 149,
+        "Mode": "100644",
+        "SHA": "af2394b1bb92dfc05d2e8508aa136eb51642788b"
+      },
+      {
+        "Path": "test/multipart/filename_with_plus",
+        "Type": "blob",
+        "Size": 140,
+        "Mode": "100644",
+        "SHA": "e169a11ee6d47b576506b1b644dafbf40d15d6ce"
+      },
+      {
+        "Path": "test/multipart/filename_with_single_quote",
+        "Type": "blob",
+        "Size": 194,
+        "Mode": "100644",
+        "SHA": "8412701b498bb691b704e4d0f11f74efaa9b867e"
+      },
+      {
+        "Path": "test/multipart/filename_with_unescaped_percentages",
+        "Type": "blob",
+        "Size": 218,
+        "Mode": "100644",
+        "SHA": "a5ba7aeaf1c001bf9ece013540e0d2c817ce6e1e"
+      },
+      {
+        "Path": "test/multipart/filename_with_unescaped_percentages2",
+        "Type": "blob",
+        "Size": 203,
+        "Mode": "100644",
+        "SHA": "57023461a3382d42143eb2f73ac3ee6bc72a1e2b"
+      },
+      {
+        "Path": "test/multipart/filename_with_unescaped_percentages3",
+        "Type": "blob",
+        "Size": 202,
+        "Mode": "100644",
+        "SHA": "f8d9114e18f986df0b80c5ea741e166bcbb38344"
+      },
+      {
+        "Path": "test/multipart/filename_with_unescaped_quotes",
+        "Type": "blob",
+        "Size": 147,
+        "Mode": "100644",
+        "SHA": "6cd7c0da1b847f0d340fef296eb5ca1c299ea18e"
+      },
+      {
+        "Path": "test/multipart/ie",
+        "Type": "blob",
+        "Size": 176,
+        "Mode": "100644",
+        "SHA": "ac8151b12f3ef5ad4bf5750b4f0cfefbadebe2e3"
+      },
+      {
+        "Path": "test/multipart/invalid_character",
+        "Type": "blob",
+        "Size": 131,
+        "Mode": "100644",
+        "SHA": "324e6400621f5d7b85093a93a334ee9441eff060"
+      },
+      {
+        "Path": "test/multipart/mixed_files",
+        "Type": "blob",
+        "Size": 433,
+        "Mode": "100644",
+        "SHA": "e18018e91e48d90da079d27b327d779895d57e58"
+      },
+      {
+        "Path": "test/multipart/multiple_encodings",
+        "Type": "blob",
+        "Size": 205,
+        "Mode": "100644",
+        "SHA": "29f5fe9937f79aa12681544d369d0fe4f9d03436"
+      },
+      {
+        "Path": "test/multipart/nested",
+        "Type": "blob",
+        "Size": 209,
+        "Mode": "100644",
+        "SHA": "054ad3d00279af18601b64f8696b4110fc22cda8"
+      },
+      {
+        "Path": "test/multipart/none",
+        "Type": "blob",
+        "Size": 156,
+        "Mode": "100644",
+        "SHA": "121f85fc91be52541bd689d2f4854718ae0c9fd6"
+      },
+      {
+        "Path": "test/multipart/preceding_boundary",
+        "Type": "blob",
+        "Size": 137,
+        "Mode": "100644",
+        "SHA": "b65e647b67f615181ea4894218313d821f783f56"
+      },
+      {
+        "Path": "test/multipart/quoted",
+        "Type": "blob",
+        "Size": 313,
+        "Mode": "100644",
+        "SHA": "8593bc20a2ecfd80e2ff4530cd93c45354c88796"
+      },
+      {
+        "Path": "test/multipart/rack-logo.png",
+        "Type": "blob",
+        "Size": 26473,
+        "Mode": "100644",
+        "SHA": "280650cabb95ff56192d0f1e35c25b38b0036f4b"
+      },
+      {
+        "Path": "test/multipart/robust_field_separation",
+        "Type": "blob",
+        "Size": 104,
+        "Mode": "100644",
+        "SHA": "9fca06350bc3c3594ae1ebd3e828bda7a1616e39"
+      },
+      {
+        "Path": "test/multipart/semicolon",
+        "Type": "blob",
+        "Size": 127,
+        "Mode": "100644",
+        "SHA": "d3702a2ba1e01b32ebec90136a03582251cf6a4c"
+      },
+      {
+        "Path": "test/multipart/space case.txt",
+        "Type": "blob",
+        "Size": 8,
+        "Mode": "100644",
+        "SHA": "0839b2e9412b314cb8bb9a20f587aa13752ae310"
+      },
+      {
+        "Path": "test/multipart/text",
+        "Type": "blob",
+        "Size": 307,
+        "Mode": "100644",
+        "SHA": "ac340228cf65cc74ec7520a43d13c363bac811f4"
+      },
+      {
+        "Path": "test/multipart/three_files_three_fields",
+        "Type": "blob",
+        "Size": 878,
+        "Mode": "100644",
+        "SHA": "8917424eaad8f939ef71ac14aa4a6744c0600454"
+      },
+      {
+        "Path": "test/multipart/unity3d_wwwform",
+        "Type": "blob",
+        "Size": 303,
+        "Mode": "100644",
+        "SHA": "1089a690b1ad5927412554e5a6435f9012b217c7"
+      },
+      {
+        "Path": "test/multipart/webkit",
+        "Type": "blob",
+        "Size": 811,
+        "Mode": "100644",
+        "SHA": "044d4db375ef4b1740720432247ca4703dee0ea2"
+      },
+      {
+        "Path": "test/psych_fix.rb",
+        "Type": "blob",
+        "Size": 273,
+        "Mode": "100644",
+        "SHA": "aed11eeba82727cd1afe60e7ca6157b4550113c0"
+      },
+      {
+        "Path": "test/rackup",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "b8882b4b1a9dd5443b82c6c3e677d257ffb1970f"
+      },
+      {
+        "Path": "test/rackup/.gitignore",
+        "Type": "blob",
+        "Size": 11,
+        "Mode": "100644",
+        "SHA": "2f9d279a62f672883b107397c0ce0a5d19fc234a"
+      },
+      {
+        "Path": "test/rackup/config.ru",
+        "Type": "blob",
+        "Size": 858,
+        "Mode": "100644",
+        "SHA": "267ffb506ab43ad4c6be9aa1a2f658b98526f86d"
+      },
+      {
+        "Path": "test/spec_auth_basic.rb",
+        "Type": "blob",
+        "Size": 3073,
+        "Mode": "100644",
+        "SHA": "6d4a1f03d6dd651bdf05b9ccce0ebfa6555e87e7"
+      },
+      {
+        "Path": "test/spec_body_proxy.rb",
+        "Type": "blob",
+        "Size": 3259,
+        "Mode": "100644",
+        "SHA": "c003713ad89763d32ca3496e968cd6ba56ca83a5"
+      },
+      {
+        "Path": "test/spec_builder.rb",
+        "Type": "blob",
+        "Size": 10565,
+        "Mode": "100644",
+        "SHA": "a08a912c3523e9272195b5be32a88a4d6110e91b"
+      },
+      {
+        "Path": "test/spec_cascade.rb",
+        "Type": "blob",
+        "Size": 3157,
+        "Mode": "100644",
+        "SHA": "50dd2805b33c00108015c97a663b92342bd20ed8"
+      },
+      {
+        "Path": "test/spec_common_logger.rb",
+        "Type": "blob",
+        "Size": 4647,
+        "Mode": "100644",
+        "SHA": "a767ff54c40564aa6d0af3b91e789a928136a233"
+      },
+      {
+        "Path": "test/spec_conditional_get.rb",
+        "Type": "blob",
+        "Size": 5198,
+        "Mode": "100644",
+        "SHA": "fe38c6cb0caf44bcd58c0380b5f34f81a1607db9"
+      },
+      {
+        "Path": "test/spec_config.rb",
+        "Type": "blob",
+        "Size": 671,
+        "Mode": "100644",
+        "SHA": "ce5f777776342aed616135bfe52f1042bcbc9474"
+      },
+      {
+        "Path": "test/spec_content_length.rb",
+        "Type": "blob",
+        "Size": 2954,
+        "Mode": "100644",
+        "SHA": "cffe8cb45957b613994dd53b0c9f81df23c4d580"
+      },
+      {
+        "Path": "test/spec_content_type.rb",
+        "Type": "blob",
+        "Size": 1379,
+        "Mode": "100644",
+        "SHA": "fff687080f536312c1e4d7ddbc8c814127615367"
+      },
+      {
+        "Path": "test/spec_deflater.rb",
+        "Type": "blob",
+        "Size": 17159,
+        "Mode": "100644",
+        "SHA": "3934a27448523c9290946aba8060c26704f8bcaf"
+      },
+      {
+        "Path": "test/spec_directory.rb",
+        "Type": "blob",
+        "Size": 7999,
+        "Mode": "100644",
+        "SHA": "b7aafb31ea8dabd31f857867b5b172ac99df3b74"
+      },
+      {
+        "Path": "test/spec_etag.rb",
+        "Type": "blob",
+        "Size": 4618,
+        "Mode": "100644",
+        "SHA": "75eb399cfcd1f452af1c2e04e0125c66b173ac23"
+      },
+      {
+        "Path": "test/spec_events.rb",
+        "Type": "blob",
+        "Size": 4636,
+        "Mode": "100644",
+        "SHA": "9c7f0faea1ea0f52a12abff291e7c516f964b7d1"
+      },
+      {
+        "Path": "test/spec_files.rb",
+        "Type": "blob",
+        "Size": 11624,
+        "Mode": "100644",
+        "SHA": "bdc433384053eba1b30da58d69a532c77799413a"
+      },
+      {
+        "Path": "test/spec_head.rb",
+        "Type": "blob",
+        "Size": 1472,
+        "Mode": "100644",
+        "SHA": "e98b5ef2cb122e64b854b83bd2b9e8aab7fd400d"
+      },
+      {
+        "Path": "test/spec_headers.rb",
+        "Type": "blob",
+        "Size": 14901,
+        "Mode": "100644",
+        "SHA": "a8035fbef0ed4e65374b310d79ddcad40165342f"
+      },
+      {
+        "Path": "test/spec_lint.rb",
+        "Type": "blob",
+        "Size": 44027,
+        "Mode": "100644",
+        "SHA": "f4a5bfcd874e8b3abbee3f3b0f6bff437c7ba8c7"
+      },
+      {
+        "Path": "test/spec_lock.rb",
+        "Type": "blob",
+        "Size": 4896,
+        "Mode": "100644",
+        "SHA": "dfc07449c9062dd343e5bf4cf85fe4b7f2326f46"
+      },
+      {
+        "Path": "test/spec_media_type.rb",
+        "Type": "blob",
+        "Size": 2274,
+        "Mode": "100644",
+        "SHA": "595a47e63ffc1e58ea54a78fec347c3b6b4746b4"
+      },
+      {
+        "Path": "test/spec_method_override.rb",
+        "Type": "blob",
+        "Size": 6857,
+        "Mode": "100644",
+        "SHA": "43e536daab7cd8b7a7d24270cc802307a0706f7c"
+      },
+      {
+        "Path": "test/spec_mime.rb",
+        "Type": "blob",
+        "Size": 1909,
+        "Mode": "100644",
+        "SHA": "4a8ff7c97a2669732e186313680fce77fa6d0c06"
+      },
+      {
+        "Path": "test/spec_mock_request.rb",
+        "Type": "blob",
+        "Size": 11384,
+        "Mode": "100644",
+        "SHA": "a563c20c911ead2c46760337964009fd1fb0eb76"
+      },
+      {
+        "Path": "test/spec_mock_response.rb",
+        "Type": "blob",
+        "Size": 11621,
+        "Mode": "100644",
+        "SHA": "29298ef55b2b11ef30ac150768b31106ecb3d5c1"
+      },
+      {
+        "Path": "test/spec_multipart.rb",
+        "Type": "blob",
+        "Size": 57036,
+        "Mode": "100644",
+        "SHA": "d1d91442f61c17c482ad216f906968da9d57afa2"
+      },
+      {
+        "Path": "test/spec_null_logger.rb",
+        "Type": "blob",
+        "Size": 655,
+        "Mode": "100644",
+        "SHA": "65ddb279e2b306f821ac0e553b36fb871fc5bb21"
+      },
+      {
+        "Path": "test/spec_query_parser.rb",
+        "Type": "blob",
+        "Size": 4064,
+        "Mode": "100644",
+        "SHA": "69efd76a45a86b0da74d819a43815034eac12039"
+      },
+      {
+        "Path": "test/spec_recursive.rb",
+        "Type": "blob",
+        "Size": 2050,
+        "Mode": "100644",
+        "SHA": "650626c0f9ee320847c0470b49a9fa6d6348b864"
+      },
+      {
+        "Path": "test/spec_request.rb",
+        "Type": "blob",
+        "Size": 92062,
+        "Mode": "100644",
+        "SHA": "00733bfd2e593eb81b71b803ed39ba10697b253f"
+      },
+      {
+        "Path": "test/spec_response.rb",
+        "Type": "blob",
+        "Size": 24922,
+        "Mode": "100644",
+        "SHA": "8e8ac83910c74e7045dd2a587c58bdc87e018f52"
+      },
+      {
+        "Path": "test/spec_rewindable_input.rb",
+        "Type": "blob",
+        "Size": 4499,
+        "Mode": "100644",
+        "SHA": "20c1def5bf0d060eb185ccec61e33a789fdda45f"
+      },
+      {
+        "Path": "test/spec_runtime.rb",
+        "Type": "blob",
+        "Size": 1722,
+        "Mode": "100644",
+        "SHA": "5f23dce742cc7efdb5390816358ea928d67460bf"
+      },
+      {
+        "Path": "test/spec_sendfile.rb",
+        "Type": "blob",
+        "Size": 13198,
+        "Mode": "100644",
+        "SHA": "8711fcce79524b99089d77cfe869d6caeecad87a"
+      },
+      {
+        "Path": "test/spec_show_exceptions.rb",
+        "Type": "blob",
+        "Size": 5747,
+        "Mode": "100644",
+        "SHA": "5248ca2bc45fba04b32a0bf25bb39c996a4136df"
+      },
+      {
+        "Path": "test/spec_show_status.rb",
+        "Type": "blob",
+        "Size": 3849,
+        "Mode": "100644",
+        "SHA": "14c3da45a58d0212de9bd6e908a184d5e56fdfcf"
+      },
+      {
+        "Path": "test/spec_static.rb",
+        "Type": "blob",
+        "Size": 12387,
+        "Mode": "100644",
+        "SHA": "8f2b0cacd066b2093a0faf1b163e189df93208e3"
+      },
+      {
+        "Path": "test/spec_tempfile_reaper.rb",
+        "Type": "blob",
+        "Size": 4561,
+        "Mode": "100644",
+        "SHA": "1fedb55a3c3c07933cda5c4931bd1edc9479d057"
+      },
+      {
+        "Path": "test/spec_urlmap.rb",
+        "Type": "blob",
+        "Size": 9737,
+        "Mode": "100644",
+        "SHA": "c3ecffe29e3a7c21d4716658e352cad22d94464d"
+      },
+      {
+        "Path": "test/spec_utils.rb",
+        "Type": "blob",
+        "Size": 34632,
+        "Mode": "100644",
+        "SHA": "de26d93adc5675d2d70e2eae09e0bf87c8460e41"
+      },
+      {
+        "Path": "test/spec_version.rb",
+        "Type": "blob",
+        "Size": 505,
+        "Mode": "100644",
+        "SHA": "2ba61c8e46c97f6c23dcea3dd71345388fc23b63"
+      },
+      {
+        "Path": "test/static",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "045458333314e5b6d7abaa2c43e0c673b99d5363"
+      },
+      {
+        "Path": "test/static/another",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "3fe137ae52255f58882c51eddfd73afcd00e6ad8"
+      },
+      {
+        "Path": "test/static/another/index.html",
+        "Type": "blob",
+        "Size": 15,
+        "Mode": "100644",
+        "SHA": "d93e6fc34c114f21c122b205defb31ff56b53319"
+      },
+      {
+        "Path": "test/static/foo.html",
+        "Type": "blob",
+        "Size": 10,
+        "Mode": "100644",
+        "SHA": "0ab676f192916e626fc4b0a9536264b56220953f"
+      },
+      {
+        "Path": "test/static/index.html",
+        "Type": "blob",
+        "Size": 7,
+        "Mode": "100644",
+        "SHA": "fc2d9ad1e67ff63f192bbe93a298a963ea71239f"
+      }
+    ],
+    "Truncated": false,
+    "DepthLimited": false,
+    "MaxDepth": 12
+  },
+  "selected": [
+    "Gemfile",
+    "CONTRIBUTING.md",
+    "README.md",
+    ".github/workflows/depsreview.yaml",
+    ".github/workflows/documentation.yaml",
+    ".github/workflows/test-external.yaml",
+    ".github/workflows/test.yaml",
+    "test/cgi/assets/javascripts/app.js",
+    "test.rb",
+    "lib/rack.rb",
+    "test/gemloader.rb",
+    "test/helper.rb",
+    "test/psych_fix.rb",
+    "test/spec_auth_basic.rb"
+  ],
+  "consumed": {
+    "Files": [
+      {
+        "Path": "Gemfile",
+        "Content": "# frozen_string_literal: true\n\nsource 'https://rubygems.org'\n\ngemspec\n\ngroup :maintenance, optional: true do\n  gem \"rubocop\", require: false\n  gem \"rubocop-packaging\", require: false\nend\n\ngroup :doc do\n  if RUBY_ENGINE == \"jruby\"\n    gem \"rdoc\", \"\u003c 8\"\n  else\n    gem \"rdoc\"\n  end\nend\n\ngroup :test do\n  gem \"logger\"\n  gem \"webrick\"\n\n  unless ENV['CI'] == 'spec'\n    gem 'bake-test-external'\n  end\nend\n",
+        "Size": 400,
+        "Truncated": false
+      },
+      {
+        "Path": "CONTRIBUTING.md",
+        "Content": "# Contributing to Rack\n\nRack is work of [hundreds of\ncontributors](https://github.com/rack/rack/graphs/contributors). You're\nencouraged to submit [pull requests](https://github.com/rack/rack/pulls) and\n[propose features and discuss issues](https://github.com/rack/rack/issues).\n\n## Backports\n\nOnly security patches are ideal for backporting to non-main release versions. If\nyou're not sure if your bug fix is backportable, you should open a discussion to\ndiscuss it first.\n\nThe [Security Policy] documents which release versions will receive security\nbackports.\n\n## Fork the Project\n\nFork the [project on GitHub](https://github.com/rack/rack) and check out your\ncopy.\n\n```\ngit clone https://github.com/(your-github-username)/rack.git\ncd rack\ngit remote add upstream https://github.com/rack/rack.git\n```\n\n## Create a Topic Branch\n\nMake sure your fork is up-to-date and create a topic branch for your feature or\nbug fix.\n\n```\ngit checkout main\ngit pull upstream main\ngit checkout -b my-feature-branch\n```\n\n## Running All Tests\n\nInstall all dependencies.\n\n```\nbundle install\n```\n\nRun all tests.\n\n```\nbundle exec rake test\n```\n\n## Write Tests\n\nTry to write a test that reproduces the problem you're trying to fix or\ndescribes a feature that you want to build.\n\nWe definitely appreciate pull requests that highlight or reproduce a problem,\neven without a fix.\n\n## Write Code\n\nImplement your feature or bug fix.\n\nMake sure that all tests pass:\n\n```\nbundle exec rake test\n```\n\n## Write Documentation\n\nDocument any external behavior in the [README](README.md).\n\n## Update Changelog\n\nAdd a line to [CHANGELOG](CHANGELOG.md).\n\n## Commit Changes\n\nMake sure git knows your name and email address:\n\n```\ngit config --global user.name \"Your Name\"\ngit config --global user.email \"contributor@example.com\"\n```\n\nWriting good commit logs is important. A commit log should describe what changed\nand why.\n\n```\ngit add ...\ngit commit\n```\n\n## Push\n\n```\ngit push origin my-feature-branch\n```\n\n## Make a Pull Request\n\nGo to your fork of rack on GitHub and select your feature branch. Click the\n'Pull Request' button and fill out the form. Pull requests are usually\nreviewed within a few days.\n\n## Rebase\n\nIf you've been working on a change for a while, rebase with upstream/main.\n\n```\ngit fetch upstream\ngit rebase upstream/main\ngit push origin my-feature-branch -f\n```\n\n## Make Required Changes\n\nAmend your previous commit and force push the changes.\n\n```\ngit commit --amend\ngit push origin my-feature-branch -f\n```\n\n## Check on Your Pull Request\n\nGo back to your pull request after a few minutes and see whether it passed\ntests with GitHub Actions. Everything should look green, otherwise fix issues and\namend your commit as described above.\n\n## Be Patient\n\nIt's likely that your change will not be merged and that the nitpicky\nmaintainers will ask you to do more, or fix seemingly benign problems. Hang in\nthere!\n\n## Thank You\n\nPlease do know that we really appreciate and value your time and work. We love\nyou, really.\n\n[Security Policy]: SECURITY.md\n",
+        "Size": 3030,
+        "Truncated": false
+      },
+      {
+        "Path": "README.md",
+        "Content": "# ![Rack](contrib/logo.webp)\n\nRack provides a minimal, modular, and adaptable interface for developing web\napplications in Ruby. By wrapping HTTP requests and responses in the simplest\nway possible, it unifies and distills the bridge between web servers, web\nframeworks, and web application into a single method call.\n\nThe exact details of this are described in the [Rack Specification], which all\nRack applications should conform to. Browse the [Documentation] for more\ninformation.\n\n## Version support\n\n| Version  | Support                                     |\n|----------|---------------------------------------------|\n|    3.2.x | Bug fixes and security patches.             |\n|    3.1.x | Security patches only.                      |\n|    3.0.x | End of support.                             |\n|    2.2.x | Security patches only (through April 2027). |\n| \u003c= 2.1.x | End of support.                             |\n\n**Rack 2.2.x is in security maintenance mode, and all support will end in May\n2027**. Please upgrade to Rack 3.2 as soon as possible to ensure you are receiving\nthe latest bug fixes and security patches.\n\nPlease see the [Security Policy] for more information.\n\n## Change log\n\nSee the [Changelog](CHANGELOG.md) for a detailed list of changes in each version of Rack.\n\n### Rack 3.2 (latest release)\n\nThis version of rack is supported with bug fixes and security patches.\n\n### Rack 3.1\n\nThis version of rack is supported with security patches only.\n\n### Rack 3.0\n\nThis version of rack is no longer supported. It contains significant changes\nwhich are detailed in the [Upgrade Guide](UPGRADE-GUIDE.md).\n\n### Rack 2.2\n\nThis version of Rack is receiving security patches only, and effort should be\nmade to move to Rack 3.2.\n\nStarting in Ruby 3.4 the `base64` dependency will no longer be a default gem,\nand may cause a warning or error about `base64` being missing. To correct this,\nadd `base64` as a dependency to your project.\n\n## Installation\n\nAdd the rack gem to your application bundle, or follow the instructions provided\nby a [supported web framework](#supported-web-frameworks):\n\n```bash\n# Install it generally:\n$ gem install rack\n\n# or, add it to your current application gemfile:\n$ bundle add rack\n```\n\nIf you need features from `Rack::Session` or `bin/rackup` please add those gems separately.\n\n```bash\n$ gem install rack-session rackup\n```\n\n## Usage\n\nCreate a file called `config.ru` with the following contents:\n\n```ruby\nrun do |env|\n  [200, {}, [\"Hello World\"]]\nend\n```\n\nRun this using the rackup gem or another [supported web\nserver](#supported-web-servers).\n\n```bash\n$ gem install rackup\n$ rackup\n\n# In another shell:\n$ curl http://localhost:9292\nHello World\n```\n\n## Supported web servers\n\nRack is supported by a wide range of servers, including:\n\n* [Agoo](https://github.com/ohler55/agoo)\n* [Falcon](https://github.com/socketry/falcon)\n* [Iodine](https://github.com/boazsegev/iodine)\n* [NGINX Unit](https://unit.nginx.org/)\n* [Phusion Passenger](https://www.phusionpassenger.com/) (which is mod_rack for\n  Apache and for nginx)\n* [Pitchfork](https://github.com/Shopify/pitchfork)\n* [Puma](https://puma.io/)\n* [Thin](https://github.com/macournoyer/thin)\n* [Unicorn](https://yhbt.net/unicorn/)\n* [uWSGI](https://uwsgi-docs.readthedocs.io/en/latest/)\n* [Lamby](https://lamby.custominktech.com) (for AWS Lambda)\n\nYou will need to consult the server documentation to find out what features and\nlimitations they may have. In general, any valid Rack app will run the same on\nall these servers, without changing anything.\n\n### Rackup\n\nRack provides a separate gem, [rackup](https://github.com/rack/rackup) which is\na generic interface for running a Rack application on supported servers, which\ninclude `WEBRick`, `Puma`, `Falcon` and others.\n\n## Supported web frameworks\n\nThese frameworks and many others support the [Rack Specification]:\n\n* [Camping](https://github.com/camping/camping)\n* [Hanami](https://hanamirb.org/)\n* [Ramaze](https://github.com/ramaze/ramaze)\n* [Padrino](https://padrinorb.com/)\n* [Roda](https://github.com/jeremyevans/roda)\n* [Ruby on Rails](https://rubyonrails.org/)\n* [Rum](https://github.com/leahneukirchen/rum)\n* [Sinatra](https://sinatrarb.com/)\n* [Utopia](https://github.com/socketry/utopia)\n* [WABuR](https://github.com/ohler55/wabur)\n\n## Available middleware shipped with Rack\n\nBetween the server and the framework, Rack can be customized to your\napplications needs using middleware. Rack itself ships with the following\nmiddleware:\n\n* `Rack::CommonLogger` for creating Apache-style logfiles.\n* `Rack::ConditionalGet` for returning [Not\n  Modified](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/304)\n  responses when the response has not changed.\n* `Rack::Config` for modifying the environment before processing the request.\n* `Rack::ContentLength` for setting a `content-length` header based on body\n  size.\n* `Rack::ContentType` for setting a default `content-type` header for responses.\n* `Rack::Deflater` for compressing responses with gzip.\n* `Rack::ETag` for setting `etag` header on bodies that can be buffered.\n* `Rack::Events` for providing easy hooks when a request is received and when\n  the response is sent.\n* `Rack::Head` for returning an empty body for HEAD requests.\n* `Rack::Lint` for checking conformance to the [Rack Specification].\n* `Rack::Lock` for serializing requests using a mutex.\n* `Rack::MethodOverride` for modifying the request method based on a submitted\n  parameter.\n* `Rack::Recursive` for including data from other paths in the application, and\n  for performing internal redirects.\n* `Rack::Reloader` for reloading files if they have been modified.\n* `Rack::Runtime` for including a response header with the time taken to process\n  the request.\n* `Rack::Sendfile` for working with web servers that can use optimized file\n  serving for file system paths.\n* `Rack::ShowException` for catching unhandled exceptions and presenting them in\n  a nice and helpful way with clickable backtrace.\n* `Rack::ShowStatus` for using nice error pages for empty client error\n  responses.\n* `Rack::Static` for configurable serving of static files.\n* `Rack::TempfileReaper` for removing temporary files creating during a request.\n\nAll these components use the same interface, which is described in detail in the\n[Rack Specification]. These optional components can be used in any way you wish.\n\n### Convenience interfaces\n\nIf you want to develop outside of existing frameworks, implement your own ones,\nor develop middleware, Rack provides many helpers to create Rack applications\nquickly and without doing the same web stuff all over:\n\n* `Rack::Request` which also provides query string parsing and multipart\n  handling.\n* `Rack::Response` for convenient generation of HTTP replies and cookie\n  handling.\n* `Rack::MockRequest` and `Rack::MockResponse` for efficient and quick testing\n  of Rack application without real HTTP round-trips.\n* `Rack::Cascade` for trying additional Rack applications if an application\n  returns a not found or method not supported response.\n* `Rack::Directory` for serving files under a given directory, with directory\n  indexes.\n* `Rack::Files` for serving files under a given directory, without directory\n  indexes.\n* `Rack::MediaType` for parsing content-type headers.\n* `Rack::Mime` for determining content-type based on file extension.\n* `Rack::RewindableInput` for making any IO object rewindable, using a temporary\n  file buffer.\n* `Rack::URLMap` to route to multiple applications inside the same process.\n\n## Configuration\n\nRack exposes several configuration parameters to control various features of the\nimplementation.\n\n### `RACK_QUERY_PARSER_BYTESIZE_LIMIT`\n\nThis environment variable sets the default for the maximum query string bytesize\nthat `Rack::QueryParser` will attempt to parse.  Attempts to use a query string\nor application/x-www-form-urlencoded request body that exceeds this number of\nbytes will result in a `Rack::QueryParser::QueryLimitError` exception. If this\nenviroment variable is provided, it must be an integer, or `Rack::QueryParser`\nwill raise an exception.\nIf the value is negative, the bytesize limit is disabled.\n\nThe default limit can be overridden on a per-`Rack::QueryParser` basis using\nthe `bytesize_limit` keyword argument when creating the `Rack::QueryParser`.\nPassing `nil` for this keyword argument disables the bytesize limit.\n\n### `RACK_QUERY_PARSER_PARAMS_LIMIT`\n\nThis environment variable sets the default for the maximum number of query\nparameters that `Rack::QueryParser` will attempt to parse.  Attempts to use a\nquery string or application/x-www-form-urlencoded request body with more\nparameters than this will result in a `Rack::QueryParser::QueryLimitError`\nexception. If this enviroment variable is provided, it must be an integer, or\n`Rack::QueryParser` will raise an exception.\nIf the value is negative, the params limit is disabled.\n\nThe default limit can be overridden on a per-`Rack::QueryParser` basis using\nthe `params_limit` keyword argument when creating the `Rack::QueryParser`.\nPassing `nil` for this keyword argument disables the params limit.\n\nThis is implemented by counting the number of parameter separators in the\nquery string, before attempting parsing, so if the same parameter key is\nused multiple times in the query, each counts as a separate parameter for\nthis check.\n\n### `RACK_MULTIPART_BUFFERED_UPLOAD_BYTESIZE_LIMIT`\n\nThis environment variable sets the maximum amount of memory Rack will use\nto buffer multipart parameters when parsing a request body. This considers\nthe size of the multipart mime headers and the body part for multipart\nparameters that are buffered in memory and do not use tempfiles. This\ndefaults to 16MB if not provided.\n\n### `param_depth_limit`\n\n```ruby\nRack::Utils.param_depth_limit = 32 # default\n```\n\nThe maximum amount of nesting allowed in parameters. For example, if set to 3,\nthis query string would be allowed:\n\n```\n?a[b][c]=d\n```\n\nbut this query string would not be allowed:\n\n```\n?a[b][c][d]=e\n```\n\nLimiting the depth prevents a possible stack overflow when parsing parameters.\n\n### `multipart_file_limit`\n\n```ruby\nRack::Utils.multipart_file_limit = 128 # default\n```\n\nThe maximum number of parts with a filename a request can contain. Accepting\ntoo many parts can lead to the server running out of file handles.\n\nThe default is 128, which means that a single request can't upload more than 128\nfiles at once. Set to 0 for no limit.\n\nCan also be set via the `RACK_MULTIPART_FILE_LIMIT` environment variable.\n\n(This is also aliased as `multipart_part_limit` and `RACK_MULTIPART_PART_LIMIT` for compatibility)\n\n### `multipart_total_part_limit`\n\nThe maximum total number of parts a request can contain of any type, including\nboth file and non-file form fields.\n\nThe default is 4096, which means that a single request can't contain more than\n4096 parts.\n\nSet to 0 for no limit.\n\nCan also be set via the `RACK_MULTIPART_TOTAL_PART_LIMIT` environment variable.\n\n## Contributing\n\nSee [CONTRIBUTING.md](CONTRIBUTING.md) for specific details about how to make a\ncontribution to Rack.\n\nPlease post bugs, suggestions and patches to [GitHub Issues](https://github.com/rack/rack/issues).\n\nPlease check our [Security Policy](https://github.com/rack/rack/security/policy)\nfor responsible disclosure and security bug reporting process. Due to wide usage\nof the library, it is strongly preferred that we manage timing in order to\nprovide viable patches at the time of disclosure. Your assistance in this matter\nis greatly appreciated.\n\n## See Also\n\n### `rackup`\n\nA useful tool for running Rack applications from the command line, including\n`Rackup::Server` (previously `Rack::Server`) for scripting servers.\n\n* https://github.com/rack/rackup\n\n### `rack-contrib`\n\nThe plethora of useful middleware created the need for a project that collects\nfresh Rack middleware. `rack-contrib` includes a variety of add-on components\nfor Rack and it is easy to contribute new modules.\n\n* https://github.com/rack/rack-contrib\n\n### `rack-session`\n\nProvides convenient session management for Rack.\n\n* https://github.com/rack/rack-session\n\n## Thanks\n\nThe Rack Core Team, consisting of\n\n* Aaron Patterson [tenderlove](https://github.com/tenderlove)\n* Samuel Williams [ioquatix](https://github.com/ioquatix)\n* Jeremy Evans [jeremyevans](https://github.com/jeremyevans)\n* Eileen Uchitelle [eileencodes](https://github.com/eileencodes)\n* Matthew Draper [matthewd](https://github.com/matthewd)\n* Rafael França [rafaelfranca](https://github.com/rafaelfranca)\n\nand the Rack Alumni\n\n* Ryan Tomayko [rtomayko](https://github.com/rtomayko)\n* Scytrin dai Kinthra [scytrin](https://github.com/scytrin)\n* Leah Neukirchen [leahneukirchen](https://github.com/leahneukirchen)\n* James Tucker [raggi](https://github.com/raggi)\n* Josh Peek [josh](https://github.com/josh)\n* José Valim [josevalim](https://github.com/josevalim)\n* Michael Fellinger [manveru](https://github.com/manveru)\n* Santiago Pastorino [spastorino](https://github.com/spastorino)\n* Konstantin Haase [rkh](https://github.com/rkh)\n\nwould like to thank:\n\n* Adrian Madrid, for the LiteSpeed handler.\n* Christoffer Sawicki, for the first Rails adapter and `Rack::Deflater`.\n* Tim Fletcher, for the HTTP authentication code.\n* Luc Heinrich for the Cookie sessions, the static file handler and bugfixes.\n* Armin Ronacher, for the logo and racktools.\n* Alex Beregszaszi, Alexander Kahn, Anil Wadghule, Aredridel, Ben Alpert, Dan\n  Kubb, Daniel Roethlisberger, Matt Todd, Tom Robinson, Phil Hagelberg, S. Brent\n  Faulkner, Bosko Milekic, Daniel Rodríguez Troitiño, Genki Takiuchi, Geoffrey\n  Grosenbach, Julien Sanchez, Kamal Fariz Mahyuddin, Masayoshi Takahashi,\n  Patrick Aljordm, Mig, Kazuhiro Nishiyama, Jon Bardin, Konstantin Haase, Larry\n  Siden, Matias Korhonen, Sam Ruby, Simon Chiang, Tim Connor, Timur Batyrshin,\n  and Zach Brock for bug fixing and other improvements.\n* Eric Wong, Hongli Lai, Jeremy Kemper for their continuous support and API\n  improvements.\n* Yehuda Katz and Carl Lerche for refactoring rackup.\n* Brian Candler, for `Rack::ContentType`.\n* Graham Batty, for improved handler loading.\n* Stephen Bannasch, for bug reports and documentation.\n* Gary Wright, for proposing a better `Rack::Response` interface.\n* Jonathan Buch, for improvements regarding `Rack::Response`.\n* Armin Röhrl, for tracking down bugs in the Cookie generator.\n* Alexander Kellett for testing the Gem and reviewing the announcement.\n* Marcus Rückert, for help with configuring and debugging lighttpd.\n* The WSGI team for the well-done and documented work they've done and Rack\n  builds up on.\n* All bug reporters and patch contributors not mentioned above.\n\n## License\n\nRack is released under the [MIT License](MIT-LICENSE).\n\n[Rack Specification]: https://rack.github.io/rack/main/SPEC_rdoc.html\n[Documentation]: https://rack.github.io/rack/\n[Security Policy]: SECURITY.md\n",
+        "Size": 14906,
+        "Truncated": false
+      },
+      {
+        "Path": ".github/workflows/depsreview.yaml",
+        "Content": "name: 'Dependency Review'\non: [pull_request]\n\npermissions:\n  contents: read\n\njobs:\n  dependency-review:\n    runs-on: ubuntu-latest\n    steps:\n      - name: 'Checkout Repository'\n        uses: actions/checkout@v6\n      - name: 'Dependency Review'\n        uses: actions/dependency-review-action@v5\n",
+        "Size": 296,
+        "Truncated": false
+      },
+      {
+        "Path": ".github/workflows/documentation.yaml",
+        "Content": "name: Documentation\n\non:\n  push:\n    branches:\n      - main\n      - documentation-*\n\npermissions:\n  contents: read\n  pages: write\n  id-token: write\n\nconcurrency:\n  group: \"pages\"\n  cancel-in-progress: true\n\njobs:\n  generate:\n    runs-on: ubuntu-latest\n    \n    steps:\n    - uses: actions/checkout@v6\n\n    - uses: ruby/setup-ruby@v1\n      with:\n        ruby-version: ruby\n        bundler-cache: true\n    \n    - name: Generate main documentation\n      timeout-minutes: 5\n      run: |\n        bundle exec rdoc --op docs/main --main README.md --template-stylesheets contrib/rdoc.css\n        cp -r contrib docs/main\n\n    - name: \"Generate 3.2 documentation\"\n      timeout-minutes: 5\n      run: |\n        gem install rack --version \"\u003c 3.3\"\n        gem unpack rack -v \"\u003c 3.3\"\n        cd rack-3.2*\n        cp ../.rdoc_options .\n        cp ../UPGRADE-GUIDE.md .\n        cp ../SECURITY.md .\n        bundle exec rdoc --op ../docs/3.2 --main README.md --template-stylesheets ../contrib/rdoc.css\n        cp -r ../contrib ../docs/3.2\n\n    - name: \"Generate 3.1 documentation\"\n      timeout-minutes: 5\n      run: |\n        gem install rack --version \"\u003c 3.2\"\n        gem unpack rack -v \"\u003c 3.2\"\n        cd rack-3.1*\n        cp ../.rdoc_options .\n        cp ../UPGRADE-GUIDE.md .\n        cp ../SECURITY.md .\n        bundle exec rdoc --op ../docs/3.1 --main README.md --template-stylesheets ../contrib/rdoc.css\n        cp -r ../contrib ../docs/3.1\n\n    - name: \"Generate 3.0 documentation\"\n      timeout-minutes: 5\n      run: |\n        gem install rack --version \"\u003c 3.1\"\n        gem unpack rack -v \"\u003c 3.1\"\n        cd rack-3.0*\n        cp ../.rdoc_options .\n        cp ../UPGRADE-GUIDE.md .\n        bundle exec rdoc --op ../docs/3.0 --main README.md --template-stylesheets ../contrib/rdoc.css\n        cp -r ../contrib ../docs/3.0\n\n    - name: \"Generate 2.2 documentation\"\n      timeout-minutes: 5\n      run: |\n        gem install rack --version \"\u003c 2.3\"\n        gem unpack rack -v \"\u003c 2.3\"\n        cd rack-2.2*\n        cp ../.rdoc_options .\n        bundle exec rdoc --op ../docs/2.2 --main README.rdoc --template-stylesheets ../contrib/rdoc.css\n        cp -r ../contrib ../docs/2.2\n\n    - name: Upload documentation artifact\n      uses: actions/upload-pages-artifact@v5\n      with:\n        path: docs\n  \n  deploy:\n    runs-on: ubuntu-latest\n    \n    environment:\n      name: github-pages\n      url: ${{steps.deployment.outputs.page_url}}\n    \n    needs: generate\n    steps:\n      - name: Deploy to GitHub Pages\n        id: deployment\n        uses: actions/deploy-pages@v5\n",
+        "Size": 2550,
+        "Truncated": false
+      },
+      {
+        "Path": ".github/workflows/test-external.yaml",
+        "Content": "name: Test External\n\non: [push, pull_request]\n\npermissions:\n  contents: read\n\njobs:\n  test:\n    strategy:\n      fail-fast: false\n      matrix:\n        os: [ubuntu-latest]\n        ruby: ['3.3', '3.4', '4.0']\n\n    runs-on: ${{matrix.os}}\n    env:\n      CI: external\n\n    steps:\n    - uses: actions/checkout@v6\n\n    - uses: ruby/setup-ruby-pkgs@v1\n      with:\n        ruby-version: ${{matrix.ruby}}\n        bundler-cache: true\n        apt-get: pandoc\n        brew: pandoc\n\n    - name: Change permissions\n      run: chmod -R o-w /opt/hostedtoolcache/Ruby\n\n    - run: bundle exec bake test:external\n",
+        "Size": 594,
+        "Truncated": false
+      },
+      {
+        "Path": ".github/workflows/test.yaml",
+        "Content": "name: Test\n\non: [push, pull_request]\n\npermissions:\n  contents: read\n\njobs:\n  test:\n    strategy:\n      fail-fast: false\n      matrix:\n        os:\n          - ubuntu-latest\n        ruby:\n          - '2.7'\n          - '2.7.3'\n          - '3.0'\n          - '3.1'\n          - '3.2'\n          - '3.3'\n          - '3.4'\n          - '4.0'\n          - ruby-head\n          - jruby-head\n          - truffleruby-head\n        include:\n          - os: macos-latest\n            ruby: '4.0'\n    runs-on: ${{matrix.os}}\n    env:\n      CI: spec\n\n    steps:\n    - uses: actions/checkout@v6\n\n    - uses: ruby/setup-ruby@v1\n      with:\n        ruby-version: ${{matrix.ruby}}\n        bundler-cache: true\n\n    - run: bundle exec rake\n",
+        "Size": 712,
+        "Truncated": false
+      },
+      {
+        "Path": "test/cgi/assets/javascripts/app.js",
+        "Content": "### TestFile ###\n",
+        "Size": 17,
+        "Truncated": false
+      },
+      {
+        "Path": "test.rb",
+        "Content": "# frozen_string_literal: true\n\nrequire \"bundler/inline\"\n\ngemfile(true) do\n  source \"https://rubygems.org\"\n\n  gem \"rails\"\n  # gem \"rack\", \"~\u003e 3.0.0\"\n  # gem \"rack\", \"~\u003e 3.1.0\"\n\tgem \"rack\", path: \".\"\nend\n\nrequire \"action_controller/railtie\"\n\nclass TestApp \u003c Rails::Application\n  config.root = __dir__\n  config.hosts \u003c\u003c \"www.example.com\"\n  config.secret_key_base = \"secret_key_base\"\n  config.action_dispatch.show_exceptions = :rescuable\n  config.logger = Logger.new($stdout)\n  Rails.logger  = config.logger\n\n  routes.draw do\n    get \"/head\" =\u003e \"test#one\"\n    get \"/empty\" =\u003e \"test#two\"\n    get \"/body\" =\u003e \"test#three\"\n  end\nend\n\nclass TestController \u003c ActionController::Base\n  def one\n    head 200\n  end\n  def two\n    render plain: ''\n  end\n  def three\n    render plain: 'a', layout: false\n  end\nend\n\nrequire \"minitest/autorun\"\n\nclass TestControllerTest \u003c ActionDispatch::IntegrationTest\n\n  # works on rack 3.0\n  # content-length key is missing on rack 3.1\n  def test_head\n    get \"/head\"\n    assert_response 200\n    assert_equal '0', headers['content-length']\n    # assert headers.key?('content-length')\n  end\n\n  # works on rack 3.0\n  # content-length key is missing on rack 3.1\n  def test_empty_body\n    get \"/empty\"\n    assert_response 200\n    assert_equal '0', headers['content-length']\n    # assert headers.key?('content-length')\n  end\n\n  # works on rack 3.0 and 3.1\n  def test_with_body\n    get \"/body\"\n    assert_response 200\n    assert_equal '1', headers['content-length']\n  end\n\n  private\n    def app\n      Rails.application\n    end\nend\n",
+        "Size": 1543,
+        "Truncated": false
+      },
+      {
+        "Path": "lib/rack.rb",
+        "Content": "# frozen_string_literal: true\n\n# Copyright (C) 2007-2019 Leah Neukirchen \u003chttp://leahneukirchen.org/infopage.html\u003e\n#\n# Rack is freely distributable under the terms of an MIT-style license.\n# See MIT-LICENSE or https://opensource.org/licenses/MIT.\n\n# The Rack main module, serving as a namespace for all core Rack\n# modules and classes.\n#\n# All modules meant for use in your application are \u003ctt\u003eautoload\u003c/tt\u003eed here,\n# so it should be enough just to \u003ctt\u003erequire 'rack'\u003c/tt\u003e in your code.\n\nrequire_relative 'rack/version'\nrequire_relative 'rack/constants'\n\nmodule Rack\n  autoload :BadRequest, \"rack/bad_request\"\n  autoload :BodyProxy, \"rack/body_proxy\"\n  autoload :Builder, \"rack/builder\"\n  autoload :Cascade, \"rack/cascade\"\n  autoload :CommonLogger, \"rack/common_logger\"\n  autoload :ConditionalGet, \"rack/conditional_get\"\n  autoload :Config, \"rack/config\"\n  autoload :ContentLength, \"rack/content_length\"\n  autoload :ContentType, \"rack/content_type\"\n  autoload :Deflater, \"rack/deflater\"\n  autoload :Directory, \"rack/directory\"\n  autoload :ETag, \"rack/etag\"\n  autoload :Events, \"rack/events\"\n  autoload :Files, \"rack/files\"\n  autoload :ForwardRequest, \"rack/recursive\"\n  autoload :Head, \"rack/head\"\n  autoload :Headers, \"rack/headers\"\n  autoload :Lint, \"rack/lint\"\n  autoload :Lock, \"rack/lock\"\n  autoload :MediaType, \"rack/media_type\"\n  autoload :MethodOverride, \"rack/method_override\"\n  autoload :Mime, \"rack/mime\"\n  autoload :MockRequest, \"rack/mock_request\"\n  autoload :MockResponse, \"rack/mock_response\"\n  autoload :Multipart, \"rack/multipart\"\n  autoload :NullLogger, \"rack/null_logger\"\n  autoload :QueryParser, \"rack/query_parser\"\n  autoload :Recursive, \"rack/recursive\"\n  autoload :Reloader, \"rack/reloader\"\n  autoload :Request, \"rack/request\"\n  autoload :Response, \"rack/response\"\n  autoload :RewindableInput, \"rack/rewindable_input\"\n  autoload :Runtime, \"rack/runtime\"\n  autoload :Sendfile, \"rack/sendfile\"\n  autoload :ShowExceptions, \"rack/show_exceptions\"\n  autoload :ShowStatus, \"rack/show_status\"\n  autoload :Static, \"rack/static\"\n  autoload :TempfileReaper, \"rack/tempfile_reaper\"\n  autoload :URLMap, \"rack/urlmap\"\n  autoload :Utils, \"rack/utils\"\n\n  module Auth\n    autoload :Basic, \"rack/auth/basic\"\n    autoload :AbstractHandler, \"rack/auth/abstract/handler\"\n    autoload :AbstractRequest, \"rack/auth/abstract/request\"\n  end\nend\n",
+        "Size": 2344,
+        "Truncated": false
+      },
+      {
+        "Path": "test/gemloader.rb",
+        "Content": "# frozen_string_literal: true\n\nrequire 'rubygems'\nproject = 'rack'\ngemspec = File.expand_path(\"#{project}.gemspec\", Dir.pwd)\nGem::Specification.load(gemspec).dependencies.each do |dep|\n  begin\n    gem dep.name, *dep.requirement.as_list\n  rescue Gem::LoadError\n    warn \"Cannot load #{dep.name} #{dep.requirement.to_s}\"\n  end\nend\n",
+        "Size": 329,
+        "Truncated": false
+      },
+      {
+        "Path": "test/helper.rb",
+        "Content": "# frozen_string_literal: true\n\nif ENV.delete('COVERAGE')\n  require 'simplecov'\n\n  SimpleCov.start do\n    enable_coverage :branch\n    skip{|f| f.filename.start_with?(__dir__ + \"/\")}\n    group('Missing'){|src| src.covered_percent \u003c 100}\n  end\nend\n\nif ENV['SEPARATE']\n  def self.separate_testing\n    yield\n  end\nelse\n  $:.unshift(File.expand_path('../lib', __dir__))\n  require_relative '../lib/rack'\n\n  def self.separate_testing\n  end\nend\n\nrequire 'minitest/global_expectations/autorun'\nrequire 'stringio'\n\nclass Minitest::Spec\n  def self.deprecated(*args, \u0026block)\n    it(*args) do\n      begin\n        verbose, $VERBOSE = $VERBOSE, nil\n        instance_exec(\u0026block)\n      ensure\n        $VERBOSE = verbose\n      end\n    end\n  end\n  \n  def capture_warnings(target)\n    verbose = $VERBOSE\n    warnings = Thread::Queue.new\n    target.define_singleton_method(:warn) do |*args|\n      warnings \u003c\u003c args\n    end\n    begin\n      $VERBOSE = true\n      yield warnings\n    ensure\n      $VERBOSE = verbose\n      target.singleton_class.send(:remove_method, :warn)\n    end\n  end\nend\n",
+        "Size": 1065,
+        "Truncated": false
+      },
+      {
+        "Path": "test/psych_fix.rb",
+        "Content": "# frozen_string_literal: true\n\n# Work correctly with older versions of Psych, having\n# unsafe_load call load (in older versions, load operates\n# as unsafe_load in current version).\nunless YAML.respond_to?(:unsafe_load)\n  def YAML.unsafe_load(body)\n    load(body)\n  end\nend\n",
+        "Size": 273,
+        "Truncated": false
+      },
+      {
+        "Path": "test/spec_auth_basic.rb",
+        "Content": "# frozen_string_literal: true\n\nrequire_relative 'helper'\n\nseparate_testing do\n  require_relative '../lib/rack/auth/basic'\n  require_relative '../lib/rack/mock_request'\n  require_relative '../lib/rack/lint'\nend\n\ndescribe Rack::Auth::Basic do\n  def realm\n    'WallysWorld'\n  end\n\n  def unprotected_app\n    Rack::Lint.new lambda { |env|\n      [ 200, { 'content-type' =\u003e 'text/plain' }, [\"Hi #{env['REMOTE_USER']}\"] ]\n    }\n  end\n\n  def protected_app\n    app = Rack::Auth::Basic.new(unprotected_app) { |username, password| 'Boss' == username }\n    app.realm = realm\n    app\n  end\n\n  before do\n    @request = Rack::MockRequest.new(protected_app)\n  end\n\n  def request_with_basic_auth(username, password, \u0026block)\n    request 'HTTP_AUTHORIZATION' =\u003e 'Basic ' + [\"#{username}:#{password}\"].pack(\"m*\"), \u0026block\n  end\n\n  def request(headers = {})\n    yield @request.get('/', headers)\n  end\n\n  def assert_basic_auth_challenge(response)\n    response.must_be :client_error?\n    response.status.must_equal 401\n    response.must_include 'www-authenticate'\n    response.headers['www-authenticate'].must_match(/Basic realm=\"#{Regexp.escape(realm)}\"/)\n    response.body.must_be :empty?\n  end\n\n  it 'challenge correctly when no credentials are specified' do\n    request do |response|\n      assert_basic_auth_challenge response\n    end\n  end\n\n  it 'rechallenge if incorrect credentials are specified' do\n    request_with_basic_auth 'joe', 'password' do |response|\n      assert_basic_auth_challenge response\n    end\n  end\n\n  it 'return application output if correct credentials are specified' do\n    request_with_basic_auth 'Boss', 'password' do |response|\n      response.status.must_equal 200\n      response.body.to_s.must_equal 'Hi Boss'\n    end\n  end\n\n  it 'return 400 Bad Request if different auth scheme used' do\n    request 'HTTP_AUTHORIZATION' =\u003e 'Digest params' do |response|\n      response.must_be :client_error?\n      response.status.must_equal 400\n      response.wont_include 'www-authenticate'\n    end\n  end\n\n  it 'return 400 Bad Request for a malformed authorization header' do\n    request 'HTTP_AUTHORIZATION' =\u003e '' do |response|\n      response.must_be :client_error?\n      response.status.must_equal 400\n      response.wont_include 'www-authenticate'\n    end\n  end\n\n  it 'return 401 Bad Request for a nil authorization header' do\n    request 'HTTP_AUTHORIZATION' =\u003e nil do |response|\n      response.must_be :client_error?\n      response.status.must_equal 401\n    end\n  end\n\n  it 'return 400 Bad Request for a authorization header with only username' do\n    auth = 'Basic ' + ['foo'].pack(\"m*\")\n    request 'HTTP_AUTHORIZATION' =\u003e auth do |response|\n      response.must_be :client_error?\n      response.status.must_equal 400\n      response.wont_include 'www-authenticate'\n    end\n  end\n\n  it 'takes realm as optional constructor arg' do\n    app = Rack::Auth::Basic.new(unprotected_app, realm) { true }\n    realm.must_equal app.realm\n  end\n\n  it \"supports #request for a Rack::Request object\" do\n    Rack::Auth::Basic::Request.new({}).request.must_be_kind_of Rack::Request\n  end\nend\n",
+        "Size": 3073,
+        "Truncated": false
+      }
+    ],
+    "Skipped": null
+  }
+}

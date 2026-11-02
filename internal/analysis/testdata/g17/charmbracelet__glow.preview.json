@@ -1,0 +1,330 @@
+{
+  "id": "charmbracelet/glow",
+  "owner": "charmbracelet",
+  "name": "glow",
+  "slug": "charmbracelet/glow",
+  "kind": "cli",
+  "language": "Go",
+  "description": "Render markdown on the CLI, with pizzazz! 💅🏻",
+  "github_url": "https://github.com/charmbracelet/glow",
+  "license": "MIT",
+  "sections": [
+    {
+      "kind": "idea",
+      "title": "Repository descriptions",
+      "claims": [
+        {
+          "label": "Repository identity",
+          "source": {
+            "kind": "metadata",
+            "ref": "full_name",
+            "url": "https://api.github.com/repos/charmbracelet/glow"
+          },
+          "explanation": "GitHub reports full_name as \"charmbracelet/glow\".",
+          "supports": "The value reported by GitHub for this repository.",
+          "limit": "Captured 2026-11-02T13:10:01Z. Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "confidence": "confident"
+        },
+        {
+          "label": "GitHub description",
+          "source": {
+            "kind": "metadata",
+            "ref": "description",
+            "url": "https://api.github.com/repos/charmbracelet/glow"
+          },
+          "explanation": "The repository's GitHub description states: \"Render markdown on the CLI, with pizzazz! 💅🏻\".",
+          "supports": "The value reported by GitHub for this repository.",
+          "limit": "Captured 2026-11-02T13:10:01Z. Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "confidence": "confident"
+        },
+        {
+          "label": "README passage",
+          "source": {
+            "kind": "file",
+            "ref": "README.md",
+            "lines": "3-3",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/README.md#L3-L3"
+          },
+          "excerpt": "Render markdown on the CLI, with _pizzazz_!",
+          "explanation": "\"README.md\" states: \"Render markdown on the CLI, with _pizzazz_!\".",
+          "supports": "An attributed documentation passage in the repository root.",
+          "limit": "Repository documentation is an author statement; its described behavior was not verified.",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "stack",
+      "title": "Declared stack",
+      "claims": [
+        {
+          "label": "GitHub primary language",
+          "source": {
+            "kind": "metadata",
+            "ref": "language",
+            "url": "https://api.github.com/repos/charmbracelet/glow"
+          },
+          "explanation": "GitHub reports language as \"Go\".",
+          "supports": "The value reported by GitHub for this repository.",
+          "limit": "Captured 2026-11-02T13:10:01Z. Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares charm.land/bubbles/v2",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+          },
+          "explanation": "\"go.mod\" declares \"charm.land/bubbles/v2\" in \"require\" with declared specification \"v2.1.1\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares charm.land/bubbletea/v2",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+          },
+          "explanation": "\"go.mod\" declares \"charm.land/bubbletea/v2\" in \"require\" with declared specification \"v2.0.8\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares charm.land/glamour/v2",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+          },
+          "explanation": "\"go.mod\" declares \"charm.land/glamour/v2\" in \"require\" with declared specification \"v2.0.1\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares charm.land/lipgloss/v2",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+          },
+          "explanation": "\"go.mod\" declares \"charm.land/lipgloss/v2\" in \"require\" with declared specification \"v2.0.6\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/alecthomas/chroma/v2",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+          },
+          "explanation": "\"go.mod\" declares \"github.com/alecthomas/chroma/v2\" in \"require (indirect)\" with declared specification \"v2.14.0\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/atotto/clipboard",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+          },
+          "explanation": "\"go.mod\" declares \"github.com/atotto/clipboard\" in \"require\" with declared specification \"v0.1.4\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/aymanbagabas/go-osc52/v2",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+          },
+          "explanation": "\"go.mod\" declares \"github.com/aymanbagabas/go-osc52/v2\" in \"require (indirect)\" with declared specification \"v2.0.1\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/aymerick/douceur",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+          },
+          "explanation": "\"go.mod\" declares \"github.com/aymerick/douceur\" in \"require (indirect)\" with declared specification \"v0.2.0\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/caarlos0/env/v11",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+          },
+          "explanation": "\"go.mod\" declares \"github.com/caarlos0/env/v11\" in \"require\" with declared specification \"v11.3.1\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/charmbracelet/colorprofile",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+          },
+          "explanation": "\"go.mod\" declares \"github.com/charmbracelet/colorprofile\" in \"require (indirect)\" with declared specification \"v0.4.3\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/charmbracelet/lipgloss",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+          },
+          "explanation": "\"go.mod\" declares \"github.com/charmbracelet/lipgloss\" in \"require (indirect)\" with declared specification \"v1.1.1-0.20250404203927-76690c660834\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/charmbracelet/log",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+          },
+          "explanation": "\"go.mod\" declares \"github.com/charmbracelet/log\" in \"require\" with declared specification \"v0.4.2\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/charmbracelet/ultraviolet",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+          },
+          "explanation": "\"go.mod\" declares \"github.com/charmbracelet/ultraviolet\" in \"require (indirect)\" with declared specification \"v0.0.0-20260811164956-006e29f97886\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/charmbracelet/x/ansi",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+          },
+          "explanation": "\"go.mod\" declares \"github.com/charmbracelet/x/ansi\" in \"require (indirect)\" with declared specification \"v0.11.8\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/charmbracelet/x/cellbuf",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+          },
+          "explanation": "\"go.mod\" declares \"github.com/charmbracelet/x/cellbuf\" in \"require (indirect)\" with declared specification \"v0.0.15\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/charmbracelet/x/editor",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+          },
+          "explanation": "\"go.mod\" declares \"github.com/charmbracelet/x/editor\" in \"require\" with declared specification \"v0.1.0\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/charmbracelet/x/exp/slice",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+          },
+          "explanation": "\"go.mod\" declares \"github.com/charmbracelet/x/exp/slice\" in \"require (indirect)\" with declared specification \"v0.0.0-20250327172914-2fdc97757edf\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "activity",
+      "title": "GitHub metadata",
+      "claims": [
+        {
+          "label": "GitHub license identification",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id",
+            "url": "https://api.github.com/repos/charmbracelet/glow"
+          },
+          "explanation": "GitHub reports license.spdx_id as \"MIT\".",
+          "supports": "The value reported by GitHub for this repository.",
+          "limit": "Captured 2026-11-02T13:10:01Z. Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "confidence": "confident"
+        },
+        {
+          "label": "GitHub star count",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count",
+            "url": "https://api.github.com/repos/charmbracelet/glow"
+          },
+          "explanation": "GitHub reports stargazers_count as \"27883\".",
+          "supports": "The value reported by GitHub for this repository.",
+          "limit": "Captured 2026-11-02T13:10:01Z. Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Last push reported by GitHub",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at",
+            "url": "https://api.github.com/repos/charmbracelet/glow"
+          },
+          "explanation": "GitHub reports pushed_at as \"2026-10-05T11:11:20Z\".",
+          "supports": "The value reported by GitHub for this repository.",
+          "limit": "Captured 2026-11-02T13:10:01Z. Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "decision",
+      "title": "Inspection limits",
+      "body": "Preview output was limited to 24 representative claims.",
+      "evidence_mode": "not_executed"
+    }
+  ]
+}

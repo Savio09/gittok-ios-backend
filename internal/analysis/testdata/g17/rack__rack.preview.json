@@ -1,0 +1,113 @@
+{
+  "id": "rack/rack",
+  "owner": "rack",
+  "name": "rack",
+  "slug": "rack/rack",
+  "kind": "other",
+  "language": "Ruby",
+  "description": "A modular Ruby web server interface.",
+  "github_url": "https://github.com/rack/rack",
+  "sections": [
+    {
+      "kind": "idea",
+      "title": "Repository descriptions",
+      "claims": [
+        {
+          "label": "Repository identity",
+          "source": {
+            "kind": "metadata",
+            "ref": "full_name",
+            "url": "https://api.github.com/repos/rack/rack"
+          },
+          "explanation": "GitHub reports full_name as \"rack/rack\".",
+          "supports": "The value reported by GitHub for this repository.",
+          "limit": "Captured 2026-11-02T13:10:04Z. Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "confidence": "confident"
+        },
+        {
+          "label": "GitHub description",
+          "source": {
+            "kind": "metadata",
+            "ref": "description",
+            "url": "https://api.github.com/repos/rack/rack"
+          },
+          "explanation": "The repository's GitHub description states: \"A modular Ruby web server interface.\".",
+          "supports": "The value reported by GitHub for this repository.",
+          "limit": "Captured 2026-11-02T13:10:04Z. Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "confidence": "confident"
+        },
+        {
+          "label": "README passage",
+          "source": {
+            "kind": "file",
+            "ref": "README.md",
+            "lines": "3-6",
+            "url": "https://github.com/rack/rack/blob/da90464e3fa93e3cb49dc2d4ede798e6c6b70b4f/README.md#L3-L6"
+          },
+          "excerpt": "Rack provides a minimal, modular, and adaptable interface for developing web\napplications in Ruby. By wrapping HTTP requests and responses in the simplest\nway possible, it unifies and distills the bridge between web servers, web\nframeworks, and web application into a single method call.",
+          "explanation": "\"README.md\" states: \"Rack provides a minimal, modular, and adaptable interface for developing web\\napplications in Ruby. By wrapping HTTP requests and responses in the simplest\\nway possible, it unifies and distills the bridge between web servers, web\\nframeworks, and web application into a single method call.\".",
+          "supports": "An attributed documentation passage in the repository root.",
+          "limit": "Repository documentation is an author statement; its described behavior was not verified.",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "stack",
+      "title": "Declared stack",
+      "claims": [
+        {
+          "label": "GitHub primary language",
+          "source": {
+            "kind": "metadata",
+            "ref": "language",
+            "url": "https://api.github.com/repos/rack/rack"
+          },
+          "explanation": "GitHub reports language as \"Ruby\".",
+          "supports": "The value reported by GitHub for this repository.",
+          "limit": "Captured 2026-11-02T13:10:04Z. Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "activity",
+      "title": "GitHub metadata",
+      "claims": [
+        {
+          "label": "GitHub star count",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count",
+            "url": "https://api.github.com/repos/rack/rack"
+          },
+          "explanation": "GitHub reports stargazers_count as \"5135\".",
+          "supports": "The value reported by GitHub for this repository.",
+          "limit": "Captured 2026-11-02T13:10:04Z. Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Last push reported by GitHub",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at",
+            "url": "https://api.github.com/repos/rack/rack"
+          },
+          "explanation": "GitHub reports pushed_at as \"2026-10-31T21:26:25Z\".",
+          "supports": "The value reported by GitHub for this repository.",
+          "limit": "Captured 2026-11-02T13:10:04Z. Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "decision",
+      "title": "Inspection limits",
+      "body": "no decisive frontend / backend / library / CLI / mobile signal was found in the inspected manifests and file tree",
+      "evidence_mode": "not_executed"
+    }
+  ]
+}
