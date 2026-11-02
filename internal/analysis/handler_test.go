@@ -31,7 +31,7 @@ func TestPublicPreviewUsesAnonymousPinnedAcquisition(t *testing.T) {
 				}
 				switch r.URL.Path {
 				case "/repos/o/r":
-					_, _ = w.Write([]byte(`{"owner":{"login":"o"},"name":"r","full_name":"o/r","private":false,"description":"Public purpose","default_branch":"moving","language":"Ruby"}`))
+					_, _ = w.Write([]byte(`{"id":123,"owner":{"login":"o"},"name":"r","full_name":"o/r","private":false,"description":"Public purpose","default_branch":"moving","language":"Ruby"}`))
 				case "/repos/o/r/commits/moving":
 					if privateNow {
 						http.Error(w, `{"message":"became private"}`, 404)

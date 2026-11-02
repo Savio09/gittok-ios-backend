@@ -26,7 +26,7 @@ func TestPreviewRouteUsesPublicPipelineAndFeedStaysMetadataOnly(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/repos/o/r" {
 			auth = append(auth, r.Header.Get("Authorization"))
-			_, _ = w.Write([]byte(`{"owner":{"login":"o"},"name":"r","full_name":"o/r","description":"An arbitrary repo","private":false,"default_branch":"main"}`))
+			_, _ = w.Write([]byte(`{"id":123,"owner":{"login":"o"},"name":"r","full_name":"o/r","description":"An arbitrary repo","private":false,"default_branch":"main"}`))
 			return
 		}
 		analysisCalls++

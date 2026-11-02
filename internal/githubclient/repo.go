@@ -11,6 +11,7 @@ import (
 // Repo is the subset of GitHub repository metadata the backend uses. It is a
 // stable, typed shape; callers never see GitHub's raw JSON.
 type Repo struct {
+	ID            int64 // stable GitHub repository identity, independent of mutable slugs
 	Owner         string
 	Name          string
 	FullName      string // "owner/name"
@@ -39,6 +40,7 @@ type MetadataField struct {
 
 // repoPayload mirrors the GitHub /repos/{owner}/{repo} JSON we read.
 type repoPayload struct {
+	ID       int64  `json:"id"`
 	Name     string `json:"name"`
 	FullName string `json:"full_name"`
 	Owner    struct {
@@ -126,6 +128,7 @@ func (c *Client) GetRepo(ctx context.Context, owner, name string) (Repo, error) 
 		return Repo{}, err
 	}
 	return Repo{
+		ID:            p.ID,
 		Owner:         p.Owner.Login,
 		Name:          p.Name,
 		FullName:      p.FullName,

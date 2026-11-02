@@ -28,6 +28,20 @@ func TestPreviewSanitizesPerFileProviderErrors(t *testing.T) {
 	}
 }
 
+func TestNonRoleBearingSkippedAndTruncatedFilesRemainVisible(t *testing.T) {
+	f := &fakeGitHub{repo: githubclient.Repo{Owner: "o", Name: "r", DefaultBranch: "main", Language: "Ruby"}, contents: func(context.Context) (githubclient.FetchedContents, error) {
+		return githubclient.FetchedContents{Files: []githubclient.FileContent{{Path: "LICENSE", Content: "MIT", Size: 100, Truncated: true}}, Skipped: []githubclient.SkippedFile{{Path: "README.md", Reason: "not found"}}}, nil
+	}}
+	p, err := NewService(f).Preview(context.Background(), "o", "r")
+	if err != nil {
+		t.Fatal(err)
+	}
+	b, _ := json.Marshal(p)
+	if !strings.Contains(string(b), "README.md") || !strings.Contains(string(b), "LICENSE") {
+		t.Fatalf("hidden acquisition gap: %s", b)
+	}
+}
+
 func TestOwnDeadlineRetainsFetchedFactsButCallerCancelDiscardsResult(t *testing.T) {
 	for _, parentCanceled := range []bool{false, true} {
 		t.Run(map[bool]string{false: "own-deadline", true: "caller-cancel"}[parentCanceled], func(t *testing.T) {

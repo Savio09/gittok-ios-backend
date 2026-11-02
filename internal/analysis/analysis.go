@@ -60,6 +60,9 @@ func (s *Service) Acquire(parent context.Context, owner, name string) (Result, e
 	if err != nil {
 		return Result{}, fmt.Errorf("metadata: %w", err)
 	}
+	if err := parent.Err(); err != nil {
+		return Result{}, err
+	}
 	a := Result{Repo: repo, CapturedAt: time.Now().UTC()}
 	if s.publicOnly && !repo.Public {
 		return Result{}, githubclient.ErrNotFound
@@ -67,12 +70,41 @@ func (s *Service) Acquire(parent context.Context, owner, name string) (Result, e
 	if s.publicOnly && !preview.ValidIdentity(repo.Owner, repo.Name) {
 		return Result{}, fmt.Errorf("invalid GitHub repository identity")
 	}
+	// Follow canonical identity after a redirected metadata lookup. A reused
+	// alias must never select another repository's commits for this metadata.
+	if preview.ValidIdentity(repo.Owner, repo.Name) {
+		owner, name = repo.Owner, repo.Name
+	}
 	finish := func(stage string) (Result, error) {
 		if err := parent.Err(); err != nil {
 			return Result{}, err
 		}
 		if stage != "" {
 			a.Limitations = append(a.Limitations, stage)
+		}
+		// An owner/name can be renamed and reused while acquisition is in flight.
+		// Verify stable identity before publishing public file citations. On a
+		// failed check, retain only the already captured provider metadata.
+		if (s.publicOnly || repo.ID > 0) && a.Inspection.Revision.Resolved {
+			verified, err := s.github.GetRepo(ctx, owner, name)
+			if err != nil || repo.ID <= 0 || verified.ID != repo.ID || (s.publicOnly && !verified.Public) || verified.Owner != repo.Owner || verified.Name != repo.Name {
+				a.Fetched = githubclient.FetchedContents{}
+				a.Tree = githubclient.FileTree{Truncated: true}
+				a.Requested = nil
+				a.Inspection.Revision = crawler.Revision{}
+				a.Limitations = append(a.Limitations, "Repository identity could not be revalidated after acquisition; file evidence was withheld.")
+			}
+			if err := parent.Err(); err != nil {
+				return Result{}, err
+			}
+		}
+		for _, skipped := range a.Fetched.Skipped {
+			a.Limitations = append(a.Limitations, fmt.Sprintf("Selected file %q could not be read (%s).", skipped.Path, skipped.Reason))
+		}
+		for _, file := range a.Fetched.Files {
+			if file.Truncated {
+				a.Limitations = append(a.Limitations, fmt.Sprintf("Selected file %q was clipped to %d of %d bytes.", file.Path, len(file.Content), file.Size))
+			}
 		}
 		a.Inspection = crawler.NewInspection(repo.Language, a.Inspection.Revision, a.Tree, a.Fetched)
 		a.Classification = crawler.Classify(a.Inspection)
