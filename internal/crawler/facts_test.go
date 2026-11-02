@@ -100,3 +100,11 @@ func TestFactsPreservePubspecAndCargoDeclarationContext(t *testing.T) {
 		t.Fatalf("lost declaration context: %+v", got)
 	}
 }
+
+func TestReadmeQuoteKeepsWholeShortParagraph(t *testing.T) {
+	content := "# Project\n\nA wrapped description of\nwhat the authors say it does.\n\nAnother paragraph.\n"
+	facts := CollectFacts(InspectionFromSources("", []string{"README.md"}, map[string]string{"README.md": content}))
+	if len(facts) != 1 || facts[0].Witness.Quote != "A wrapped description of\nwhat the authors say it does." {
+		t.Fatalf("fragmented documentation: %+v", facts)
+	}
+}

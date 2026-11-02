@@ -93,7 +93,7 @@ func CollectFacts(insp Inspection) []Fact {
 				continue
 			}
 			if strings.HasSuffix(strings.ToLower(p), ".go") {
-				g := analyzeGoFile(f)
+				g := st.goFile(p)
 				if !g.test {
 					for _, call := range g.serverCalls {
 						if call.start < 0 || call.end <= call.start || call.end > len(f.Content) {
@@ -174,6 +174,20 @@ func readmeWitness(f SourceFile) (Witness, bool) {
 		}
 		if !fenced && text != "" && len(line) <= 1024 && !strings.HasPrefix(text, "#") && !strings.HasPrefix(text, "[!") && !strings.HasPrefix(text, "![") && !strings.HasPrefix(text, "<") && !strings.HasPrefix(text, "===") && !strings.HasPrefix(text, "---") && !strings.HasPrefix(text, "```") && !strings.HasPrefix(text, "~~~") {
 			end := offset + len(strings.TrimRight(line, "\r\n"))
+			// Quote a whole short paragraph, rather than a sentence fragment at
+			// the author's hard-wrapped first line. Preserve intervening bytes.
+			nextOffset := offset + len(line)
+			for _, next := range strings.SplitAfter(f.Content[nextOffset:], "\n") {
+				trimmed := strings.TrimSpace(next)
+				if trimmed == "" || strings.HasPrefix(trimmed, "#") || strings.HasPrefix(trimmed, "```") || strings.HasPrefix(trimmed, "~~~") {
+					break
+				}
+				end = nextOffset + len(strings.TrimRight(next, "\r\n"))
+				if end-offset > 1024 {
+					return Witness{}, false
+				}
+				nextOffset += len(next)
+			}
 			if end > offset {
 				return Witness{Kind: WitnessSpan, Path: f.Path, Start: offset, End: end, Quote: f.Content[offset:end], Construct: "readme.quote"}, true
 			}

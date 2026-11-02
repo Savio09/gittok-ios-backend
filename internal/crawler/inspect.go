@@ -28,6 +28,26 @@ type inspIndex struct {
 	files         map[string]SourceFile
 	unavail       map[string]string // path -> reason
 	manifestCache map[string]parsedManifest
+	goCache       map[string]goFile
+	serverSpans   map[string]map[[2]int]bool
+}
+
+func (st *inspIndex) goFile(p string) goFile {
+	if f, ok := st.goCache[p]; ok {
+		return f
+	}
+	f := analyzeGoFile(st.files[p])
+	if st.goCache == nil {
+		st.goCache = make(map[string]goFile)
+		st.serverSpans = make(map[string]map[[2]int]bool)
+	}
+	st.goCache[p] = f
+	spans := make(map[[2]int]bool, len(f.serverCalls))
+	for _, c := range f.serverCalls {
+		spans[[2]int{c.start, c.end}] = true
+	}
+	st.serverSpans[p] = spans
+	return f
 }
 
 func indexInspection(insp Inspection) *inspIndex {

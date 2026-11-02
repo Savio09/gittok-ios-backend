@@ -171,15 +171,14 @@ func validateSpan(st *inspIndex, w Witness) error {
 	}
 	switch w.Construct {
 	case constructGoPackageMain, constructGoPackageName:
-		g := analyzeGoFile(st.files[w.Path])
+		g := st.goFile(w.Path)
 		if g.pkgStart != w.Start || g.pkgEnd != w.End || (w.Construct == constructGoPackageMain && g.pkg != "main") {
 			return fmt.Errorf("%s bytes %d–%d are not its package clause %q", w.Path, w.Start, w.End, w.Construct)
 		}
 	case constructGoServerCall:
-		for _, c := range analyzeGoFile(st.files[w.Path]).serverCalls {
-			if c.start == w.Start && c.end == w.End {
-				return nil
-			}
+		st.goFile(w.Path)
+		if st.serverSpans[w.Path][[2]int{w.Start, w.End}] {
+			return nil
 		}
 		return fmt.Errorf("%s bytes %d–%d hold no call resolved to a net/http server entry point", w.Path, w.Start, w.End)
 	case constructDockerExpose:

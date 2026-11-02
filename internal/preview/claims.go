@@ -117,11 +117,16 @@ func candidates(in Input) []candidate {
 	out := metadataClaims(in)
 	var files []candidate
 	rounds := map[string]int{}
+	seen := map[apimodel.Claim]bool{}
 	for _, f := range crawler.CollectFacts(in.Inspection) {
 		c, ok := factClaim(in, f)
 		if !ok {
 			continue
 		}
+		if seen[c.claim] {
+			continue
+		}
+		seen[c.claim] = true
 		// Interleave fact families/components before taking second and later facts
 		// from the same bucket, so one large dependency table cannot fill the preview.
 		bucket := string(f.Kind) + "\x00" + f.Component

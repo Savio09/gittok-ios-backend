@@ -59,14 +59,9 @@ func Build(in Input) apimodel.RepoPreview {
 	}
 	for _, kind := range []apimodel.SectionKind{apimodel.SectionIdea, apimodel.SectionHow, apimodel.SectionStack, apimodel.SectionActivity, apimodel.SectionSetup} {
 		section := apimodel.Section{Kind: kind, Title: sectionTitle(kind), EvidenceMode: apimodel.NotExecuted}
-		seen := map[string]bool{}
 		for _, c := range claims {
 			if c.section == kind {
-				key := fmt.Sprintf("%+v", c.claim)
-				if !seen[key] {
-					section.Claims = append(section.Claims, c.claim)
-					seen[key] = true
-				}
+				section.Claims = append(section.Claims, c.claim)
 			}
 		}
 		if len(section.Claims) > 0 {

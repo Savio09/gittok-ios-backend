@@ -61,3 +61,18 @@ func TestFileSourcesEscapePathsAndRejectForgedSpans(t *testing.T) {
 		t.Fatal("accepted path traversal")
 	}
 }
+
+func TestDuplicateFactsCannotConsumeTheClaimBudget(t *testing.T) {
+	in := inputForTest()
+	content := strings.Repeat("a==1\n", 100) + "b==2\nc==3\n"
+	in.Inspection = crawler.InspectionFromSources("Python", []string{"requirements.txt"}, map[string]string{"requirements.txt": content})
+	in.Inspection.Revision = crawler.Revision{Ref: testSHA, Resolved: true}
+	p := Build(in)
+	names := map[string]bool{}
+	for _, c := range claimsIn(p) {
+		names[c.Label] = true
+	}
+	if !names["Declares b"] || !names["Declares c"] {
+		t.Fatalf("duplicates starved other facts: %v", names)
+	}
+}
