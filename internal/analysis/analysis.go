@@ -82,6 +82,12 @@ func (s *Service) Acquire(parent context.Context, owner, name string) (Result, e
 		return finish("The file tree could not be acquired; only metadata evidence is available.")
 	}
 	a.Tree = tree
+	for _, entry := range tree.Entries {
+		if entry.Mode == "120000" {
+			a.Limitations = append(a.Limitations, "Symlink contents were excluded from inspection.")
+			break
+		}
+	}
 	selected := crawler.SelectFiles(tree.Entries, crawler.DefaultSelectionBudget())
 	paths := make([]string, len(selected))
 	for i, f := range selected {

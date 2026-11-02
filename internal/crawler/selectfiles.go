@@ -87,7 +87,9 @@ func SelectFiles(entries []githubclient.TreeEntry, budget SelectionBudget) []Sel
 
 	var cands []candidate
 	for _, e := range entries {
-		if e.Type != "blob" {
+		// Contents API may dereference a symlink and return another path's bytes.
+		// Those bytes must not be cited as this path's original file contents.
+		if e.Type != "blob" || e.Mode == "120000" {
 			continue
 		}
 		fs := scoreTreeFile(e.Path)

@@ -11,6 +11,8 @@ type TreeEntry struct {
 	Path string // full path from the repo root, e.g. "internal/app.go"
 	Type string // "blob" (file) or "tree" (directory)
 	Size int    // bytes; 0 for directories
+	Mode string // Git mode; 120000 denotes a symlink, never regular-file evidence
+	SHA  string // Git blob/tree object ID reported for this entry
 }
 
 // FileTree is a repository's file listing, bounded by TreeLimits. Truncated is
@@ -51,6 +53,8 @@ type treePayload struct {
 		Path string `json:"path"`
 		Type string `json:"type"`
 		Size int    `json:"size"`
+		Mode string `json:"mode"`
+		SHA  string `json:"sha"`
 	} `json:"tree"`
 }
 
@@ -73,7 +77,7 @@ func (c *Client) GetTree(ctx context.Context, owner, name, ref string, limits Tr
 			tree.DepthLimited = true
 			continue
 		}
-		entries = append(entries, TreeEntry{Path: e.Path, Type: e.Type, Size: e.Size})
+		entries = append(entries, TreeEntry{Path: e.Path, Type: e.Type, Size: e.Size, Mode: e.Mode, SHA: e.SHA})
 	}
 	if limits.MaxEntries > 0 && len(entries) > limits.MaxEntries {
 		entries = entries[:limits.MaxEntries]
