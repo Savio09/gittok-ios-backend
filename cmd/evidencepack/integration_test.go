@@ -50,6 +50,9 @@ func (m *mockGitHub) server(t *testing.T) *httptest.Server {
 			"default_branch": m.defaultBranch,
 		})
 	})
+	mux.HandleFunc("/repos/o/r/commits/", func(w http.ResponseWriter, _ *http.Request) {
+		_ = json.NewEncoder(w).Encode(map[string]string{"sha": "0123456789abcdef0123456789abcdef01234567"})
+	})
 	mux.HandleFunc("/repos/o/r/git/trees/", func(w http.ResponseWriter, _ *http.Request) {
 		tree := make([]map[string]any, 0, len(m.entries))
 		for _, e := range m.entries {
@@ -120,9 +123,9 @@ func TestAnalyzeBackendWithProvenanceAndNoReadme(t *testing.T) {
 	if !cited {
 		t.Errorf("no observation cited cmd/api/main.go; %+v", a.Classification.Observations)
 	}
-	// A branch ref is not a pinned commit.
-	if a.Inspection.Revision.Resolved {
-		t.Errorf("Revision.Resolved = true for a branch ref; want false")
+	// All reads use the resolved commit, not a moving branch.
+	if !a.Inspection.Revision.Resolved || a.Inspection.Revision.Ref != "0123456789abcdef0123456789abcdef01234567" {
+		t.Errorf("unexpected revision: %+v", a.Inspection.Revision)
 	}
 }
 

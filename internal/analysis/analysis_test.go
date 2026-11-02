@@ -13,12 +13,20 @@ type fakeGitHub struct {
 	repo    githubclient.Repo
 	treeErr error
 	refs    []string
+	ref     string
+	refErr  error
 }
 
 func (f *fakeGitHub) GetRepo(context.Context, string, string) (githubclient.Repo, error) {
 	return f.repo, nil
 }
 func (f *fakeGitHub) ResolveRef(context.Context, string, string, string) (string, error) {
+	if f.refErr != nil {
+		return "", f.refErr
+	}
+	if f.ref != "" {
+		return f.ref, nil
+	}
 	return "0123456789abcdef0123456789abcdef01234567", nil
 }
 func (f *fakeGitHub) GetTree(_ context.Context, _, _, ref string, _ githubclient.TreeLimits) (githubclient.FileTree, error) {
@@ -41,9 +49,46 @@ func TestAcquireArbitraryRepository(t *testing.T) {
 	}
 }
 
-func TestAcquireMetadataFailure(t *testing.T) {
+func TestAcquireTreeFailurePreservesMetadata(t *testing.T) {
 	f := &fakeGitHub{treeErr: errors.New("transport unavailable"), repo: githubclient.Repo{DefaultBranch: "trunk"}}
-	if _, err := NewService(f).Acquire(context.Background(), "o", "r"); err == nil {
-		t.Fatal("expected acquisition error")
+	got, err := NewService(f).Acquire(context.Background(), "o", "r")
+	if err != nil || len(got.Limitations) == 0 || len(got.Inspection.Files) != 0 {
+		t.Fatalf("want truthful partial result: %+v, %v", got, err)
+	}
+}
+
+func TestAcquirePinsAllFileReads(t *testing.T) {
+	f := &fakeGitHub{repo: githubclient.Repo{DefaultBranch: "moving"}}
+	got, err := NewService(f).Acquire(context.Background(), "o", "r")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !got.Inspection.Revision.Resolved {
+		t.Fatal("inspection not pinned")
+	}
+	for _, ref := range f.refs {
+		if ref != "0123456789abcdef0123456789abcdef01234567" {
+			t.Fatalf("mutable read %q", ref)
+		}
+	}
+}
+
+func TestAcquireUnresolvedRefCannotCiteFiles(t *testing.T) {
+	for _, ref := range []string{"main", "abc", "0123456789abcdef0123456789abcdef0123456z"} {
+		t.Run(ref, func(t *testing.T) {
+			f := &fakeGitHub{repo: githubclient.Repo{DefaultBranch: "main"}, ref: ref}
+			got, err := NewService(f).Acquire(context.Background(), "o", "r")
+			if err != nil || len(f.refs) > 0 || len(got.Limitations) == 0 || got.Inspection.Revision.Resolved {
+				t.Fatalf("unsafe revision: %+v %v", got, err)
+			}
+		})
+	}
+}
+
+func TestAcquireMissingDefaultBranchDoesNotGuessMain(t *testing.T) {
+	f := &fakeGitHub{}
+	got, err := NewService(f).Acquire(context.Background(), "o", "r")
+	if err != nil || len(f.refs) > 0 || len(got.Limitations) == 0 {
+		t.Fatalf("guessed branch: %+v %v", got, err)
 	}
 }
