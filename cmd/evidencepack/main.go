@@ -23,6 +23,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Savio09/gittok-ios-backend/internal/crawler"
 	"github.com/Savio09/gittok-ios-backend/internal/githubclient"
 )
 
@@ -75,162 +76,76 @@ func splitSlug(s string) (owner, name string, ok bool) {
 	return parts[0], parts[1], true
 }
 
-func buildPack(ctx context.Context, c *githubclient.Client, owner, name string) error {
+// analysis is the result of the read-only pipeline for one repo: the metadata,
+// the (bounded) tree, the files requested and fetched, the Inspection the
+// classifier saw, and its verdict. It is returned whole so the pack renderer and
+// the integration test work from exactly what the analyzer worked from.
+type analysis struct {
+	repo           githubclient.Repo
+	tree           githubclient.FileTree
+	requested      []string
+	fetched        githubclient.FetchedContents
+	insp           crawler.Inspection
+	classification crawler.Classification
+}
+
+// analyze runs the full read-only pipeline for one repo — metadata, bounded tree
+// retrieval, canonical file selection, bounded contents fetch, Inspection
+// construction and classification — on a single resolved ref. It writes nothing;
+// it is the one orchestration buildPack and the integration test both drive. The
+// ref is a branch name, not a pinned commit, so the Inspection's revision is
+// recorded as unresolved rather than mislabelled an immutable SHA.
+func analyze(ctx context.Context, c *githubclient.Client, owner, name string) (analysis, error) {
 	repo, err := c.GetRepo(ctx, owner, name)
 	if err != nil {
-		return fmt.Errorf("metadata: %w", err)
+		return analysis{}, fmt.Errorf("metadata: %w", err)
 	}
 	ref := repo.DefaultBranch
 	if ref == "" {
 		ref = "main"
 	}
-
 	tree, err := c.GetTree(ctx, owner, name, ref, githubclient.DefaultTreeLimits())
 	if err != nil {
-		return fmt.Errorf("tree: %w", err)
+		return analysis{}, fmt.Errorf("tree: %w", err)
 	}
-
-	keyFiles := selectKeyFiles(tree.Entries)
+	keyFiles := keyFilePaths(tree.Entries)
 	fetched, err := c.GetFileContents(ctx, owner, name, ref, keyFiles, githubclient.DefaultContentLimits())
 	if err != nil {
-		return fmt.Errorf("contents: %w", err)
+		return analysis{}, fmt.Errorf("contents: %w", err)
 	}
+	insp := crawler.NewInspection(repo.Language, crawler.Revision{Ref: ref}, tree, fetched)
+	return analysis{
+		repo:           repo,
+		tree:           tree,
+		requested:      keyFiles,
+		fetched:        fetched,
+		insp:           insp,
+		classification: crawler.Classify(insp),
+	}, nil
+}
 
-	md := renderPack(repo, tree, keyFiles, fetched)
+func buildPack(ctx context.Context, c *githubclient.Client, owner, name string) error {
+	a, err := analyze(ctx, c, owner, name)
+	if err != nil {
+		return err
+	}
+	md := renderPack(a.repo, a.tree, a.requested, a.fetched, a.classification)
 	path := filepath.Join(outDir, owner+"__"+name+".md")
 	return os.WriteFile(path, []byte(md), 0o644)
 }
 
-// selectKeyFiles ranks tree entries by how much project signal they usually
-// carry (manifests and entry points first, then config and docs) and returns
-// the top paths, preferring shallower ones. Generic source files are included
-// as a fallback so README-poor repos — where the code is the only evidence —
-// still produce a useful pack. It is a heuristic: it only decides what a human
+// keyFilePaths selects the files worth reading using the canonical crawler
+// selector — the same ranking and budget the analysis path uses — so the pack
+// and the analyzer never diverge. It returns just the paths, which is all the
+// fetch step needs. The selector only decides what a human (and the classifier)
 // should read, never what is true.
-func selectKeyFiles(entries []githubclient.TreeEntry) []string {
-	type scored struct {
-		path     string
-		score    int
-		depth    int
-		isSource bool // matched only by generic extension, not by a named rule
-	}
-	var out []scored
-	for _, e := range entries {
-		if e.Type != "blob" {
-			continue
-		}
-		s := scoreFile(e.Path)
-		isSource := false
-		if s == 0 && sourceExt(e.Path) {
-			s = 25 // below named entry points (50), above nothing
-			isSource = true
-		}
-		if s == 0 {
-			continue
-		}
-		out = append(out, scored{
-			path:     e.Path,
-			score:    s,
-			depth:    strings.Count(e.Path, "/"),
-			isSource: isSource,
-		})
-	}
-	sort.SliceStable(out, func(i, j int) bool {
-		if out[i].score != out[j].score {
-			return out[i].score > out[j].score
-		}
-		if out[i].depth != out[j].depth {
-			return out[i].depth < out[j].depth
-		}
-		return out[i].path < out[j].path
-	})
-
-	const (
-		maxFiles   = 16 // overall cap
-		maxSource  = 6  // generic source files, so a monorepo's code can't flood
-		maxPerBase = 3  // same basename (e.g. package.json in a monorepo)
-	)
-	var paths []string
-	sourceCount := 0
-	perBase := map[string]int{}
-	for _, s := range out {
-		if len(paths) >= maxFiles {
-			break
-		}
-		if s.isSource && sourceCount >= maxSource {
-			continue
-		}
-		base := strings.ToLower(filepath.Base(s.path))
-		if perBase[base] >= maxPerBase {
-			continue
-		}
-		paths = append(paths, s.path)
-		perBase[base]++
-		if s.isSource {
-			sourceCount++
-		}
+func keyFilePaths(entries []githubclient.TreeEntry) []string {
+	selected := crawler.SelectFiles(entries, crawler.DefaultSelectionBudget())
+	paths := make([]string, len(selected))
+	for i, s := range selected {
+		paths[i] = s.Path
 	}
 	return paths
-}
-
-// sourceExt reports whether a path is a source file in a common language, used
-// as the fallback signal when a repo lacks manifests and docs.
-func sourceExt(path string) bool {
-	switch strings.ToLower(filepath.Ext(path)) {
-	case ".go", ".py", ".ts", ".tsx", ".js", ".jsx", ".rs",
-		".dart", ".java", ".rb", ".kt", ".swift", ".c", ".cpp":
-		return true
-	}
-	return false
-}
-
-func scoreFile(path string) int {
-	base := strings.ToLower(filepath.Base(path))
-	lower := strings.ToLower(path)
-	depth := strings.Count(path, "/")
-
-	// Dependency manifests & project definition — the strongest signal.
-	switch base {
-	case "package.json", "go.mod", "cargo.toml", "pyproject.toml",
-		"requirements.txt", "gemfile", "pom.xml", "build.gradle",
-		"composer.json", "pubspec.yaml", "setup.py":
-		return 100 - depth
-	}
-	// Contribution + licensing docs.
-	if strings.HasPrefix(base, "contributing") {
-		return 90 - depth
-	}
-	if strings.HasPrefix(base, "readme") {
-		return 85 - depth
-	}
-	// Containerization / run config.
-	switch base {
-	case "dockerfile", "docker-compose.yml", "docker-compose.yaml",
-		"makefile", ".env.example", "procfile":
-		return 80 - depth
-	}
-	// Build/tooling config (root-level only, to avoid nested noise).
-	if depth == 0 {
-		switch base {
-		case "tsconfig.json", "vite.config.ts", "vite.config.js",
-			"next.config.js", "next.config.mjs", "webpack.config.js",
-			"rollup.config.js", "babel.config.js", "nest-cli.json",
-			"tailwind.config.js", "app.json":
-			return 70
-		}
-	}
-	// CI workflows (take the shallow ones).
-	if strings.HasPrefix(lower, ".github/workflows/") &&
-		(strings.HasSuffix(lower, ".yml") || strings.HasSuffix(lower, ".yaml")) {
-		return 60 - depth
-	}
-	// Likely entry points.
-	switch base {
-	case "main.go", "main.py", "main.rs", "index.js", "index.ts",
-		"app.js", "app.ts", "app.py", "server.go", "server.js", "main.dart":
-		return 50 - depth
-	}
-	return 0
 }
 
 func renderPack(
@@ -238,6 +153,7 @@ func renderPack(
 	tree githubclient.FileTree,
 	requested []string,
 	fetched githubclient.FetchedContents,
+	class crawler.Classification,
 ) string {
 	var b strings.Builder
 
@@ -311,6 +227,49 @@ func renderPack(
 		fmt.Fprintf(&b, "- `%s`\n", f.Path)
 	}
 	b.WriteString("\n")
+
+	// Crawler classification over the same inspection, shown for reference. The
+	// pack still makes no claims of its own; this is the analyzer's verdict with
+	// its evidence and the limits the bounded fetch imposed.
+	b.WriteString("## Classification (crawler, for reference)\n\n")
+	fmt.Fprintf(&b, "- **Kind:** %s\n- **Status:** %s\n\n", class.Kind, class.Status)
+	if len(class.Observations) > 0 {
+		b.WriteString("Observations (each validated against its witness):\n")
+		for _, o := range class.Observations {
+			if o.Path != "" {
+				fmt.Fprintf(&b, "- `%s` — %s _(witness: %s)_\n", o.Path, o.Detail, o.Witness)
+			} else {
+				fmt.Fprintf(&b, "- %s _(witness: %s)_\n", o.Detail, o.Witness)
+			}
+		}
+		b.WriteString("\n")
+	}
+	if len(class.Secondary) > 0 {
+		label := "Secondary components:"
+		if class.Status == crawler.VerdictInconclusive {
+			label = "Candidates:"
+		}
+		b.WriteString(label + "\n")
+		for _, o := range class.Secondary {
+			owner := "repository root"
+			if o.Component != "" {
+				owner = "`" + o.Component + "`"
+			}
+			if o.Path != "" {
+				fmt.Fprintf(&b, "- %s (%s): `%s` — %s _(witness: %s)_\n", owner, o.Role, o.Path, o.Detail, o.Witness)
+			} else {
+				fmt.Fprintf(&b, "- %s (%s): %s _(witness: %s)_\n", owner, o.Role, o.Detail, o.Witness)
+			}
+		}
+		b.WriteString("\n")
+	}
+	if len(class.Limitations) > 0 {
+		b.WriteString("Limitations:\n")
+		for _, l := range class.Limitations {
+			fmt.Fprintf(&b, "- %s\n", l)
+		}
+		b.WriteString("\n")
+	}
 
 	return b.String()
 }

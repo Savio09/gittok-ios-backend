@@ -1,0 +1,17 @@
+{
+ "excalidraw/excalidraw": {
+  "examples/with-nextjs/package.json": "a component manifest the canonical selection did not fetch (its per-basename cap admits 3 package.json files and this workspace has 12); the reference judgment needs the component's declared name, dependencies and entries to decide whether it is the product or a supporting member",
+  "examples/with-script-in-browser/package.json": "a component manifest the canonical selection did not fetch (its per-basename cap admits 3 package.json files and this workspace has 12); the reference judgment needs the component's declared name, dependencies and entries to decide whether it is the product or a supporting member",
+  "packages/common/package.json": "a component manifest the canonical selection did not fetch (its per-basename cap admits 3 package.json files and this workspace has 12); the reference judgment needs the component's declared name, dependencies and entries to decide whether it is the product or a supporting member",
+  "packages/element/package.json": "a component manifest the canonical selection did not fetch (its per-basename cap admits 3 package.json files and this workspace has 12); the reference judgment needs the component's declared name, dependencies and entries to decide whether it is the product or a supporting member",
+  "packages/excalidraw/package.json": "a component manifest the canonical selection did not fetch (its per-basename cap admits 3 package.json files and this workspace has 12); the reference judgment needs the component's declared name, dependencies and entries to decide whether it is the product or a supporting member",
+  "packages/fractional-indexing/package.json": "a component manifest the canonical selection did not fetch (its per-basename cap admits 3 package.json files and this workspace has 12); the reference judgment needs the component's declared name, dependencies and entries to decide whether it is the product or a supporting member",
+  "packages/laser-pointer/package.json": "a component manifest the canonical selection did not fetch (its per-basename cap admits 3 package.json files and this workspace has 12); the reference judgment needs the component's declared name, dependencies and entries to decide whether it is the product or a supporting member",
+  "packages/math/package.json": "a component manifest the canonical selection did not fetch (its per-basename cap admits 3 package.json files and this workspace has 12); the reference judgment needs the component's declared name, dependencies and entries to decide whether it is the product or a supporting member",
+  "packages/utils/package.json": "a component manifest the canonical selection did not fetch (its per-basename cap admits 3 package.json files and this workspace has 12); the reference judgment needs the component's declared name, dependencies and entries to decide whether it is the product or a supporting member"
+ },
+ "pocketbase/pocketbase": {
+  "cmd/serve.go": "listed under cmd/ but not fetched by the canonical selection (its entry-point reservation went to examples/base/main.go); this file's package clause decides whether cmd/ holds a command or an importable package",
+  "cmd/superuser.go": "listed under cmd/ but not fetched by the canonical selection (its entry-point reservation went to examples/base/main.go); this file's package clause decides whether cmd/ holds a command or an importable package"
+ }
+}

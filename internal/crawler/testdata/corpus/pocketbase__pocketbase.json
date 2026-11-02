@@ -1,0 +1,5468 @@
+{
+ "repo": "pocketbase/pocketbase",
+ "source_url": "https://github.com/pocketbase/pocketbase",
+ "captured_at": "2026-11-01",
+ "requested_ref": "master",
+ "resolved_sha": "7f2773ec234b62d0b80ca47c508397cb3d0da3ea",
+ "language": "Go",
+ "archived": true,
+ "tree_limits": {
+  "MaxEntries": 5000,
+  "MaxDepth": 12
+ },
+ "content_limits": {
+  "MaxFileBytes": 65536,
+  "MaxTotalBytes": 524288,
+  "MaxFiles": 40
+ },
+ "tree": {
+  "truncated": false,
+  "depth_limited": false,
+  "max_depth": 12,
+  "entries": [
+   {
+    "p": ".github",
+    "t": "tree"
+   },
+   {
+    "p": ".github/SECURITY.md",
+    "t": "blob",
+    "s": 11076
+   },
+   {
+    "p": ".github/workflows",
+    "t": "tree"
+   },
+   {
+    "p": ".github/workflows/release.yaml",
+    "t": "blob",
+    "s": 1751
+   },
+   {
+    "p": ".gitignore",
+    "t": "blob",
+    "s": 239
+   },
+   {
+    "p": ".goreleaser.yaml",
+    "t": "blob",
+    "s": 1057
+   },
+   {
+    "p": "CHANGELOG.md",
+    "t": "blob",
+    "s": 9391
+   },
+   {
+    "p": "CHANGELOG_08_15.md",
+    "t": "blob",
+    "s": 59008
+   },
+   {
+    "p": "CHANGELOG_16_22.md",
+    "t": "blob",
+    "s": 75945
+   },
+   {
+    "p": "CHANGELOG_23_39.md",
+    "t": "blob",
+    "s": 72284
+   },
+   {
+    "p": "CONTRIBUTING.md",
+    "t": "blob",
+    "s": 3686
+   },
+   {
+    "p": "LICENSE.md",
+    "t": "blob",
+    "s": 1090
+   },
+   {
+    "p": "Makefile",
+    "t": "blob",
+    "s": 240
+   },
+   {
+    "p": "README.md",
+    "t": "blob",
+    "s": 7079
+   },
+   {
+    "p": "apis",
+    "t": "tree"
+   },
+   {
+    "p": "apis/api_error_aliases.go",
+    "t": "blob",
+    "s": 1787
+   },
+   {
+    "p": "apis/backup.go",
+    "t": "blob",
+    "s": 4561
+   },
+   {
+    "p": "apis/backup_create.go",
+    "t": "blob",
+    "s": 1918
+   },
+   {
+    "p": "apis/backup_test.go",
+    "t": "blob",
+    "s": 29922
+   },
+   {
+    "p": "apis/backup_upload.go",
+    "t": "blob",
+    "s": 1866
+   },
+   {
+    "p": "apis/base.go",
+    "t": "blob",
+    "s": 5876
+   },
+   {
+    "p": "apis/base_test.go",
+    "t": "blob",
+    "s": 6805
+   },
+   {
+    "p": "apis/batch.go",
+    "t": "blob",
+    "s": 14404
+   },
+   {
+    "p": "apis/batch_test.go",
+    "t": "blob",
+    "s": 25048
+   },
+   {
+    "p": "apis/collection.go",
+    "t": "blob",
+    "s": 8825
+   },
+   {
+    "p": "apis/collection_import.go",
+    "t": "blob",
+    "s": 1924
+   },
+   {
+    "p": "apis/collection_import_test.go",
+    "t": "blob",
+    "s": 11088
+   },
+   {
+    "p": "apis/collection_test.go",
+    "t": "blob",
+    "s": 66022
+   },
+   {
+    "p": "apis/cron.go",
+    "t": "blob",
+    "s": 1233
+   },
+   {
+    "p": "apis/cron_test.go",
+    "t": "blob",
+    "s": 5076
+   },
+   {
+    "p": "apis/extensions.go",
+    "t": "blob",
+    "s": 2646
+   },
+   {
+    "p": "apis/extensions_test.go",
+    "t": "blob",
+    "s": 4448
+   },
+   {
+    "p": "apis/file.go",
+    "t": "blob",
+    "s": 7592
+   },
+   {
+    "p": "apis/file_test.go",
+    "t": "blob",
+    "s": 21712
+   },
+   {
+    "p": "apis/health.go",
+    "t": "blob",
+    "s": 1575
+   },
+   {
+    "p": "apis/health_test.go",
+    "t": "blob",
+    "s": 1874
+   },
+   {
+    "p": "apis/installer.go",
+    "t": "blob",
+    "s": 2734
+   },
+   {
+    "p": "apis/logs.go",
+    "t": "blob",
+    "s": 2329
+   },
+   {
+    "p": "apis/logs_test.go",
+    "t": "blob",
+    "s": 8986
+   },
+   {
+    "p": "apis/middlewares.go",
+    "t": "blob",
+    "s": 14913
+   },
+   {
+    "p": "apis/middlewares_body_limit.go",
+    "t": "blob",
+    "s": 3832
+   },
+   {
+    "p": "apis/middlewares_body_limit_test.go",
+    "t": "blob",
+    "s": 3462
+   },
+   {
+    "p": "apis/middlewares_cors.go",
+    "t": "blob",
+    "s": 11529
+   },
+   {
+    "p": "apis/middlewares_cors_test.go",
+    "t": "blob",
+    "s": 1246
+   },
+   {
+    "p": "apis/middlewares_gzip.go",
+    "t": "blob",
+    "s": 6697
+   },
+   {
+    "p": "apis/middlewares_rate_limit.go",
+    "t": "blob",
+    "s": 9602
+   },
+   {
+    "p": "apis/middlewares_rate_limit_test.go",
+    "t": "blob",
+    "s": 7891
+   },
+   {
+    "p": "apis/middlewares_test.go",
+    "t": "blob",
+    "s": 25109
+   },
+   {
+    "p": "apis/realtime.go",
+    "t": "blob",
+    "s": 27613
+   },
+   {
+    "p": "apis/realtime_test.go",
+    "t": "blob",
+    "s": 36232
+   },
+   {
+    "p": "apis/record_auth.go",
+    "t": "blob",
+    "s": 2686
+   },
+   {
+    "p": "apis/record_auth_email_change_confirm.go",
+    "t": "blob",
+    "s": 3925
+   },
+   {
+    "p": "apis/record_auth_email_change_confirm_test.go",
+    "t": "blob",
+    "s": 9681
+   },
+   {
+    "p": "apis/record_auth_email_change_request.go",
+    "t": "blob",
+    "s": 2578
+   },
+   {
+    "p": "apis/record_auth_email_change_request_test.go",
+    "t": "blob",
+    "s": 8013
+   },
+   {
+    "p": "apis/record_auth_impersonate.go",
+    "t": "blob",
+    "s": 1532
+   },
+   {
+    "p": "apis/record_auth_impersonate_test.go",
+    "t": "blob",
+    "s": 3804
+   },
+   {
+    "p": "apis/record_auth_methods.go",
+    "t": "blob",
+    "s": 4864
+   },
+   {
+    "p": "apis/record_auth_methods_test.go",
+    "t": "blob",
+    "s": 3310
+   },
+   {
+    "p": "apis/record_auth_otp_request.go",
+    "t": "blob",
+    "s": 3670
+   },
+   {
+    "p": "apis/record_auth_otp_request_test.go",
+    "t": "blob",
+    "s": 10276
+   },
+   {
+    "p": "apis/record_auth_password_reset_confirm.go",
+    "t": "blob",
+    "s": 3419
+   },
+   {
+    "p": "apis/record_auth_password_reset_confirm_test.go",
+    "t": "blob",
+    "s": 15551
+   },
+   {
+    "p": "apis/record_auth_password_reset_request.go",
+    "t": "blob",
+    "s": 2839
+   },
+   {
+    "p": "apis/record_auth_password_reset_request_test.go",
+    "t": "blob",
+    "s": 6041
+   },
+   {
+    "p": "apis/record_auth_refresh.go",
+    "t": "blob",
+    "s": 1080
+   },
+   {
+    "p": "apis/record_auth_refresh_test.go",
+    "t": "blob",
+    "s": 8668
+   },
+   {
+    "p": "apis/record_auth_verification_confirm.go",
+    "t": "blob",
+    "s": 3345
+   },
+   {
+    "p": "apis/record_auth_verification_confirm_test.go",
+    "t": "blob",
+    "s": 13065
+   },
+   {
+    "p": "apis/record_auth_verification_request.go",
+    "t": "blob",
+    "s": 2900
+   },
+   {
+    "p": "apis/record_auth_verification_request_test.go",
+    "t": "blob",
+    "s": 6561
+   },
+   {
+    "p": "apis/record_auth_with_oauth2.go",
+    "t": "blob",
+    "s": 17434
+   },
+   {
+    "p": "apis/record_auth_with_oauth2_redirect.go",
+    "t": "blob",
+    "s": 5590
+   },
+   {
+    "p": "apis/record_auth_with_oauth2_redirect_test.go",
+    "t": "blob",
+    "s": 12058
+   },
+   {
+    "p": "apis/record_auth_with_oauth2_test.go",
+    "t": "blob",
+    "s": 66127
+   },
+   {
+    "p": "apis/record_auth_with_otp.go",
+    "t": "blob",
+    "s": 3989
+   },
+   {
+    "p": "apis/record_auth_with_otp_test.go",
+    "t": "blob",
+    "s": 19155
+   },
+   {
+    "p": "apis/record_auth_with_password.go",
+    "t": "blob",
+    "s": 5233
+   },
+   {
+    "p": "apis/record_auth_with_password_test.go",
+    "t": "blob",
+    "s": 23841
+   },
+   {
+    "p": "apis/record_crud.go",
+    "t": "blob",
+    "s": 23475
+   },
+   {
+    "p": "apis/record_crud_auth_origin_test.go",
+    "t": "blob",
+    "s": 10240
+   },
+   {
+    "p": "apis/record_crud_external_auth_test.go",
+    "t": "blob",
+    "s": 10350
+   },
+   {
+    "p": "apis/record_crud_mfa_test.go",
+    "t": "blob",
+    "s": 12983
+   },
+   {
+    "p": "apis/record_crud_otp_test.go",
+    "t": "blob",
+    "s": 13003
+   },
+   {
+    "p": "apis/record_crud_superuser_test.go",
+    "t": "blob",
+    "s": 11423
+   },
+   {
+    "p": "apis/record_crud_test.go",
+    "t": "blob",
+    "s": 122810
+   },
+   {
+    "p": "apis/record_helpers.go",
+    "t": "blob",
+    "s": 19222
+   },
+   {
+    "p": "apis/record_helpers_test.go",
+    "t": "blob",
+    "s": 20403
+   },
+   {
+    "p": "apis/serve.go",
+    "t": "blob",
+    "s": 8994
+   },
+   {
+    "p": "apis/settings.go",
+    "t": "blob",
+    "s": 4040
+   },
+   {
+    "p": "apis/settings_test.go",
+    "t": "blob",
+    "s": 23540
+   },
+   {
+    "p": "apis/sql.go",
+    "t": "blob",
+    "s": 4682
+   },
+   {
+    "p": "apis/sql_test.go",
+    "t": "blob",
+    "s": 7886
+   },
+   {
+    "p": "cmd",
+    "t": "tree"
+   },
+   {
+    "p": "cmd/serve.go",
+    "t": "blob",
+    "s": 1983
+   },
+   {
+    "p": "cmd/superuser.go",
+    "t": "blob",
+    "s": 7443
+   },
+   {
+    "p": "cmd/superuser_test.go",
+    "t": "blob",
+    "s": 8360
+   },
+   {
+    "p": "core",
+    "t": "tree"
+   },
+   {
+    "p": "core/app.go",
+    "t": "blob",
+    "s": 73633
+   },
+   {
+    "p": "core/auth_origin_model.go",
+    "t": "blob",
+    "s": 6528
+   },
+   {
+    "p": "core/auth_origin_model_test.go",
+    "t": "blob",
+    "s": 7845
+   },
+   {
+    "p": "core/auth_origin_query.go",
+    "t": "blob",
+    "s": 2435
+   },
+   {
+    "p": "core/auth_origin_query_test.go",
+    "t": "blob",
+    "s": 6379
+   },
+   {
+    "p": "core/backup.go",
+    "t": "blob",
+    "s": 2957
+   },
+   {
+    "p": "core/backup_create.go",
+    "t": "blob",
+    "s": 11738
+   },
+   {
+    "p": "core/backup_restore.go",
+    "t": "blob",
+    "s": 6677
+   },
+   {
+    "p": "core/backup_test.go",
+    "t": "blob",
+    "s": 4164
+   },
+   {
+    "p": "core/base.go",
+    "t": "blob",
+    "s": 58380
+   },
+   {
+    "p": "core/base_test.go",
+    "t": "blob",
+    "s": 17486
+   },
+   {
+    "p": "core/collection_import.go",
+    "t": "blob",
+    "s": 5418
+   },
+   {
+    "p": "core/collection_import_test.go",
+    "t": "blob",
+    "s": 13022
+   },
+   {
+    "p": "core/collection_model.go",
+    "t": "blob",
+    "s": 30826
+   },
+   {
+    "p": "core/collection_model_auth_options.go",
+    "t": "blob",
+    "s": 18969
+   },
+   {
+    "p": "core/collection_model_auth_options_test.go",
+    "t": "blob",
+    "s": 27679
+   },
+   {
+    "p": "core/collection_model_auth_templates.go",
+    "t": "blob",
+    "s": 2881
+   },
+   {
+    "p": "core/collection_model_base_options.go",
+    "t": "blob",
+    "s": 274
+   },
+   {
+    "p": "core/collection_model_test.go",
+    "t": "blob",
+    "s": 45450
+   },
+   {
+    "p": "core/collection_model_view_options.go",
+    "t": "blob",
+    "s": 512
+   },
+   {
+    "p": "core/collection_model_view_options_test.go",
+    "t": "blob",
+    "s": 2590
+   },
+   {
+    "p": "core/collection_query.go",
+    "t": "blob",
+    "s": 10514
+   },
+   {
+    "p": "core/collection_query_test.go",
+    "t": "blob",
+    "s": 10584
+   },
+   {
+    "p": "core/collection_record_table_sync.go",
+    "t": "blob",
+    "s": 10366
+   },
+   {
+    "p": "core/collection_record_table_sync_test.go",
+    "t": "blob",
+    "s": 8765
+   },
+   {
+    "p": "core/collection_validate.go",
+    "t": "blob",
+    "s": 20096
+   },
+   {
+    "p": "core/collection_validate_test.go",
+    "t": "blob",
+    "s": 26236
+   },
+   {
+    "p": "core/db.go",
+    "t": "blob",
+    "s": 15235
+   },
+   {
+    "p": "core/db_builder.go",
+    "t": "blob",
+    "s": 6831
+   },
+   {
+    "p": "core/db_connect.go",
+    "t": "blob",
+    "s": 691
+   },
+   {
+    "p": "core/db_connect_nodefaultdriver.go",
+    "t": "blob",
+    "s": 224
+   },
+   {
+    "p": "core/db_model.go",
+    "t": "blob",
+    "s": 1579
+   },
+   {
+    "p": "core/db_model_test.go",
+    "t": "blob",
+    "s": 1509
+   },
+   {
+    "p": "core/db_retry.go",
+    "t": "blob",
+    "s": 1696
+   },
+   {
+    "p": "core/db_retry_test.go",
+    "t": "blob",
+    "s": 1428
+   },
+   {
+    "p": "core/db_table.go",
+    "t": "blob",
+    "s": 3891
+   },
+   {
+    "p": "core/db_table_test.go",
+    "t": "blob",
+    "s": 5895
+   },
+   {
+    "p": "core/db_test.go",
+    "t": "blob",
+    "s": 2454
+   },
+   {
+    "p": "core/db_tx.go",
+    "t": "blob",
+    "s": 2986
+   },
+   {
+    "p": "core/db_tx_test.go",
+    "t": "blob",
+    "s": 10614
+   },
+   {
+    "p": "core/event_request.go",
+    "t": "blob",
+    "s": 5129
+   },
+   {
+    "p": "core/event_request_batch.go",
+    "t": "blob",
+    "s": 868
+   },
+   {
+    "p": "core/event_request_batch_test.go",
+    "t": "blob",
+    "s": 1465
+   },
+   {
+    "p": "core/event_request_test.go",
+    "t": "blob",
+    "s": 8912
+   },
+   {
+    "p": "core/events.go",
+    "t": "blob",
+    "s": 14443
+   },
+   {
+    "p": "core/external_auth_model.go",
+    "t": "blob",
+    "s": 4975
+   },
+   {
+    "p": "core/external_auth_model_test.go",
+    "t": "blob",
+    "s": 9942
+   },
+   {
+    "p": "core/external_auth_query.go",
+    "t": "blob",
+    "s": 2078
+   },
+   {
+    "p": "core/external_auth_query_test.go",
+    "t": "blob",
+    "s": 5424
+   },
+   {
+    "p": "core/field.go",
+    "t": "blob",
+    "s": 8258
+   },
+   {
+    "p": "core/field_autodate.go",
+    "t": "blob",
+    "s": 6432
+   },
+   {
+    "p": "core/field_autodate_test.go",
+    "t": "blob",
+    "s": 10201
+   },
+   {
+    "p": "core/field_bool.go",
+    "t": "blob",
+    "s": 3533
+   },
+   {
+    "p": "core/field_bool_test.go",
+    "t": "blob",
+    "s": 3229
+   },
+   {
+    "p": "core/field_date.go",
+    "t": "blob",
+    "s": 4776
+   },
+   {
+    "p": "core/field_date_test.go",
+    "t": "blob",
+    "s": 4743
+   },
+   {
+    "p": "core/field_editor.go",
+    "t": "blob",
+    "s": 4825
+   },
+   {
+    "p": "core/field_editor_test.go",
+    "t": "blob",
+    "s": 5293
+   },
+   {
+    "p": "core/field_email.go",
+    "t": "blob",
+    "s": 4968
+   },
+   {
+    "p": "core/field_email_test.go",
+    "t": "blob",
+    "s": 6026
+   },
+   {
+    "p": "core/field_file.go",
+    "t": "blob",
+    "s": 22898
+   },
+   {
+    "p": "core/field_file_test.go",
+    "t": "blob",
+    "s": 27641
+   },
+   {
+    "p": "core/field_geo_point.go",
+    "t": "blob",
+    "s": 4575
+   },
+   {
+    "p": "core/field_geo_point_test.go",
+    "t": "blob",
+    "s": 4849
+   },
+   {
+    "p": "core/field_json.go",
+    "t": "blob",
+    "s": 6222
+   },
+   {
+    "p": "core/field_json_test.go",
+    "t": "blob",
+    "s": 6201
+   },
+   {
+    "p": "core/field_number.go",
+    "t": "blob",
+    "s": 6629
+   },
+   {
+    "p": "core/field_number_test.go",
+    "t": "blob",
+    "s": 8729
+   },
+   {
+    "p": "core/field_password.go",
+    "t": "blob",
+    "s": 9063
+   },
+   {
+    "p": "core/field_password_test.go",
+    "t": "blob",
+    "s": 12300
+   },
+   {
+    "p": "core/field_relation.go",
+    "t": "blob",
+    "s": 10305
+   },
+   {
+    "p": "core/field_relation_test.go",
+    "t": "blob",
+    "s": 14571
+   },
+   {
+    "p": "core/field_select.go",
+    "t": "blob",
+    "s": 7696
+   },
+   {
+    "p": "core/field_select_test.go",
+    "t": "blob",
+    "s": 11689
+   },
+   {
+    "p": "core/field_test.go",
+    "t": "blob",
+    "s": 6294
+   },
+   {
+    "p": "core/field_text.go",
+    "t": "blob",
+    "s": 12421
+   },
+   {
+    "p": "core/field_text_test.go",
+    "t": "blob",
+    "s": 15957
+   },
+   {
+    "p": "core/field_url.go",
+    "t": "blob",
+    "s": 4952
+   },
+   {
+    "p": "core/field_url_test.go",
+    "t": "blob",
+    "s": 5971
+   },
+   {
+    "p": "core/fields_list.go",
+    "t": "blob",
+    "s": 9315
+   },
+   {
+    "p": "core/fields_list_test.go",
+    "t": "blob",
+    "s": 16032
+   },
+   {
+    "p": "core/log_model.go",
+    "t": "blob",
+    "s": 2173
+   },
+   {
+    "p": "core/log_model_test.go",
+    "t": "blob",
+    "s": 3579
+   },
+   {
+    "p": "core/log_printer.go",
+    "t": "blob",
+    "s": 2048
+   },
+   {
+    "p": "core/log_printer_test.go",
+    "t": "blob",
+    "s": 3698
+   },
+   {
+    "p": "core/log_query.go",
+    "t": "blob",
+    "s": 1623
+   },
+   {
+    "p": "core/log_query_test.go",
+    "t": "blob",
+    "s": 2684
+   },
+   {
+    "p": "core/mfa_model.go",
+    "t": "blob",
+    "s": 4014
+   },
+   {
+    "p": "core/mfa_model_test.go",
+    "t": "blob",
+    "s": 7662
+   },
+   {
+    "p": "core/mfa_query.go",
+    "t": "blob",
+    "s": 2624
+   },
+   {
+    "p": "core/mfa_query_test.go",
+    "t": "blob",
+    "s": 6832
+   },
+   {
+    "p": "core/migrations_list.go",
+    "t": "blob",
+    "s": 2017
+   },
+   {
+    "p": "core/migrations_list_test.go",
+    "t": "blob",
+    "s": 1110
+   },
+   {
+    "p": "core/migrations_runner.go",
+    "t": "blob",
+    "s": 7558
+   },
+   {
+    "p": "core/migrations_runner_test.go",
+    "t": "blob",
+    "s": 5481
+   },
+   {
+    "p": "core/notify_watcher.go",
+    "t": "blob",
+    "s": 5305
+   },
+   {
+    "p": "core/notify_watcher_test.go",
+    "t": "blob",
+    "s": 4965
+   },
+   {
+    "p": "core/otp_model.go",
+    "t": "blob",
+    "s": 4167
+   },
+   {
+    "p": "core/otp_model_test.go",
+    "t": "blob",
+    "s": 7660
+   },
+   {
+    "p": "core/otp_query.go",
+    "t": "blob",
+    "s": 2624
+   },
+   {
+    "p": "core/otp_query_test.go",
+    "t": "blob",
+    "s": 6825
+   },
+   {
+    "p": "core/record_field_resolver.go",
+    "t": "blob",
+    "s": 16698
+   },
+   {
+    "p": "core/record_field_resolver_replace_expr.go",
+    "t": "blob",
+    "s": 773
+   },
+   {
+    "p": "core/record_field_resolver_runner.go",
+    "t": "blob",
+    "s": 26822
+   },
+   {
+    "p": "core/record_field_resolver_test.go",
+    "t": "blob",
+    "s": 86971
+   },
+   {
+    "p": "core/record_model.go",
+    "t": "blob",
+    "s": 43753
+   },
+   {
+    "p": "core/record_model_auth.go",
+    "t": "blob",
+    "s": 2957
+   },
+   {
+    "p": "core/record_model_auth_test.go",
+    "t": "blob",
+    "s": 3717
+   },
+   {
+    "p": "core/record_model_superusers.go",
+    "t": "blob",
+    "s": 3643
+   },
+   {
+    "p": "core/record_model_superusers_test.go",
+    "t": "blob",
+    "s": 924
+   },
+   {
+    "p": "core/record_model_test.go",
+    "t": "blob",
+    "s": 69174
+   },
+   {
+    "p": "core/record_proxy.go",
+    "t": "blob",
+    "s": 1034
+   },
+   {
+    "p": "core/record_proxy_test.go",
+    "t": "blob",
+    "s": 389
+   },
+   {
+    "p": "core/record_query.go",
+    "t": "blob",
+    "s": 16600
+   },
+   {
+    "p": "core/record_query_expand.go",
+    "t": "blob",
+    "s": 8149
+   },
+   {
+    "p": "core/record_query_expand_test.go",
+    "t": "blob",
+    "s": 14151
+   },
+   {
+    "p": "core/record_query_test.go",
+    "t": "blob",
+    "s": 24620
+   },
+   {
+    "p": "core/record_tokens.go",
+    "t": "blob",
+    "s": 4378
+   },
+   {
+    "p": "core/record_tokens_test.go",
+    "t": "blob",
+    "s": 4143
+   },
+   {
+    "p": "core/settings_model.go",
+    "t": "blob",
+    "s": 21588
+   },
+   {
+    "p": "core/settings_model_test.go",
+    "t": "blob",
+    "s": 21098
+   },
+   {
+    "p": "core/settings_query.go",
+    "t": "blob",
+    "s": 2410
+   },
+   {
+    "p": "core/settings_query_test.go",
+    "t": "blob",
+    "s": 4793
+   },
+   {
+    "p": "core/syscall.go",
+    "t": "blob",
+    "s": 209
+   },
+   {
+    "p": "core/syscall_wasm.go",
+    "t": "blob",
+    "s": 204
+   },
+   {
+    "p": "core/system_alert.go",
+    "t": "blob",
+    "s": 3414
+   },
+   {
+    "p": "core/system_alert_test.go",
+    "t": "blob",
+    "s": 2805
+   },
+   {
+    "p": "core/validators",
+    "t": "tree"
+   },
+   {
+    "p": "core/validators/db.go",
+    "t": "blob",
+    "s": 2084
+   },
+   {
+    "p": "core/validators/db_test.go",
+    "t": "blob",
+    "s": 2825
+   },
+   {
+    "p": "core/validators/equal.go",
+    "t": "blob",
+    "s": 1806
+   },
+   {
+    "p": "core/validators/equal_test.go",
+    "t": "blob",
+    "s": 1218
+   },
+   {
+    "p": "core/validators/file.go",
+    "t": "blob",
+    "s": 2169
+   },
+   {
+    "p": "core/validators/file_test.go",
+    "t": "blob",
+    "s": 1785
+   },
+   {
+    "p": "core/validators/string.go",
+    "t": "blob",
+    "s": 1079
+   },
+   {
+    "p": "core/validators/string_test.go",
+    "t": "blob",
+    "s": 1210
+   },
+   {
+    "p": "core/validators/validators.go",
+    "t": "blob",
+    "s": 1104
+   },
+   {
+    "p": "core/validators/validators_test.go",
+    "t": "blob",
+    "s": 1353
+   },
+   {
+    "p": "core/view.go",
+    "t": "blob",
+    "s": 19116
+   },
+   {
+    "p": "core/view_test.go",
+    "t": "blob",
+    "s": 19150
+   },
+   {
+    "p": "examples",
+    "t": "tree"
+   },
+   {
+    "p": "examples/base",
+    "t": "tree"
+   },
+   {
+    "p": "examples/base/.gitignore",
+    "t": "blob",
+    "s": 78
+   },
+   {
+    "p": "examples/base/main.go",
+    "t": "blob",
+    "s": 3373
+   },
+   {
+    "p": "forms",
+    "t": "tree"
+   },
+   {
+    "p": "forms/apple_client_secret_create.go",
+    "t": "blob",
+    "s": 3083
+   },
+   {
+    "p": "forms/apple_client_secret_create_test.go",
+    "t": "blob",
+    "s": 2453
+   },
+   {
+    "p": "forms/record_upsert.go",
+    "t": "blob",
+    "s": 9672
+   },
+   {
+    "p": "forms/record_upsert_test.go",
+    "t": "blob",
+    "s": 25795
+   },
+   {
+    "p": "forms/test_email_send.go",
+    "t": "blob",
+    "s": 3238
+   },
+   {
+    "p": "forms/test_email_send_test.go",
+    "t": "blob",
+    "s": 2814
+   },
+   {
+    "p": "forms/test_s3_filesystem.go",
+    "t": "blob",
+    "s": 2217
+   },
+   {
+    "p": "forms/test_s3_filesystem_test.go",
+    "t": "blob",
+    "s": 2040
+   },
+   {
+    "p": "go.mod",
+    "t": "blob",
+    "s": 1916
+   },
+   {
+    "p": "go.sum",
+    "t": "blob",
+    "s": 13112
+   },
+   {
+    "p": "golangci.yml",
+    "t": "blob",
+    "s": 469
+   },
+   {
+    "p": "mails",
+    "t": "tree"
+   },
+   {
+    "p": "mails/base.go",
+    "t": "blob",
+    "s": 668
+   },
+   {
+    "p": "mails/record.go",
+    "t": "blob",
+    "s": 7949
+   },
+   {
+    "p": "mails/record_test.go",
+    "t": "blob",
+    "s": 4953
+   },
+   {
+    "p": "mails/templates",
+    "t": "tree"
+   },
+   {
+    "p": "mails/templates/html_content.go",
+    "t": "blob",
+    "s": 152
+   },
+   {
+    "p": "mails/templates/layout.go",
+    "t": "blob",
+    "s": 2051
+   },
+   {
+    "p": "migrations",
+    "t": "tree"
+   },
+   {
+    "p": "migrations/1640988000_aux_init.go",
+    "t": "blob",
+    "s": 1192
+   },
+   {
+    "p": "migrations/1640988000_init.go",
+    "t": "blob",
+    "s": 9145
+   },
+   {
+    "p": "migrations/1717233556_v0.23_migrate.go",
+    "t": "blob",
+    "s": 31237
+   },
+   {
+    "p": "migrations/1717233557_v0.23_migrate2.go",
+    "t": "blob",
+    "s": 787
+   },
+   {
+    "p": "migrations/1717233558_v0.23_migrate3.go",
+    "t": "blob",
+    "s": 3165
+   },
+   {
+    "p": "migrations/1717233559_v0.23_migrate4.go",
+    "t": "blob",
+    "s": 634
+   },
+   {
+    "p": "migrations/1763020353_update_default_auth_alert_templates.go",
+    "t": "blob",
+    "s": 1415
+   },
+   {
+    "p": "migrations/1778828400_normalize_indexes.go",
+    "t": "blob",
+    "s": 3521
+   },
+   {
+    "p": "modernc_versions_check.go",
+    "t": "blob",
+    "s": 2900
+   },
+   {
+    "p": "plugins",
+    "t": "tree"
+   },
+   {
+    "p": "plugins/ghupdate",
+    "t": "tree"
+   },
+   {
+    "p": "plugins/ghupdate/ghupdate.go",
+    "t": "blob",
+    "s": 10435
+   },
+   {
+    "p": "plugins/ghupdate/ghupdate_test.go",
+    "t": "blob",
+    "s": 773
+   },
+   {
+    "p": "plugins/ghupdate/release.go",
+    "t": "blob",
+    "s": 922
+   },
+   {
+    "p": "plugins/ghupdate/release_test.go",
+    "t": "blob",
+    "s": 456
+   },
+   {
+    "p": "plugins/jsvm",
+    "t": "tree"
+   },
+   {
+    "p": "plugins/jsvm/binds.go",
+    "t": "blob",
+    "s": 37055
+   },
+   {
+    "p": "plugins/jsvm/binds_app_reset_test.go",
+    "t": "blob",
+    "s": 6571
+   },
+   {
+    "p": "plugins/jsvm/binds_test.go",
+    "t": "blob",
+    "s": 43793
+   },
+   {
+    "p": "plugins/jsvm/form_data.go",
+    "t": "blob",
+    "s": 3421
+   },
+   {
+    "p": "plugins/jsvm/form_data_test.go",
+    "t": "blob",
+    "s": 4855
+   },
+   {
+    "p": "plugins/jsvm/internal",
+    "t": "tree"
+   },
+   {
+    "p": "plugins/jsvm/internal/types",
+    "t": "tree"
+   },
+   {
+    "p": "plugins/jsvm/internal/types/generated",
+    "t": "tree"
+   },
+   {
+    "p": "plugins/jsvm/internal/types/generated/embed.go",
+    "t": "blob",
+    "s": 76
+   },
+   {
+    "p": "plugins/jsvm/internal/types/generated/types.d.ts",
+    "t": "blob",
+    "s": 802641
+   },
+   {
+    "p": "plugins/jsvm/internal/types/types.go",
+    "t": "blob",
+    "s": 39699
+   },
+   {
+    "p": "plugins/jsvm/jsvm.go",
+    "t": "blob",
+    "s": 15188
+   },
+   {
+    "p": "plugins/jsvm/mapper.go",
+    "t": "blob",
+    "s": 1588
+   },
+   {
+    "p": "plugins/jsvm/mapper_test.go",
+    "t": "blob",
+    "s": 988
+   },
+   {
+    "p": "plugins/jsvm/pool.go",
+    "t": "blob",
+    "s": 1462
+   },
+   {
+    "p": "plugins/migratecmd",
+    "t": "tree"
+   },
+   {
+    "p": "plugins/migratecmd/automigrate.go",
+    "t": "blob",
+    "s": 2736
+   },
+   {
+    "p": "plugins/migratecmd/migratecmd.go",
+    "t": "blob",
+    "s": 6349
+   },
+   {
+    "p": "plugins/migratecmd/migratecmd_test.go",
+    "t": "blob",
+    "s": 42177
+   },
+   {
+    "p": "plugins/migratecmd/templates.go",
+    "t": "blob",
+    "s": 18834
+   },
+   {
+    "p": "plugins/update",
+    "t": "tree"
+   },
+   {
+    "p": "plugins/update/release.go",
+    "t": "blob",
+    "s": 1046
+   },
+   {
+    "p": "plugins/update/release_test.go",
+    "t": "blob",
+    "s": 745
+   },
+   {
+    "p": "plugins/update/update.go",
+    "t": "blob",
+    "s": 11388
+   },
+   {
+    "p": "plugins/update/update_test.go",
+    "t": "blob",
+    "s": 771
+   },
+   {
+    "p": "pocketbase.go",
+    "t": "blob",
+    "s": 9221
+   },
+   {
+    "p": "pocketbase_test.go",
+    "t": "blob",
+    "s": 5086
+   },
+   {
+    "p": "tests",
+    "t": "tree"
+   },
+   {
+    "p": "tests/api.go",
+    "t": "blob",
+    "s": 9279
+   },
+   {
+    "p": "tests/app.go",
+    "t": "blob",
+    "s": 24338
+   },
+   {
+    "p": "tests/data",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/.gitignore",
+    "t": "blob",
+    "s": 29
+   },
+   {
+    "p": "tests/data/auxiliary.db",
+    "t": "blob",
+    "s": 49152
+   },
+   {
+    "p": "tests/data/data.db",
+    "t": "blob",
+    "s": 344064
+   },
+   {
+    "p": "tests/data/lost+found",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/lost+found/test.txt",
+    "t": "blob",
+    "s": 5
+   },
+   {
+    "p": "tests/data/storage",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/9n89pl5vkct6330",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/9n89pl5vkct6330/la4y2w4o98acwuj",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/9n89pl5vkct6330/la4y2w4o98acwuj/300_uh_lkx91_hvb_Da8K5pl069.png",
+    "t": "blob",
+    "s": 1132
+   },
+   {
+    "p": "tests/data/storage/9n89pl5vkct6330/la4y2w4o98acwuj/300_uh_lkx91_hvb_Da8K5pl069.png.attrs",
+    "t": "blob",
+    "s": 234
+   },
+   {
+    "p": "tests/data/storage/9n89pl5vkct6330/la4y2w4o98acwuj/thumbs_300_uh_lkx91_hvb_Da8K5pl069.png",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/9n89pl5vkct6330/la4y2w4o98acwuj/thumbs_300_uh_lkx91_hvb_Da8K5pl069.png/100x100_300_uh_lkx91_hvb_Da8K5pl069.png",
+    "t": "blob",
+    "s": 1289
+   },
+   {
+    "p": "tests/data/storage/9n89pl5vkct6330/la4y2w4o98acwuj/thumbs_300_uh_lkx91_hvb_Da8K5pl069.png/100x100_300_uh_lkx91_hvb_Da8K5pl069.png.attrs",
+    "t": "blob",
+    "s": 196
+   },
+   {
+    "p": "tests/data/storage/9n89pl5vkct6330/qjeql998mtp1azp",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/9n89pl5vkct6330/qjeql998mtp1azp/logo_vcf_jjg5_tah_9MtIHytOmZ.svg",
+    "t": "blob",
+    "s": 3172
+   },
+   {
+    "p": "tests/data/storage/9n89pl5vkct6330/qjeql998mtp1azp/logo_vcf_jjg5_tah_9MtIHytOmZ.svg.attrs",
+    "t": "blob",
+    "s": 239
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/4q1xlclmfloku33",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/4q1xlclmfloku33/300_1SEi6Q6U72.png",
+    "t": "blob",
+    "s": 1132
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/4q1xlclmfloku33/300_1SEi6Q6U72.png.attrs",
+    "t": "blob",
+    "s": 196
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/4q1xlclmfloku33/thumbs_300_1SEi6Q6U72.png",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/4q1xlclmfloku33/thumbs_300_1SEi6Q6U72.png/0x50_300_1SEi6Q6U72.png",
+    "t": "blob",
+    "s": 599
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/4q1xlclmfloku33/thumbs_300_1SEi6Q6U72.png/0x50_300_1SEi6Q6U72.png.attrs",
+    "t": "blob",
+    "s": 196
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/4q1xlclmfloku33/thumbs_300_1SEi6Q6U72.png/100x100_300_1SEi6Q6U72.png",
+    "t": "blob",
+    "s": 1289
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/4q1xlclmfloku33/thumbs_300_1SEi6Q6U72.png/100x100_300_1SEi6Q6U72.png.attrs",
+    "t": "blob",
+    "s": 196
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/4q1xlclmfloku33/thumbs_300_1SEi6Q6U72.png/70x0_300_1SEi6Q6U72.png",
+    "t": "blob",
+    "s": 890
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/4q1xlclmfloku33/thumbs_300_1SEi6Q6U72.png/70x0_300_1SEi6Q6U72.png.attrs",
+    "t": "blob",
+    "s": 196
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/4q1xlclmfloku33/thumbs_300_1SEi6Q6U72.png/70x50_300_1SEi6Q6U72.png",
+    "t": "blob",
+    "s": 616
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/4q1xlclmfloku33/thumbs_300_1SEi6Q6U72.png/70x50_300_1SEi6Q6U72.png.attrs",
+    "t": "blob",
+    "s": 196
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/4q1xlclmfloku33/thumbs_300_1SEi6Q6U72.png/70x50b_300_1SEi6Q6U72.png",
+    "t": "blob",
+    "s": 868
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/4q1xlclmfloku33/thumbs_300_1SEi6Q6U72.png/70x50b_300_1SEi6Q6U72.png.attrs",
+    "t": "blob",
+    "s": 196
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/4q1xlclmfloku33/thumbs_300_1SEi6Q6U72.png/70x50f_300_1SEi6Q6U72.png",
+    "t": "blob",
+    "s": 599
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/4q1xlclmfloku33/thumbs_300_1SEi6Q6U72.png/70x50f_300_1SEi6Q6U72.png.attrs",
+    "t": "blob",
+    "s": 196
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/4q1xlclmfloku33/thumbs_300_1SEi6Q6U72.png/70x50t_300_1SEi6Q6U72.png",
+    "t": "blob",
+    "s": 621
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/4q1xlclmfloku33/thumbs_300_1SEi6Q6U72.png/70x50t_300_1SEi6Q6U72.png.attrs",
+    "t": "blob",
+    "s": 196
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/oap640cot4yru2s",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/oap640cot4yru2s/test_kfd2wYLxkz.txt",
+    "t": "blob",
+    "s": 5
+   },
+   {
+    "p": "tests/data/storage/_pb_users_auth_/oap640cot4yru2s/test_kfd2wYLxkz.txt.attrs",
+    "t": "blob",
+    "s": 212
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/84nmscqy84lsi1t",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/84nmscqy84lsi1t/300_WlbFWSGmW9.png",
+    "t": "blob",
+    "s": 1132
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/84nmscqy84lsi1t/300_WlbFWSGmW9.png.attrs",
+    "t": "blob",
+    "s": 196
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/84nmscqy84lsi1t/logo_vcfJJG5TAh.svg",
+    "t": "blob",
+    "s": 3172
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/84nmscqy84lsi1t/logo_vcfJJG5TAh.svg.attrs",
+    "t": "blob",
+    "s": 200
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/84nmscqy84lsi1t/test_MaWC6mWyrP.txt",
+    "t": "blob",
+    "s": 5
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/84nmscqy84lsi1t/test_MaWC6mWyrP.txt.attrs",
+    "t": "blob",
+    "s": 240
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/84nmscqy84lsi1t/test_QZFjKjXchk.txt",
+    "t": "blob",
+    "s": 5
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/84nmscqy84lsi1t/test_QZFjKjXchk.txt.attrs",
+    "t": "blob",
+    "s": 212
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/84nmscqy84lsi1t/test_d61b33QdDU.txt",
+    "t": "blob",
+    "s": 5
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/84nmscqy84lsi1t/test_d61b33QdDU.txt.attrs",
+    "t": "blob",
+    "s": 212
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/84nmscqy84lsi1t/test_tC1Yc87DfC.txt",
+    "t": "blob",
+    "s": 5
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/84nmscqy84lsi1t/test_tC1Yc87DfC.txt.attrs",
+    "t": "blob",
+    "s": 240
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/84nmscqy84lsi1t/thumbs_300_WlbFWSGmW9.png",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/84nmscqy84lsi1t/thumbs_300_WlbFWSGmW9.png/100x100_300_WlbFWSGmW9.png",
+    "t": "blob",
+    "s": 1289
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/84nmscqy84lsi1t/thumbs_300_WlbFWSGmW9.png/100x100_300_WlbFWSGmW9.png.attrs",
+    "t": "blob",
+    "s": 196
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/al1h9ijdeojtsjy",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/al1h9ijdeojtsjy/300_Jsjq7RdBgA.png",
+    "t": "blob",
+    "s": 1132
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/al1h9ijdeojtsjy/300_Jsjq7RdBgA.png.attrs",
+    "t": "blob",
+    "s": 196
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/al1h9ijdeojtsjy/thumbs_300_Jsjq7RdBgA.png",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/al1h9ijdeojtsjy/thumbs_300_Jsjq7RdBgA.png/100x100_300_Jsjq7RdBgA.png",
+    "t": "blob",
+    "s": 1289
+   },
+   {
+    "p": "tests/data/storage/wsmn24bux7wo113/al1h9ijdeojtsjy/thumbs_300_Jsjq7RdBgA.png/100x100_300_Jsjq7RdBgA.png.attrs",
+    "t": "blob",
+    "s": 196
+   },
+   {
+    "p": "tests/data/storage/wzlqyes4orhoygb",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/wzlqyes4orhoygb/7nwo8tuiatetxdm",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/wzlqyes4orhoygb/7nwo8tuiatetxdm/test_JnXeKEwgwr.txt",
+    "t": "blob",
+    "s": 5
+   },
+   {
+    "p": "tests/data/storage/wzlqyes4orhoygb/7nwo8tuiatetxdm/test_JnXeKEwgwr.txt.attrs",
+    "t": "blob",
+    "s": 212
+   },
+   {
+    "p": "tests/data/storage/wzlqyes4orhoygb/lcl9d87w22ml6jy",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/wzlqyes4orhoygb/lcl9d87w22ml6jy/300_UhLKX91HVb.png",
+    "t": "blob",
+    "s": 1132
+   },
+   {
+    "p": "tests/data/storage/wzlqyes4orhoygb/lcl9d87w22ml6jy/300_UhLKX91HVb.png.attrs",
+    "t": "blob",
+    "s": 196
+   },
+   {
+    "p": "tests/data/storage/wzlqyes4orhoygb/lcl9d87w22ml6jy/test_FLurQTgrY8.txt",
+    "t": "blob",
+    "s": 5
+   },
+   {
+    "p": "tests/data/storage/wzlqyes4orhoygb/lcl9d87w22ml6jy/test_FLurQTgrY8.txt.attrs",
+    "t": "blob",
+    "s": 212
+   },
+   {
+    "p": "tests/data/storage/wzlqyes4orhoygb/lcl9d87w22ml6jy/thumbs_300_UhLKX91HVb.png",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/wzlqyes4orhoygb/lcl9d87w22ml6jy/thumbs_300_UhLKX91HVb.png/100x100_300_UhLKX91HVb.png",
+    "t": "blob",
+    "s": 1289
+   },
+   {
+    "p": "tests/data/storage/wzlqyes4orhoygb/lcl9d87w22ml6jy/thumbs_300_UhLKX91HVb.png/100x100_300_UhLKX91HVb.png.attrs",
+    "t": "blob",
+    "s": 196
+   },
+   {
+    "p": "tests/data/storage/wzlqyes4orhoygb/mk5fmymtx4wsprk",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/wzlqyes4orhoygb/mk5fmymtx4wsprk/300_JdfBOieXAW.png",
+    "t": "blob",
+    "s": 1132
+   },
+   {
+    "p": "tests/data/storage/wzlqyes4orhoygb/mk5fmymtx4wsprk/300_JdfBOieXAW.png.attrs",
+    "t": "blob",
+    "s": 196
+   },
+   {
+    "p": "tests/data/storage/wzlqyes4orhoygb/mk5fmymtx4wsprk/thumbs_300_JdfBOieXAW.png",
+    "t": "tree"
+   },
+   {
+    "p": "tests/data/storage/wzlqyes4orhoygb/mk5fmymtx4wsprk/thumbs_300_JdfBOieXAW.png/100x100_300_JdfBOieXAW.png",
+    "t": "blob",
+    "s": 1289
+   },
+   {
+    "p": "tests/data/storage/wzlqyes4orhoygb/mk5fmymtx4wsprk/thumbs_300_JdfBOieXAW.png/100x100_300_JdfBOieXAW.png.attrs",
+    "t": "blob",
+    "s": 196
+   },
+   {
+    "p": "tests/dynamic_stubs.go",
+    "t": "blob",
+    "s": 3529
+   },
+   {
+    "p": "tests/mailer.go",
+    "t": "blob",
+    "s": 1640
+   },
+   {
+    "p": "tests/request.go",
+    "t": "blob",
+    "s": 1213
+   },
+   {
+    "p": "tests/validation_errors.go",
+    "t": "blob",
+    "s": 872
+   },
+   {
+    "p": "tools",
+    "t": "tree"
+   },
+   {
+    "p": "tools/archive",
+    "t": "tree"
+   },
+   {
+    "p": "tools/archive/create.go",
+    "t": "blob",
+    "s": 1917
+   },
+   {
+    "p": "tools/archive/create_test.go",
+    "t": "blob",
+    "s": 2767
+   },
+   {
+    "p": "tools/archive/extract.go",
+    "t": "blob",
+    "s": 1690
+   },
+   {
+    "p": "tools/archive/extract_test.go",
+    "t": "blob",
+    "s": 2180
+   },
+   {
+    "p": "tools/auth",
+    "t": "tree"
+   },
+   {
+    "p": "tools/auth/apple.go",
+    "t": "blob",
+    "s": 4614
+   },
+   {
+    "p": "tools/auth/auth.go",
+    "t": "blob",
+    "s": 5410
+   },
+   {
+    "p": "tools/auth/auth_test.go",
+    "t": "blob",
+    "s": 7652
+   },
+   {
+    "p": "tools/auth/base_provider.go",
+    "t": "blob",
+    "s": 5665
+   },
+   {
+    "p": "tools/auth/base_provider_test.go",
+    "t": "blob",
+    "s": 6269
+   },
+   {
+    "p": "tools/auth/bitbucket.go",
+    "t": "blob",
+    "s": 4138
+   },
+   {
+    "p": "tools/auth/box.go",
+    "t": "blob",
+    "s": 2661
+   },
+   {
+    "p": "tools/auth/discord.go",
+    "t": "blob",
+    "s": 3670
+   },
+   {
+    "p": "tools/auth/facebook.go",
+    "t": "blob",
+    "s": 2495
+   },
+   {
+    "p": "tools/auth/gitea.go",
+    "t": "blob",
+    "s": 4640
+   },
+   {
+    "p": "tools/auth/gitee.go",
+    "t": "blob",
+    "s": 4346
+   },
+   {
+    "p": "tools/auth/github.go",
+    "t": "blob",
+    "s": 4898
+   },
+   {
+    "p": "tools/auth/gitlab.go",
+    "t": "blob",
+    "s": 2867
+   },
+   {
+    "p": "tools/auth/google.go",
+    "t": "blob",
+    "s": 2670
+   },
+   {
+    "p": "tools/auth/instagram.go",
+    "t": "blob",
+    "s": 5173
+   },
+   {
+    "p": "tools/auth/internal",
+    "t": "tree"
+   },
+   {
+    "p": "tools/auth/internal/jwk",
+    "t": "tree"
+   },
+   {
+    "p": "tools/auth/internal/jwk/jwk.go",
+    "t": "blob",
+    "s": 3762
+   },
+   {
+    "p": "tools/auth/internal/jwk/jwk_test.go",
+    "t": "blob",
+    "s": 6168
+   },
+   {
+    "p": "tools/auth/kakao.go",
+    "t": "blob",
+    "s": 2952
+   },
+   {
+    "p": "tools/auth/lark.go",
+    "t": "blob",
+    "s": 3163
+   },
+   {
+    "p": "tools/auth/linear.go",
+    "t": "blob",
+    "s": 3658
+   },
+   {
+    "p": "tools/auth/livechat.go",
+    "t": "blob",
+    "s": 2489
+   },
+   {
+    "p": "tools/auth/mailcow.go",
+    "t": "blob",
+    "s": 6173
+   },
+   {
+    "p": "tools/auth/microsoft.go",
+    "t": "blob",
+    "s": 5494
+   },
+   {
+    "p": "tools/auth/monday.go",
+    "t": "blob",
+    "s": 3449
+   },
+   {
+    "p": "tools/auth/notion.go",
+    "t": "blob",
+    "s": 3280
+   },
+   {
+    "p": "tools/auth/oidc.go",
+    "t": "blob",
+    "s": 5557
+   },
+   {
+    "p": "tools/auth/patreon.go",
+    "t": "blob",
+    "s": 2667
+   },
+   {
+    "p": "tools/auth/planningcenter.go",
+    "t": "blob",
+    "s": 2858
+   },
+   {
+    "p": "tools/auth/spotify.go",
+    "t": "blob",
+    "s": 2949
+   },
+   {
+    "p": "tools/auth/strava.go",
+    "t": "blob",
+    "s": 2475
+   },
+   {
+    "p": "tools/auth/trakt.go",
+    "t": "blob",
+    "s": 3831
+   },
+   {
+    "p": "tools/auth/twitch.go",
+    "t": "blob",
+    "s": 2869
+   },
+   {
+    "p": "tools/auth/twitter.go",
+    "t": "blob",
+    "s": 2573
+   },
+   {
+    "p": "tools/auth/vk.go",
+    "t": "blob",
+    "s": 2915
+   },
+   {
+    "p": "tools/auth/wakatime.go",
+    "t": "blob",
+    "s": 2921
+   },
+   {
+    "p": "tools/auth/yandex.go",
+    "t": "blob",
+    "s": 2504
+   },
+   {
+    "p": "tools/cron",
+    "t": "tree"
+   },
+   {
+    "p": "tools/cron/cron.go",
+    "t": "blob",
+    "s": 4760
+   },
+   {
+    "p": "tools/cron/cron_test.go",
+    "t": "blob",
+    "s": 7224
+   },
+   {
+    "p": "tools/cron/job.go",
+    "t": "blob",
+    "s": 776
+   },
+   {
+    "p": "tools/cron/job_test.go",
+    "t": "blob",
+    "s": 1223
+   },
+   {
+    "p": "tools/cron/schedule.go",
+    "t": "blob",
+    "s": 5304
+   },
+   {
+    "p": "tools/cron/schedule_test.go",
+    "t": "blob",
+    "s": 22618
+   },
+   {
+    "p": "tools/dbutils",
+    "t": "tree"
+   },
+   {
+    "p": "tools/dbutils/index.go",
+    "t": "blob",
+    "s": 5279
+   },
+   {
+    "p": "tools/dbutils/index_test.go",
+    "t": "blob",
+    "s": 8257
+   },
+   {
+    "p": "tools/dbutils/json.go",
+    "t": "blob",
+    "s": 1839
+   },
+   {
+    "p": "tools/dbutils/json_test.go",
+    "t": "blob",
+    "s": 1726
+   },
+   {
+    "p": "tools/dbutils/select.go",
+    "t": "blob",
+    "s": 537
+   },
+   {
+    "p": "tools/dbutils/select_test.go",
+    "t": "blob",
+    "s": 814
+   },
+   {
+    "p": "tools/filesystem",
+    "t": "tree"
+   },
+   {
+    "p": "tools/filesystem/blob",
+    "t": "tree"
+   },
+   {
+    "p": "tools/filesystem/blob/bucket.go",
+    "t": "blob",
+    "s": 23579
+   },
+   {
+    "p": "tools/filesystem/blob/driver.go",
+    "t": "blob",
+    "s": 3888
+   },
+   {
+    "p": "tools/filesystem/blob/hex.go",
+    "t": "blob",
+    "s": 4373
+   },
+   {
+    "p": "tools/filesystem/blob/reader.go",
+    "t": "blob",
+    "s": 6826
+   },
+   {
+    "p": "tools/filesystem/blob/writer.go",
+    "t": "blob",
+    "s": 5540
+   },
+   {
+    "p": "tools/filesystem/file.go",
+    "t": "blob",
+    "s": 7397
+   },
+   {
+    "p": "tools/filesystem/file_test.go",
+    "t": "blob",
+    "s": 6991
+   },
+   {
+    "p": "tools/filesystem/filesystem.go",
+    "t": "blob",
+    "s": 20116
+   },
+   {
+    "p": "tools/filesystem/filesystem_test.go",
+    "t": "blob",
+    "s": 31660
+   },
+   {
+    "p": "tools/filesystem/internal",
+    "t": "tree"
+   },
+   {
+    "p": "tools/filesystem/internal/fileblob",
+    "t": "tree"
+   },
+   {
+    "p": "tools/filesystem/internal/fileblob/attrs.go",
+    "t": "blob",
+    "s": 2618
+   },
+   {
+    "p": "tools/filesystem/internal/fileblob/fileblob.go",
+    "t": "blob",
+    "s": 21417
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob",
+    "t": "tree"
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3",
+    "t": "tree"
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/copy_object.go",
+    "t": "blob",
+    "s": 1846
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/copy_object_test.go",
+    "t": "blob",
+    "s": 1652
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/delete_object.go",
+    "t": "blob",
+    "s": 599
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/delete_object_test.go",
+    "t": "blob",
+    "s": 1031
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/error.go",
+    "t": "blob",
+    "s": 1157
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/error_test.go",
+    "t": "blob",
+    "s": 1768
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/get_object.go",
+    "t": "blob",
+    "s": 975
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/get_object_test.go",
+    "t": "blob",
+    "s": 2583
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/head_object.go",
+    "t": "blob",
+    "s": 3026
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/head_object_test.go",
+    "t": "blob",
+    "s": 2284
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/list_objects.go",
+    "t": "blob",
+    "s": 5144
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/list_objects_test.go",
+    "t": "blob",
+    "s": 4800
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/s3.go",
+    "t": "blob",
+    "s": 11130
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/s3_escape_test.go",
+    "t": "blob",
+    "s": 1264
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/s3_test.go",
+    "t": "blob",
+    "s": 7959
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/tests",
+    "t": "tree"
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/tests/client.go",
+    "t": "blob",
+    "s": 2327
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/tests/headers.go",
+    "t": "blob",
+    "s": 776
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/uploader.go",
+    "t": "blob",
+    "s": 9418
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3/uploader_test.go",
+    "t": "blob",
+    "s": 12531
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3blob.go",
+    "t": "blob",
+    "s": 12962
+   },
+   {
+    "p": "tools/filesystem/internal/s3blob/s3blob_test.go",
+    "t": "blob",
+    "s": 15633
+   },
+   {
+    "p": "tools/hook",
+    "t": "tree"
+   },
+   {
+    "p": "tools/hook/event.go",
+    "t": "blob",
+    "s": 971
+   },
+   {
+    "p": "tools/hook/event_test.go",
+    "t": "blob",
+    "s": 394
+   },
+   {
+    "p": "tools/hook/hook.go",
+    "t": "blob",
+    "s": 4589
+   },
+   {
+    "p": "tools/hook/hook_test.go",
+    "t": "blob",
+    "s": 3973
+   },
+   {
+    "p": "tools/hook/tagged.go",
+    "t": "blob",
+    "s": 2077
+   },
+   {
+    "p": "tools/hook/tagged_test.go",
+    "t": "blob",
+    "s": 1818
+   },
+   {
+    "p": "tools/inflector",
+    "t": "tree"
+   },
+   {
+    "p": "tools/inflector/inflector.go",
+    "t": "blob",
+    "s": 2471
+   },
+   {
+    "p": "tools/inflector/inflector_test.go",
+    "t": "blob",
+    "s": 3740
+   },
+   {
+    "p": "tools/inflector/singularize.go",
+    "t": "blob",
+    "s": 2404
+   },
+   {
+    "p": "tools/inflector/singularize_test.go",
+    "t": "blob",
+    "s": 1668
+   },
+   {
+    "p": "tools/list",
+    "t": "tree"
+   },
+   {
+    "p": "tools/list/list.go",
+    "t": "blob",
+    "s": 3770
+   },
+   {
+    "p": "tools/list/list_test.go",
+    "t": "blob",
+    "s": 7315
+   },
+   {
+    "p": "tools/logger",
+    "t": "tree"
+   },
+   {
+    "p": "tools/logger/batch_handler.go",
+    "t": "blob",
+    "s": 7767
+   },
+   {
+    "p": "tools/logger/batch_handler_test.go",
+    "t": "blob",
+    "s": 9155
+   },
+   {
+    "p": "tools/logger/log.go",
+    "t": "blob",
+    "s": 296
+   },
+   {
+    "p": "tools/mailer",
+    "t": "tree"
+   },
+   {
+    "p": "tools/mailer/html2text.go",
+    "t": "blob",
+    "s": 2906
+   },
+   {
+    "p": "tools/mailer/html2text_test.go",
+    "t": "blob",
+    "s": 3058
+   },
+   {
+    "p": "tools/mailer/mailer.go",
+    "t": "blob",
+    "s": 2115
+   },
+   {
+    "p": "tools/mailer/mailer_test.go",
+    "t": "blob",
+    "s": 1822
+   },
+   {
+    "p": "tools/mailer/sendmail.go",
+    "t": "blob",
+    "s": 2265
+   },
+   {
+    "p": "tools/mailer/smtp.go",
+    "t": "blob",
+    "s": 5390
+   },
+   {
+    "p": "tools/mailer/smtp_test.go",
+    "t": "blob",
+    "s": 3765
+   },
+   {
+    "p": "tools/osutils",
+    "t": "tree"
+   },
+   {
+    "p": "tools/osutils/cmd.go",
+    "t": "blob",
+    "s": 1507
+   },
+   {
+    "p": "tools/osutils/cmd_test.go",
+    "t": "blob",
+    "s": 1281
+   },
+   {
+    "p": "tools/osutils/dir.go",
+    "t": "blob",
+    "s": 1766
+   },
+   {
+    "p": "tools/osutils/dir_test.go",
+    "t": "blob",
+    "s": 3026
+   },
+   {
+    "p": "tools/osutils/run.go",
+    "t": "blob",
+    "s": 488
+   },
+   {
+    "p": "tools/osutils/run_test.go",
+    "t": "blob",
+    "s": 803
+   },
+   {
+    "p": "tools/picker",
+    "t": "tree"
+   },
+   {
+    "p": "tools/picker/excerpt_modifier.go",
+    "t": "blob",
+    "s": 3723
+   },
+   {
+    "p": "tools/picker/excerpt_modifier_test.go",
+    "t": "blob",
+    "s": 3289
+   },
+   {
+    "p": "tools/picker/modifiers.go",
+    "t": "blob",
+    "s": 842
+   },
+   {
+    "p": "tools/picker/pick.go",
+    "t": "blob",
+    "s": 5126
+   },
+   {
+    "p": "tools/picker/pick_test.go",
+    "t": "blob",
+    "s": 6827
+   },
+   {
+    "p": "tools/router",
+    "t": "tree"
+   },
+   {
+    "p": "tools/router/buffer_with_file.go",
+    "t": "blob",
+    "s": 3037
+   },
+   {
+    "p": "tools/router/buffer_with_file_test.go",
+    "t": "blob",
+    "s": 4032
+   },
+   {
+    "p": "tools/router/error.go",
+    "t": "blob",
+    "s": 6146
+   },
+   {
+    "p": "tools/router/error_test.go",
+    "t": "blob",
+    "s": 9604
+   },
+   {
+    "p": "tools/router/event.go",
+    "t": "blob",
+    "s": 13424
+   },
+   {
+    "p": "tools/router/event_test.go",
+    "t": "blob",
+    "s": 27183
+   },
+   {
+    "p": "tools/router/group.go",
+    "t": "blob",
+    "s": 7550
+   },
+   {
+    "p": "tools/router/group_test.go",
+    "t": "blob",
+    "s": 7643
+   },
+   {
+    "p": "tools/router/rereadable_read_closer.go",
+    "t": "blob",
+    "s": 2403
+   },
+   {
+    "p": "tools/router/rereadable_read_closer_test.go",
+    "t": "blob",
+    "s": 1659
+   },
+   {
+    "p": "tools/router/route.go",
+    "t": "blob",
+    "s": 2289
+   },
+   {
+    "p": "tools/router/route_test.go",
+    "t": "blob",
+    "s": 3146
+   },
+   {
+    "p": "tools/router/router.go",
+    "t": "blob",
+    "s": 8557
+   },
+   {
+    "p": "tools/router/router_test.go",
+    "t": "blob",
+    "s": 5600
+   },
+   {
+    "p": "tools/router/unmarshal_request_data.go",
+    "t": "blob",
+    "s": 9619
+   },
+   {
+    "p": "tools/router/unmarshal_request_data_test.go",
+    "t": "blob",
+    "s": 14826
+   },
+   {
+    "p": "tools/routine",
+    "t": "tree"
+   },
+   {
+    "p": "tools/routine/routine.go",
+    "t": "blob",
+    "s": 1174
+   },
+   {
+    "p": "tools/routine/routine_test.go",
+    "t": "blob",
+    "s": 1306
+   },
+   {
+    "p": "tools/search",
+    "t": "tree"
+   },
+   {
+    "p": "tools/search/filter.go",
+    "t": "blob",
+    "s": 20660
+   },
+   {
+    "p": "tools/search/filter_test.go",
+    "t": "blob",
+    "s": 10911
+   },
+   {
+    "p": "tools/search/identifier_macros.go",
+    "t": "blob",
+    "s": 3153
+   },
+   {
+    "p": "tools/search/identifier_macros_test.go",
+    "t": "blob",
+    "s": 1293
+   },
+   {
+    "p": "tools/search/multi_match_subquery.go",
+    "t": "blob",
+    "s": 1708
+   },
+   {
+    "p": "tools/search/multi_match_subquery_test.go",
+    "t": "blob",
+    "s": 1690
+   },
+   {
+    "p": "tools/search/provider.go",
+    "t": "blob",
+    "s": 9803
+   },
+   {
+    "p": "tools/search/provider_test.go",
+    "t": "blob",
+    "s": 19355
+   },
+   {
+    "p": "tools/search/simple_field_resolver.go",
+    "t": "blob",
+    "s": 3939
+   },
+   {
+    "p": "tools/search/simple_field_resolver_test.go",
+    "t": "blob",
+    "s": 2097
+   },
+   {
+    "p": "tools/search/sort.go",
+    "t": "blob",
+    "s": 1662
+   },
+   {
+    "p": "tools/search/sort_test.go",
+    "t": "blob",
+    "s": 2493
+   },
+   {
+    "p": "tools/search/token_functions.go",
+    "t": "blob",
+    "s": 7600
+   },
+   {
+    "p": "tools/search/token_functions_test.go",
+    "t": "blob",
+    "s": 17052
+   },
+   {
+    "p": "tools/security",
+    "t": "tree"
+   },
+   {
+    "p": "tools/security/crypto.go",
+    "t": "blob",
+    "s": 1728
+   },
+   {
+    "p": "tools/security/crypto_test.go",
+    "t": "blob",
+    "s": 4104
+   },
+   {
+    "p": "tools/security/encrypt.go",
+    "t": "blob",
+    "s": 1389
+   },
+   {
+    "p": "tools/security/encrypt_test.go",
+    "t": "blob",
+    "s": 1952
+   },
+   {
+    "p": "tools/security/jwt.go",
+    "t": "blob",
+    "s": 1503
+   },
+   {
+    "p": "tools/security/jwt_test.go",
+    "t": "blob",
+    "s": 5430
+   },
+   {
+    "p": "tools/security/random.go",
+    "t": "blob",
+    "s": 1759
+   },
+   {
+    "p": "tools/security/random_by_regex.go",
+    "t": "blob",
+    "s": 4580
+   },
+   {
+    "p": "tools/security/random_by_regex_test.go",
+    "t": "blob",
+    "s": 1536
+   },
+   {
+    "p": "tools/security/random_test.go",
+    "t": "blob",
+    "s": 2687
+   },
+   {
+    "p": "tools/store",
+    "t": "tree"
+   },
+   {
+    "p": "tools/store/store.go",
+    "t": "blob",
+    "s": 5727
+   },
+   {
+    "p": "tools/store/store_test.go",
+    "t": "blob",
+    "s": 9183
+   },
+   {
+    "p": "tools/subscriptions",
+    "t": "tree"
+   },
+   {
+    "p": "tools/subscriptions/broker.go",
+    "t": "blob",
+    "s": 1677
+   },
+   {
+    "p": "tools/subscriptions/broker_test.go",
+    "t": "blob",
+    "s": 3294
+   },
+   {
+    "p": "tools/subscriptions/client.go",
+    "t": "blob",
+    "s": 7378
+   },
+   {
+    "p": "tools/subscriptions/client_test.go",
+    "t": "blob",
+    "s": 5266
+   },
+   {
+    "p": "tools/subscriptions/message.go",
+    "t": "blob",
+    "s": 720
+   },
+   {
+    "p": "tools/subscriptions/message_test.go",
+    "t": "blob",
+    "s": 465
+   },
+   {
+    "p": "tools/template",
+    "t": "tree"
+   },
+   {
+    "p": "tools/template/registry.go",
+    "t": "blob",
+    "s": 4101
+   },
+   {
+    "p": "tools/template/registry_test.go",
+    "t": "blob",
+    "s": 6074
+   },
+   {
+    "p": "tools/template/renderer.go",
+    "t": "blob",
+    "s": 624
+   },
+   {
+    "p": "tools/template/renderer_test.go",
+    "t": "blob",
+    "s": 1133
+   },
+   {
+    "p": "tools/tokenizer",
+    "t": "tree"
+   },
+   {
+    "p": "tools/tokenizer/tokenizer.go",
+    "t": "blob",
+    "s": 5108
+   },
+   {
+    "p": "tools/tokenizer/tokenizer_test.go",
+    "t": "blob",
+    "s": 6534
+   },
+   {
+    "p": "tools/types",
+    "t": "tree"
+   },
+   {
+    "p": "tools/types/datetime.go",
+    "t": "blob",
+    "s": 4226
+   },
+   {
+    "p": "tools/types/datetime_test.go",
+    "t": "blob",
+    "s": 9024
+   },
+   {
+    "p": "tools/types/geo_point.go",
+    "t": "blob",
+    "s": 1945
+   },
+   {
+    "p": "tools/types/geo_point_test.go",
+    "t": "blob",
+    "s": 2863
+   },
+   {
+    "p": "tools/types/json_array.go",
+    "t": "blob",
+    "s": 1601
+   },
+   {
+    "p": "tools/types/json_array_test.go",
+    "t": "blob",
+    "s": 3029
+   },
+   {
+    "p": "tools/types/json_map.go",
+    "t": "blob",
+    "s": 2166
+   },
+   {
+    "p": "tools/types/json_map_test.go",
+    "t": "blob",
+    "s": 3799
+   },
+   {
+    "p": "tools/types/json_raw.go",
+    "t": "blob",
+    "s": 1819
+   },
+   {
+    "p": "tools/types/json_raw_test.go",
+    "t": "blob",
+    "s": 4456
+   },
+   {
+    "p": "tools/types/types.go",
+    "t": "blob",
+    "s": 215
+   },
+   {
+    "p": "tools/types/types_test.go",
+    "t": "blob",
+    "s": 480
+   },
+   {
+    "p": "ui",
+    "t": "tree"
+   },
+   {
+    "p": "ui/.env",
+    "t": "blob",
+    "s": 1125
+   },
+   {
+    "p": "ui/.env.development",
+    "t": "blob",
+    "s": 41
+   },
+   {
+    "p": "ui/.gitignore",
+    "t": "blob",
+    "s": 241
+   },
+   {
+    "p": "ui/README.md",
+    "t": "blob",
+    "s": 844
+   },
+   {
+    "p": "ui/dist",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/assets",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/assets/docsAuthRefresh-Cq3xTY6M.js",
+    "t": "blob",
+    "s": 4026
+   },
+   {
+    "p": "ui/dist/assets/docsAuthWithOAuth2-qI6si9uJ.js",
+    "t": "blob",
+    "s": 6943
+   },
+   {
+    "p": "ui/dist/assets/docsAuthWithOTP-75iz1Xmg.js",
+    "t": "blob",
+    "s": 7751
+   },
+   {
+    "p": "ui/dist/assets/docsAuthWithPassword-NXiq7pZI.js",
+    "t": "blob",
+    "s": 5021
+   },
+   {
+    "p": "ui/dist/assets/docsBatch-CQUyIsim.js",
+    "t": "blob",
+    "s": 7482
+   },
+   {
+    "p": "ui/dist/assets/docsCreate-Ap21j9FE.js",
+    "t": "blob",
+    "s": 7100
+   },
+   {
+    "p": "ui/dist/assets/docsDelete-CeK6pY9P.js",
+    "t": "blob",
+    "s": 2955
+   },
+   {
+    "p": "ui/dist/assets/docsEmailChange-VWbqXOVy.js",
+    "t": "blob",
+    "s": 7229
+   },
+   {
+    "p": "ui/dist/assets/docsList-DsIHfo2q.js",
+    "t": "blob",
+    "s": 9692
+   },
+   {
+    "p": "ui/dist/assets/docsListAuthMethods-CYETXzX7.js",
+    "t": "blob",
+    "s": 2723
+   },
+   {
+    "p": "ui/dist/assets/docsPasswordReset-UqmNW8HA.js",
+    "t": "blob",
+    "s": 6599
+   },
+   {
+    "p": "ui/dist/assets/docsRealtime-BR9-cDED.js",
+    "t": "blob",
+    "s": 6137
+   },
+   {
+    "p": "ui/dist/assets/docsUpdate-DAnNYWFv.js",
+    "t": "blob",
+    "s": 4843
+   },
+   {
+    "p": "ui/dist/assets/docsVerification-CIbF1DIL.js",
+    "t": "blob",
+    "s": 5172
+   },
+   {
+    "p": "ui/dist/assets/docsView-oyuvqZP8.js",
+    "t": "blob",
+    "s": 3571
+   },
+   {
+    "p": "ui/dist/assets/expandInfo-CJ9aeAaN.js",
+    "t": "blob",
+    "s": 575
+   },
+   {
+    "p": "ui/dist/assets/fieldsInfo-CiLcXgNq.js",
+    "t": "blob",
+    "s": 715
+   },
+   {
+    "p": "ui/dist/assets/index-B7vkkFa_.js",
+    "t": "blob",
+    "s": 636153
+   },
+   {
+    "p": "ui/dist/assets/index-BlYc8RZd.css",
+    "t": "blob",
+    "s": 275701
+   },
+   {
+    "p": "ui/dist/assets/pageConfirmEmailChange-BJ3t9yjS.js",
+    "t": "blob",
+    "s": 2167
+   },
+   {
+    "p": "ui/dist/assets/pageConfirmPasswordReset-B9t8Z5AO.js",
+    "t": "blob",
+    "s": 2997
+   },
+   {
+    "p": "ui/dist/assets/pageConfirmVerification-DCcIi4qQ.js",
+    "t": "blob",
+    "s": 1870
+   },
+   {
+    "p": "ui/dist/assets/pageInstaller-DrvEOYt2.js",
+    "t": "blob",
+    "s": 4329
+   },
+   {
+    "p": "ui/dist/assets/pageOAuth2RedirectFailure-CRvz4PXa.js",
+    "t": "blob",
+    "s": 411
+   },
+   {
+    "p": "ui/dist/assets/pageOAuth2RedirectSuccess-DmZV1eyz.js",
+    "t": "blob",
+    "s": 404
+   },
+   {
+    "p": "ui/dist/assets/pageRequestSuperuserPasswordReset-C39AMhGf.js",
+    "t": "blob",
+    "s": 1632
+   },
+   {
+    "p": "ui/dist/fonts",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/fonts/ibm-plex-mono",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/fonts/ibm-plex-mono/ibm-plex-mono-v20-latin-600.woff2",
+    "t": "blob",
+    "s": 15620
+   },
+   {
+    "p": "ui/dist/fonts/ibm-plex-mono/ibm-plex-mono-v20-latin-regular.woff2",
+    "t": "blob",
+    "s": 14708
+   },
+   {
+    "p": "ui/dist/fonts/ibm-plex-sans",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/fonts/ibm-plex-sans/ibm-plex-sans-v23-cyrillic_latin_latin-ext-600.woff2",
+    "t": "blob",
+    "s": 76564
+   },
+   {
+    "p": "ui/dist/fonts/ibm-plex-sans/ibm-plex-sans-v23-cyrillic_latin_latin-ext-600italic.woff2",
+    "t": "blob",
+    "s": 83508
+   },
+   {
+    "p": "ui/dist/fonts/ibm-plex-sans/ibm-plex-sans-v23-cyrillic_latin_latin-ext-italic.woff2",
+    "t": "blob",
+    "s": 76204
+   },
+   {
+    "p": "ui/dist/fonts/ibm-plex-sans/ibm-plex-sans-v23-cyrillic_latin_latin-ext-regular.woff2",
+    "t": "blob",
+    "s": 69868
+   },
+   {
+    "p": "ui/dist/fonts/remixicon",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/fonts/remixicon/remixicon.woff2",
+    "t": "blob",
+    "s": 176812
+   },
+   {
+    "p": "ui/dist/images",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/images/favicon.png",
+    "t": "blob",
+    "s": 731
+   },
+   {
+    "p": "ui/dist/images/favicon_prod.png",
+    "t": "blob",
+    "s": 744
+   },
+   {
+    "p": "ui/dist/images/logo.svg",
+    "t": "blob",
+    "s": 1715
+   },
+   {
+    "p": "ui/dist/images/logo_white.svg",
+    "t": "blob",
+    "s": 1688
+   },
+   {
+    "p": "ui/dist/images/oauth2",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/images/oauth2/apple.svg",
+    "t": "blob",
+    "s": 532
+   },
+   {
+    "p": "ui/dist/images/oauth2/bitbucket.svg",
+    "t": "blob",
+    "s": 563
+   },
+   {
+    "p": "ui/dist/images/oauth2/box.svg",
+    "t": "blob",
+    "s": 631
+   },
+   {
+    "p": "ui/dist/images/oauth2/discord.svg",
+    "t": "blob",
+    "s": 654
+   },
+   {
+    "p": "ui/dist/images/oauth2/facebook.svg",
+    "t": "blob",
+    "s": 479
+   },
+   {
+    "p": "ui/dist/images/oauth2/gitea.svg",
+    "t": "blob",
+    "s": 1090
+   },
+   {
+    "p": "ui/dist/images/oauth2/gitee.svg",
+    "t": "blob",
+    "s": 470
+   },
+   {
+    "p": "ui/dist/images/oauth2/github.svg",
+    "t": "blob",
+    "s": 1164
+   },
+   {
+    "p": "ui/dist/images/oauth2/gitlab.svg",
+    "t": "blob",
+    "s": 725
+   },
+   {
+    "p": "ui/dist/images/oauth2/google.svg",
+    "t": "blob",
+    "s": 675
+   },
+   {
+    "p": "ui/dist/images/oauth2/instagram.svg",
+    "t": "blob",
+    "s": 2737
+   },
+   {
+    "p": "ui/dist/images/oauth2/kakao.svg",
+    "t": "blob",
+    "s": 672
+   },
+   {
+    "p": "ui/dist/images/oauth2/lark.svg",
+    "t": "blob",
+    "s": 791
+   },
+   {
+    "p": "ui/dist/images/oauth2/linear.svg",
+    "t": "blob",
+    "s": 487
+   },
+   {
+    "p": "ui/dist/images/oauth2/livechat.svg",
+    "t": "blob",
+    "s": 445
+   },
+   {
+    "p": "ui/dist/images/oauth2/mailcow.svg",
+    "t": "blob",
+    "s": 4069
+   },
+   {
+    "p": "ui/dist/images/oauth2/microsoft.svg",
+    "t": "blob",
+    "s": 287
+   },
+   {
+    "p": "ui/dist/images/oauth2/monday.svg",
+    "t": "blob",
+    "s": 544
+   },
+   {
+    "p": "ui/dist/images/oauth2/notion.svg",
+    "t": "blob",
+    "s": 403
+   },
+   {
+    "p": "ui/dist/images/oauth2/oidc.svg",
+    "t": "blob",
+    "s": 332
+   },
+   {
+    "p": "ui/dist/images/oauth2/patreon.svg",
+    "t": "blob",
+    "s": 265
+   },
+   {
+    "p": "ui/dist/images/oauth2/planningcenter.svg",
+    "t": "blob",
+    "s": 488
+   },
+   {
+    "p": "ui/dist/images/oauth2/spotify.svg",
+    "t": "blob",
+    "s": 694
+   },
+   {
+    "p": "ui/dist/images/oauth2/strava.svg",
+    "t": "blob",
+    "s": 291
+   },
+   {
+    "p": "ui/dist/images/oauth2/trakt.svg",
+    "t": "blob",
+    "s": 1150
+   },
+   {
+    "p": "ui/dist/images/oauth2/twitch.svg",
+    "t": "blob",
+    "s": 245
+   },
+   {
+    "p": "ui/dist/images/oauth2/twitter.svg",
+    "t": "blob",
+    "s": 175
+   },
+   {
+    "p": "ui/dist/images/oauth2/vk.svg",
+    "t": "blob",
+    "s": 484
+   },
+   {
+    "p": "ui/dist/images/oauth2/wakatime.svg",
+    "t": "blob",
+    "s": 550
+   },
+   {
+    "p": "ui/dist/images/oauth2/yandex.svg",
+    "t": "blob",
+    "s": 303
+   },
+   {
+    "p": "ui/dist/index.html",
+    "t": "blob",
+    "s": 656
+   },
+   {
+    "p": "ui/dist/libs",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/prism",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/prism/prism.js",
+    "t": "blob",
+    "s": 67442
+   },
+   {
+    "p": "ui/dist/libs/shablon",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/shablon/shablon.iife.js",
+    "t": "blob",
+    "s": 7213
+   },
+   {
+    "p": "ui/dist/libs/tinymce",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/icons",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/icons/default",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/icons/default/icons.min.js",
+    "t": "blob",
+    "s": 69427
+   },
+   {
+    "p": "ui/dist/libs/tinymce/models",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/models/dom",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/models/dom/model.min.js",
+    "t": "blob",
+    "s": 96619
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/autolink",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/autolink/plugin.min.js",
+    "t": "blob",
+    "s": 3237
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/autoresize",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/autoresize/plugin.min.js",
+    "t": "blob",
+    "s": 2514
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/code",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/code/plugin.min.js",
+    "t": "blob",
+    "s": 871
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/codesample",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/codesample/plugin.min.js",
+    "t": "blob",
+    "s": 48466
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/directionality",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/directionality/plugin.min.js",
+    "t": "blob",
+    "s": 4576
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/fullscreen",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/fullscreen/plugin.min.js",
+    "t": "blob",
+    "s": 15591
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/image",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/image/plugin.min.js",
+    "t": "blob",
+    "s": 19568
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/link",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/link/plugin.min.js",
+    "t": "blob",
+    "s": 15833
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/lists",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/lists/plugin.min.js",
+    "t": "blob",
+    "s": 28118
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/media",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/media/plugin.min.js",
+    "t": "blob",
+    "s": 17298
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/table",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/table/plugin.min.js",
+    "t": "blob",
+    "s": 47832
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/wordcount",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/plugins/wordcount/plugin.min.js",
+    "t": "blob",
+    "s": 12028
+   },
+   {
+    "p": "ui/dist/libs/tinymce/skins",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/skins/content",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/skins/content/default",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/skins/content/default/content.js",
+    "t": "blob",
+    "s": 1632
+   },
+   {
+    "p": "ui/dist/libs/tinymce/skins/content/default/content.min.css",
+    "t": "blob",
+    "s": 1284
+   },
+   {
+    "p": "ui/dist/libs/tinymce/skins/ui",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/skins/ui/oxide",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/skins/ui/oxide/content.inline.min.css",
+    "t": "blob",
+    "s": 23846
+   },
+   {
+    "p": "ui/dist/libs/tinymce/skins/ui/oxide/content.min.css",
+    "t": "blob",
+    "s": 22536
+   },
+   {
+    "p": "ui/dist/libs/tinymce/skins/ui/oxide/skin.min.css",
+    "t": "blob",
+    "s": 76132
+   },
+   {
+    "p": "ui/dist/libs/tinymce/skins/ui/oxide/skin.shadowdom.min.css",
+    "t": "blob",
+    "s": 508
+   },
+   {
+    "p": "ui/dist/libs/tinymce/themes",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/themes/silver",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/tinymce/themes/silver/theme.min.js",
+    "t": "blob",
+    "s": 410171
+   },
+   {
+    "p": "ui/dist/libs/tinymce/tinymce.min.js",
+    "t": "blob",
+    "s": 433465
+   },
+   {
+    "p": "ui/dist/libs/uplot",
+    "t": "tree"
+   },
+   {
+    "p": "ui/dist/libs/uplot/uplot.css",
+    "t": "blob",
+    "s": 1858
+   },
+   {
+    "p": "ui/dist/libs/uplot/uplot.iife.js",
+    "t": "blob",
+    "s": 53166
+   },
+   {
+    "p": "ui/dprint-typescript-0.95.15.wasm",
+    "t": "blob",
+    "s": 4171851
+   },
+   {
+    "p": "ui/dprint.json",
+    "t": "blob",
+    "s": 179
+   },
+   {
+    "p": "ui/embed.go",
+    "t": "blob",
+    "s": 297
+   },
+   {
+    "p": "ui/embed_no_ui.go",
+    "t": "blob",
+    "s": 147
+   },
+   {
+    "p": "ui/index.html",
+    "t": "blob",
+    "s": 555
+   },
+   {
+    "p": "ui/package-lock.json",
+    "t": "blob",
+    "s": 38674
+   },
+   {
+    "p": "ui/package.json",
+    "t": "blob",
+    "s": 352
+   },
+   {
+    "p": "ui/public",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/fonts",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/fonts/ibm-plex-mono",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/fonts/ibm-plex-mono/ibm-plex-mono-v20-latin-600.woff2",
+    "t": "blob",
+    "s": 15620
+   },
+   {
+    "p": "ui/public/fonts/ibm-plex-mono/ibm-plex-mono-v20-latin-regular.woff2",
+    "t": "blob",
+    "s": 14708
+   },
+   {
+    "p": "ui/public/fonts/ibm-plex-sans",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/fonts/ibm-plex-sans/ibm-plex-sans-v23-cyrillic_latin_latin-ext-600.woff2",
+    "t": "blob",
+    "s": 76564
+   },
+   {
+    "p": "ui/public/fonts/ibm-plex-sans/ibm-plex-sans-v23-cyrillic_latin_latin-ext-600italic.woff2",
+    "t": "blob",
+    "s": 83508
+   },
+   {
+    "p": "ui/public/fonts/ibm-plex-sans/ibm-plex-sans-v23-cyrillic_latin_latin-ext-italic.woff2",
+    "t": "blob",
+    "s": 76204
+   },
+   {
+    "p": "ui/public/fonts/ibm-plex-sans/ibm-plex-sans-v23-cyrillic_latin_latin-ext-regular.woff2",
+    "t": "blob",
+    "s": 69868
+   },
+   {
+    "p": "ui/public/fonts/remixicon",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/fonts/remixicon/remixicon.woff2",
+    "t": "blob",
+    "s": 176812
+   },
+   {
+    "p": "ui/public/images",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/images/favicon.png",
+    "t": "blob",
+    "s": 731
+   },
+   {
+    "p": "ui/public/images/favicon_prod.png",
+    "t": "blob",
+    "s": 744
+   },
+   {
+    "p": "ui/public/images/logo.svg",
+    "t": "blob",
+    "s": 1715
+   },
+   {
+    "p": "ui/public/images/logo_white.svg",
+    "t": "blob",
+    "s": 1688
+   },
+   {
+    "p": "ui/public/images/oauth2",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/images/oauth2/apple.svg",
+    "t": "blob",
+    "s": 532
+   },
+   {
+    "p": "ui/public/images/oauth2/bitbucket.svg",
+    "t": "blob",
+    "s": 563
+   },
+   {
+    "p": "ui/public/images/oauth2/box.svg",
+    "t": "blob",
+    "s": 631
+   },
+   {
+    "p": "ui/public/images/oauth2/discord.svg",
+    "t": "blob",
+    "s": 654
+   },
+   {
+    "p": "ui/public/images/oauth2/facebook.svg",
+    "t": "blob",
+    "s": 479
+   },
+   {
+    "p": "ui/public/images/oauth2/gitea.svg",
+    "t": "blob",
+    "s": 1090
+   },
+   {
+    "p": "ui/public/images/oauth2/gitee.svg",
+    "t": "blob",
+    "s": 470
+   },
+   {
+    "p": "ui/public/images/oauth2/github.svg",
+    "t": "blob",
+    "s": 1164
+   },
+   {
+    "p": "ui/public/images/oauth2/gitlab.svg",
+    "t": "blob",
+    "s": 725
+   },
+   {
+    "p": "ui/public/images/oauth2/google.svg",
+    "t": "blob",
+    "s": 675
+   },
+   {
+    "p": "ui/public/images/oauth2/instagram.svg",
+    "t": "blob",
+    "s": 2737
+   },
+   {
+    "p": "ui/public/images/oauth2/kakao.svg",
+    "t": "blob",
+    "s": 672
+   },
+   {
+    "p": "ui/public/images/oauth2/lark.svg",
+    "t": "blob",
+    "s": 791
+   },
+   {
+    "p": "ui/public/images/oauth2/linear.svg",
+    "t": "blob",
+    "s": 487
+   },
+   {
+    "p": "ui/public/images/oauth2/livechat.svg",
+    "t": "blob",
+    "s": 445
+   },
+   {
+    "p": "ui/public/images/oauth2/mailcow.svg",
+    "t": "blob",
+    "s": 4069
+   },
+   {
+    "p": "ui/public/images/oauth2/microsoft.svg",
+    "t": "blob",
+    "s": 287
+   },
+   {
+    "p": "ui/public/images/oauth2/monday.svg",
+    "t": "blob",
+    "s": 544
+   },
+   {
+    "p": "ui/public/images/oauth2/notion.svg",
+    "t": "blob",
+    "s": 403
+   },
+   {
+    "p": "ui/public/images/oauth2/oidc.svg",
+    "t": "blob",
+    "s": 332
+   },
+   {
+    "p": "ui/public/images/oauth2/patreon.svg",
+    "t": "blob",
+    "s": 265
+   },
+   {
+    "p": "ui/public/images/oauth2/planningcenter.svg",
+    "t": "blob",
+    "s": 488
+   },
+   {
+    "p": "ui/public/images/oauth2/spotify.svg",
+    "t": "blob",
+    "s": 694
+   },
+   {
+    "p": "ui/public/images/oauth2/strava.svg",
+    "t": "blob",
+    "s": 291
+   },
+   {
+    "p": "ui/public/images/oauth2/trakt.svg",
+    "t": "blob",
+    "s": 1150
+   },
+   {
+    "p": "ui/public/images/oauth2/twitch.svg",
+    "t": "blob",
+    "s": 245
+   },
+   {
+    "p": "ui/public/images/oauth2/twitter.svg",
+    "t": "blob",
+    "s": 175
+   },
+   {
+    "p": "ui/public/images/oauth2/vk.svg",
+    "t": "blob",
+    "s": 484
+   },
+   {
+    "p": "ui/public/images/oauth2/wakatime.svg",
+    "t": "blob",
+    "s": 550
+   },
+   {
+    "p": "ui/public/images/oauth2/yandex.svg",
+    "t": "blob",
+    "s": 303
+   },
+   {
+    "p": "ui/public/libs",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/prism",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/prism/prism.js",
+    "t": "blob",
+    "s": 67442
+   },
+   {
+    "p": "ui/public/libs/shablon",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/shablon/shablon.iife.js",
+    "t": "blob",
+    "s": 7213
+   },
+   {
+    "p": "ui/public/libs/tinymce",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/icons",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/icons/default",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/icons/default/icons.min.js",
+    "t": "blob",
+    "s": 69427
+   },
+   {
+    "p": "ui/public/libs/tinymce/models",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/models/dom",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/models/dom/model.min.js",
+    "t": "blob",
+    "s": 96619
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/autolink",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/autolink/plugin.min.js",
+    "t": "blob",
+    "s": 3237
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/autoresize",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/autoresize/plugin.min.js",
+    "t": "blob",
+    "s": 2514
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/code",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/code/plugin.min.js",
+    "t": "blob",
+    "s": 871
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/codesample",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/codesample/plugin.min.js",
+    "t": "blob",
+    "s": 48466
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/directionality",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/directionality/plugin.min.js",
+    "t": "blob",
+    "s": 4576
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/fullscreen",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/fullscreen/plugin.min.js",
+    "t": "blob",
+    "s": 15591
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/image",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/image/plugin.min.js",
+    "t": "blob",
+    "s": 19568
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/link",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/link/plugin.min.js",
+    "t": "blob",
+    "s": 15833
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/lists",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/lists/plugin.min.js",
+    "t": "blob",
+    "s": 28118
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/media",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/media/plugin.min.js",
+    "t": "blob",
+    "s": 17298
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/table",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/table/plugin.min.js",
+    "t": "blob",
+    "s": 47832
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/wordcount",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/plugins/wordcount/plugin.min.js",
+    "t": "blob",
+    "s": 12028
+   },
+   {
+    "p": "ui/public/libs/tinymce/skins",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/skins/content",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/skins/content/default",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/skins/content/default/content.js",
+    "t": "blob",
+    "s": 1632
+   },
+   {
+    "p": "ui/public/libs/tinymce/skins/content/default/content.min.css",
+    "t": "blob",
+    "s": 1284
+   },
+   {
+    "p": "ui/public/libs/tinymce/skins/ui",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/skins/ui/oxide",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/skins/ui/oxide/content.inline.min.css",
+    "t": "blob",
+    "s": 23846
+   },
+   {
+    "p": "ui/public/libs/tinymce/skins/ui/oxide/content.min.css",
+    "t": "blob",
+    "s": 22536
+   },
+   {
+    "p": "ui/public/libs/tinymce/skins/ui/oxide/skin.min.css",
+    "t": "blob",
+    "s": 76132
+   },
+   {
+    "p": "ui/public/libs/tinymce/skins/ui/oxide/skin.shadowdom.min.css",
+    "t": "blob",
+    "s": 508
+   },
+   {
+    "p": "ui/public/libs/tinymce/themes",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/themes/silver",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/tinymce/themes/silver/theme.min.js",
+    "t": "blob",
+    "s": 410171
+   },
+   {
+    "p": "ui/public/libs/tinymce/tinymce.min.js",
+    "t": "blob",
+    "s": 433465
+   },
+   {
+    "p": "ui/public/libs/uplot",
+    "t": "tree"
+   },
+   {
+    "p": "ui/public/libs/uplot/uplot.css",
+    "t": "blob",
+    "s": 1858
+   },
+   {
+    "p": "ui/public/libs/uplot/uplot.iife.js",
+    "t": "blob",
+    "s": 53166
+   },
+   {
+    "p": "ui/src",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/apiPreview",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/apiPreview/apiPreviewModal.js",
+    "t": "blob",
+    "s": 8031
+   },
+   {
+    "p": "ui/src/apiPreview/docsAuthRefresh.js",
+    "t": "blob",
+    "s": 6272
+   },
+   {
+    "p": "ui/src/apiPreview/docsAuthWithOAuth2.js",
+    "t": "blob",
+    "s": 10691
+   },
+   {
+    "p": "ui/src/apiPreview/docsAuthWithOTP.js",
+    "t": "blob",
+    "s": 11716
+   },
+   {
+    "p": "ui/src/apiPreview/docsAuthWithPassword.js",
+    "t": "blob",
+    "s": 8249
+   },
+   {
+    "p": "ui/src/apiPreview/docsBatch.js",
+    "t": "blob",
+    "s": 10476
+   },
+   {
+    "p": "ui/src/apiPreview/docsCreate.js",
+    "t": "blob",
+    "s": 15651
+   },
+   {
+    "p": "ui/src/apiPreview/docsDelete.js",
+    "t": "blob",
+    "s": 4896
+   },
+   {
+    "p": "ui/src/apiPreview/docsEmailChange.js",
+    "t": "blob",
+    "s": 10470
+   },
+   {
+    "p": "ui/src/apiPreview/docsList.js",
+    "t": "blob",
+    "s": 11216
+   },
+   {
+    "p": "ui/src/apiPreview/docsListAuthMethods.js",
+    "t": "blob",
+    "s": 4834
+   },
+   {
+    "p": "ui/src/apiPreview/docsPasswordReset.js",
+    "t": "blob",
+    "s": 9843
+   },
+   {
+    "p": "ui/src/apiPreview/docsRealtime.js",
+    "t": "blob",
+    "s": 8181
+   },
+   {
+    "p": "ui/src/apiPreview/docsUpdate.js",
+    "t": "blob",
+    "s": 8165
+   },
+   {
+    "p": "ui/src/apiPreview/docsVerification.js",
+    "t": "blob",
+    "s": 8103
+   },
+   {
+    "p": "ui/src/apiPreview/docsView.js",
+    "t": "blob",
+    "s": 6156
+   },
+   {
+    "p": "ui/src/apiPreview/expandInfo.js",
+    "t": "blob",
+    "s": 843
+   },
+   {
+    "p": "ui/src/apiPreview/fieldsInfo.js",
+    "t": "blob",
+    "s": 1008
+   },
+   {
+    "p": "ui/src/apiPreview/filterSyntax.js",
+    "t": "blob",
+    "s": 7830
+   },
+   {
+    "p": "ui/src/auth",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/auth/pageConfirmEmailChange.js",
+    "t": "blob",
+    "s": 4946
+   },
+   {
+    "p": "ui/src/auth/pageConfirmPasswordReset.js",
+    "t": "blob",
+    "s": 7007
+   },
+   {
+    "p": "ui/src/auth/pageConfirmVerification.js",
+    "t": "blob",
+    "s": 3625
+   },
+   {
+    "p": "ui/src/auth/pageInstaller.js",
+    "t": "blob",
+    "s": 9513
+   },
+   {
+    "p": "ui/src/auth/pageOAuth2RedirectFailure.js",
+    "t": "blob",
+    "s": 633
+   },
+   {
+    "p": "ui/src/auth/pageOAuth2RedirectSuccess.js",
+    "t": "blob",
+    "s": 567
+   },
+   {
+    "p": "ui/src/auth/pageRequestSuperuserPasswordReset.js",
+    "t": "blob",
+    "s": 3266
+   },
+   {
+    "p": "ui/src/auth/pageSuperuserLogin.js",
+    "t": "blob",
+    "s": 13740
+   },
+   {
+    "p": "ui/src/base",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/base/appHeader.js",
+    "t": "blob",
+    "s": 6021
+   },
+   {
+    "p": "ui/src/base/autoAccordionOpenOnError.js",
+    "t": "blob",
+    "s": 415
+   },
+   {
+    "p": "ui/src/base/codeBlock.js",
+    "t": "blob",
+    "s": 2210
+   },
+   {
+    "p": "ui/src/base/codeBlockTabs.js",
+    "t": "blob",
+    "s": 2808
+   },
+   {
+    "p": "ui/src/base/codeEditor.js",
+    "t": "blob",
+    "s": 18141
+   },
+   {
+    "p": "ui/src/base/colorPicker.js",
+    "t": "blob",
+    "s": 4470
+   },
+   {
+    "p": "ui/src/base/confirm.js",
+    "t": "blob",
+    "s": 5407
+   },
+   {
+    "p": "ui/src/base/copyButton.js",
+    "t": "blob",
+    "s": 1590
+   },
+   {
+    "p": "ui/src/base/credits.js",
+    "t": "blob",
+    "s": 1306
+   },
+   {
+    "p": "ui/src/base/dragline.js",
+    "t": "blob",
+    "s": 3146
+   },
+   {
+    "p": "ui/src/base/dropdownKeyboardNav.js",
+    "t": "blob",
+    "s": 3562
+   },
+   {
+    "p": "ui/src/base/erd.js",
+    "t": "blob",
+    "s": 16921
+   },
+   {
+    "p": "ui/src/base/fieldSettings.js",
+    "t": "blob",
+    "s": 17355
+   },
+   {
+    "p": "ui/src/base/filePreviewModal.js",
+    "t": "blob",
+    "s": 3287
+   },
+   {
+    "p": "ui/src/base/formattedDate.js",
+    "t": "blob",
+    "s": 1678
+   },
+   {
+    "p": "ui/src/base/leaflet.js",
+    "t": "blob",
+    "s": 9351
+   },
+   {
+    "p": "ui/src/base/modal.js",
+    "t": "blob",
+    "s": 7454
+   },
+   {
+    "p": "ui/src/base/pageSidebar.js",
+    "t": "blob",
+    "s": 5178
+   },
+   {
+    "p": "ui/src/base/refreshButton.js",
+    "t": "blob",
+    "s": 1957
+   },
+   {
+    "p": "ui/src/base/ruleField.js",
+    "t": "blob",
+    "s": 4953
+   },
+   {
+    "p": "ui/src/base/s3ConfigFields.js",
+    "t": "blob",
+    "s": 8903
+   },
+   {
+    "p": "ui/src/base/s3Test.js",
+    "t": "blob",
+    "s": 3572
+   },
+   {
+    "p": "ui/src/base/searchHistoryButton.js",
+    "t": "blob",
+    "s": 5028
+   },
+   {
+    "p": "ui/src/base/searchbar.js",
+    "t": "blob",
+    "s": 3662
+   },
+   {
+    "p": "ui/src/base/select.js",
+    "t": "blob",
+    "s": 10935
+   },
+   {
+    "p": "ui/src/base/slide.js",
+    "t": "blob",
+    "s": 1084
+   },
+   {
+    "p": "ui/src/base/sortable.js",
+    "t": "blob",
+    "s": 5830
+   },
+   {
+    "p": "ui/src/base/tinymce.js",
+    "t": "blob",
+    "s": 18278
+   },
+   {
+    "p": "ui/src/base/toast.js",
+    "t": "blob",
+    "s": 4321
+   },
+   {
+    "p": "ui/src/base/tooltip.js",
+    "t": "blob",
+    "s": 5094
+   },
+   {
+    "p": "ui/src/base/uploadedFileThumb.js",
+    "t": "blob",
+    "s": 2534
+   },
+   {
+    "p": "ui/src/collections",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/collections/addCollectionFieldButton.js",
+    "t": "blob",
+    "s": 3411
+   },
+   {
+    "p": "ui/src/collections/autocomplete.utils.js",
+    "t": "blob",
+    "s": 7251
+   },
+   {
+    "p": "ui/src/collections/collectionAuthOptionsTab.js",
+    "t": "blob",
+    "s": 4286
+   },
+   {
+    "p": "ui/src/collections/collectionChangesConfirmationModal.js",
+    "t": "blob",
+    "s": 13840
+   },
+   {
+    "p": "ui/src/collections/collectionFieldsTab.js",
+    "t": "blob",
+    "s": 3517
+   },
+   {
+    "p": "ui/src/collections/collectionRulesTab.js",
+    "t": "blob",
+    "s": 13784
+   },
+   {
+    "p": "ui/src/collections/collectionUpsertModal.js",
+    "t": "blob",
+    "s": 39516
+   },
+   {
+    "p": "ui/src/collections/collectionViewQueryTab.js",
+    "t": "blob",
+    "s": 7508
+   },
+   {
+    "p": "ui/src/collections/collectionsOverviewModal.js",
+    "t": "blob",
+    "s": 10969
+   },
+   {
+    "p": "ui/src/collections/collectionsSidebar.js",
+    "t": "blob",
+    "s": 10854
+   },
+   {
+    "p": "ui/src/collections/emailTemplateAccordion.js",
+    "t": "blob",
+    "s": 3760
+   },
+   {
+    "p": "ui/src/collections/indexUpsertModal.js",
+    "t": "blob",
+    "s": 9484
+   },
+   {
+    "p": "ui/src/collections/mfaAccordion.js",
+    "t": "blob",
+    "s": 5374
+   },
+   {
+    "p": "ui/src/collections/oauth2",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/collections/oauth2/appleOptions.js",
+    "t": "blob",
+    "s": 8219
+   },
+   {
+    "p": "ui/src/collections/oauth2/larkOptions.js",
+    "t": "blob",
+    "s": 2732
+   },
+   {
+    "p": "ui/src/collections/oauth2/microsoftOptions.js",
+    "t": "blob",
+    "s": 7017
+   },
+   {
+    "p": "ui/src/collections/oauth2/oidcOptions.js",
+    "t": "blob",
+    "s": 10695
+   },
+   {
+    "p": "ui/src/collections/oauth2/selfhostOptions.js",
+    "t": "blob",
+    "s": 3781
+   },
+   {
+    "p": "ui/src/collections/oauth2Accordion.js",
+    "t": "blob",
+    "s": 15567
+   },
+   {
+    "p": "ui/src/collections/otpAccordion.js",
+    "t": "blob",
+    "s": 4482
+   },
+   {
+    "p": "ui/src/collections/pageCollections.js",
+    "t": "blob",
+    "s": 13774
+   },
+   {
+    "p": "ui/src/collections/passwordAuthAccordion.js",
+    "t": "blob",
+    "s": 4072
+   },
+   {
+    "p": "ui/src/collections/providerPickerModal.js",
+    "t": "blob",
+    "s": 6515
+   },
+   {
+    "p": "ui/src/collections/providerSettingsModal.js",
+    "t": "blob",
+    "s": 7045
+   },
+   {
+    "p": "ui/src/collections/tokenOptionsAccordion.js",
+    "t": "blob",
+    "s": 3194
+   },
+   {
+    "p": "ui/src/css",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/css/_main.css",
+    "t": "blob",
+    "s": 987
+   },
+   {
+    "p": "ui/src/css/accordion.css",
+    "t": "blob",
+    "s": 5225
+   },
+   {
+    "p": "ui/src/css/animations.css",
+    "t": "blob",
+    "s": 646
+   },
+   {
+    "p": "ui/src/css/apiPreviewModal.css",
+    "t": "blob",
+    "s": 2951
+   },
+   {
+    "p": "ui/src/css/base.css",
+    "t": "blob",
+    "s": 23975
+   },
+   {
+    "p": "ui/src/css/bulkbar.css",
+    "t": "blob",
+    "s": 1723
+   },
+   {
+    "p": "ui/src/css/collectionModal.css",
+    "t": "blob",
+    "s": 2111
+   },
+   {
+    "p": "ui/src/css/collectionsOverview.css",
+    "t": "blob",
+    "s": 1530
+   },
+   {
+    "p": "ui/src/css/colorPicker.css",
+    "t": "blob",
+    "s": 2238
+   },
+   {
+    "p": "ui/src/css/dropdown.css",
+    "t": "blob",
+    "s": 4151
+   },
+   {
+    "p": "ui/src/css/erd.css",
+    "t": "blob",
+    "s": 4234
+   },
+   {
+    "p": "ui/src/css/export.css",
+    "t": "blob",
+    "s": 3639
+   },
+   {
+    "p": "ui/src/css/fonts.css",
+    "t": "blob",
+    "s": 1641
+   },
+   {
+    "p": "ui/src/css/form.css",
+    "t": "blob",
+    "s": 28999
+   },
+   {
+    "p": "ui/src/css/grid.css",
+    "t": "blob",
+    "s": 4641
+   },
+   {
+    "p": "ui/src/css/hideControls.css",
+    "t": "blob",
+    "s": 163
+   },
+   {
+    "p": "ui/src/css/layout.css",
+    "t": "blob",
+    "s": 16561
+   },
+   {
+    "p": "ui/src/css/list.css",
+    "t": "blob",
+    "s": 3488
+   },
+   {
+    "p": "ui/src/css/logs.css",
+    "t": "blob",
+    "s": 5635
+   },
+   {
+    "p": "ui/src/css/map.css",
+    "t": "blob",
+    "s": 800
+   },
+   {
+    "p": "ui/src/css/modal.css",
+    "t": "blob",
+    "s": 7845
+   },
+   {
+    "p": "ui/src/css/prism.css",
+    "t": "blob",
+    "s": 1381
+   },
+   {
+    "p": "ui/src/css/providers.css",
+    "t": "blob",
+    "s": 2202
+   },
+   {
+    "p": "ui/src/css/ratelimit.css",
+    "t": "blob",
+    "s": 2211
+   },
+   {
+    "p": "ui/src/css/recordFields.css",
+    "t": "blob",
+    "s": 7745
+   },
+   {
+    "p": "ui/src/css/recordFilePicker.css",
+    "t": "blob",
+    "s": 1397
+   },
+   {
+    "p": "ui/src/css/recordSummary.css",
+    "t": "blob",
+    "s": 1526
+   },
+   {
+    "p": "ui/src/css/recordsPicker.css",
+    "t": "blob",
+    "s": 788
+   },
+   {
+    "p": "ui/src/css/remixicon.css",
+    "t": "blob",
+    "s": 160209
+   },
+   {
+    "p": "ui/src/css/ruleField.css",
+    "t": "blob",
+    "s": 3758
+   },
+   {
+    "p": "ui/src/css/sqlConsole.css",
+    "t": "blob",
+    "s": 660
+   },
+   {
+    "p": "ui/src/css/table.css",
+    "t": "blob",
+    "s": 13488
+   },
+   {
+    "p": "ui/src/css/tabs.css",
+    "t": "blob",
+    "s": 1515
+   },
+   {
+    "p": "ui/src/css/toast.css",
+    "t": "blob",
+    "s": 3049
+   },
+   {
+    "p": "ui/src/css/tooltip.css",
+    "t": "blob",
+    "s": 952
+   },
+   {
+    "p": "ui/src/css/vars.css",
+    "t": "blob",
+    "s": 10400
+   },
+   {
+    "p": "ui/src/fields",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/fields/autodate",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/fields/autodate/init.js",
+    "t": "blob",
+    "s": 542
+   },
+   {
+    "p": "ui/src/fields/autodate/onrecordduplicate.js",
+    "t": "blob",
+    "s": 160
+   },
+   {
+    "p": "ui/src/fields/autodate/settings.js",
+    "t": "blob",
+    "s": 2140
+   },
+   {
+    "p": "ui/src/fields/autodate/view.js",
+    "t": "blob",
+    "s": 349
+   },
+   {
+    "p": "ui/src/fields/bool",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/fields/bool/init.js",
+    "t": "blob",
+    "s": 415
+   },
+   {
+    "p": "ui/src/fields/bool/input.js",
+    "t": "blob",
+    "s": 992
+   },
+   {
+    "p": "ui/src/fields/bool/settings.js",
+    "t": "blob",
+    "s": 1985
+   },
+   {
+    "p": "ui/src/fields/bool/view.js",
+    "t": "blob",
+    "s": 388
+   },
+   {
+    "p": "ui/src/fields/date",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/fields/date/init.js",
+    "t": "blob",
+    "s": 422
+   },
+   {
+    "p": "ui/src/fields/date/input.js",
+    "t": "blob",
+    "s": 1794
+   },
+   {
+    "p": "ui/src/fields/date/settings.js",
+    "t": "blob",
+    "s": 3687
+   },
+   {
+    "p": "ui/src/fields/date/view.js",
+    "t": "blob",
+    "s": 345
+   },
+   {
+    "p": "ui/src/fields/editor",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/fields/editor/init.js",
+    "t": "blob",
+    "s": 474
+   },
+   {
+    "p": "ui/src/fields/editor/input.js",
+    "t": "blob",
+    "s": 1651
+   },
+   {
+    "p": "ui/src/fields/editor/settings.js",
+    "t": "blob",
+    "s": 4682
+   },
+   {
+    "p": "ui/src/fields/editor/view.js",
+    "t": "blob",
+    "s": 829
+   },
+   {
+    "p": "ui/src/fields/email",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/fields/email/init.js",
+    "t": "blob",
+    "s": 494
+   },
+   {
+    "p": "ui/src/fields/email/input.js",
+    "t": "blob",
+    "s": 1167
+   },
+   {
+    "p": "ui/src/fields/email/settings.js",
+    "t": "blob",
+    "s": 4849
+   },
+   {
+    "p": "ui/src/fields/email/view.js",
+    "t": "blob",
+    "s": 631
+   },
+   {
+    "p": "ui/src/fields/file",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/fields/file/init.js",
+    "t": "blob",
+    "s": 1407
+   },
+   {
+    "p": "ui/src/fields/file/input.js",
+    "t": "blob",
+    "s": 9933
+   },
+   {
+    "p": "ui/src/fields/file/onrecordduplicate.js",
+    "t": "blob",
+    "s": 183
+   },
+   {
+    "p": "ui/src/fields/file/onrecordsave.js",
+    "t": "blob",
+    "s": 665
+   },
+   {
+    "p": "ui/src/fields/file/settings.js",
+    "t": "blob",
+    "s": 17911
+   },
+   {
+    "p": "ui/src/fields/file/view.js",
+    "t": "blob",
+    "s": 979
+   },
+   {
+    "p": "ui/src/fields/geoPoint",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/fields/geoPoint/init.js",
+    "t": "blob",
+    "s": 541
+   },
+   {
+    "p": "ui/src/fields/geoPoint/input.js",
+    "t": "blob",
+    "s": 4669
+   },
+   {
+    "p": "ui/src/fields/geoPoint/settings.js",
+    "t": "blob",
+    "s": 1985
+   },
+   {
+    "p": "ui/src/fields/geoPoint/view.js",
+    "t": "blob",
+    "s": 384
+   },
+   {
+    "p": "ui/src/fields/json",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/fields/json/init.js",
+    "t": "blob",
+    "s": 454
+   },
+   {
+    "p": "ui/src/fields/json/input.js",
+    "t": "blob",
+    "s": 3987
+   },
+   {
+    "p": "ui/src/fields/json/onrecordsave.js",
+    "t": "blob",
+    "s": 766
+   },
+   {
+    "p": "ui/src/fields/json/settings.js",
+    "t": "blob",
+    "s": 6756
+   },
+   {
+    "p": "ui/src/fields/json/view.js",
+    "t": "blob",
+    "s": 613
+   },
+   {
+    "p": "ui/src/fields/number",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/fields/number/init.js",
+    "t": "blob",
+    "s": 378
+   },
+   {
+    "p": "ui/src/fields/number/input.js",
+    "t": "blob",
+    "s": 1898
+   },
+   {
+    "p": "ui/src/fields/number/settings.js",
+    "t": "blob",
+    "s": 4752
+   },
+   {
+    "p": "ui/src/fields/number/view.js",
+    "t": "blob",
+    "s": 277
+   },
+   {
+    "p": "ui/src/fields/password",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/fields/password/init.js",
+    "t": "blob",
+    "s": 234
+   },
+   {
+    "p": "ui/src/fields/password/settings.js",
+    "t": "blob",
+    "s": 8493
+   },
+   {
+    "p": "ui/src/fields/relation",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/fields/relation/init.js",
+    "t": "blob",
+    "s": 531
+   },
+   {
+    "p": "ui/src/fields/relation/input.js",
+    "t": "blob",
+    "s": 7353
+   },
+   {
+    "p": "ui/src/fields/relation/settings.js",
+    "t": "blob",
+    "s": 8701
+   },
+   {
+    "p": "ui/src/fields/relation/view.js",
+    "t": "blob",
+    "s": 7999
+   },
+   {
+    "p": "ui/src/fields/select",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/fields/select/init.js",
+    "t": "blob",
+    "s": 577
+   },
+   {
+    "p": "ui/src/fields/select/input.js",
+    "t": "blob",
+    "s": 1620
+   },
+   {
+    "p": "ui/src/fields/select/settings.js",
+    "t": "blob",
+    "s": 7113
+   },
+   {
+    "p": "ui/src/fields/select/view.js",
+    "t": "blob",
+    "s": 664
+   },
+   {
+    "p": "ui/src/fields/text",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/fields/text/init.js",
+    "t": "blob",
+    "s": 491
+   },
+   {
+    "p": "ui/src/fields/text/input.js",
+    "t": "blob",
+    "s": 3799
+   },
+   {
+    "p": "ui/src/fields/text/settings.js",
+    "t": "blob",
+    "s": 8689
+   },
+   {
+    "p": "ui/src/fields/text/view.js",
+    "t": "blob",
+    "s": 1194
+   },
+   {
+    "p": "ui/src/fields/url",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/fields/url/init.js",
+    "t": "blob",
+    "s": 383
+   },
+   {
+    "p": "ui/src/fields/url/input.js",
+    "t": "blob",
+    "s": 1122
+   },
+   {
+    "p": "ui/src/fields/url/settings.js",
+    "t": "blob",
+    "s": 4849
+   },
+   {
+    "p": "ui/src/fields/url/view.js",
+    "t": "blob",
+    "s": 846
+   },
+   {
+    "p": "ui/src/logs",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/logs/defaultLogLevels.js",
+    "t": "blob",
+    "s": 455
+   },
+   {
+    "p": "ui/src/logs/logLevel.js",
+    "t": "blob",
+    "s": 277
+   },
+   {
+    "p": "ui/src/logs/logPreviewModal.js",
+    "t": "blob",
+    "s": 9936
+   },
+   {
+    "p": "ui/src/logs/logsChart.js",
+    "t": "blob",
+    "s": 17310
+   },
+   {
+    "p": "ui/src/logs/logsList.js",
+    "t": "blob",
+    "s": 22210
+   },
+   {
+    "p": "ui/src/logs/logsSettingsModal.js",
+    "t": "blob",
+    "s": 12449
+   },
+   {
+    "p": "ui/src/logs/pageLogs.js",
+    "t": "blob",
+    "s": 7605
+   },
+   {
+    "p": "ui/src/main.js",
+    "t": "blob",
+    "s": 4615
+   },
+   {
+    "p": "ui/src/mimeTypes.js",
+    "t": "blob",
+    "s": 10395
+   },
+   {
+    "p": "ui/src/pb.js",
+    "t": "blob",
+    "s": 6820
+   },
+   {
+    "p": "ui/src/records",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/records/recordFilePickerModal.js",
+    "t": "blob",
+    "s": 15762
+   },
+   {
+    "p": "ui/src/records/recordFileThumb.js",
+    "t": "blob",
+    "s": 4801
+   },
+   {
+    "p": "ui/src/records/recordImpersonateModal.js",
+    "t": "blob",
+    "s": 6765
+   },
+   {
+    "p": "ui/src/records/recordPreviewModal.js",
+    "t": "blob",
+    "s": 7867
+   },
+   {
+    "p": "ui/src/records/recordSummary.js",
+    "t": "blob",
+    "s": 6900
+   },
+   {
+    "p": "ui/src/records/recordUpsertModal.js",
+    "t": "blob",
+    "s": 54920
+   },
+   {
+    "p": "ui/src/records/recordsList.js",
+    "t": "blob",
+    "s": 34542
+   },
+   {
+    "p": "ui/src/records/recordsPickerModal.js",
+    "t": "blob",
+    "s": 16740
+   },
+   {
+    "p": "ui/src/records/recordsSearchbar.js",
+    "t": "blob",
+    "s": 1975
+   },
+   {
+    "p": "ui/src/router.js",
+    "t": "blob",
+    "s": 5943
+   },
+   {
+    "p": "ui/src/settings",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/settings/application",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/settings/application/batchAccordion.js",
+    "t": "blob",
+    "s": 5179
+   },
+   {
+    "p": "ui/src/settings/application/pageApplicationSettings.js",
+    "t": "blob",
+    "s": 14712
+   },
+   {
+    "p": "ui/src/settings/application/rateLimitAccordion.js",
+    "t": "blob",
+    "s": 25049
+   },
+   {
+    "p": "ui/src/settings/application/rateLimitInfoModal.js",
+    "t": "blob",
+    "s": 6206
+   },
+   {
+    "p": "ui/src/settings/application/superuserAccordion.js",
+    "t": "blob",
+    "s": 6003
+   },
+   {
+    "p": "ui/src/settings/application/trustedProxyAccordion.js",
+    "t": "blob",
+    "s": 10387
+   },
+   {
+    "p": "ui/src/settings/backups",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/settings/backups/backupCreateModal.js",
+    "t": "blob",
+    "s": 4910
+   },
+   {
+    "p": "ui/src/settings/backups/backupRestoreModal.js",
+    "t": "blob",
+    "s": 6627
+   },
+   {
+    "p": "ui/src/settings/backups/backupUploadButton.js",
+    "t": "blob",
+    "s": 2450
+   },
+   {
+    "p": "ui/src/settings/backups/backupsForm.js",
+    "t": "blob",
+    "s": 13734
+   },
+   {
+    "p": "ui/src/settings/backups/backupsList.js",
+    "t": "blob",
+    "s": 8429
+   },
+   {
+    "p": "ui/src/settings/backups/pageBackupsSettings.js",
+    "t": "blob",
+    "s": 2259
+   },
+   {
+    "p": "ui/src/settings/crons",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/settings/crons/cronsList.js",
+    "t": "blob",
+    "s": 3626
+   },
+   {
+    "p": "ui/src/settings/crons/pageCronsSettings.js",
+    "t": "blob",
+    "s": 2260
+   },
+   {
+    "p": "ui/src/settings/mail",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/settings/mail/mailTestModal.js",
+    "t": "blob",
+    "s": 7691
+   },
+   {
+    "p": "ui/src/settings/mail/pageMailSettings.js",
+    "t": "blob",
+    "s": 20360
+   },
+   {
+    "p": "ui/src/settings/settingsSidebar.js",
+    "t": "blob",
+    "s": 2330
+   },
+   {
+    "p": "ui/src/settings/sql",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/settings/sql/pageSQLConsole.js",
+    "t": "blob",
+    "s": 18919
+   },
+   {
+    "p": "ui/src/settings/storage",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/settings/storage/pageStorageSettings.js",
+    "t": "blob",
+    "s": 7699
+   },
+   {
+    "p": "ui/src/settings/sync",
+    "t": "tree"
+   },
+   {
+    "p": "ui/src/settings/sync/collectionsDiffTable.js",
+    "t": "blob",
+    "s": 12683
+   },
+   {
+    "p": "ui/src/settings/sync/importCollectionsReviewModal.js",
+    "t": "blob",
+    "s": 5731
+   },
+   {
+    "p": "ui/src/settings/sync/pageExportCollections.js",
+    "t": "blob",
+    "s": 9501
+   },
+   {
+    "p": "ui/src/settings/sync/pageImportCollections.js",
+    "t": "blob",
+    "s": 22062
+   },
+   {
+    "p": "ui/src/store.js",
+    "t": "blob",
+    "s": 15015
+   },
+   {
+    "p": "ui/src/utils.js",
+    "t": "blob",
+    "s": 54411
+   },
+   {
+    "p": "ui/vite.config.js",
+    "t": "blob",
+    "s": 300
+   }
+  ]
+ },
+ "selected": [
+  "go.mod",
+  "ui/package.json",
+  "CONTRIBUTING.md",
+  "README.md",
+  "ui/README.md",
+  "Makefile",
+  ".github/workflows/release.yaml",
+  "examples/base/main.go",
+  "modernc_versions_check.go",
+  "pocketbase.go",
+  "pocketbase_test.go",
+  "apis/api_error_aliases.go",
+  "apis/backup.go",
+  "apis/backup_create.go"
+ ],
+ "extras": {
+  "cmd/serve.go": "listed under cmd/ but not fetched by the canonical selection (its entry-point reservation went to examples/base/main.go); this file's package clause decides whether cmd/ holds a command or an importable package",
+  "cmd/superuser.go": "listed under cmd/ but not fetched by the canonical selection (its entry-point reservation went to examples/base/main.go); this file's package clause decides whether cmd/ holds a command or an importable package"
+ },
+ "files": {
+  ".github/workflows/release.yaml": {
+   "content": "name: basebuild\n\non:\n  pull_request:\n  push:\n\njobs:\n  goreleaser:\n    runs-on: ubuntu-latest\n    env:\n      flags: \"\"\n    steps:\n      # re-enable auto-snapshot from goreleaser-action@v3\n      # (https://github.com/goreleaser/goreleaser-action-v4-auto-snapshot-example)\n      - if: ${{ !startsWith(github.ref, 'refs/tags/v') }}\n        run: echo \"flags=--snapshot\" \u003e\u003e $GITHUB_ENV\n\n      - name: Checkout\n        uses: actions/checkout@v6\n        with:\n          fetch-depth: 0\n\n      - name: Set up Node.js\n        uses: actions/setup-node@v6\n        with:\n          node-version: '\u003e=25.2.1'\n\n      - name: Set up Go\n        uses: actions/setup-go@v7\n        with:\n          go-version: '\u003e=1.27.3'\n\n      # This step usually is not needed because the /ui/dist is pregenerated locally\n      # but its here to ensure that each release embeds the latest admin ui artifacts.\n      # If the artificats differs, a \"dirty error\" is thrown - https://goreleaser.com/errors/dirty/\n      - name: Build Admin dashboard UI\n        run: npm --prefix=./ui ci \u0026\u0026 npm --prefix=./ui run build\n\n      # Temporary disable as the types can have random generated identifiers making it non-deterministic.\n      #\n      # # Similar to the above, the jsvm types are pregenerated locally\n      # # but its here to ensure that it wasn't forgotten to be executed.\n      # - name: Generate jsvm types\n      #   run: go run ./plugins/jsvm/internal/types/types.go\n\n      - name: Run tests\n        run: go test ./...\n\n      - name: Run GoReleaser\n        uses: goreleaser/goreleaser-action@v6\n        with:\n          distribution: goreleaser\n          version: '~\u003e v2'\n          args: release --clean ${{ env.flags }}\n        env:\n          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}\n",
+   "size": 1751
+  },
+  "CONTRIBUTING.md": {
+   "content": "# Contributing to PocketBase\n\n\u003e [!IMPORTANT]\n\u003e Due to recent LLM spam, PRs are temporary disabled and only existing collaborators can open a PR.\n\u003e If you stumble on a problem that you want to fix, please consider instead opening an issue or discussion with link to your fork _(if not obvious - LLM contributions are not welcome)_.\n\u003e This status may change in the future in case GitHub finally decide to do something about the constant spam, or when I find time to move the project somewhere else.\n\nThis document describes how to prepare a PR for a change in the main repository.\n\n- [Prerequisites](#prerequisites)\n- [Making changes in the Go code](#making-changes-in-the-go-code)\n- [Making changes in the Superuser UI](#making-changes-in-the-superuser-ui)\n\n## Prerequisites\n\n- Go 1.27+ (for making changes in the Go code)\n- Node 24+ (for making changes in the Superuser UI)\n\nIf you haven't already, you can fork the main repository and clone your fork so that you can work locally:\n\n```\ngit clone https://github.com/your_username/pocketbase.git\n```\n\n\u003e [!IMPORTANT]\n\u003e It is recommended to create a new branch from master for each of your bugfixes and features.\n\u003e This is required if you are planning to submit multiple PRs in order to keep the changes separate for review until they eventually get merged.\n\n## Making changes in the Go code\n\nPocketBase is distributed as a Go package, which means that in order to run the project you'll have to create a Go `main` program that imports the package.\n\nThe repository already includes such program, located in `examples/base`, that is also used for the prebuilt executables.\n\nSo, let's assume that you already done some changes in the PocketBase Go code and you want now to run them:\n\n1. Navigate to `examples/base`\n2. Run `go run main.go serve`\n\nThis will start a web server on `http://localhost:8090` with the embedded prebuilt Superuser UI from `ui/dist`. And that's it!\n\n**Before making a PR to the main repository, it is a good idea to:**\n\n- Add unit/integration tests for your changes (we are using the standard `testing` go package).\n  To run the tests, you could execute (while in the root project directory):\n\n  ```sh\n  go test ./...\n\n  # or using the Makefile\n  make test\n  ```\n\n- Run the linter - **golangci** ([see how to install](https://golangci-lint.run/usage/install/#local-installation)):\n\n  ```sh\n  golangci-lint run -c ./golangci.yml ./...\n\n  # or using the Makefile\n  make lint\n  ```\n\n## Making changes in the Superuser UI\n\nPocketBase Superuser UI is a single-page application (SPA) built with Svelte and Vite.\n\nTo start the Superuser UI:\n\n1. Navigate to the `ui` project directory\n2. Run `npm install` to install the node dependencies\n3. Start vite's dev server\n   ```sh\n   npm run dev\n   ```\n\nYou could open the browser and access the running Superuser UI at `http://localhost:5173`.\n\nSince the Superuser UI is just a client-side application, you need to have the PocketBase backend server also running in the background (either manually running the `examples/base/main.go` or download a prebuilt executable).\n\n\u003e [!NOTE]\n\u003e By default, the Superuser UI is expecting the backend server to be started at `http://localhost:8090`, but you could change that by creating a new `ui/.env.development.local` file with `PB_BACKEND_URL = YOUR_ADDRESS` variable inside it.\n\nEvery change you make in the Superuser UI should be automatically reflected in the browser at `http://localhost:5173` without reloading the page.\n\nOnce you are done with your changes, you have to build the Superuser UI with `npm run build`, so that it can be embedded in the go package. And that's it - you can make your PR to the main PocketBase repository.\n",
+   "size": 3686
+  },
+  "Makefile": {
+   "content": "lint:\n\tgolangci-lint run -c ./golangci.yml ./...\n\ntest:\n\tgo test ./... -v --cover\n\njstypes:\n\tgo run ./plugins/jsvm/internal/types/types.go\n\ntest-report:\n\tgo test ./... -v --cover -coverprofile=coverage.out\n\tgo tool cover -html=coverage.out\n",
+   "size": 240
+  },
+  "README.md": {
+   "content": "**⚠️ The repo has moved to https://ganigeorgiev.com/pocketbase/pocketbase.**\n\n---\n\n\u003cp align=\"center\"\u003e\n    \u003ca href=\"https://pocketbase.io\" target=\"_blank\" rel=\"noopener\"\u003e\n        \u003cimg src=\"https://i.imgur.com/aCBbjKx.png\" alt=\"PocketBase - open source backend in 1 file\" /\u003e\n    \u003c/a\u003e\n\u003c/p\u003e\n\n\u003cp align=\"center\"\u003e\n    \u003ca href=\"https://github.com/pocketbase/pocketbase/actions/workflows/release.yaml\" target=\"_blank\" rel=\"noopener\"\u003e\u003cimg src=\"https://github.com/pocketbase/pocketbase/actions/workflows/release.yaml/badge.svg\" alt=\"build\" /\u003e\u003c/a\u003e\n    \u003ca href=\"https://github.com/pocketbase/pocketbase/releases\" target=\"_blank\" rel=\"noopener\"\u003e\u003cimg src=\"https://img.shields.io/github/release/pocketbase/pocketbase.svg\" alt=\"Latest releases\" /\u003e\u003c/a\u003e\n    \u003ca href=\"https://pkg.go.dev/github.com/pocketbase/pocketbase\" target=\"_blank\" rel=\"noopener\"\u003e\u003cimg src=\"https://godoc.org/github.com/pocketbase/pocketbase?status.svg\" alt=\"Go package documentation\" /\u003e\u003c/a\u003e\n\u003c/p\u003e\n\n[PocketBase](https://pocketbase.io) is an open source Go backend that includes:\n\n- embedded database (_SQLite_) with **realtime subscriptions**\n- built-in **files and users management**\n- convenient **Admin dashboard UI**\n- and simple **REST-ish API**\n\n**For documentation and examples, please visit https://pocketbase.io/docs.**\n\n\u003e [!WARNING]\n\u003e Please keep in mind that PocketBase is still under active development\n\u003e and therefore full backward compatibility is not guaranteed before reaching v1.0.0.\n\n## API SDK clients\n\nThe easiest way to interact with the PocketBase Web APIs is to use one of the official SDK clients:\n\n- **JavaScript - [pocketbase/js-sdk](https://github.com/pocketbase/js-sdk)** (_Browser, Node.js, React Native_)\n- **Dart - [pocketbase/dart-sdk](https://github.com/pocketbase/dart-sdk)** (_Web, Mobile, Desktop, CLI_)\n\nYou could also check the recommendations in https://pocketbase.io/docs/how-to-use/.\n\n\n## Overview\n\n### Use as standalone app\n\nYou could download the prebuilt executable for your platform from the [Releases page](https://github.com/pocketbase/pocketbase/releases).\nOnce downloaded, extract the archive and run `./pocketbase serve` in the extracted directory.\n\nThe prebuilt executables are based on the [`examples/base/main.go` file](https://github.com/pocketbase/pocketbase/blob/master/examples/base/main.go) and comes with the JS VM plugin enabled by default which allows to extend PocketBase with JavaScript (_for more details please refer to [Extend with JavaScript](https://pocketbase.io/docs/js-overview/)_).\n\n### Use as a Go framework/toolkit\n\nPocketBase is distributed as a regular Go library package which allows you to build\nyour own custom app specific business logic and still have a single portable executable at the end.\n\nHere is a minimal example:\n\n0. [Install Go 1.27+](https://go.dev/doc/install) (_if you haven't already_)\n\n1. Create a new project directory with the following `main.go` file inside it:\n    ```go\n    package main\n\n    import (\n        \"log\"\n\n        \"github.com/pocketbase/pocketbase\"\n        \"github.com/pocketbase/pocketbase/core\"\n    )\n\n    func main() {\n        app := pocketbase.New()\n\n        app.OnServe().BindFunc(func(se *core.ServeEvent) error {\n            // registers new \"GET /hello\" route\n            se.Router.GET(\"/hello\", func(re *core.RequestEvent) error {\n                return re.String(200, \"Hello world!\")\n            })\n\n            return se.Next()\n        })\n\n        if err := app.Start(); err != nil {\n            log.Fatal(err)\n        }\n    }\n    ```\n\n2. To init the dependencies, run `go mod init myapp \u0026\u0026 go mod tidy`.\n\n3. To start the application, run `go run main.go serve`.\n\n4. To build a statically linked executable, you can run `CGO_ENABLED=0 go build` and then start the created executable with `./myapp serve`.\n\n_For more details please refer to [Extend with Go](https://pocketbase.io/docs/go-overview/)._\n\n### Building and running the repo main.go example\n\nTo build the minimal standalone executable, like the prebuilt ones in the releases page, you can simply run `go build` inside the `examples/base` directory:\n\n0. [Install Go 1.27+](https://go.dev/doc/install) (_if you haven't already_)\n1. Clone/download the repo\n2. Navigate to `examples/base`\n3. Run `CGO_ENABLED=0 go build` to build a binary for your current environment\n   _(or to target other platforms use `GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build`; see https://go.dev/doc/install/source#environment)_\n4. Start the created executable by running `./base serve`.\n\nNote that the supported build targets by the pure Go SQLite driver at the moment are:\n\n| GOOS    | GOARCH  |\n|---------|---------|\n| darwin  | amd64   |\n| darwin  | arm64   |\n| freebsd | 386     |\n| freebsd | amd64   |\n| freebsd | arm     |\n| freebsd | arm64   |\n| linux   | 386     |\n| linux   | amd64   |\n| linux   | arm     |\n| linux   | arm64   |\n| linux   | loong64 |\n| linux   | ppc64le |\n| linux   | riscv64 |\n| linux   | s390x   |\n| netbsd  | amd64   |\n| openbsd | amd64   |\n| openbsd | arm64   |\n| windows | 386     |\n| windows | amd64   |\n| windows | arm64   |\n\n### Testing\n\nPocketBase comes with mixed bag of unit and integration tests.\nTo run them, use the standard `go test` command:\n\n```sh\ngo test ./...\n```\n\nCheck also the [Testing guide](http://pocketbase.io/docs/testing) to learn how to write your own custom application tests.\n\n## Security\n\nIf you discover a security vulnerability within PocketBase, please send an e-mail to **support at pocketbase.io**.\n\nYou could find more details in the project [Security policy](https://github.com/pocketbase/pocketbase/security/policy).\n\n## Contributing\n\nPocketBase is free and open source project licensed under the [MIT License](LICENSE.md).\nYou are free to do whatever you want with it, even offering it as a paid service.\n\nYou could help continuing its development by:\n\n- [Contribute to the source code](CONTRIBUTING.md)\n- [Suggest new features and report issues](https://github.com/pocketbase/pocketbase/issues)\n\nPlease refrain creating PRs for _new features_ without previously discussing the implementation details.\nPocketBase has a [roadmap](https://github.com/orgs/pocketbase/projects/2) and I try to work on issues in specific order and such PRs often come in out of nowhere and skew all initial planning with tedious back-and-forth communication.\n\nDon't get upset if I close your PR, even if it is well executed and tested. This doesn't mean that it will never be merged.\nLater we can always refer to it and/or take pieces of your implementation when the time comes to work on the issue (don't worry you'll be credited in the release notes).\n\n\u003e [!IMPORTANT]\n\u003e Due to recent LLM spam, PRs are temporary disabled and only existing collaborators can open a PR.\n\u003e If you stumble on a problem that you want to fix, please consider instead opening an issue or discussion with link to your fork _(if not obvious - LLM contributions are not welcome)_.\n\u003e This status may change in the future in case GitHub finally decide to do something about the constant spam, or when I find time to move the project somewhere else.\n",
+   "size": 7079
+  },
+  "apis/api_error_aliases.go": {
+   "content": "package apis\n\nimport \"github.com/pocketbase/pocketbase/tools/router\"\n\n// ApiError aliases to minimize the breaking changes with earlier versions\n// and for consistency with the JSVM binds.\n// -------------------------------------------------------------------\n\n// ToApiError wraps err into ApiError instance (if not already).\nfunc ToApiError(err error) *router.ApiError {\n\treturn router.ToApiError(err)\n}\n\n// NewApiError is an alias for [router.NewApiError].\nfunc NewApiError(status int, message string, errData any) *router.ApiError {\n\treturn router.NewApiError(status, message, errData)\n}\n\n// NewBadRequestError is an alias for [router.NewBadRequestError].\nfunc NewBadRequestError(message string, errData any) *router.ApiError {\n\treturn router.NewBadRequestError(message, errData)\n}\n\n// NewNotFoundError is an alias for [router.NewNotFoundError].\nfunc NewNotFoundError(message string, errData any) *router.ApiError {\n\treturn router.NewNotFoundError(message, errData)\n}\n\n// NewForbiddenError is an alias for [router.NewForbiddenError].\nfunc NewForbiddenError(message string, errData any) *router.ApiError {\n\treturn router.NewForbiddenError(message, errData)\n}\n\n// NewUnauthorizedError is an alias for [router.NewUnauthorizedError].\nfunc NewUnauthorizedError(message string, errData any) *router.ApiError {\n\treturn router.NewUnauthorizedError(message, errData)\n}\n\n// NewTooManyRequestsError is an alias for [router.NewTooManyRequestsError].\nfunc NewTooManyRequestsError(message string, errData any) *router.ApiError {\n\treturn router.NewTooManyRequestsError(message, errData)\n}\n\n// NewInternalServerError is an alias for [router.NewInternalServerError].\nfunc NewInternalServerError(message string, errData any) *router.ApiError {\n\treturn router.NewInternalServerError(message, errData)\n}\n",
+   "size": 1787
+  },
+  "apis/backup.go": {
+   "content": "package apis\n\nimport (\n\t\"context\"\n\t\"net/http\"\n\t\"path/filepath\"\n\t\"time\"\n\n\t\"github.com/pocketbase/pocketbase/core\"\n\t\"github.com/pocketbase/pocketbase/tools/router\"\n\t\"github.com/pocketbase/pocketbase/tools/routine\"\n\t\"github.com/pocketbase/pocketbase/tools/types\"\n\t\"github.com/spf13/cast\"\n)\n\n// bindBackupApi registers the file api endpoints and the corresponding handlers.\nfunc bindBackupApi(app core.App, rg *router.RouterGroup[*core.RequestEvent]) {\n\tsub := rg.Group(\"/backups\")\n\tsub.GET(\"\", backupsList).Bind(RequireSuperuserAuth())\n\tsub.POST(\"\", backupCreate).Bind(RequireSuperuserAuth())\n\tsub.POST(\"/upload\", backupUpload).Bind(BodyLimit(0), RequireSuperuserAuth())\n\tsub.GET(\"/{key}\", backupDownload) // relies on superuser file token\n\tsub.DELETE(\"/{key}\", backupDelete).Bind(RequireSuperuserAuth())\n\tsub.POST(\"/{key}/restore\", backupRestore).Bind(RequireSuperuserAuth())\n}\n\ntype backupFileInfo struct {\n\tModified types.DateTime `json:\"modified\"`\n\tKey      string         `json:\"key\"`\n\tSize     int64          `json:\"size\"`\n}\n\nfunc backupsList(e *core.RequestEvent) error {\n\tctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)\n\tdefer cancel()\n\n\tfsys, err := e.App.NewBackupsFilesystem()\n\tif err != nil {\n\t\treturn e.BadRequestError(\"Failed to load backups filesystem.\", err)\n\t}\n\tdefer fsys.Close()\n\n\tfsys.SetContext(ctx)\n\n\tbackups, err := fsys.List(\"\")\n\tif err != nil {\n\t\treturn e.BadRequestError(\"Failed to retrieve backup items. Raw error: \\n\"+err.Error(), nil)\n\t}\n\n\tresult := make([]backupFileInfo, len(backups))\n\n\tfor i, obj := range backups {\n\t\tmodified, _ := types.ParseDateTime(obj.ModTime)\n\n\t\tresult[i] = backupFileInfo{\n\t\t\tKey:      obj.Key,\n\t\t\tSize:     obj.Size,\n\t\t\tModified: modified,\n\t\t}\n\t}\n\n\treturn e.JSON(http.StatusOK, result)\n}\n\nfunc backupDownload(e *core.RequestEvent) error {\n\tfileToken := e.Request.URL.Query().Get(\"token\")\n\n\tauthRecord, err := e.App.FindAuthRecordByToken(fileToken, core.TokenTypeFile)\n\tif err != nil || !authRecord.IsSuperuser() {\n\t\treturn e.ForbiddenError(\"Insufficient permissions to access the resource.\", err)\n\t}\n\n\tallowedIPs := e.App.Settings().SuperuserIPs\n\tif len(allowedIPs) \u003e 0 \u0026\u0026 !isIPInList(allowedIPs, e.RealIP()) {\n\t\treturn e.ForbiddenError(\"Insufficient permissions to access the resource.\", nil)\n\t}\n\n\tfsys, err := e.App.NewBackupsFilesystem()\n\tif err != nil {\n\t\treturn e.InternalServerError(\"Failed to load backups filesystem.\", err)\n\t}\n\tdefer fsys.Close()\n\n\tctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)\n\tdefer cancel()\n\n\tfsys.SetContext(ctx)\n\n\tkey := e.Request.PathValue(\"key\")\n\n\treturn fsys.Serve(\n\t\te.Response,\n\t\te.Request,\n\t\tkey,\n\t\tfilepath.Base(key), // without the path prefix (if any)\n\t)\n}\n\nfunc backupDelete(e *core.RequestEvent) error {\n\tctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)\n\tdefer cancel()\n\n\tfsys, err := e.App.NewBackupsFilesystem()\n\tif err != nil {\n\t\treturn e.InternalServerError(\"Failed to load backups filesystem.\", err)\n\t}\n\tdefer fsys.Close()\n\n\tfsys.SetContext(ctx)\n\n\tkey := e.Request.PathValue(\"key\")\n\n\tif key != \"\" \u0026\u0026 cast.ToString(e.App.Store().Get(core.StoreKeyActiveBackup)) == key {\n\t\treturn e.BadRequestError(\"The backup is currently being used and cannot be deleted.\", nil)\n\t}\n\n\tif err := fsys.Delete(key); err != nil {\n\t\treturn e.BadRequestError(\"Invalid or already deleted backup file. Raw error: \\n\"+err.Error(), nil)\n\t}\n\n\treturn e.NoContent(http.StatusNoContent)\n}\n\nfunc backupRestore(e *core.RequestEvent) error {\n\tif e.App.Store().Has(core.StoreKeyActiveBackup) {\n\t\treturn e.BadRequestError(\"Try again later - another backup/restore process has already been started.\", nil)\n\t}\n\n\tkey := e.Request.PathValue(\"key\")\n\n\texistsCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)\n\tdefer cancel()\n\n\tfsys, err := e.App.NewBackupsFilesystem()\n\tif err != nil {\n\t\treturn e.InternalServerError(\"Failed to load backups filesystem.\", err)\n\t}\n\tdefer fsys.Close()\n\n\tfsys.SetContext(existsCtx)\n\n\tif exists, err := fsys.Exists(key); !exists {\n\t\treturn e.BadRequestError(\"Missing or invalid backup file.\", err)\n\t}\n\n\troutine.FireAndForget(func() {\n\t\t// give some optimistic time to write the response before restarting the app\n\t\ttime.Sleep(1 * time.Second)\n\n\t\t// wait max 10 minutes to fetch the backup\n\t\tctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)\n\t\tdefer cancel()\n\n\t\tif err := e.App.RestoreBackup(ctx, key); err != nil {\n\t\t\te.App.Logger().Error(\"Failed to restore backup\", \"key\", key, \"error\", err.Error())\n\t\t}\n\t})\n\n\treturn e.NoContent(http.StatusNoContent)\n}\n",
+   "size": 4561
+  },
+  "apis/backup_create.go": {
+   "content": "package apis\n\nimport (\n\t\"context\"\n\t\"net/http\"\n\t\"regexp\"\n\n\tvalidation \"github.com/pocketbase/ozzo-validation/v4\"\n\t\"github.com/pocketbase/pocketbase/core\"\n)\n\nfunc backupCreate(e *core.RequestEvent) error {\n\tif e.App.Store().Has(core.StoreKeyActiveBackup) {\n\t\treturn e.BadRequestError(\"Try again later - another backup/restore process has already been started\", nil)\n\t}\n\n\tform := new(backupCreateForm)\n\tform.app = e.App\n\n\terr := e.BindBody(form)\n\tif err != nil {\n\t\treturn e.BadRequestError(\"An error occurred while loading the submitted data.\", err)\n\t}\n\n\terr = form.validate()\n\tif err != nil {\n\t\treturn e.BadRequestError(\"An error occurred while validating the submitted data.\", err)\n\t}\n\n\terr = e.App.CreateBackup(context.Background(), form.Name)\n\tif err != nil {\n\t\treturn e.BadRequestError(\"Failed to create backup.\", err)\n\t}\n\n\t// we don't retrieve the generated backup file because it may not be\n\t// available yet due to the eventually consistent nature of some S3 providers\n\treturn e.NoContent(http.StatusNoContent)\n}\n\n// -------------------------------------------------------------------\n\nvar backupNameRegex = regexp.MustCompile(`^[a-z0-9_-]+\\.zip$`)\n\ntype backupCreateForm struct {\n\tapp core.App\n\n\tName string `form:\"name\" json:\"name\"`\n}\n\nfunc (form *backupCreateForm) validate() error {\n\treturn validation.ValidateStruct(form,\n\t\tvalidation.Field(\n\t\t\t\u0026form.Name,\n\t\t\tvalidation.Length(1, 150),\n\t\t\tvalidation.Match(backupNameRegex),\n\t\t\tvalidation.By(form.checkUniqueName),\n\t\t),\n\t)\n}\n\nfunc (form *backupCreateForm) checkUniqueName(value any) error {\n\tv, _ := value.(string)\n\tif v == \"\" {\n\t\treturn nil // nothing to check\n\t}\n\n\tfsys, err := form.app.NewBackupsFilesystem()\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer fsys.Close()\n\n\tif exists, err := fsys.Exists(v); err != nil || exists {\n\t\treturn validation.NewError(\"validation_backup_name_exists\", \"The backup file name is invalid or already exists.\")\n\t}\n\n\treturn nil\n}\n",
+   "size": 1918
+  },
+  "cmd/serve.go": {
+   "content": "package cmd\n\nimport (\n\t\"errors\"\n\t\"net/http\"\n\n\t\"github.com/pocketbase/pocketbase/apis\"\n\t\"github.com/pocketbase/pocketbase/core\"\n\t\"github.com/spf13/cobra\"\n)\n\n// NewServeCommand creates and returns new command responsible for\n// starting the default PocketBase web server.\nfunc NewServeCommand(app core.App, showStartBanner bool) *cobra.Command {\n\tvar allowedOrigins []string\n\tvar httpAddr string\n\tvar httpsAddr string\n\n\tcommand := \u0026cobra.Command{\n\t\tUse:          \"serve [domain(s)]\",\n\t\tArgs:         cobra.ArbitraryArgs,\n\t\tShort:        \"Starts the web server (default to 127.0.0.1:8090 if no domain is specified)\",\n\t\tSilenceUsage: true,\n\t\tRunE: func(command *cobra.Command, args []string) error {\n\t\t\t// set default listener addresses if at least one domain is specified\n\t\t\tif len(args) \u003e 0 {\n\t\t\t\tif httpAddr == \"\" {\n\t\t\t\t\thttpAddr = \"0.0.0.0:80\"\n\t\t\t\t}\n\t\t\t\tif httpsAddr == \"\" {\n\t\t\t\t\thttpsAddr = \"0.0.0.0:443\"\n\t\t\t\t}\n\t\t\t} else {\n\t\t\t\tif httpAddr == \"\" {\n\t\t\t\t\thttpAddr = \"127.0.0.1:8090\"\n\t\t\t\t}\n\t\t\t}\n\n\t\t\terr := apis.Serve(app, apis.ServeConfig{\n\t\t\t\tHttpAddr:           httpAddr,\n\t\t\t\tHttpsAddr:          httpsAddr,\n\t\t\t\tShowStartBanner:    showStartBanner,\n\t\t\t\tAllowedOrigins:     allowedOrigins,\n\t\t\t\tCertificateDomains: args,\n\t\t\t})\n\n\t\t\tif errors.Is(err, http.ErrServerClosed) {\n\t\t\t\treturn nil\n\t\t\t}\n\n\t\t\treturn err\n\t\t},\n\t}\n\n\tcommand.PersistentFlags().StringSliceVar(\n\t\t\u0026allowedOrigins,\n\t\t\"origins\",\n\t\t[]string{\"*\"},\n\t\t\"CORS allowed domain origins list\",\n\t)\n\n\tcommand.PersistentFlags().StringVar(\n\t\t\u0026httpAddr,\n\t\t\"http\",\n\t\t\"\",\n\t\t\"TCP address to listen for the HTTP server\\n(if domain args are specified - default to 0.0.0.0:80, otherwise - default to 127.0.0.1:8090)\",\n\t)\n\n\tcommand.PersistentFlags().StringVar(\n\t\t\u0026httpsAddr,\n\t\t\"https\",\n\t\t\"\",\n\t\t\"TCP address to listen for the HTTPS server\\n(if domain args are specified - default to 0.0.0.0:443, otherwise - default to empty string, aka. no TLS)\\nThe incoming HTTP traffic also will be auto redirected to the HTTPS version\",\n\t)\n\n\treturn command\n}\n",
+   "size": 1983
+  },
+  "cmd/superuser.go": {
+   "content": "package cmd\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n\n\t\"github.com/fatih/color\"\n\t\"github.com/pocketbase/ozzo-validation/v4/is\"\n\t\"github.com/pocketbase/pocketbase/core\"\n\t\"github.com/pocketbase/pocketbase/tools/security\"\n\t\"github.com/spf13/cobra\"\n)\n\n// NewSuperuserCommand creates and returns new command for managing\n// superuser accounts (create, update, upsert, delete).\nfunc NewSuperuserCommand(app core.App) *cobra.Command {\n\tcommand := \u0026cobra.Command{\n\t\tUse:   \"superuser\",\n\t\tShort: \"Manage superusers\",\n\t}\n\n\tcommand.AddCommand(superuserUpsertCommand(app))\n\tcommand.AddCommand(superuserCreateCommand(app))\n\tcommand.AddCommand(superuserUpdateCommand(app))\n\tcommand.AddCommand(superuserDeleteCommand(app))\n\tcommand.AddCommand(superuserOTPCommand(app))\n\tcommand.AddCommand(superuserIPsCommand(app))\n\n\treturn command\n}\n\nfunc superuserUpsertCommand(app core.App) *cobra.Command {\n\tcommand := \u0026cobra.Command{\n\t\tUse:          \"upsert\",\n\t\tExample:      \"superuser upsert test@example.com 1234567890\",\n\t\tShort:        \"Creates, or updates if email exists, a single superuser\",\n\t\tSilenceUsage: true,\n\t\tRunE: func(command *cobra.Command, args []string) error {\n\t\t\tif len(args) != 2 {\n\t\t\t\treturn errors.New(\"missing email and password arguments\")\n\t\t\t}\n\n\t\t\tif args[0] == \"\" || is.EmailFormat.Validate(args[0]) != nil {\n\t\t\t\treturn errors.New(\"missing or invalid email address\")\n\t\t\t}\n\n\t\t\tsuperusersCol, err := app.FindCachedCollectionByNameOrId(core.CollectionNameSuperusers)\n\t\t\tif err != nil {\n\t\t\t\treturn fmt.Errorf(\"failed to fetch %q collection: %w\", core.CollectionNameSuperusers, err)\n\t\t\t}\n\n\t\t\tsuperuser, err := app.FindAuthRecordByEmail(superusersCol, args[0])\n\t\t\tif err != nil {\n\t\t\t\tsuperuser = core.NewRecord(superusersCol)\n\t\t\t}\n\n\t\t\tsuperuser.SetEmail(args[0])\n\t\t\tsuperuser.SetPassword(args[1])\n\n\t\t\tif err := app.Save(superuser); err != nil {\n\t\t\t\treturn fmt.Errorf(\"failed to upsert superuser account: %w\", err)\n\t\t\t}\n\n\t\t\tcolor.Green(\"Successfully saved superuser %q!\", superuser.Email())\n\t\t\treturn nil\n\t\t},\n\t}\n\n\treturn command\n}\n\nfunc superuserCreateCommand(app core.App) *cobra.Command {\n\tcommand := \u0026cobra.Command{\n\t\tUse:          \"create\",\n\t\tExample:      \"superuser create test@example.com 1234567890\",\n\t\tShort:        \"Creates a new superuser\",\n\t\tSilenceUsage: true,\n\t\tRunE: func(command *cobra.Command, args []string) error {\n\t\t\tif len(args) != 2 {\n\t\t\t\treturn errors.New(\"missing email and password arguments\")\n\t\t\t}\n\n\t\t\tif args[0] == \"\" || is.EmailFormat.Validate(args[0]) != nil {\n\t\t\t\treturn errors.New(\"missing or invalid email address\")\n\t\t\t}\n\n\t\t\tsuperusersCol, err := app.FindCachedCollectionByNameOrId(core.CollectionNameSuperusers)\n\t\t\tif err != nil {\n\t\t\t\treturn fmt.Errorf(\"failed to fetch %q collection: %w\", core.CollectionNameSuperusers, err)\n\t\t\t}\n\n\t\t\tsuperuser := core.NewRecord(superusersCol)\n\t\t\tsuperuser.SetEmail(args[0])\n\t\t\tsuperuser.SetPassword(args[1])\n\n\t\t\tif err := app.Save(superuser); err != nil {\n\t\t\t\treturn fmt.Errorf(\"failed to create new superuser account: %w\", err)\n\t\t\t}\n\n\t\t\tcolor.Green(\"Successfully created new superuser %q!\", superuser.Email())\n\t\t\treturn nil\n\t\t},\n\t}\n\n\treturn command\n}\n\nfunc superuserUpdateCommand(app core.App) *cobra.Command {\n\tcommand := \u0026cobra.Command{\n\t\tUse:          \"update\",\n\t\tExample:      \"superuser update test@example.com 1234567890\",\n\t\tShort:        \"Changes the password of a single superuser\",\n\t\tSilenceUsage: true,\n\t\tRunE: func(command *cobra.Command, args []string) error {\n\t\t\tif len(args) != 2 {\n\t\t\t\treturn errors.New(\"missing email and password arguments\")\n\t\t\t}\n\n\t\t\tif args[0] == \"\" || is.EmailFormat.Validate(args[0]) != nil {\n\t\t\t\treturn errors.New(\"missing or invalid email address\")\n\t\t\t}\n\n\t\t\tsuperuser, err := app.FindAuthRecordByEmail(core.CollectionNameSuperusers, args[0])\n\t\t\tif err != nil {\n\t\t\t\treturn fmt.Errorf(\"superuser with email %q doesn't exist\", args[0])\n\t\t\t}\n\n\t\t\tsuperuser.SetPassword(args[1])\n\n\t\t\tif err := app.Save(superuser); err != nil {\n\t\t\t\treturn fmt.Errorf(\"failed to change superuser %q password: %w\", superuser.Email(), err)\n\t\t\t}\n\n\t\t\tcolor.Green(\"Successfully changed superuser %q password!\", superuser.Email())\n\t\t\treturn nil\n\t\t},\n\t}\n\n\treturn command\n}\n\nfunc superuserDeleteCommand(app core.App) *cobra.Command {\n\tcommand := \u0026cobra.Command{\n\t\tUse:          \"delete\",\n\t\tExample:      \"superuser delete test@example.com\",\n\t\tShort:        \"Deletes an existing superuser\",\n\t\tSilenceUsage: true,\n\t\tRunE: func(command *cobra.Command, args []string) error {\n\t\t\tif len(args) == 0 || args[0] == \"\" || is.EmailFormat.Validate(args[0]) != nil {\n\t\t\t\treturn errors.New(\"invalid or missing email address\")\n\t\t\t}\n\n\t\t\tsuperuser, err := app.FindAuthRecordByEmail(core.CollectionNameSuperusers, args[0])\n\t\t\tif err != nil {\n\t\t\t\tcolor.Yellow(\"superuser %q is missing or already deleted\", args[0])\n\t\t\t\treturn nil\n\t\t\t}\n\n\t\t\tif err := app.Delete(superuser); err != nil {\n\t\t\t\treturn fmt.Errorf(\"failed to delete superuser %q: %w\", superuser.Email(), err)\n\t\t\t}\n\n\t\t\tcolor.Green(\"Successfully deleted superuser %q!\", superuser.Email())\n\t\t\treturn nil\n\t\t},\n\t}\n\n\treturn command\n}\n\nfunc superuserOTPCommand(app core.App) *cobra.Command {\n\tcommand := \u0026cobra.Command{\n\t\tUse:          \"otp\",\n\t\tExample:      \"superuser otp test@example.com\",\n\t\tShort:        \"Creates a new OTP for the specified superuser\",\n\t\tSilenceUsage: true,\n\t\tRunE: func(command *cobra.Command, args []string) error {\n\t\t\tif len(args) == 0 || args[0] == \"\" || is.EmailFormat.Validate(args[0]) != nil {\n\t\t\t\treturn errors.New(\"invalid or missing email address\")\n\t\t\t}\n\n\t\t\tsuperuser, err := app.FindAuthRecordByEmail(core.CollectionNameSuperusers, args[0])\n\t\t\tif err != nil {\n\t\t\t\treturn fmt.Errorf(\"superuser with email %q doesn't exist\", args[0])\n\t\t\t}\n\n\t\t\tif !superuser.Collection().OTP.Enabled {\n\t\t\t\treturn errors.New(\"OTP auth is not enabled for the _superusers collection\")\n\t\t\t}\n\n\t\t\tpass := security.RandomStringWithAlphabet(superuser.Collection().OTP.Length, \"1234567890\")\n\n\t\t\totp := core.NewOTP(app)\n\t\t\totp.SetCollectionRef(superuser.Collection().Id)\n\t\t\totp.SetRecordRef(superuser.Id)\n\t\t\totp.SetPassword(pass)\n\n\t\t\terr = app.Save(otp)\n\t\t\tif err != nil {\n\t\t\t\treturn fmt.Errorf(\"failed to create OTP: %w\", err)\n\t\t\t}\n\n\t\t\tcolor.New(color.BgGreen, color.FgBlack).Printf(\"Successfully created OTP for superuser %q:\", superuser.Email())\n\t\t\tcolor.Green(\"\\n├─ Id:    %s\", otp.Id)\n\t\t\tcolor.Green(\"├─ Pass:  %s\", pass)\n\t\t\tcolor.Green(\"└─ Valid: %ds\\n\\n\", superuser.Collection().OTP.Duration)\n\t\t\treturn nil\n\t\t},\n\t}\n\n\treturn command\n}\n\nfunc superuserIPsCommand(app core.App) *cobra.Command {\n\tcommand := \u0026cobra.Command{\n\t\tUse:          \"ips\",\n\t\tExample:      \"superuser ips 127.0.0.1 10.0.0.0/24\",\n\t\tShort:        \"Updates the superuser IPs whitelist setting (the IPs/subnets arguments must be space separated; leave empty to clear the whitelist restriction)\",\n\t\tSilenceUsage: true,\n\t\tRunE: func(command *cobra.Command, args []string) error {\n\t\t\tsettings := app.Settings()\n\t\t\tsettings.SuperuserIPs = args\n\n\t\t\tif err := app.Save(settings); err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\n\t\t\tif len(args) == 0 {\n\t\t\t\tcolor.Green(\"Successfully cleared SuperuserIPs setting!\")\n\t\t\t} else {\n\t\t\t\tcolor.New(color.BgGreen, color.FgBlack).Println(\"Successfully updated SuperuserIPs setting:\")\n\t\t\t\tsuperuserIPs := app.Settings().SuperuserIPs\n\t\t\t\tfor i, ip := range superuserIPs {\n\t\t\t\t\tif i == len(superuserIPs)-1 {\n\t\t\t\t\t\tcolor.Green(\"└─ %s\", ip)\n\t\t\t\t\t} else {\n\t\t\t\t\t\tcolor.Green(\"├─ %s\", ip)\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\n\t\t\treturn nil\n\t\t},\n\t}\n\n\treturn command\n}\n",
+   "size": 7443
+  },
+  "examples/base/main.go": {
+   "content": "package main\n\nimport (\n\t\"log\"\n\t\"net/http\"\n\t\"os\"\n\t\"path/filepath\"\n\n\t\"github.com/pocketbase/pocketbase\"\n\t\"github.com/pocketbase/pocketbase/apis\"\n\t\"github.com/pocketbase/pocketbase/core\"\n\t\"github.com/pocketbase/pocketbase/plugins/jsvm\"\n\t\"github.com/pocketbase/pocketbase/plugins/migratecmd\"\n\t\"github.com/pocketbase/pocketbase/plugins/update\"\n\t\"github.com/pocketbase/pocketbase/tools/hook\"\n\t\"github.com/pocketbase/pocketbase/tools/osutils\"\n)\n\nfunc main() {\n\tapp := pocketbase.New()\n\n\t// ---------------------------------------------------------------\n\t// Optional plugin flags:\n\t// ---------------------------------------------------------------\n\n\tvar hooksDir string\n\tapp.RootCmd.PersistentFlags().StringVar(\n\t\t\u0026hooksDir,\n\t\t\"hooksDir\",\n\t\t\"\",\n\t\t\"the directory with the JS app hooks\",\n\t)\n\n\tvar hooksWatch bool\n\tapp.RootCmd.PersistentFlags().BoolVar(\n\t\t\u0026hooksWatch,\n\t\t\"hooksWatch\",\n\t\ttrue,\n\t\t\"auto restart the app on pb_hooks file change; it has no effect on Windows\",\n\t)\n\n\tvar hooksPool int\n\tapp.RootCmd.PersistentFlags().IntVar(\n\t\t\u0026hooksPool,\n\t\t\"hooksPool\",\n\t\t15,\n\t\t\"the total prewarm goja.Runtime instances for the JS app hooks execution\",\n\t)\n\n\tvar migrationsDir string\n\tapp.RootCmd.PersistentFlags().StringVar(\n\t\t\u0026migrationsDir,\n\t\t\"migrationsDir\",\n\t\t\"\",\n\t\t\"the directory with the user defined migrations\",\n\t)\n\n\tvar automigrate bool\n\tapp.RootCmd.PersistentFlags().BoolVar(\n\t\t\u0026automigrate,\n\t\t\"automigrate\",\n\t\ttrue,\n\t\t\"enable/disable auto migrations\",\n\t)\n\n\tvar publicDir string\n\tapp.RootCmd.PersistentFlags().StringVar(\n\t\t\u0026publicDir,\n\t\t\"publicDir\",\n\t\tdefaultPublicDir(),\n\t\t\"the directory to serve static files\",\n\t)\n\n\tvar indexFallback bool\n\tapp.RootCmd.PersistentFlags().BoolVar(\n\t\t\u0026indexFallback,\n\t\t\"indexFallback\",\n\t\ttrue,\n\t\t\"fallback the request to index.html on missing static path, e.g. when pretty urls are used with SPA\",\n\t)\n\n\tapp.RootCmd.ParseFlags(os.Args[1:])\n\n\t// ---------------------------------------------------------------\n\t// Plugins and hooks:\n\t// ---------------------------------------------------------------\n\n\t// load jsvm (pb_hooks and pb_migrations)\n\tjsvm.MustRegister(app, jsvm.Config{\n\t\tMigrationsDir: migrationsDir,\n\t\tHooksDir:      hooksDir,\n\t\tHooksWatch:    hooksWatch,\n\t\tHooksPoolSize: hooksPool,\n\t})\n\n\t// migrate command (with js templates)\n\tmigratecmd.MustRegister(app, app.RootCmd, migratecmd.Config{\n\t\tTemplateLang: migratecmd.TemplateLangJS,\n\t\tAutomigrate:  automigrate,\n\t\tDir:          migrationsDir,\n\t})\n\n\t// update command\n\tupdate.MustRegister(app, app.RootCmd, update.Config{\n\t\tBaseURL:    \"https://ganigeorgiev.com\",\n\t\tProject:    \"pocketbase\",\n\t\tRepository: \"pocketbase\",\n\t})\n\n\t// static route to serves files from the provided public dir\n\t// (if publicDir exists and the route path is not already defined)\n\tapp.OnServe().Bind(\u0026hook.Handler[*core.ServeEvent]{\n\t\tFunc: func(e *core.ServeEvent) error {\n\t\t\tif !e.Router.HasRoute(http.MethodGet, \"/{path...}\") {\n\t\t\t\te.Router.GET(\"/{path...}\", apis.Static(os.DirFS(publicDir), indexFallback))\n\t\t\t}\n\n\t\t\treturn e.Next()\n\t\t},\n\t\tPriority: 999, // execute as latest as possible to allow users to provide their own route\n\t})\n\n\tif err := app.Start(); err != nil {\n\t\tlog.Fatal(err)\n\t}\n}\n\n// the default pb_public dir location is relative to the executable\nfunc defaultPublicDir() string {\n\tif osutils.IsProbablyGoRun() {\n\t\treturn \"./pb_public\"\n\t}\n\n\treturn filepath.Join(os.Args[0], \"../pb_public\")\n}\n",
+   "size": 3373
+  },
+  "go.mod": {
+   "content": "module github.com/pocketbase/pocketbase\n\ngo 1.27\n\nrequire (\n\tgithub.com/disintegration/imaging v1.6.2\n\tgithub.com/domodwyer/mailyak/v3 v3.6.2\n\tgithub.com/dop251/goja v0.0.0-20261021140635-64adc8bb4d51\n\tgithub.com/dop251/goja_nodejs v0.0.0-20260212111938-1f56ff5bcf14\n\tgithub.com/fatih/color v1.19.0\n\tgithub.com/fsnotify/fsnotify v1.10.1\n\tgithub.com/gabriel-vasile/mimetype v1.4.15\n\tgithub.com/ganigeorgiev/fexpr v0.6.0\n\tgithub.com/golang-jwt/jwt/v5 v5.3.1\n\tgithub.com/pocketbase/dbx v1.12.0\n\tgithub.com/pocketbase/ozzo-validation/v4 v4.3.0\n\tgithub.com/pocketbase/tygoja v0.1.0\n\tgithub.com/spf13/cast v1.10.0\n\tgithub.com/spf13/cobra v1.10.2\n\tgolang.org/x/crypto v0.58.0\n\tgolang.org/x/image v0.47.0\n\tgolang.org/x/net v0.61.0\n\tgolang.org/x/oauth2 v0.37.0\n\tgolang.org/x/sync v0.24.0\n\tmodernc.org/sqlite v1.60.1\n)\n\nrequire (\n\tgithub.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect\n\tgithub.com/dlclark/regexp2/v2 v2.9.1 // indirect\n\tgithub.com/dop251/base64dec v0.0.0-20231022112746-c6c9f9a96217 // indirect\n\tgithub.com/dustin/go-humanize v1.1.0 // indirect\n\tgithub.com/go-sourcemap/sourcemap v2.1.4+incompatible // indirect\n\tgithub.com/google/pprof v0.0.0-20261016150608-1facf8f91b50 // indirect\n\tgithub.com/google/uuid v1.6.0 // indirect\n\tgithub.com/inconshreveable/mousetrap v1.1.0 // indirect\n\tgithub.com/mattn/go-colorable v0.1.16 // indirect\n\tgithub.com/mattn/go-isatty v0.0.24 // indirect\n\tgithub.com/ncruces/go-strftime v1.1.0 // indirect\n\tgithub.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect\n\tgithub.com/spf13/pflag v1.0.10 // indirect\n\tgithub.com/stretchr/testify v1.8.0 // indirect\n\tgolang.org/x/mod v0.42.0 // indirect\n\tgolang.org/x/sys v0.49.0 // indirect\n\tgolang.org/x/text v0.43.0 // indirect\n\tgolang.org/x/tools v0.52.0 // indirect\n\tmodernc.org/libc v1.77.1 // indirect\n\tmodernc.org/mathutil v1.7.1 // indirect\n\tmodernc.org/memory v1.12.1 // indirect\n)\n",
+   "size": 1916
+  },
+  "modernc_versions_check.go": {
+   "content": "package pocketbase\n\nimport (\n\t\"fmt\"\n\t\"log/slog\"\n\t\"runtime/debug\"\n\n\t\"github.com/fatih/color\"\n\t\"github.com/pocketbase/pocketbase/core\"\n)\n\nconst (\n\texpectedDriverVersion = \"v1.60.1\"\n\texpectedLibcVersion   = \"v1.77.1\"\n\n\t// ModerncDepsCheckHookId is the id of the hook that performs the modernc.org/* deps checks.\n\t// It could be used for removing/unbinding the hook if you don't want the checks.\n\tModerncDepsCheckHookId = \"pbModerncDepsCheck\"\n)\n\n// checkModerncDeps checks whether the current binary was built with the\n// expected and tested modernc driver dependencies.\n//\n// This is needed because modernc.org/libc doesn't follow semantic versioning\n// and using a version different from the one in the go.mod of modernc.org/sqlite\n// could have unintended side-effects and cause obscure build and runtime bugs\n// (https://github.com/pocketbase/pocketbase/issues/6136).\nfunc checkModerncDeps(app core.App) {\n\tinfo, ok := debug.ReadBuildInfo()\n\tif !ok {\n\t\treturn // no build info (probably compiled without module support)\n\t}\n\n\tvar driverVersion, libcVersion string\n\n\tfor _, dep := range info.Deps {\n\t\tswitch dep.Path {\n\t\tcase \"modernc.org/libc\":\n\t\t\tlibcVersion = dep.Version\n\t\tcase \"modernc.org/sqlite\":\n\t\t\tdriverVersion = dep.Version\n\t\t}\n\n\t\t// no need to further search if both deps are located\n\t\tif driverVersion != \"\" \u0026\u0026 libcVersion != \"\" {\n\t\t\tbreak\n\t\t}\n\t}\n\n\t// not using the default driver\n\tif driverVersion == \"\" {\n\t\treturn\n\t}\n\n\tvar msg string\n\tif driverVersion != expectedDriverVersion {\n\t\tmsg = fmt.Sprintf(\n\t\t\t\"You are using modernc.org/sqlite %s which differs from the expected and tested %s.\\n\"+\n\t\t\t\t\"Make sure to either manually update in your go.mod the dependency version to the expected one OR if you want to keep yours \"+\n\t\t\t\t\"ensure that its indirect modernc.org/libc dependency has the same version as in the https://gitlab.com/cznic/sqlite/-/blob/master/go.mod, \"+\n\t\t\t\t\"otherwise it could result in unexpected build or runtime errors.\",\n\t\t\tdriverVersion,\n\t\t\texpectedDriverVersion,\n\t\t)\n\t\tapp.Logger().Warn(msg, slog.String(\"current\", driverVersion), slog.String(\"expected\", expectedDriverVersion))\n\t} else if libcVersion != expectedLibcVersion {\n\t\tmsg = fmt.Sprintf(\n\t\t\t\"You are using modernc.org/libc %s which differs from the expected and tested %s.\\n\"+\n\t\t\t\t\"Please update your go.mod and manually set modernc.org/libc to %s, otherwise it could result in unexpected build or runtime errors \"+\n\t\t\t\t\"(you may have to also run 'go clean -modcache' to clear the cache if the warning persists).\",\n\t\t\tlibcVersion,\n\t\t\texpectedLibcVersion,\n\t\t\texpectedLibcVersion,\n\t\t)\n\t\tapp.Logger().Warn(msg, slog.String(\"current\", libcVersion), slog.String(\"expected\", expectedLibcVersion))\n\t}\n\n\t// ensure that the message is printed to the default stderr too\n\t// (when in dev mode this is not needed because we print all logs)\n\tif msg != \"\" \u0026\u0026 !app.IsDev() {\n\t\tcolor.Yellow(\"\\nWARN \" + msg + \"\\n\\n\")\n\t}\n}\n",
+   "size": 2900
+  },
+  "pocketbase.go": {
+   "content": "package pocketbase\n\nimport (\n\t\"errors\"\n\t\"io\"\n\t\"os\"\n\t\"os/signal\"\n\t\"path/filepath\"\n\t\"strings\"\n\t\"syscall\"\n\t\"time\"\n\n\t\"github.com/pocketbase/pocketbase/cmd\"\n\t\"github.com/pocketbase/pocketbase/core\"\n\t\"github.com/pocketbase/pocketbase/tools/hook\"\n\t\"github.com/pocketbase/pocketbase/tools/list\"\n\t\"github.com/pocketbase/pocketbase/tools/osutils\"\n\t\"github.com/pocketbase/pocketbase/tools/routine\"\n\t\"github.com/spf13/cobra\"\n\n\t_ \"github.com/pocketbase/pocketbase/migrations\"\n)\n\nvar _ core.App = (*PocketBase)(nil)\n\n// Version of PocketBase\nvar Version = \"(untracked)\"\n\n// PocketBase defines a PocketBase app launcher.\n//\n// It implements [core.App] via embedding and all of the app interface methods\n// could be accessed directly through the instance (eg. PocketBase.DataDir()).\ntype PocketBase struct {\n\tcore.App\n\n\tdevFlag           bool\n\tdataDirFlag       string\n\tencryptionEnvFlag string\n\tqueryTimeout      int\n\thideStartBanner   bool\n\n\t// RootCmd is the main console command\n\tRootCmd *cobra.Command\n}\n\n// Config is the PocketBase initialization config struct.\ntype Config struct {\n\t// hide the default console server info on app startup\n\tHideStartBanner bool\n\n\t// optional default values for the console flags\n\tDefaultDev           bool\n\tDefaultDataDir       string // if not set, it will fallback to \"./pb_data\"\n\tDefaultEncryptionEnv string\n\tDefaultQueryTimeout  time.Duration // default to core.DefaultQueryTimeout (in seconds)\n\n\t// optional DB configurations\n\tDataMaxOpenConns int                // default to core.DefaultDataMaxOpenConns\n\tDataMaxIdleConns int                // default to core.DefaultDataMaxIdleConns\n\tAuxMaxOpenConns  int                // default to core.DefaultAuxMaxOpenConns\n\tAuxMaxIdleConns  int                // default to core.DefaultAuxMaxIdleConns\n\tDBConnect        core.DBConnectFunc // default to core.dbConnect\n}\n\n// New creates a new PocketBase instance with the default configuration.\n// Use [NewWithConfig] if you want to provide a custom configuration.\n//\n// Note that the application will not be initialized/bootstrapped yet,\n// aka. DB connections, migrations, app settings, etc. will not be accessible.\n// Everything will be initialized when [PocketBase.Start] is executed.\n// If you want to initialize the application before calling [PocketBase.Start],\n// then you'll have to manually call [PocketBase.Bootstrap].\nfunc New() *PocketBase {\n\t_, isUsingGoRun := inspectRuntime()\n\n\treturn NewWithConfig(Config{\n\t\tDefaultDev: isUsingGoRun,\n\t})\n}\n\n// NewWithConfig creates a new PocketBase instance with the provided config.\n//\n// Note that the application will not be initialized/bootstrapped yet,\n// aka. DB connections, migrations, app settings, etc. will not be accessible.\n// Everything will be initialized when [PocketBase.Start] is executed.\n// If you want to initialize the application before calling [PocketBase.Start],\n// then you'll have to manually call [PocketBase.Bootstrap].\nfunc NewWithConfig(config Config) *PocketBase {\n\t// initialize a default data directory based on the executable baseDir\n\tif config.DefaultDataDir == \"\" {\n\t\tbaseDir, _ := inspectRuntime()\n\t\tconfig.DefaultDataDir = filepath.Join(baseDir, \"pb_data\")\n\t}\n\n\tif config.DefaultQueryTimeout == 0 {\n\t\tconfig.DefaultQueryTimeout = core.DefaultQueryTimeout\n\t}\n\n\texecutableName := filepath.Base(os.Args[0])\n\n\tpb := \u0026PocketBase{\n\t\tRootCmd: \u0026cobra.Command{\n\t\t\tUse:     executableName,\n\t\t\tShort:   executableName + \" CLI\",\n\t\t\tVersion: Version,\n\t\t\tFParseErrWhitelist: cobra.FParseErrWhitelist{\n\t\t\t\tUnknownFlags: true,\n\t\t\t},\n\t\t\t// no need to provide the default cobra completion command\n\t\t\tCompletionOptions: cobra.CompletionOptions{\n\t\t\t\tDisableDefaultCmd: true,\n\t\t\t},\n\t\t},\n\t\tdevFlag:           config.DefaultDev,\n\t\tdataDirFlag:       config.DefaultDataDir,\n\t\tencryptionEnvFlag: config.DefaultEncryptionEnv,\n\t\thideStartBanner:   config.HideStartBanner,\n\t}\n\n\t// don't write command errors to the stderr because the error is\n\t// propagated back to the app.Start() and could result in duplication\n\tpb.RootCmd.SetErr(\u0026nopWrite{})\n\n\t// parse base flags\n\t// (errors are ignored, since the full flags parsing happens on Execute())\n\tpb.eagerParseFlags(\u0026config)\n\n\t// initialize the app instance\n\tpb.App = core.NewBaseApp(core.BaseAppConfig{\n\t\tIsDev:            pb.devFlag,\n\t\tDataDir:          pb.dataDirFlag,\n\t\tEncryptionEnv:    pb.encryptionEnvFlag,\n\t\tQueryTimeout:     time.Duration(pb.queryTimeout) * time.Second,\n\t\tDataMaxOpenConns: config.DataMaxOpenConns,\n\t\tDataMaxIdleConns: config.DataMaxIdleConns,\n\t\tAuxMaxOpenConns:  config.AuxMaxOpenConns,\n\t\tAuxMaxIdleConns:  config.AuxMaxIdleConns,\n\t\tDBConnect:        config.DBConnect,\n\t})\n\n\t// hide the default help command (allow only `--help` flag)\n\tpb.RootCmd.SetHelpCommand(\u0026cobra.Command{Hidden: true})\n\n\t// https://github.com/pocketbase/pocketbase/issues/6136\n\tpb.OnBootstrap().Bind(\u0026hook.Handler[*core.BootstrapEvent]{\n\t\tId: ModerncDepsCheckHookId,\n\t\tFunc: func(be *core.BootstrapEvent) error {\n\t\t\tif err := be.Next(); err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\n\t\t\t// run separately to avoid blocking\n\t\t\tapp := be.App\n\t\t\troutine.FireAndForget(func() {\n\t\t\t\tcheckModerncDeps(app)\n\t\t\t})\n\n\t\t\treturn nil\n\t\t},\n\t})\n\n\treturn pb\n}\n\n// Start starts the application, aka. registers the default system\n// commands (serve, superuser, version) and executes pb.RootCmd.\nfunc (pb *PocketBase) Start() error {\n\t// register system commands\n\tpb.RootCmd.AddCommand(cmd.NewSuperuserCommand(pb))\n\tpb.RootCmd.AddCommand(cmd.NewServeCommand(pb, !pb.hideStartBanner))\n\n\treturn pb.Execute()\n}\n\n// Execute initializes the application (if not already) and executes\n// the pb.RootCmd with graceful shutdown support.\n//\n// This method differs from pb.Start() by not registering the default\n// system commands!\nfunc (pb *PocketBase) Execute() error {\n\tif !pb.skipBootstrap() {\n\t\tif err := pb.Bootstrap(); err != nil {\n\t\t\treturn err\n\t\t}\n\t}\n\n\texecCh := make(chan error, 1)\n\tsigCh := make(chan os.Signal, 1)\n\n\t// listen for interrupt signal to gracefully shutdown the application\n\tsignal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)\n\n\t// execute the root command\n\tgo func() {\n\t\texecCh \u003c- routine.SafeWrap(pb.RootCmd.Execute)()\n\t}()\n\n\t// wait for either an OS signal or the command to complete\n\tvar execErr error\n\tselect {\n\tcase \u003c-sigCh:\n\tcase execErr = \u003c-execCh:\n\t}\n\n\tsignal.Stop(sigCh)\n\n\t// trigger cleanups\n\t//\n\t// @todo consider skipping and just call the finalizer in case OnTerminate was already invoked manually?\n\tevent := new(core.TerminateEvent)\n\tevent.App = pb\n\treturn pb.OnTerminate().Trigger(event, func(e *core.TerminateEvent) error {\n\t\treturn errors.Join(e.App.ClearBootstrap(), execErr)\n\t})\n}\n\n// eagerParseFlags parses the global app flags before calling pb.RootCmd.Execute().\n// so we can have all PocketBase flags ready for use on initialization.\nfunc (pb *PocketBase) eagerParseFlags(config *Config) error {\n\tpb.RootCmd.PersistentFlags().StringVar(\n\t\t\u0026pb.dataDirFlag,\n\t\t\"dir\",\n\t\tconfig.DefaultDataDir,\n\t\t\"the PocketBase data directory\",\n\t)\n\n\tpb.RootCmd.PersistentFlags().StringVar(\n\t\t\u0026pb.encryptionEnvFlag,\n\t\t\"encryptionEnv\",\n\t\tconfig.DefaultEncryptionEnv,\n\t\t\"the env variable whose value of 32 characters will be used \\nas encryption key for the app settings (default none)\",\n\t)\n\n\tpb.RootCmd.PersistentFlags().BoolVar(\n\t\t\u0026pb.devFlag,\n\t\t\"dev\",\n\t\tconfig.DefaultDev,\n\t\t\"enable dev mode, aka. printing logs and sql statements to the console\",\n\t)\n\n\tpb.RootCmd.PersistentFlags().IntVar(\n\t\t\u0026pb.queryTimeout,\n\t\t\"queryTimeout\",\n\t\tint(config.DefaultQueryTimeout.Seconds()),\n\t\t\"the default SELECT queries timeout in seconds\",\n\t)\n\n\treturn pb.RootCmd.ParseFlags(os.Args[1:])\n}\n\n// skipBootstrap eagerly checks if the app should skip the bootstrap process:\n// - already bootstrapped\n// - is unknown command\n// - is the default help command\n// - is the default version command\n//\n// https://github.com/pocketbase/pocketbase/issues/404\n// https://github.com/pocketbase/pocketbase/discussions/1267\nfunc (pb *PocketBase) skipBootstrap() bool {\n\tflags := []string{\n\t\t\"-h\",\n\t\t\"--help\",\n\t\t\"-v\",\n\t\t\"--version\",\n\t}\n\n\tif pb.IsBootstrapped() {\n\t\treturn true // already bootstrapped\n\t}\n\n\tcmd, _, err := pb.RootCmd.Find(os.Args[1:])\n\tif err != nil {\n\t\treturn true // unknown command\n\t}\n\n\tfor _, arg := range os.Args {\n\t\tif !list.ExistInSlice(arg, flags) {\n\t\t\tcontinue\n\t\t}\n\n\t\t// ensure that there is no user defined flag with the same name/shorthand\n\t\ttrimmed := strings.TrimLeft(arg, \"-\")\n\t\tif len(trimmed) \u003e 1 \u0026\u0026 cmd.Flags().Lookup(trimmed) == nil {\n\t\t\treturn true\n\t\t}\n\t\tif len(trimmed) == 1 \u0026\u0026 cmd.Flags().ShorthandLookup(trimmed) == nil {\n\t\t\treturn true\n\t\t}\n\t}\n\n\treturn false\n}\n\n// inspectRuntime tries to find the base executable directory and how it was run.\n//\n// note: we are using os.Args[0] and not os.Executable() since it could\n// break existing aliased binaries (eg. the community maintained homebrew package)\nfunc inspectRuntime() (baseDir string, withGoRun bool) {\n\tif osutils.IsProbablyGoRun() {\n\t\t// probably ran with go run\n\t\twithGoRun = true\n\t\tbaseDir, _ = os.Getwd()\n\t} else {\n\t\t// probably ran with go build\n\t\twithGoRun = false\n\t\tbaseDir = filepath.Dir(os.Args[0])\n\t}\n\treturn\n}\n\nvar _ io.Writer = (*nopWrite)(nil)\n\ntype nopWrite struct{}\n\nfunc (w *nopWrite) Write(p []byte) (n int, err error) {\n\treturn\n}\n",
+   "size": 9221
+  },
+  "pocketbase_test.go": {
+   "content": "package pocketbase\n\nimport (\n\t\"os\"\n\t\"path/filepath\"\n\t\"testing\"\n\n\t\"github.com/spf13/cobra\"\n)\n\nfunc TestNew(t *testing.T) {\n\t// copy os.Args\n\toriginalArgs := make([]string, len(os.Args))\n\tcopy(originalArgs, os.Args)\n\tdefer func() {\n\t\t// restore os.Args\n\t\tos.Args = originalArgs\n\t}()\n\n\t// change os.Args\n\tos.Args = os.Args[:1]\n\tos.Args = append(\n\t\tos.Args,\n\t\t\"--dir=test_dir\",\n\t\t\"--encryptionEnv=test_encryption_env\",\n\t\t\"--debug=true\",\n\t)\n\n\tapp := New()\n\n\tif app == nil {\n\t\tt.Fatal(\"Expected initialized PocketBase instance, got nil\")\n\t}\n\n\tif app.RootCmd == nil {\n\t\tt.Fatal(\"Expected RootCmd to be initialized, got nil\")\n\t}\n\n\tif app.App == nil {\n\t\tt.Fatal(\"Expected App to be initialized, got nil\")\n\t}\n\n\tif app.DataDir() != \"test_dir\" {\n\t\tt.Fatalf(\"Expected app.DataDir() %q, got %q\", \"test_dir\", app.DataDir())\n\t}\n\n\tif app.EncryptionEnv() != \"test_encryption_env\" {\n\t\tt.Fatalf(\"Expected app.EncryptionEnv() test_encryption_env, got %q\", app.EncryptionEnv())\n\t}\n}\n\nfunc TestNewWithConfig(t *testing.T) {\n\tapp := NewWithConfig(Config{\n\t\tDefaultDataDir:       \"test_dir\",\n\t\tDefaultEncryptionEnv: \"test_encryption_env\",\n\t\tHideStartBanner:      true,\n\t})\n\n\tif app == nil {\n\t\tt.Fatal(\"Expected initialized PocketBase instance, got nil\")\n\t}\n\n\tif app.RootCmd == nil {\n\t\tt.Fatal(\"Expected RootCmd to be initialized, got nil\")\n\t}\n\n\tif app.App == nil {\n\t\tt.Fatal(\"Expected App to be initialized, got nil\")\n\t}\n\n\tif app.hideStartBanner != true {\n\t\tt.Fatal(\"Expected app.hideStartBanner to be true, got false\")\n\t}\n\n\tif app.DataDir() != \"test_dir\" {\n\t\tt.Fatalf(\"Expected app.DataDir() %q, got %q\", \"test_dir\", app.DataDir())\n\t}\n\n\tif app.EncryptionEnv() != \"test_encryption_env\" {\n\t\tt.Fatalf(\"Expected app.EncryptionEnv() %q, got %q\", \"test_encryption_env\", app.EncryptionEnv())\n\t}\n}\n\nfunc TestNewWithConfigAndFlags(t *testing.T) {\n\t// copy os.Args\n\toriginalArgs := make([]string, len(os.Args))\n\tcopy(originalArgs, os.Args)\n\tdefer func() {\n\t\t// restore os.Args\n\t\tos.Args = originalArgs\n\t}()\n\n\t// change os.Args\n\tos.Args = os.Args[:1]\n\tos.Args = append(\n\t\tos.Args,\n\t\t\"--dir=test_dir_flag\",\n\t\t\"--encryptionEnv=test_encryption_env_flag\",\n\t\t\"--debug=false\",\n\t)\n\n\tapp := NewWithConfig(Config{\n\t\tDefaultDataDir:       \"test_dir\",\n\t\tDefaultEncryptionEnv: \"test_encryption_env\",\n\t\tHideStartBanner:      true,\n\t})\n\n\tif app == nil {\n\t\tt.Fatal(\"Expected initialized PocketBase instance, got nil\")\n\t}\n\n\tif app.RootCmd == nil {\n\t\tt.Fatal(\"Expected RootCmd to be initialized, got nil\")\n\t}\n\n\tif app.App == nil {\n\t\tt.Fatal(\"Expected App to be initialized, got nil\")\n\t}\n\n\tif app.hideStartBanner != true {\n\t\tt.Fatal(\"Expected app.hideStartBanner to be true, got false\")\n\t}\n\n\tif app.DataDir() != \"test_dir_flag\" {\n\t\tt.Fatalf(\"Expected app.DataDir() %q, got %q\", \"test_dir_flag\", app.DataDir())\n\t}\n\n\tif app.EncryptionEnv() != \"test_encryption_env_flag\" {\n\t\tt.Fatalf(\"Expected app.EncryptionEnv() %q, got %q\", \"test_encryption_env_flag\", app.EncryptionEnv())\n\t}\n}\n\nfunc TestSkipBootstrap(t *testing.T) {\n\t// copy os.Args\n\toriginalArgs := make([]string, len(os.Args))\n\tcopy(originalArgs, os.Args)\n\tdefer func() {\n\t\t// restore os.Args\n\t\tos.Args = originalArgs\n\t}()\n\n\ttempDir := filepath.Join(os.TempDir(), \"temp_pb_data\")\n\tdefer os.RemoveAll(tempDir)\n\n\t// already bootstrapped\n\tapp0 := NewWithConfig(Config{DefaultDataDir: tempDir})\n\tapp0.Bootstrap()\n\tif v := app0.skipBootstrap(); !v {\n\t\tt.Fatal(\"[bootstrapped] Expected true, got false\")\n\t}\n\n\t// unknown command\n\tos.Args = os.Args[:1]\n\tos.Args = append(os.Args, \"demo\")\n\tapp1 := NewWithConfig(Config{DefaultDataDir: tempDir})\n\tapp1.RootCmd.AddCommand(\u0026cobra.Command{Use: \"test\"})\n\tif v := app1.skipBootstrap(); !v {\n\t\tt.Fatal(\"[unknown] Expected true, got false\")\n\t}\n\n\t// default flags\n\tflagScenarios := []struct {\n\t\tname  string\n\t\tshort string\n\t}{\n\t\t{\"help\", \"h\"},\n\t\t{\"version\", \"v\"},\n\t}\n\n\tfor _, s := range flagScenarios {\n\t\t// base flag\n\t\tos.Args = os.Args[:1]\n\t\tos.Args = append(os.Args, \"--\"+s.name)\n\t\tapp1 := NewWithConfig(Config{DefaultDataDir: tempDir})\n\t\tif v := app1.skipBootstrap(); !v {\n\t\t\tt.Fatalf(\"[--%s] Expected true, got false\", s.name)\n\t\t}\n\n\t\t// short flag\n\t\tos.Args = os.Args[:1]\n\t\tos.Args = append(os.Args, \"-\"+s.short)\n\t\tapp2 := NewWithConfig(Config{DefaultDataDir: tempDir})\n\t\tif v := app2.skipBootstrap(); !v {\n\t\t\tt.Fatalf(\"[-%s] Expected true, got false\", s.short)\n\t\t}\n\n\t\tcustomCmd := \u0026cobra.Command{Use: \"custom\"}\n\t\tcustomCmd.PersistentFlags().BoolP(s.name, s.short, false, \"\")\n\n\t\t// base flag in custom command\n\t\tos.Args = os.Args[:1]\n\t\tos.Args = append(os.Args, \"custom\")\n\t\tos.Args = append(os.Args, \"--\"+s.name)\n\t\tapp3 := NewWithConfig(Config{DefaultDataDir: tempDir})\n\t\tapp3.RootCmd.AddCommand(customCmd)\n\t\tif v := app3.skipBootstrap(); v {\n\t\t\tt.Fatalf(\"[--%s custom] Expected false, got true\", s.name)\n\t\t}\n\n\t\t// short flag in custom command\n\t\tos.Args = os.Args[:1]\n\t\tos.Args = append(os.Args, \"custom\")\n\t\tos.Args = append(os.Args, \"-\"+s.short)\n\t\tapp4 := NewWithConfig(Config{DefaultDataDir: tempDir})\n\t\tapp4.RootCmd.AddCommand(customCmd)\n\t\tif v := app4.skipBootstrap(); v {\n\t\t\tt.Fatalf(\"[-%s custom] Expected false, got true\", s.short)\n\t\t}\n\t}\n}\n",
+   "size": 5086
+  },
+  "ui/README.md": {
+   "content": "PocketBase Superuser dashboard UI\n======================================================================\n\nThis is the PocketBase Superuser dashboard UI (built with Shablon and Vite).\n\nAlthough it could be used independently, it is intended to be embedded and extended\nas part of the PocketBase app executable (hence the `dist` directory and `embed.go` file).\n\n\u003e [!WARNING]\n\u003e The UI kit and extension APIs remains deliberately undocumented for the time being until a stable PocketBase release is published ([#7612](https://github.com/pocketbase/pocketbase/discussions/7612)).\n\n## Development\n\nDownload the repository and run the appropriate console commands:\n\n```sh\n# install dependencies\nnpm install\n\n# start a dev server with hot reload at localhost:5173\nnpm run dev\n\n# or generate production ready bundle in dist/ directory\nnpm run build\n```\n",
+   "size": 844
+  },
+  "ui/package.json": {
+   "content": "{\n    \"name\": \"PocketBase Superuser UI\",\n    \"private\": true,\n    \"type\": \"module\",\n    \"scripts\": {\n        \"dev\": \"vite\",\n        \"build\": \"dprint fmt \u0026\u0026 vite build\"\n    },\n    \"dependencies\": {\n        \"leaflet\": \"^1.9.4\",\n        \"pocketbase\": \"^0.28.1\"\n    },\n    \"devDependencies\": {\n        \"dprint\": \"^0.52.0\",\n        \"vite\": \"^8.0.0\"\n    }\n}\n",
+   "size": 352
+  }
+ },
+ "skipped": {}
+}
