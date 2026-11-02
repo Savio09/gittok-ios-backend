@@ -76,6 +76,9 @@ type Source struct {
 	Kind  SourceKind `json:"kind,omitempty"`
 	Ref   string     `json:"ref"`
 	Lines string     `json:"lines,omitempty"`
+	// URL is a canonical source link. File URLs use the inspected commit ID;
+	// metadata URLs identify the mutable provider resource, not code history.
+	URL string `json:"url,omitempty"`
 }
 
 // Claim is the backbone of the schema: one evidence-linked statement about a
