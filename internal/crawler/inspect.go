@@ -22,11 +22,12 @@ const (
 // inspIndex is a path-keyed view of an Inspection. Building it once keeps every
 // read-state question O(1) and keeps the original Inspection untouched.
 type inspIndex struct {
-	scope   TreeScope
-	paths   []string // the listing, original order and case
-	listed  map[string]bool
-	files   map[string]SourceFile
-	unavail map[string]string // path -> reason
+	scope         TreeScope
+	paths         []string // the listing, original order and case
+	listed        map[string]bool
+	files         map[string]SourceFile
+	unavail       map[string]string // path -> reason
+	manifestCache map[string]parsedManifest
 }
 
 func indexInspection(insp Inspection) *inspIndex {

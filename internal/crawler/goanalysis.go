@@ -199,7 +199,13 @@ func scanServerCalls(fset *token.FileSet, file *ast.File, src string) (calls []g
 			return true
 		}
 		start, end := fset.Position(call.Pos()), fset.Position(call.End())
-		callee := src[fset.Position(fun.Pos()).Offset:fset.Position(fun.End()).Offset]
+		funStart, funEnd := fset.Position(fun.Pos()), fset.Position(fun.End())
+		// Parser recovery may synthesize a closing token beyond EOF. Such an
+		// incomplete construct has no quotable source span.
+		if !start.IsValid() || !end.IsValid() || start.Offset < 0 || end.Offset <= start.Offset || end.Offset > len(src) || !funStart.IsValid() || !funEnd.IsValid() || funEnd.Offset <= funStart.Offset || funEnd.Offset > len(src) {
+			return true
+		}
+		callee := src[funStart.Offset:funEnd.Offset]
 		fn, isFunc := obj.(*types.Func)
 		switch {
 		case isFunc && fn.Pkg() != nil && fn.Pkg().Path() == "net/http":

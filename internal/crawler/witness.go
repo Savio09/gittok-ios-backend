@@ -115,11 +115,7 @@ func validateField(st *inspIndex, w Witness) error {
 	if len(w.Field) == 0 {
 		return fmt.Errorf("field witness on %s names no field", w.Path)
 	}
-	content, err := consumed(st, w.Path)
-	if err != nil {
-		return err
-	}
-	tree, err := manifestTree(w.Path, content)
+	tree, err := st.parsedManifest(w.Path)
 	if err != nil {
 		return fmt.Errorf("%s could not be parsed: %v", w.Path, err)
 	}
@@ -131,6 +127,29 @@ func validateField(st *inspIndex, w Witness) error {
 		return fmt.Errorf("%s field %s is %q, not %q", w.Path, strings.Join(w.Field, "."), got, w.Value)
 	}
 	return nil
+}
+
+type parsedManifest struct {
+	tree map[string]any
+	err  error
+}
+
+// Cache by consumed path for this inspection only. Dependency-rich manifests
+// are parsed once, rather than once for every field witness.
+func (st *inspIndex) parsedManifest(p string) (map[string]any, error) {
+	if cached, ok := st.manifestCache[p]; ok {
+		return cached.tree, cached.err
+	}
+	content, err := consumed(st, p)
+	var tree map[string]any
+	if err == nil {
+		tree, err = manifestTree(p, content)
+	}
+	if st.manifestCache == nil {
+		st.manifestCache = make(map[string]parsedManifest)
+	}
+	st.manifestCache[p] = parsedManifest{tree: tree, err: err}
+	return tree, err
 }
 
 func validateSpan(st *inspIndex, w Witness) error {

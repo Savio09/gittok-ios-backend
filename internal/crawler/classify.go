@@ -1170,17 +1170,18 @@ func dedupe(in []string) []string {
 // --- package.json ------------------------------------------------------------
 
 type packageJSON struct {
-	Name             string            `json:"name"`
-	Private          bool              `json:"private"`
-	Main             string            `json:"main"`
-	Module           string            `json:"module"`
-	Exports          json.RawMessage   `json:"exports"`
-	Bin              json.RawMessage   `json:"bin"`
-	Workspaces       json.RawMessage   `json:"workspaces"`
-	Scripts          map[string]string `json:"scripts"`
-	Dependencies     map[string]string `json:"dependencies"`
-	DevDependencies  map[string]string `json:"devDependencies"`
-	PeerDependencies map[string]string `json:"peerDependencies"`
+	Name                 string            `json:"name"`
+	Private              bool              `json:"private"`
+	Main                 string            `json:"main"`
+	Module               string            `json:"module"`
+	Exports              json.RawMessage   `json:"exports"`
+	Bin                  json.RawMessage   `json:"bin"`
+	Workspaces           json.RawMessage   `json:"workspaces"`
+	Scripts              map[string]string `json:"scripts"`
+	Dependencies         map[string]string `json:"dependencies"`
+	DevDependencies      map[string]string `json:"devDependencies"`
+	PeerDependencies     map[string]string `json:"peerDependencies"`
+	OptionalDependencies map[string]string `json:"optionalDependencies"`
 }
 
 // parsePackageJSON decodes package.json best-effort; malformed JSON yields nil
