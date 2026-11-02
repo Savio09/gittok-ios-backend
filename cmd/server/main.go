@@ -15,6 +15,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Savio09/gittok-ios-backend/internal/analysis"
 	"github.com/Savio09/gittok-ios-backend/internal/config"
 	"github.com/Savio09/gittok-ios-backend/internal/feed"
 	"github.com/Savio09/gittok-ios-backend/internal/githubclient"
@@ -29,10 +30,11 @@ func main() {
 
 	gh := githubclient.New(cfg.GitHubToken, githubclient.WithUserAgent("gittok-backend"))
 	feedSvc := feed.NewService(gh, selection.Curated(), 10*time.Minute)
+	previewSvc := analysis.NewPublicService(githubclient.WithUserAgent("gittok-preview"))
 
 	srv := &http.Server{
 		Addr:              ":" + strconv.Itoa(cfg.Port),
-		Handler:           newRouter(feedSvc),
+		Handler:           newRouter(feedSvc, previewSvc),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
@@ -73,12 +75,13 @@ func run(srv *http.Server) error {
 }
 
 // newRouter builds the HTTP handler for the backend: the operational health
-// check and the v1 feed. Further v1 endpoints (preview, profile, events) are
+// check, v1 feed and on-demand preview. Further v1 endpoints (profile, events) are
 // added in later tickets.
-func newRouter(feedSvc *feed.Service) http.Handler {
+func newRouter(feedSvc *feed.Service, previewSvc *analysis.Service) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", handleHealthz)
 	mux.Handle("GET /v1/feed", feedSvc.Handler())
+	mux.Handle("GET /v1/repos/{id}/preview", previewSvc.Handler())
 	return mux
 }
 
