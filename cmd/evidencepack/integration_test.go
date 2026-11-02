@@ -107,21 +107,21 @@ func TestAnalyzeBackendWithProvenanceAndNoReadme(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if a.classification.Kind != apimodel.KindBackend {
-		t.Errorf("Kind = %q, want backend (no README, classified from code)", a.classification.Kind)
+	if a.Classification.Kind != apimodel.KindBackend {
+		t.Errorf("Kind = %q, want backend (no README, classified from code)", a.Classification.Kind)
 	}
 	// The verdict is traceable to the actual source file.
 	cited := false
-	for _, o := range a.classification.Observations {
+	for _, o := range a.Classification.Observations {
 		if o.Path == "cmd/api/main.go" {
 			cited = true
 		}
 	}
 	if !cited {
-		t.Errorf("no observation cited cmd/api/main.go; %+v", a.classification.Observations)
+		t.Errorf("no observation cited cmd/api/main.go; %+v", a.Classification.Observations)
 	}
 	// A branch ref is not a pinned commit.
-	if a.insp.Revision.Resolved {
+	if a.Inspection.Revision.Resolved {
 		t.Errorf("Revision.Resolved = true for a branch ref; want false")
 	}
 }
@@ -139,8 +139,8 @@ func TestAnalyzeDegradesWhenDecisiveSourceUnfetched(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if a.classification.Status != crawler.VerdictInconclusive {
-		t.Errorf("Status = %q, want inconclusive when the entry source could not be fetched", a.classification.Status)
+	if a.Classification.Status != crawler.VerdictInconclusive {
+		t.Errorf("Status = %q, want inconclusive when the entry source could not be fetched", a.Classification.Status)
 	}
 }
 
@@ -157,7 +157,7 @@ func TestAnalyzeTruncatedTreeDoesNotAssertAbsence(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if a.classification.Kind == apimodel.KindLibrary {
+	if a.Classification.Kind == apimodel.KindLibrary {
 		t.Errorf("asserted library from a truncated tree; want abstention")
 	}
 }
@@ -196,7 +196,7 @@ func TestAnalyzeCancellationOnFinalContentsRequest(t *testing.T) {
 
 			a, err := analyze(ctx, cl, "o", "r")
 			if !errors.Is(err, context.Canceled) {
-				t.Errorf("err = %v (verdict %q/%q), want context.Canceled", err, a.classification.Kind, a.classification.Status)
+				t.Errorf("err = %v (verdict %q/%q), want context.Canceled", err, a.Classification.Kind, a.Classification.Status)
 			}
 		})
 	}
@@ -218,7 +218,7 @@ func TestAnalyzeRenderedPackCarriesWitnesses(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	md := renderPack(a.repo, a.tree, a.requested, a.fetched, a.classification)
+	md := renderPack(a.Repo, a.Tree, a.Requested, a.Fetched, a.Classification)
 	for _, want := range []string{"**Kind:** backend", "witness: cmd/api/main.go bytes", "(go.server-call)", "(go.package-main)"} {
 		if !strings.Contains(md, want) {
 			t.Errorf("rendered pack missing %q", want)
