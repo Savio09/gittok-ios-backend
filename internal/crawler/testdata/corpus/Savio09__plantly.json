@@ -1,0 +1,279 @@
+{
+ "repo": "Savio09/plantly",
+ "source_url": "https://github.com/Savio09/plantly",
+ "captured_at": "2026-11-01",
+ "requested_ref": "main",
+ "resolved_sha": "81c15a40289784af8765f5b7485999d2aff8757d",
+ "language": "TypeScript",
+ "archived": false,
+ "tree_limits": {
+  "MaxEntries": 5000,
+  "MaxDepth": 12
+ },
+ "content_limits": {
+  "MaxFileBytes": 65536,
+  "MaxTotalBytes": 524288,
+  "MaxFiles": 40
+ },
+ "tree": {
+  "truncated": false,
+  "depth_limited": false,
+  "max_depth": 12,
+  "entries": [
+   {
+    "p": ".eslintrc.js",
+    "t": "blob",
+    "s": 238
+   },
+   {
+    "p": ".gitignore",
+    "t": "blob",
+    "s": 375
+   },
+   {
+    "p": "README.md",
+    "t": "blob",
+    "s": 678
+   },
+   {
+    "p": "app.json",
+    "t": "blob",
+    "s": 631
+   },
+   {
+    "p": "app",
+    "t": "tree"
+   },
+   {
+    "p": "app/(tabs)",
+    "t": "tree"
+   },
+   {
+    "p": "app/(tabs)/(home)",
+    "t": "tree"
+   },
+   {
+    "p": "app/(tabs)/(home)/_layout.tsx",
+    "t": "blob",
+    "s": 815
+   },
+   {
+    "p": "app/(tabs)/(home)/index.tsx",
+    "t": "blob",
+    "s": 1014
+   },
+   {
+    "p": "app/(tabs)/(home)/plants",
+    "t": "tree"
+   },
+   {
+    "p": "app/(tabs)/(home)/plants/[plantId].tsx",
+    "t": "blob",
+    "s": 3679
+   },
+   {
+    "p": "app/(tabs)/_layout.tsx",
+    "t": "blob",
+    "s": 1028
+   },
+   {
+    "p": "app/(tabs)/profile.tsx",
+    "t": "blob",
+    "s": 644
+   },
+   {
+    "p": "app/_layout.tsx",
+    "t": "blob",
+    "s": 512
+   },
+   {
+    "p": "app/new.tsx",
+    "t": "blob",
+    "s": 3165
+   },
+   {
+    "p": "app/onboarding.tsx",
+    "t": "blob",
+    "s": 1639
+   },
+   {
+    "p": "assets",
+    "t": "tree"
+   },
+   {
+    "p": "assets/85620.jpg",
+    "t": "blob",
+    "s": 242581
+   },
+   {
+    "p": "assets/adaptive-icon.png",
+    "t": "blob",
+    "s": 17547
+   },
+   {
+    "p": "assets/detail_info.PNG",
+    "t": "blob",
+    "s": 229796
+   },
+   {
+    "p": "assets/details.PNG",
+    "t": "blob",
+    "s": 230130
+   },
+   {
+    "p": "assets/favicon.png",
+    "t": "blob",
+    "s": 1466
+   },
+   {
+    "p": "assets/form.PNG",
+    "t": "blob",
+    "s": 739707
+   },
+   {
+    "p": "assets/icon.png",
+    "t": "blob",
+    "s": 22380
+   },
+   {
+    "p": "assets/landing.PNG",
+    "t": "blob",
+    "s": 2908869
+   },
+   {
+    "p": "assets/onboard.PNG",
+    "t": "blob",
+    "s": 97920
+   },
+   {
+    "p": "assets/plantly.png",
+    "t": "blob",
+    "s": 121364
+   },
+   {
+    "p": "assets/splash.png",
+    "t": "blob",
+    "s": 47346
+   },
+   {
+    "p": "babel.config.js",
+    "t": "blob",
+    "s": 108
+   },
+   {
+    "p": "components",
+    "t": "tree"
+   },
+   {
+    "p": "components/PlantCard.tsx",
+    "t": "blob",
+    "s": 1288
+   },
+   {
+    "p": "components/PlantlyButton.tsx",
+    "t": "blob",
+    "s": 1022
+   },
+   {
+    "p": "components/PlantlyImage.tsx",
+    "t": "blob",
+    "s": 488
+   },
+   {
+    "p": "package-lock.json",
+    "t": "blob",
+    "s": 597196
+   },
+   {
+    "p": "package.json",
+    "t": "blob",
+    "s": 1288
+   },
+   {
+    "p": "store",
+    "t": "tree"
+   },
+   {
+    "p": "store/plantsStore.ts",
+    "t": "blob",
+    "s": 2333
+   },
+   {
+    "p": "store/userStore.ts",
+    "t": "blob",
+    "s": 687
+   },
+   {
+    "p": "theme.ts",
+    "t": "blob",
+    "s": 231
+   },
+   {
+    "p": "tsconfig.json",
+    "t": "blob",
+    "s": 128
+   }
+  ]
+ },
+ "selected": [
+  "package.json",
+  "README.md",
+  "app.json",
+  "babel.config.js",
+  "tsconfig.json",
+  ".eslintrc.js",
+  "theme.ts",
+  "app/_layout.tsx",
+  "app/new.tsx",
+  "app/onboarding.tsx",
+  "components/PlantCard.tsx"
+ ],
+ "extras": {},
+ "files": {
+  ".eslintrc.js": {
+   "content": "// https://docs.expo.dev/guides/using-eslint/\nmodule.exports = {\n  extends: [\"expo\", \"prettier\"],\n  plugins: [\"prettier\", \"react-native\"],\n  rules: {\n    \"prettier/prettier\": \"error\",\n    \"react-native/no-unused-styles\": \"error\",\n  },\n};\n",
+   "size": 238
+  },
+  "README.md": {
+   "content": "# Plantly\n\nThis is an application that reminds one to take care of their plants. It's one of the apps that I would be building for my five native apps challenge using React Native. I'll be getting back to this shortly.\n\n## Core Features of the Application\n\n- Allows for Video uploads\n- Form to add plant information\n- Dynamic Routing with Tab menu\n- More features to be added soon\n\n# Technologies Used\n\n- React Native using Typescript\n- Zustand for State Management\n\n# Application UI\n\n![Home Screen](assets/landing.PNG)\n![Onboarding](assets/onboard.PNG)\n![Form](assets/form.PNG)\n![List Items](assets/85620.jpg)\n![Details](assets/details.PNG)\n![More Details](assets/landing.PNG)\n",
+   "size": 678
+  },
+  "app.json": {
+   "content": "{\n  \"expo\": {\n    \"name\": \"plantly\",\n    \"slug\": \"plantly\",\n    \"scheme\": \"plantly\",\n    \"version\": \"1.0.0\",\n    \"orientation\": \"portrait\",\n    \"icon\": \"./assets/icon.png\",\n    \"userInterfaceStyle\": \"light\",\n    \"splash\": {\n      \"image\": \"./assets/splash.png\",\n      \"resizeMode\": \"contain\",\n      \"backgroundColor\": \"#ffffff\"\n    },\n    \"ios\": {\n      \"supportsTablet\": true\n    },\n    \"android\": {\n      \"adaptiveIcon\": {\n        \"foregroundImage\": \"./assets/adaptive-icon.png\",\n        \"backgroundColor\": \"#ffffff\"\n      }\n    },\n    \"web\": {\n      \"favicon\": \"./assets/favicon.png\"\n    },\n    \"plugins\": [\"expo-router\"]\n  }\n}\n",
+   "size": 631
+  },
+  "app/_layout.tsx": {
+   "content": "import { Stack } from \"expo-router\";\n\nexport default function Layout() {\n  return (\n    \u003cStack\u003e\n      \u003cStack.Screen\n        name=\"(tabs)\"\n        options={{ headerShown: false, animation: \"fade\" }}\n      /\u003e\n      \u003cStack.Screen\n        name=\"onboarding\"\n        options={{\n          headerShown: false,\n          animation: \"fade\",\n        }}\n      /\u003e\n      \u003cStack.Screen\n        name=\"new\"\n        options={{\n          presentation: \"modal\",\n          title: \"New Plant\",\n        }}\n      /\u003e\n    \u003c/Stack\u003e\n  );\n}\n",
+   "size": 512
+  },
+  "app/new.tsx": {
+   "content": "import {\n  View,\n  Text,\n  StyleSheet,\n  TextInput,\n  Alert,\n  ScrollView,\n  TouchableOpacity,\n  Platform,\n} from \"react-native\";\nimport { theme } from \"@/theme\";\nimport { PlantlyImage } from \"@/components/PlantlyImage\";\nimport { useState } from \"react\";\nimport { PlantlyButton } from \"@/components/PlantlyButton\";\nimport { KeyboardAwareScrollView } from \"react-native-keyboard-aware-scroll-view\";\nimport { usePlantStore } from \"@/store/plantsStore\";\nimport { useRouter } from \"expo-router\";\nimport * as ImagePicker from \"expo-image-picker\";\n\nexport default function NewScreen() {\n  const [name, setName] = useState\u003cstring\u003e();\n  const [days, setDays] = useState\u003cstring\u003e();\n  const [imageUri, setImageUri] = useState\u003cstring\u003e();\n  const addPlant = usePlantStore((state) =\u003e state.addPlant);\n  const router = useRouter();\n  const handleSubmit = () =\u003e {\n    if (!name) return Alert.alert(\"Validation Error\", \"Give you plant a name\");\n    if (!days)\n      return Alert.alert(\n        \"Validation Error\",\n        `How often does ${name} need to be watered?`\n      );\n    if (Number.isNaN(Number(days)))\n      return Alert.alert(\n        \"Validation Error\",\n        \"Watering frequency must be a number!\"\n      );\n    addPlant(name, Number(days), imageUri);\n    router.navigate(\"/\");\n    console.log(\"Adding plant\", name, days);\n  };\n  const handleChooseImage = async () =\u003e {\n    if (Platform.OS === \"web\") return;\n    const result = await ImagePicker.launchImageLibraryAsync({\n      mediaTypes: ImagePicker.MediaTypeOptions.Images,\n      allowsEditing: true,\n      aspect: [1, 1],\n      quality: 1,\n    });\n\n    if (!result.canceled) {\n      setImageUri(result.assets[0].uri);\n    }\n    console.log(JSON.stringify(result, null, \" \"));\n  };\n  return (\n    \u003cKeyboardAwareScrollView\n      style={styles.container}\n      contentContainerStyle={styles.contentContainer}\n      keyboardShouldPersistTaps=\"handled\"\n    \u003e\n      \u003cTouchableOpacity\n        style={styles.centered}\n        activeOpacity={0.8}\n        onPress={handleChooseImage}\n      \u003e\n        \u003cPlantlyImage imageUri={imageUri} /\u003e\n      \u003c/TouchableOpacity\u003e\n      \u003cText style={styles.label}\u003eName\u003c/Text\u003e\n      \u003cTextInput\n        onChangeText={setName}\n        value={name}\n        style={styles.input}\n        placeholder=\"E.g. Casper the Cactus\"\n        autoCapitalize=\"words\"\n      /\u003e\n      \u003cText style={styles.label}\u003eWatering Frequency (every x days)\u003c/Text\u003e\n      \u003cTextInput\n        onChangeText={setDays}\n        value={days}\n        style={styles.input}\n        placeholder=\"E.g. 6\"\n        keyboardType=\"number-pad\"\n      /\u003e\n      \u003cPlantlyButton title=\"Add plant\" onPress={handleSubmit} /\u003e\n    \u003c/KeyboardAwareScrollView\u003e\n  );\n}\n\nconst styles = StyleSheet.create({\n  container: {\n    flex: 1,\n    backgroundColor: theme.colorWhite,\n  },\n  input: {\n    borderWidth: 2,\n    borderColor: theme.colorLightGrey,\n    padding: 12,\n    borderRadius: 6,\n    marginBottom: 24,\n    fontSize: 18,\n  },\n  contentContainer: {\n    paddingTop: 24,\n    paddingHorizontal: 24,\n    paddingBottom: 100,\n  },\n  centered: {\n    alignItems: \"center\",\n    marginBottom: 24,\n  },\n  label: {\n    fontSize: 18,\n    marginBottom: 8,\n  },\n});\n",
+   "size": 3165
+  },
+  "app/onboarding.tsx": {
+   "content": "import { Text, View, StyleSheet, Button } from \"react-native\";\nimport { theme } from \"@/theme\";\nimport { useUserStore } from \"@/store/userStore\";\nimport { useRouter } from \"expo-router\";\nimport { PlantlyButton } from \"@/components/PlantlyButton\";\nimport { LinearGradient } from \"expo-linear-gradient\";\nimport { StatusBar } from \"expo-status-bar\";\nimport { PlantlyImage } from \"@/components/PlantlyImage\";\n\nexport default function ProfileScreen() {\n  const router = useRouter();\n  const toggleHasOnboarded = useUserStore((state) =\u003e state.toggeleHadOnboarded);\n  const handlePress = () =\u003e {\n    toggleHasOnboarded();\n    router.replace(\"/\");\n  };\n  return (\n    \u003cLinearGradient\n      start={{ x: 0, y: 0 }}\n      end={{ x: 1, y: 1 }}\n      colors={[theme.colorGreen, theme.colorAppleGreen, theme.colorLimeGreen]}\n      style={styles.container}\n    \u003e\n      \u003cStatusBar style=\"light\" /\u003e\n      \u003cView\u003e\n        \u003cText style={styles.heading}\u003ePlantly\u003c/Text\u003e\n        \u003cText style={styles.tagline}\u003e\n          Keep your plants healthy and hydrated\n        \u003c/Text\u003e\n      \u003c/View\u003e\n\n      \u003cPlantlyImage /\u003e\n      \u003cPlantlyButton title=\"Let me in\" onPress={handlePress} /\u003e\n    \u003c/LinearGradient\u003e\n  );\n}\n\nconst styles = StyleSheet.create({\n  container: {\n    flex: 1,\n    justifyContent: \"space-evenly\",\n    alignItems: \"center\",\n    backgroundColor: theme.colorWhite,\n    paddingHorizontal: 8,\n  },\n  text: {\n    fontSize: 24,\n  },\n  heading: {\n    fontSize: 42,\n    color: theme.colorWhite,\n    fontWeight: \"bold\",\n    marginBottom: 12,\n    textAlign: \"center\",\n  },\n  tagline: {\n    fontSize: 24,\n    color: theme.colorWhite,\n    textAlign: \"center\",\n  },\n});\n",
+   "size": 1639
+  },
+  "babel.config.js": {
+   "content": "module.exports = function (api) {\n  api.cache(true);\n  return {\n    presets: [\"babel-preset-expo\"],\n  };\n};\n",
+   "size": 108
+  },
+  "components/PlantCard.tsx": {
+   "content": "import { StyleSheet, View, Text, Pressable } from \"react-native\";\nimport { theme } from \"@/theme\";\nimport { PlantType } from \"@/store/plantsStore\";\nimport { PlantlyImage } from \"./PlantlyImage\";\nimport { Link } from \"expo-router\";\n\nexport function PlantCard({ plant }: { plant: PlantType }) {\n  return (\n    \u003cLink href={`plants/${plant.id}`} asChild\u003e\n      \u003cPressable style={styles.plantCard}\u003e\n        \u003cPlantlyImage size={100} imageUri={plant.imageUri} /\u003e\n        \u003cView style={styles.details}\u003e\n          \u003cText numberOfLines={1} style={styles.plantName}\u003e\n            {plant.name}\n          \u003c/Text\u003e\n          \u003cText style={styles.subtitle}\u003e\n            Water every {plant.wateringFrequencyDays} days\n          \u003c/Text\u003e\n        \u003c/View\u003e\n      \u003c/Pressable\u003e\n    \u003c/Link\u003e\n  );\n}\n\nconst styles = StyleSheet.create({\n  plantCard: {\n    flexDirection: \"row\",\n    shadowColor: theme.colorBlack,\n    backgroundColor: theme.colorWhite,\n    borderRadius: 6,\n    padding: 12,\n    marginBottom: 12,\n    shadowOffset: {\n      width: 0,\n      height: 1,\n    },\n    shadowOpacity: 0.22,\n    shadowRadius: 2.22,\n\n    elevation: 3,\n  },\n  details: {\n    padding: 14,\n    justifyContent: \"center\",\n  },\n  plantName: {\n    fontSize: 18,\n    marginBottom: 4,\n  },\n  subtitle: {\n    color: theme.colorGrey,\n  },\n});\n",
+   "size": 1288
+  },
+  "package.json": {
+   "content": "{\n  \"name\": \"plantly\",\n  \"version\": \"1.0.0\",\n  \"main\": \"expo-router/entry\",\n  \"scripts\": {\n    \"start\": \"expo start\",\n    \"android\": \"expo start --android\",\n    \"ios\": \"expo start --ios\",\n    \"web\": \"expo start --web\",\n    \"lint\": \"eslint .\"\n  },\n  \"dependencies\": {\n    \"@expo/vector-icons\": \"^14.0.3\",\n    \"@react-native-async-storage/async-storage\": \"1.23.1\",\n    \"date-fns\": \"^4.1.0\",\n    \"expo\": \"~51.0.28\",\n    \"expo-constants\": \"~16.0.2\",\n    \"expo-file-system\": \"~17.0.1\",\n    \"expo-haptics\": \"~13.0.1\",\n    \"expo-image-picker\": \"~15.0.7\",\n    \"expo-linear-gradient\": \"~13.0.2\",\n    \"expo-linking\": \"~6.3.1\",\n    \"expo-router\": \"~3.5.24\",\n    \"expo-status-bar\": \"~1.12.1\",\n    \"react\": \"18.2.0\",\n    \"react-native\": \"0.74.5\",\n    \"react-native-keyboard-aware-scroll-view\": \"^0.9.5\",\n    \"react-native-safe-area-context\": \"4.10.5\",\n    \"react-native-screens\": \"3.31.1\",\n    \"zustand\": \"^5.0.1\",\n    \"expo-dev-client\": \"~4.0.29\"\n  },\n  \"devDependencies\": {\n    \"@babel/core\": \"^7.20.0\",\n    \"@types/react\": \"~18.2.45\",\n    \"eslint\": \"^8.57.0\",\n    \"eslint-config-expo\": \"~7.1.2\",\n    \"eslint-config-prettier\": \"^9.1.0\",\n    \"eslint-plugin-prettier\": \"^5.2.1\",\n    \"eslint-plugin-react-native\": \"^4.1.0\",\n    \"prettier\": \"^3.3.3\",\n    \"typescript\": \"^5.1.3\"\n  },\n  \"private\": true\n}\n",
+   "size": 1288
+  },
+  "theme.ts": {
+   "content": "export const theme = {\n  colorGreen: \"#29b365\",\n  colorWhite: \"#fff\",\n  colorLeafyGreen: \"#206a42\",\n  colorAppleGreen: \"#a0d36c\",\n  colorLimeGreen: \"#d0e57e\",\n  colorLightGrey: \"#eee\",\n  colorBlack: \"#000\",\n  colorGrey: \"grey\",\n};\n",
+   "size": 231
+  },
+  "tsconfig.json": {
+   "content": "{\n  \"extends\": \"expo/tsconfig.base\",\n  \"compilerOptions\": {\n    \"strict\": true,\n    \"paths\": {\n      \"@/*\": [\"./*\"]\n    }\n  }\n}\n",
+   "size": 128
+  }
+ },
+ "skipped": {}
+}
