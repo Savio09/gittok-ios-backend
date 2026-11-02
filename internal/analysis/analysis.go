@@ -4,10 +4,12 @@ package analysis
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/Savio09/gittok-ios-backend/internal/crawler"
 	"github.com/Savio09/gittok-ios-backend/internal/githubclient"
+	"github.com/Savio09/gittok-ios-backend/internal/preview"
 )
 
 // GitHub is the acquisition interface; selection and interpretation stay local.
@@ -32,11 +34,20 @@ type Result struct {
 
 // Service has no mutable request state and may be shared by HTTP handlers.
 type Service struct {
-	github  GitHub
-	timeout time.Duration
+	github     GitHub
+	timeout    time.Duration
+	publicOnly bool
 }
 
 func NewService(github GitHub) *Service { return &Service{github: github, timeout: 30 * time.Second} }
+
+// NewPublicService cannot inherit the server's shared token. Anonymous requests
+// cannot retrieve newly private evidence after an initially public metadata read.
+func NewPublicService(options ...githubclient.Option) *Service {
+	s := NewService(githubclient.New("", options...))
+	s.publicOnly = true
+	return s
+}
 
 // Acquire reads metadata and canonically selected files without executing code.
 func (s *Service) Acquire(parent context.Context, owner, name string) (Result, error) {
@@ -50,6 +61,12 @@ func (s *Service) Acquire(parent context.Context, owner, name string) (Result, e
 		return Result{}, fmt.Errorf("metadata: %w", err)
 	}
 	a := Result{Repo: repo, CapturedAt: time.Now().UTC()}
+	if s.publicOnly && !repo.Public {
+		return Result{}, githubclient.ErrNotFound
+	}
+	if s.publicOnly && !preview.ValidIdentity(repo.Owner, repo.Name) {
+		return Result{}, fmt.Errorf("invalid GitHub repository identity")
+	}
 	finish := func(stage string) (Result, error) {
 		if err := parent.Err(); err != nil {
 			return Result{}, err
@@ -98,6 +115,13 @@ func (s *Service) Acquire(parent context.Context, owner, name string) (Result, e
 		return finish("Analysis stopped before selected contents could be acquired.")
 	}
 	fetched, err := s.github.GetFileContents(ctx, owner, name, ref, paths, githubclient.DefaultContentLimits())
+	// Raw provider messages are diagnostic data, not public inspection limits.
+	// The shared result feeds HTTP as well as the command renderer.
+	for i := range fetched.Skipped {
+		if strings.HasPrefix(fetched.Skipped[i].Reason, "fetch error:") {
+			fetched.Skipped[i].Reason = "GitHub acquisition failed"
+		}
+	}
 	a.Fetched = fetched
 	if err != nil {
 		return finish("Selected contents could not all be acquired; only retained evidence was inspected.")

@@ -10,11 +10,12 @@ import (
 )
 
 type fakeGitHub struct {
-	repo    githubclient.Repo
-	treeErr error
-	refs    []string
-	ref     string
-	refErr  error
+	repo     githubclient.Repo
+	treeErr  error
+	refs     []string
+	ref      string
+	refErr   error
+	contents func(context.Context) (githubclient.FetchedContents, error)
 }
 
 func (f *fakeGitHub) GetRepo(context.Context, string, string) (githubclient.Repo, error) {
@@ -33,8 +34,11 @@ func (f *fakeGitHub) GetTree(_ context.Context, _, _, ref string, _ githubclient
 	f.refs = append(f.refs, ref)
 	return githubclient.FileTree{Entries: []githubclient.TreeEntry{{Path: "package.json", Type: "blob"}}}, f.treeErr
 }
-func (f *fakeGitHub) GetFileContents(_ context.Context, _, _, ref string, paths []string, _ githubclient.ContentLimits) (githubclient.FetchedContents, error) {
+func (f *fakeGitHub) GetFileContents(ctx context.Context, _, _, ref string, paths []string, _ githubclient.ContentLimits) (githubclient.FetchedContents, error) {
 	f.refs = append(f.refs, ref)
+	if f.contents != nil {
+		return f.contents(ctx)
+	}
 	return githubclient.FetchedContents{Files: []githubclient.FileContent{{Path: "package.json", Content: `{"name":"renamable","exports":"./index.js"}`}}}, nil
 }
 
