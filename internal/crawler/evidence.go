@@ -245,6 +245,11 @@ type Classification struct {
 	Limitations []string
 	// Basis is set only for a resolved verdict.
 	Basis *Basis
+	// Products lists the components that are, or could be, the repository's
+	// product, the deciding one first: for a resolved verdict, the deciding
+	// component and any compared product candidates; for an abstention, the
+	// candidates that left it undecided (empty when there were none).
+	Products []string
 }
 
 // Evidence renders the structured verdict as human-readable lines, so existing

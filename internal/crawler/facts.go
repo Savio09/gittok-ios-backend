@@ -196,3 +196,62 @@ func readmeWitness(f SourceFile) (Witness, bool) {
 	}
 	return Witness{}, false
 }
+
+// Import is a package imported by a read, parsed, non-test Go source,
+// attributed to the component that owns the source.
+type Import struct {
+	Component string
+	File      string
+	Path      string
+}
+
+// CollectImports lists the imports of every inspected Go source. Only parsed
+// syntax counts: an import string in a comment or a clipped file's unparsed
+// remainder never does. Ordered by component, file and import path.
+func CollectImports(insp Inspection) []Import {
+	st := indexInspection(insp)
+	var out []Import
+	for _, comp := range buildInventory(st) {
+		for _, p := range comp.paths {
+			if _, read := st.files[p]; !read || !isGoSource(p) {
+				continue
+			}
+			g := st.goFile(p)
+			if !g.parsed {
+				continue
+			}
+			for _, im := range g.imports {
+				out = append(out, Import{Component: comp.root, File: p, Path: im})
+			}
+		}
+	}
+	sort.Slice(out, func(i, j int) bool {
+		a, b := out[i], out[j]
+		if a.Component != b.Component {
+			return a.Component < b.Component
+		}
+		if a.File != b.File {
+			return a.File < b.File
+		}
+		return a.Path < b.Path
+	})
+	return out
+}
+
+// SupportingPath reports whether p lies under an example, documentation,
+// tooling, CI or test directory at any level. It is a ranking hint for
+// presentation, not proof of a file's runtime purpose: it applies the
+// classifier's scope policy to every directory and adds test directories.
+func SupportingPath(p string) bool {
+	dirs := strings.Split(p, "/")
+	for _, d := range dirs[:len(dirs)-1] {
+		if scopeRank(d+"/") >= 2 {
+			return true
+		}
+		switch strings.ToLower(d) {
+		case "test", "tests", "__tests__", "e2e", "acceptance":
+			return true
+		}
+	}
+	return false
+}

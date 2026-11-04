@@ -304,7 +304,7 @@ func resolveRepository(st *inspIndex, vs []compVerdict) Classification {
 		case roleResolved:
 			return decided(root, vs, limits, nil)
 		case roleUnresolved:
-			return abstain(vs, limits, "the repository root's role could not be determined from the inspected evidence, so no nested component can stand in for it")
+			return abstain(vs, limits, "the repository root's role could not be determined from the inspected evidence, so no nested component can stand in for it", []*compVerdict{root})
 		}
 	}
 
@@ -312,10 +312,6 @@ func resolveRepository(st *inspIndex, vs []compVerdict) Classification {
 	// or depth-limited listing can omit one that would itself be a product, so
 	// that comparison needs a complete listing; the root-resolved case above does
 	// not, because the root manifest speaks for the repository regardless.
-	if !st.scope.Complete() {
-		return abstain(vs, limits, "the repository root declares no product of its own, and the listing is incomplete, so components it omits could also be products; nested components were not compared")
-	}
-
 	supporting := supportingComponents(vs)
 	var top []*compVerdict
 	// npm workspaces manage linked packages; they do not exclude an application
@@ -330,13 +326,16 @@ func resolveRepository(st *inspIndex, vs []compVerdict) Classification {
 			top = append(top, &vs[i])
 		}
 	}
+	if !st.scope.Complete() {
+		return abstain(vs, limits, "the repository root declares no product of its own, and the listing is incomplete, so components it omits could also be products; nested components were not compared", top)
+	}
 	if len(top) == 0 {
-		return abstain(vs, limits, "no decisive frontend / backend / library / CLI / mobile signal was found in the inspected manifests and file tree")
+		return abstain(vs, limits, "no decisive frontend / backend / library / CLI / mobile signal was found in the inspected manifests and file tree", nil)
 	}
 	var executables []*compVerdict
 	for _, t := range top {
 		if t.status == roleUnresolved {
-			return abstain(vs, limits, "component "+t.comp.root+" could not be resolved, and with no product at the repository root it could be the primary one")
+			return abstain(vs, limits, "component "+t.comp.root+" could not be resolved, and with no product at the repository root it could be the primary one", top)
 		}
 		if t.kind != apimodel.KindLibrary {
 			executables = append(executables, t)
@@ -351,7 +350,7 @@ func resolveRepository(st *inspIndex, vs []compVerdict) Classification {
 		// are packages published alongside the product.
 		return decided(executables[0], vs, limits, top)
 	}
-	return abstain(vs, limits, "independent components declare different roles: "+strings.Join(componentRoles(top), ", "))
+	return abstain(vs, limits, "independent components declare different roles: "+strings.Join(componentRoles(top), ", "), top)
 }
 
 func allKind(vs []*compVerdict, k apimodel.RepoKind) bool {
@@ -401,9 +400,11 @@ func supportingComponents(vs []compVerdict) map[int]bool {
 func decided(primary *compVerdict, vs []compVerdict, limits []string, compared []*compVerdict) Classification {
 	c := Classification{Kind: primary.kind, Status: VerdictResolved, Observations: primary.obs}
 	c.Basis = &Basis{Component: primary.comp.root, Kind: primary.kind, Premises: primary.basis, ByComparison: compared != nil}
+	c.Products = []string{primary.comp.root}
 	for _, t := range compared {
 		if t != primary {
 			c.Basis.Compared = append(c.Basis.Compared, Basis{Component: t.comp.root, Kind: t.kind, Premises: t.basis})
+			c.Products = append(c.Products, t.comp.root)
 		}
 	}
 	for i := range vs {
@@ -416,9 +417,13 @@ func decided(primary *compVerdict, vs []compVerdict, limits []string, compared [
 	return c
 }
 
-// abstain reports an explained inconclusive verdict, listing every candidate.
-func abstain(vs []compVerdict, limits []string, reason string) Classification {
+// abstain reports an explained inconclusive verdict, listing every candidate
+// and the components that could be the product.
+func abstain(vs []compVerdict, limits []string, reason string, products []*compVerdict) Classification {
 	c := Classification{Kind: apimodel.KindOther, Status: VerdictInconclusive}
+	for _, p := range products {
+		c.Products = append(c.Products, p.comp.root)
+	}
 	for _, v := range vs {
 		c.Secondary = append(c.Secondary, v.obs...)
 		c.Secondary = append(c.Secondary, v.others...)
