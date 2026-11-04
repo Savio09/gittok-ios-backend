@@ -29,6 +29,9 @@ type Client struct {
 	maxRetries  int
 	backoffBase time.Duration
 	sleep       func(time.Duration) // injectable so tests don't actually wait
+	// check, when set, vets every successful response before its body is
+	// decoded; a non-nil result (normally a *PolicyError) is terminal.
+	check func(*http.Response) error
 }
 
 // Option configures a Client. Options exist mainly so tests can point the
@@ -117,6 +120,12 @@ func (c *Client) get(ctx context.Context, path string, v any) error {
 			continue
 		}
 
+		if c.check != nil && resp.StatusCode >= 200 && resp.StatusCode < 300 {
+			if err := c.check(resp); err != nil {
+				resp.Body.Close()
+				return err // terminal: never decode or retry a rejected response
+			}
+		}
 		done, ra, err := classify(resp, c.baseURL+path, v)
 		resp.Body.Close()
 		if done {

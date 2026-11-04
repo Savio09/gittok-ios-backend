@@ -28,3 +28,20 @@ func (e *APIError) Error() string {
 	}
 	return fmt.Sprintf("githubclient: GitHub API %d for %s", e.StatusCode, e.URL)
 }
+
+// ErrCredentialPolicy matches every *PolicyError: the configured credential
+// is not acceptable for the requested access. It is terminal — never retried,
+// never reported as a skipped file or a partial result — so a caller cannot
+// mistake a rejected credential for missing repository data.
+var ErrCredentialPolicy = errors.New("githubclient: credential policy rejected")
+
+// PolicyError reports why the credential policy rejected a response. Reason
+// is a fixed, secret-free description; provider bodies are never included.
+type PolicyError struct {
+	Reason string
+}
+
+func (e *PolicyError) Error() string { return "githubclient: credential policy rejected: " + e.Reason }
+
+// Is makes errors.Is(err, ErrCredentialPolicy) true for any *PolicyError.
+func (e *PolicyError) Is(target error) bool { return target == ErrCredentialPolicy }

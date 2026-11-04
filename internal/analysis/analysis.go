@@ -3,6 +3,7 @@ package analysis
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -20,6 +21,45 @@ type GitHub interface {
 	GetFileContents(context.Context, string, string, string, []string, githubclient.ContentLimits) (githubclient.FetchedContents, error)
 }
 
+// Outcome is the typed result of an acquisition, deciding whether it may be
+// reused. A nil error is not enough: acquisition also returns usable partial
+// results after transient failures or a withheld identity.
+type Outcome int
+
+const (
+	// OutcomeUnknown is the zero value: an empty or failed Result is never
+	// reusable by default.
+	OutcomeUnknown Outcome = iota
+	// OutcomeComplete: a bounded inspection ran to completion. Declared caps
+	// (clipped files, a truncated tree) and unsupported layouts still count.
+	OutcomeComplete
+	// OutcomePartial: a transport, provider or deadline failure cut acquisition
+	// short; the result is truthful but not reusable.
+	OutcomePartial
+	// OutcomeIdentityWithheld: the repository's identity could not be
+	// reconfirmed, so file evidence was withheld.
+	OutcomeIdentityWithheld
+)
+
+// Cacheable reports whether the result may be reused for later requests.
+func (o Outcome) Cacheable() bool { return o == OutcomeComplete }
+
+func (o Outcome) String() string {
+	switch o {
+	case OutcomeComplete:
+		return "complete"
+	case OutcomePartial:
+		return "partial"
+	case OutcomeIdentityWithheld:
+		return "identity-withheld"
+	}
+	return "unknown"
+}
+
+// policyRejected reports a credential-policy error, which ends acquisition
+// with no result rather than a partial one.
+func policyRejected(err error) bool { return errors.Is(err, githubclient.ErrCredentialPolicy) }
+
 // Result preserves exactly the evidence consumed by the classifier.
 type Result struct {
 	Repo           githubclient.Repo
@@ -31,6 +71,8 @@ type Result struct {
 	CapturedAt     time.Time
 	Limitations    []string // internal diagnostics: paths and technical reasons
 	Coverage       preview.Coverage
+	Outcome        Outcome
+	transient      bool // a selected file failed for a transient reason
 }
 
 // Service has no mutable request state and may be shared by HTTP handlers.
@@ -64,7 +106,7 @@ func (s *Service) Acquire(parent context.Context, owner, name string) (Result, e
 	if err := parent.Err(); err != nil {
 		return Result{}, err
 	}
-	a := Result{Repo: repo, CapturedAt: time.Now().UTC()}
+	a := Result{Repo: repo, CapturedAt: time.Now().UTC(), Outcome: OutcomeComplete}
 	if s.publicOnly && !repo.Public {
 		return Result{}, githubclient.ErrNotFound
 	}
@@ -88,12 +130,16 @@ func (s *Service) Acquire(parent context.Context, owner, name string) (Result, e
 		// failed check, retain only the already captured provider metadata.
 		if (s.publicOnly || repo.ID > 0) && a.Inspection.Revision.Resolved {
 			verified, err := s.github.GetRepo(ctx, owner, name)
+			if policyRejected(err) {
+				return Result{}, err
+			}
 			if err != nil || repo.ID <= 0 || verified.ID != repo.ID || (s.publicOnly && !verified.Public) || verified.Owner != repo.Owner || verified.Name != repo.Name {
 				a.Fetched = githubclient.FetchedContents{}
 				a.Tree = githubclient.FileTree{Truncated: true}
 				a.Requested = nil
 				a.Inspection.Revision = crawler.Revision{}
 				a.Coverage = preview.Coverage{IdentityUnverified: true}
+				a.Outcome = OutcomeIdentityWithheld
 				a.Limitations = append(a.Limitations, "Repository identity could not be revalidated after acquisition; file evidence was withheld.")
 			}
 			if err := parent.Err(); err != nil {
@@ -102,6 +148,11 @@ func (s *Service) Acquire(parent context.Context, owner, name string) (Result, e
 		}
 		for _, skipped := range a.Fetched.Skipped {
 			a.Limitations = append(a.Limitations, fmt.Sprintf("Selected file %q could not be read (%s).", skipped.Path, skipped.Reason))
+		}
+		if a.Coverage.FilesNotAcquired || a.Coverage.ContentsIncomplete || a.transient {
+			if a.Outcome == OutcomeComplete {
+				a.Outcome = OutcomePartial
+			}
 		}
 		for _, file := range a.Fetched.Files {
 			if file.Truncated {
@@ -123,6 +174,9 @@ func (s *Service) Acquire(parent context.Context, owner, name string) (Result, e
 		return finish("Analysis deadline reached after metadata acquisition.")
 	}
 	ref, err = s.github.ResolveRef(ctx, owner, name, ref)
+	if policyRejected(err) {
+		return Result{}, err
+	}
 	if err != nil || !githubclient.ValidCommitID(ref) {
 		a.Coverage.FilesNotAcquired = true
 		return finish("The default branch could not be pinned to a commit; file evidence was not acquired.")
@@ -133,6 +187,9 @@ func (s *Service) Acquire(parent context.Context, owner, name string) (Result, e
 		return finish("Analysis stopped before the tree could be acquired.")
 	}
 	tree, err := s.github.GetTree(ctx, owner, name, ref, githubclient.DefaultTreeLimits())
+	if policyRejected(err) {
+		return Result{}, err
+	}
 	if err != nil {
 		a.Coverage.FilesNotAcquired = true
 		return finish("The file tree could not be acquired; only metadata evidence is available.")
@@ -156,11 +213,15 @@ func (s *Service) Acquire(parent context.Context, owner, name string) (Result, e
 		return finish("Analysis stopped before selected contents could be acquired.")
 	}
 	fetched, err := s.github.GetFileContents(ctx, owner, name, ref, paths, githubclient.DefaultContentLimits())
+	if policyRejected(err) {
+		return Result{}, err
+	}
 	// Raw provider messages are diagnostic data, not public inspection limits.
 	// The shared result feeds HTTP as well as the command renderer.
 	for i := range fetched.Skipped {
 		if strings.HasPrefix(fetched.Skipped[i].Reason, "fetch error:") {
 			fetched.Skipped[i].Reason = "GitHub acquisition failed"
+			a.transient = true // a provider/transport failure, not a bounded absence
 		}
 	}
 	a.Fetched = fetched

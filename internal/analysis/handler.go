@@ -45,6 +45,8 @@ func (s *Service) Handler() http.Handler {
 				fail(504, "preview deadline exceeded")
 			case errors.Is(err, githubclient.ErrRateLimited):
 				fail(503, "GitHub temporarily unavailable")
+			case errors.Is(err, githubclient.ErrCredentialPolicy):
+				fail(503, "preview service unavailable")
 			default:
 				var api *githubclient.APIError
 				if errors.As(err, &api) && (api.StatusCode == 401 || api.StatusCode == 403 || api.StatusCode == 429) {
