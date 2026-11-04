@@ -110,6 +110,7 @@ type compVerdict struct {
 	status    roleStatus
 	kind      apimodel.RepoKind
 	obs       []Observation // support for kind, when resolved
+	basis     []Observation // one complete validated group for kind, locations attached
 	others    []Observation // the component's other candidates' evidence
 	limits    []string
 }
@@ -226,6 +227,13 @@ func classifyComponent(ix *repoIndex, cands []candidate) compVerdict {
 			}
 		} else {
 			v.status, v.kind, v.obs = roleResolved, chosen.kind, chosen.flatten()
+			// validateCandidates orders supported groups before context groups.
+			for _, o := range chosen.groups[0] {
+				if !o.Context {
+					o.Witness = ix.st.locate(o.Witness)
+					v.basis = append(v.basis, o)
+				}
+			}
 			for _, c := range cands[1:] {
 				v.others = append(v.others, c.flatten()...)
 			}
@@ -294,7 +302,7 @@ func resolveRepository(st *inspIndex, vs []compVerdict) Classification {
 	if !root.workspace {
 		switch root.status {
 		case roleResolved:
-			return decided(root, vs, limits)
+			return decided(root, vs, limits, nil)
 		case roleUnresolved:
 			return abstain(vs, limits, "the repository root's role could not be determined from the inspected evidence, so no nested component can stand in for it")
 		}
@@ -336,12 +344,12 @@ func resolveRepository(st *inspIndex, vs []compVerdict) Classification {
 	}
 	switch {
 	case allKind(top, top[0].kind):
-		return decided(top[0], vs, limits)
+		return decided(top[0], vs, limits, top)
 	case len(executables) > 0 && allKind(executables, executables[0].kind):
 		// One executable role beside importable libraries: the same rule as
 		// within a component — an artifact outranks a library — so the libraries
 		// are packages published alongside the product.
-		return decided(executables[0], vs, limits)
+		return decided(executables[0], vs, limits, top)
 	}
 	return abstain(vs, limits, "independent components declare different roles: "+strings.Join(componentRoles(top), ", "))
 }
@@ -388,9 +396,16 @@ func supportingComponents(vs []compVerdict) map[int]bool {
 }
 
 // decided reports primary's role, keeping every other component's evidence as
-// attributable secondary evidence.
-func decided(primary *compVerdict, vs []compVerdict, limits []string) Classification {
+// attributable secondary evidence. compared, when non-nil, holds the product
+// candidates of a nested comparison (primary among them), recorded in the basis.
+func decided(primary *compVerdict, vs []compVerdict, limits []string, compared []*compVerdict) Classification {
 	c := Classification{Kind: primary.kind, Status: VerdictResolved, Observations: primary.obs}
+	c.Basis = &Basis{Component: primary.comp.root, Kind: primary.kind, Premises: primary.basis, ByComparison: compared != nil}
+	for _, t := range compared {
+		if t != primary {
+			c.Basis.Compared = append(c.Basis.Compared, Basis{Component: t.comp.root, Kind: t.kind, Premises: t.basis})
+		}
+	}
 	for i := range vs {
 		if &vs[i] != primary {
 			c.Secondary = append(c.Secondary, vs[i].obs...)

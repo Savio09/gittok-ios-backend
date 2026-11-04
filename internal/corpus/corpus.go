@@ -83,6 +83,11 @@ func (s Snapshot) Save(file string) error {
 // FileTree returns the listing in the GitHub client's shape.
 func (s Snapshot) FileTree() githubclient.FileTree {
 	t := githubclient.FileTree{Truncated: s.Tree.Truncated, DepthLimited: s.Tree.DepthLimited, MaxDepth: s.Tree.MaxDepth}
+	// cmd/corpuscapture recorded this listing from GetTree at ResolvedSHA, so
+	// the request is determined by the recorded repository and commit.
+	if owner, name, ok := strings.Cut(s.Repo, "/"); ok && githubclient.ValidCommitID(s.ResolvedSHA) {
+		t.Request = githubclient.TreeRequestPath(owner, name, s.ResolvedSHA)
+	}
 	for _, e := range s.Tree.Entries {
 		t.Entries = append(t.Entries, githubclient.TreeEntry{Path: e.Path, Type: e.Type, Size: e.Size})
 	}

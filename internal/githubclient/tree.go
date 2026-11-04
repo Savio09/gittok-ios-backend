@@ -32,6 +32,15 @@ type FileTree struct {
 	// MaxDepth is the depth bound that was applied (0 when unbounded), so a
 	// reader can tell exactly which paths a depth-limited listing still covers.
 	MaxDepth int
+	// Request is the API path that returned this listing, so evidence that
+	// cites the tree names the request that actually ran.
+	Request string
+}
+
+// TreeRequestPath is the API path GetTree requests for a listing at ref.
+func TreeRequestPath(owner, name, ref string) string {
+	return "/repos/" + url.PathEscape(owner) + "/" + url.PathEscape(name) +
+		"/git/trees/" + url.PathEscape(ref) + "?recursive=1"
 }
 
 // TreeLimits bounds how much of a tree GetTree returns, so a huge repository
@@ -62,15 +71,14 @@ type treePayload struct {
 // recursively, then applies limits. It returns ErrNotFound when the repo or ref
 // does not exist.
 func (c *Client) GetTree(ctx context.Context, owner, name, ref string, limits TreeLimits) (FileTree, error) {
-	path := "/repos/" + url.PathEscape(owner) + "/" + url.PathEscape(name) +
-		"/git/trees/" + url.PathEscape(ref) + "?recursive=1"
+	path := TreeRequestPath(owner, name, ref)
 
 	var p treePayload
 	if err := c.get(ctx, path, &p); err != nil {
 		return FileTree{}, err
 	}
 
-	tree := FileTree{Truncated: p.Truncated, MaxDepth: max(limits.MaxDepth, 0)}
+	tree := FileTree{Truncated: p.Truncated, MaxDepth: max(limits.MaxDepth, 0), Request: path}
 	entries := make([]TreeEntry, 0, len(p.Tree))
 	for _, e := range p.Tree {
 		if limits.MaxDepth > 0 && depth(e.Path) > limits.MaxDepth {

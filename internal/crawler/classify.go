@@ -333,8 +333,8 @@ func listingObs(paths []string, construct, detail string) Observation {
 	return o
 }
 
-func scopeObs(file string, paths []string, construct string, depth int, detail string) Observation {
-	return Observation{Path: file, Detail: detail, Witness: Witness{Kind: WitnessScope, Paths: paths, Construct: construct, Depth: depth}}
+func scopeObs(file string, paths []string, construct string, depth int, absence AbsenceKind, detail string) Observation {
+	return Observation{Path: file, Detail: detail, Absence: absence, Witness: Witness{Kind: WitnessScope, Paths: paths, Construct: construct, Depth: depth}}
 }
 
 func contextObs(o Observation) Observation {
@@ -577,7 +577,7 @@ func detectCLI(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 					ix.block(apimodel.KindBackend, "cannot conclude the command starts no server: "+w)
 				}
 				held = held && ok
-				group = append(group, commandObs(cmd), scopeObs(cmd.path, ix.noServerScope(cmd), constructGoNoServer, 0,
+				group = append(group, commandObs(cmd), scopeObs(cmd.path, ix.noServerScope(cmd), constructGoNoServer, 0, AbsenceGoServer,
 					"the command's package was inspected in full and contains no server call (produces a command)"))
 			}
 			if held {
@@ -615,7 +615,7 @@ func detectCLI(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 		case serverDep != "":
 			// a server binary; detectBackend owns it
 		case ix.cargo.complete():
-			groups = append(groups, evidenceGroup{binObs, scopeObs(ix.cargo.path, []string{ix.cargo.path}, constructCompleteReads, 0,
+			groups = append(groups, evidenceGroup{binObs, scopeObs(ix.cargo.path, []string{ix.cargo.path}, constructCompleteReads, 0, AbsenceCargoWebFramework,
 				"a binary target with no web-framework dependency (produces a command)")})
 		default:
 			ix.block(apimodel.KindBackend, "cannot conclude the binary target is a command: "+ix.st.describe(ix.cargo.path)+"; a web-framework dependency may lie in the unread remainder")
@@ -646,7 +646,7 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 				groups = append(groups, evidenceGroup{
 					fieldObs(ix.goMod.path, []string{"module"}, ix.modPath, "declares module "+ix.modPath),
 					spanObs(pkgFile.path, pkgFile.pkgStart, pkgFile.pkgEnd, pkgFile.pkg, constructGoPackageName, "declares package "+pkgFile.pkg+" (importable)"),
-					scopeObs(ix.goMod.path, []string{ix.goMod.path}, constructCoveringListing, ix.base+3,
+					scopeObs(ix.goMod.path, []string{ix.goMod.path}, constructCoveringListing, ix.base+3, AbsenceGoCommand,
 						"no package main at the conventional command locations (module root, cmd/)"),
 				})
 			}
@@ -679,9 +679,9 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 				ok = false
 			}
 			if ok {
-				premise := scopeObs(ix.pkgRef.path, []string{ix.pkgRef.path}, constructCompleteReads, 0, "declares no executable command entry in \"bin\" and the component has no app shell")
+				premise := scopeObs(ix.pkgRef.path, []string{ix.pkgRef.path}, constructCompleteReads, 0, AbsenceNPMCommandAndShell, "declares no executable command entry in \"bin\" and the component has no app shell")
 				if fw != "" {
-					premise = scopeObs(ix.pkgRef.path, []string{ix.pkgRef.path}, constructCoveringListing, ix.base+2, "declares no executable command entry in \"bin\" and the listing shows no app entry for runtime dependency \""+fw+"\"")
+					premise = scopeObs(ix.pkgRef.path, []string{ix.pkgRef.path}, constructCoveringListing, ix.base+2, AbsenceNPMCommandAndAppEntry, "declares no executable command entry in \"bin\" and the listing shows no app entry for runtime dependency \""+fw+"\"")
 				}
 				groups = append(groups, evidenceGroup{
 					fieldObs(ix.pkgRef.path, []string{entryField}, "", `declares a lib entry ("`+entryField+`") and no app or executable command (importable package)`),
@@ -695,9 +695,9 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 	if libObs, ok := ix.rustLibTarget(); ok {
 		switch bin, _, why := ix.rustBinTarget(); bin {
 		case no:
-			premise := scopeObs(ix.cargo.path, []string{ix.cargo.path}, constructCompleteReads, 0, "no binary target (importable crate)")
+			premise := scopeObs(ix.cargo.path, []string{ix.cargo.path}, constructCompleteReads, 0, AbsenceCargoBinary, "no binary target (importable crate)")
 			if cargoAutobins(ix.cargoM) {
-				premise = scopeObs(ix.cargo.path, []string{ix.cargo.path}, constructCoveringListing, ix.base+4, "no [[bin]] table or implicit binary entry in a covering listing (importable crate)")
+				premise = scopeObs(ix.cargo.path, []string{ix.cargo.path}, constructCoveringListing, ix.base+4, AbsenceCargoBinaryListing, "no [[bin]] table or implicit binary entry in a covering listing (importable crate)")
 			}
 			groups = append(groups, evidenceGroup{libObs, premise})
 		case unknown:
@@ -720,7 +720,7 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 		case !ix.pyProj.dynamicEntryPoints():
 			groups = append(groups, evidenceGroup{
 				fieldObs(ix.pyproj.path, []string{"project"}, "", "declares a static [project] table"),
-				scopeObs(ix.pyproj.path, []string{ix.pyproj.path}, constructCompleteReads, 0, "with no command or GUI entry points (importable package)"),
+				scopeObs(ix.pyproj.path, []string{ix.pyproj.path}, constructCompleteReads, 0, AbsencePythonEntryPoints, "with no command or GUI entry points (importable package)"),
 			})
 		}
 	}
