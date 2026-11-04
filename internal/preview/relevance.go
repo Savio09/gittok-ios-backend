@@ -54,12 +54,12 @@ var lowCategories = map[string]bool{
 }
 
 type ranker struct {
-	primary     string          // the deciding or first candidate product component
-	hasPrimary  bool            // the classifier named a product component
-	secondary   map[string]bool // other product candidates
+	primary     string          // the deciding component of a resolved verdict
+	hasPrimary  bool            // only a resolved verdict names a primary
+	peers       map[string]bool // an abstention's candidates, ranked as equals
 	premises    map[string]bool // witness keys of the primary basis
-	imports     map[string][]string
-	anyPrimary  bool // some fact lies outside supporting paths
+	imports     map[string][]crawler.Import
+	anyPrimary  bool // some product-bearing fact lies outside supporting paths
 	secondaries bool // a secondary component declares dependencies
 	mainReadme  bool // some README lies outside supporting paths
 }
@@ -76,58 +76,87 @@ func witnessKey(w crawler.Witness) string {
 }
 
 func newRanker(cls crawler.Classification, facts []crawler.Fact, imports []crawler.Import) *ranker {
-	r := &ranker{secondary: map[string]bool{}, premises: map[string]bool{}, imports: map[string][]string{}}
-	if len(cls.Products) > 0 {
-		r.primary, r.hasPrimary = cls.Products[0], true
-		for _, p := range cls.Products[1:] {
-			r.secondary[p] = true
-		}
-	}
-	if cls.Basis != nil {
+	r := &ranker{premises: map[string]bool{}, imports: map[string][]crawler.Import{}}
+	switch {
+	case cls.Status == crawler.VerdictResolved && cls.Basis != nil:
+		r.primary, r.hasPrimary = cls.Basis.Component, true
 		for _, p := range cls.Basis.Premises {
 			r.premises[witnessKey(p.Witness)] = true
 		}
+	case len(cls.Products) > 0:
+		// Candidate order is not a product decision: an abstention's
+		// candidates share product priority.
+		r.peers = map[string]bool{}
+		for _, p := range cls.Products {
+			r.peers[p] = true
+		}
 	}
 	for _, im := range imports {
-		r.imports[im.Component] = append(r.imports[im.Component], im.Path)
+		r.imports[im.Component] = append(r.imports[im.Component], im)
 	}
 	for _, f := range facts {
-		if !crawler.SupportingPath(f.Witness.Path) {
+		// Documentation describes a product; it is not competing product
+		// evidence that would make tooling-path code look like a helper.
+		if f.Kind != crawler.FactReadme && !crawler.SupportingPath(f.Witness.Path) {
 			r.anyPrimary = true
-		}
-		if f.Kind == crawler.FactDependency && r.role(f) == tierSecondary {
-			r.secondaries = true
 		}
 		if f.Kind == crawler.FactReadme && !crawler.SupportingPath(f.Witness.Path) {
 			r.mainReadme = true
 		}
 	}
+	for _, f := range facts {
+		if f.Kind == crawler.FactDependency && r.role(f) == tierSecondary {
+			r.secondaries = true
+		}
+	}
 	return r
 }
 
-// role places a fact's component: tierProduct for the product (or, when the
-// classifier named none, any component), tierSecondary otherwise.
+// role places a fact's component: tierProduct for the resolved product, for
+// an abstention's candidates, or — when the classifier named none — for any
+// component; tierSecondary otherwise.
 func (r *ranker) role(f crawler.Fact) int {
-	if !r.hasPrimary || f.Component == r.primary {
-		return tierProduct
+	switch {
+	case r.hasPrimary:
+		if f.Component == r.primary {
+			return tierProduct
+		}
+		return tierSecondary
+	case r.peers != nil:
+		if r.peers[f.Component] {
+			return tierProduct
+		}
+		return tierSecondary
 	}
-	return tierSecondary
+	return tierProduct
 }
 
-// supporting reports a supporting-path hint that should lower a fact. When no
-// fact lies outside supporting paths, the hint distinguishes nothing.
+// supporting reports a supporting-path hint that should lower a fact.
 func (r *ranker) supporting(f crawler.Fact) bool {
-	if r.hasPrimary && f.Component == r.primary && crawler.SupportingPath(f.Component+"/") {
-		return crawler.SupportingPath(strings.TrimPrefix(f.Witness.Path, f.Component+"/"))
-	}
-	return r.anyPrimary && crawler.SupportingPath(f.Witness.Path)
+	return r.supportingFile(f.Component, f.Witness.Path)
 }
 
-// imported reports whether inspected code in the fact's component imports the
-// declared module: an import path equal to it or below it at a path boundary.
+// supportingFile applies the path hint to a file owned by component. Within a
+// resolved product that itself lies under a tooling-like path, only paths
+// below it count; and when no product-bearing fact lies outside supporting
+// paths, the hint distinguishes nothing (the tooling is the product).
+func (r *ranker) supportingFile(component, p string) bool {
+	if r.hasPrimary && component == r.primary && crawler.SupportingPath(component+"/") {
+		return crawler.SupportingPath(strings.TrimPrefix(p, component+"/"))
+	}
+	return r.anyPrimary && crawler.SupportingPath(p)
+}
+
+// imported reports whether inspected product code in the fact's component
+// imports the declared module: an import path equal to it or below it at a
+// path boundary. Imports from supporting files (helpers, scripts, tests) do
+// not count.
 func (r *ranker) imported(f crawler.Fact) bool {
-	for _, ip := range r.imports[f.Component] {
-		if ip == f.Name || strings.HasPrefix(ip, f.Name+"/") {
+	for _, im := range r.imports[f.Component] {
+		if r.supportingFile(im.Component, im.File) {
+			continue
+		}
+		if im.Path == f.Name || strings.HasPrefix(im.Path, f.Name+"/") {
 			return true
 		}
 	}
@@ -217,9 +246,12 @@ func (r *ranker) place(f crawler.Fact, c *candidate) bool {
 }
 
 // selectClaims takes candidates in priority order within the bounded budgets
-// and reports how many were left out.
-func selectClaims(cands []candidate, secondaries bool) (out []candidate, omitted int) {
+// and reports how many were left out. peerQuota, when positive, is each peer
+// product candidate's equal share of the dependency budget, so no candidate's
+// allocation depends on where its name sorts.
+func selectClaims(cands []candidate, secondaries bool, peerQuota int) (out []candidate, omitted int) {
 	var deps, productDeps, low, scripts, readmes int
+	perComponent := map[string]int{}
 	productCap := maxDependencies
 	if secondaries {
 		productCap = maxProductDeps
@@ -230,6 +262,7 @@ func selectClaims(cands []candidate, secondaries bool) (out []candidate, omitted
 			c.low && low == maxLowPriority,
 			c.dep && deps == maxDependencies,
 			c.dep && c.productDep && productDeps == productCap,
+			c.dep && c.productDep && peerQuota > 0 && perComponent[c.component] == peerQuota,
 			c.script && scripts == maxScripts,
 			c.readme && readmes == maxReadmePassage:
 			omitted++
@@ -242,6 +275,7 @@ func selectClaims(cands []candidate, secondaries bool) (out []candidate, omitted
 			deps++
 			if c.productDep {
 				productDeps++
+				perComponent[c.component]++
 			}
 		}
 		if c.script {

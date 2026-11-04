@@ -321,3 +321,84 @@ func TestNonSetupScriptsShareTheLowerPriorityBudget(t *testing.T) {
 		t.Errorf("setup scripts %d (want 2), other scripts %d (want ≤2)", setup, other)
 	}
 }
+
+// Ported from the swarm review's product controls (SW7–SW9).
+
+// SW7: candidates of an inconclusive verdict are peers; renaming a directory
+// must not decide which one keeps its decisive evidence.
+func TestInconclusiveProductCandidatesArePeers(t *testing.T) {
+	mk := func(root string) map[string]string {
+		deps := map[string]string{"react": "18"}
+		mod := "module example.com/cli\nrequire (\n github.com/spf13/cobra v1.8.0\n"
+		for i := 0; i < 8; i++ {
+			deps[fmt.Sprintf("z%d", i)] = "1"
+			mod += fmt.Sprintf(" example.com/d%d v1.0.0\n", i)
+		}
+		mod += ")\n"
+		body, _ := json.Marshal(map[string]any{"dependencies": deps})
+		return map[string]string{root + "/go.mod": mod, root + "/main.go": "package main\nimport \"github.com/spf13/cobra\"\nfunc main() { _ = cobra.Command{} }\n", "m/package.json": string(body)}
+	}
+	shapes := map[string][]string{}
+	for _, root := range []string{"a", "z"} {
+		in := synthetic([]string{root + "/go.mod", root + "/main.go", "m/package.json", "m/index.html"}, mk(root))
+		if cls := crawler.Classify(in.Inspection); cls.Status == crawler.VerdictResolved {
+			t.Fatalf("fixture must be inconclusive, got %s", cls.Kind)
+		}
+		p := Build(in)
+		s := measure(p)
+		if !s.labels["Declares github.com/spf13/cobra"] || !s.labels["Declares react"] {
+			t.Errorf("root %s: a candidate's decisive declaration was displaced: %v", root, depLabels(p))
+		}
+		var cli, web int
+		for _, l := range depLabels(p) {
+			if strings.HasSuffix(l, "@m/package.json") {
+				web++
+			} else {
+				cli++
+			}
+		}
+		shapes[root] = []string{fmt.Sprint(cli), fmt.Sprint(web)}
+	}
+	if !reflect.DeepEqual(shapes["a"], shapes["z"]) {
+		t.Errorf("renaming a directory changed the allocation: %v", shapes)
+	}
+}
+
+// SW8: imports from helper files do not make a declaration look like product code.
+func TestHelperOnlyImportsDoNotPromoteDeclarations(t *testing.T) {
+	mod := "module example.com/app\n\nrequire (\n github.com/spf13/cobra v1.8.0\n example.com/zproduct v1.0.0\n"
+	helper := "package main\nimport (\n"
+	for i := 0; i < 9; i++ {
+		mod += fmt.Sprintf(" example.com/ahelper%d v1.0.0\n", i)
+		helper += fmt.Sprintf(" _ \"example.com/ahelper%d\"\n", i)
+	}
+	mod += ")\n"
+	helper += ")\nfunc main() {}\n"
+	p := Build(synthetic([]string{"go.mod", "cmd/app/main.go", "script/helper.go"}, map[string]string{
+		"go.mod":           mod,
+		"cmd/app/main.go":  "package main\nimport (\n \"github.com/spf13/cobra\"\n \"example.com/zproduct\"\n)\nfunc main() { _ = cobra.Command{}; zproduct.Run() }\n",
+		"script/helper.go": helper,
+	}))
+	if s := measure(p); !s.labels["Declares example.com/zproduct"] || !s.labels["Declares github.com/spf13/cobra"] {
+		t.Errorf("a product-imported declaration was displaced by helper imports: %v", depLabels(p))
+	}
+}
+
+// SW9: documentation is not a competing product; a tool-only repository keeps
+// its product evidence when a root README is added.
+func TestAReadmeDoesNotDemoteTheOnlyProduct(t *testing.T) {
+	paths := []string{"tools/app/go.mod", "tools/app/main.go"}
+	files := map[string]string{
+		"tools/app/go.mod":  "module example.com/app\n\nrequire (\n github.com/spf13/cobra v1.8.0\n github.com/spf13/pflag v1.0.5\n golang.org/x/term v0.20.0\n)\n",
+		"tools/app/main.go": "package main\nimport (\n \"github.com/spf13/cobra\"\n \"net/http\"\n)\nfunc main() { _ = cobra.Command{}; http.ListenAndServe(\":8080\",nil) }\n",
+	}
+	before := Build(synthetic(paths, files))
+	files["README.md"] = "# App\n\nThe product command.\n"
+	after := Build(synthetic(append(paths, "README.md"), files))
+	if len(depLabels(before)) != len(depLabels(after)) || len(depLabels(after)) != 3 {
+		t.Errorf("declarations %v before, %v after adding a README", depLabels(before), depLabels(after))
+	}
+	if !measure(after).labels["Contains net/http call"] || !measure(after).labels["README passage"] {
+		t.Errorf("the product's source construct or README was lost: %v", measure(after).labels)
+	}
+}
