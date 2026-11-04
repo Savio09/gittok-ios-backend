@@ -234,9 +234,18 @@ func scopePremise(in Input, o crawler.Observation) (string, []apimodel.Source, s
 	if len(w.Paths) > 0 {
 		manifest = strconv.Quote(w.Paths[0])
 	}
+	// An absence the listing establishes needs the recorded tree and a listing
+	// that covers the depth the premise relies on; a truncated or too-shallow
+	// listing cannot show that something is missing.
+	depth := w.Depth
+	if dir != "" && o.Absence == crawler.AbsenceGoServer {
+		depth = strings.Count(dir, "/") + 2
+	} else if depth == 0 {
+		depth = 1
+	}
 	withTree := func(phrase string) (string, []apimodel.Source, string, bool) {
 		tree, ok := treeSource(in, "git/trees/"+in.Inspection.Revision.Ref)
-		if !ok {
+		if !ok || !in.Inspection.Scope.Covers(depth) {
 			return "", nil, "", false
 		}
 		return phrase, append(files, tree), "", true
@@ -249,7 +258,7 @@ func scopePremise(in Input, o crawler.Observation) (string, []apimodel.Source, s
 		}
 		return withTree(fmt.Sprintf("all %d non-test Go files of the command package in %s, and go.mod, were read in full: they contain no net/http server call and require no recognised server framework", goFiles, where))
 	case crawler.AbsenceGoCommand:
-		return withTree(manifest + " was read in full, and the inspected file tree shows no package main at the module root or under cmd/")
+		return withTree(fmt.Sprintf("%s was read in full; the package clauses of the %d inspected Go files at the module root and under cmd/ declare no package main, and the inspected file tree lists no other Go file under cmd/", manifest, len(w.Paths)-1))
 	case crawler.AbsenceCargoWebFramework:
 		return manifest + " was read in full and declares no recognised web-framework dependency", files, "", true
 	case crawler.AbsenceCargoBinary:

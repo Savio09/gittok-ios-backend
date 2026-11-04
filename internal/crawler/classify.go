@@ -646,7 +646,7 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 				groups = append(groups, evidenceGroup{
 					fieldObs(ix.goMod.path, []string{"module"}, ix.modPath, "declares module "+ix.modPath),
 					spanObs(pkgFile.path, pkgFile.pkgStart, pkgFile.pkgEnd, pkgFile.pkg, constructGoPackageName, "declares package "+pkgFile.pkg+" (importable)"),
-					scopeObs(ix.goMod.path, []string{ix.goMod.path}, constructCoveringListing, ix.base+3, AbsenceGoCommand,
+					scopeObs(ix.goMod.path, ix.noCommandScope(), constructGoNoCommand, ix.base+3, AbsenceGoCommand,
 						"no package main at the conventional command locations (module root, cmd/)"),
 				})
 			}
@@ -927,6 +927,26 @@ func (ix *repoIndex) goNoCommandPremise() (bool, []string) {
 		}
 	}
 	return len(why) == 0, dedupe(why)
+}
+
+// noCommandScope is the basis of goNoCommandPremise: go.mod, then every Go
+// source under cmd/ and the read module-root sources whose package clauses it
+// consulted, path-sorted. Its witness re-derives each clause (see
+// validateGoNoCommand), so no premise rests on a tree name alone.
+func (ix *repoIndex) noCommandScope() []string {
+	var files []string
+	for _, p := range ix.goCandidatePaths() {
+		rel := ix.comp.rel(p)
+		if strings.HasPrefix(strings.ToLower(rel), "cmd/") {
+			files = append(files, p)
+		} else if dirOf(p) == ix.comp.root {
+			if g, ok := ix.goFileAt(p); ok && g.pkg != "" {
+				files = append(files, p)
+			}
+		}
+	}
+	sort.Strings(files)
+	return append([]string{ix.goMod.path}, files...)
 }
 
 // goCandidatePaths lists every primary-scope, non-test Go source the component

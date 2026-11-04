@@ -190,3 +190,35 @@ func TestClaimKeysDistinguishAdditionalSources(t *testing.T) {
 func githubTreeFor(owner, name string) string {
 	return githubclient.TreeRequestPath(owner, name, proofSHA)
 }
+
+// SW2 (swarm review): a library's no-command premise cites every consulted
+// package-clause file, and an unread one withholds the kind.
+func TestKindProofCitesEveryConsultedPackageClause(t *testing.T) {
+	files := map[string]string{"go.mod": "module example.com/lib\n", "lib.go": "package lib\nfunc F() {}\n", "cmd/tool/helper.go": "package helper\n"}
+	paths := []string{"go.mod", "lib.go", "cmd/tool/helper.go"}
+	build := func() apimodel.RepoPreview {
+		insp := crawler.InspectionFromSources("Go", paths, files)
+		insp.Revision = crawler.Revision{Ref: proofSHA, Resolved: true}
+		insp.TreeRequest = githubclient.TreeRequestPath("o", "r", proofSHA)
+		return Build(Input{Repo: githubclient.Repo{Owner: "o", Name: "r", FullName: "o/r"}, Inspection: insp})
+	}
+	p := build()
+	proof, ok := kindProof(p)
+	if p.Kind != apimodel.KindLibrary || !ok {
+		t.Fatalf("kind %s, proof %v", p.Kind, ok)
+	}
+	cited := map[string]bool{}
+	for _, s := range allSources(proof) {
+		cited[s.Ref] = true
+	}
+	if !cited["cmd/tool/helper.go"] || !cited["lib.go"] || !cited["go.mod"] {
+		t.Errorf("consulted clause files not all cited: %v", cited)
+	}
+	if !strings.Contains(proof.Explanation, "package clauses") {
+		t.Errorf("the content inference is not described: %q", proof.Explanation)
+	}
+	delete(files, "cmd/tool/helper.go")
+	if p := build(); p.Kind != apimodel.KindOther {
+		t.Errorf("an unread consulted file still displays %s", p.Kind)
+	}
+}

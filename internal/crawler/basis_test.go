@@ -116,3 +116,46 @@ func TestInspectionKeepsTheTreeRequestThatProducedItsListing(t *testing.T) {
 		t.Fatal("a synthetic listing must not claim provider provenance")
 	}
 }
+
+// SW2 (swarm review): "no command at the conventional locations" rests on the
+// package clauses of the inspected root and cmd/ Go files, not only on go.mod
+// and the tree. The premise names every such file, and its validator rejects a
+// premise that omits one or relies on one that was not read.
+func TestGoNoCommandPremiseNamesEveryInspectedClause(t *testing.T) {
+	files := map[string]string{"go.mod": "module example.com/lib\n", "lib.go": "package lib\nfunc F() {}\n", "cmd/tool/helper.go": "package helper\n"}
+	paths := []string{"go.mod", "lib.go", "cmd/tool/helper.go"}
+	insp := InspectionFromSources("Go", paths, files)
+	c := Classify(insp)
+	if c.Kind != apimodel.KindLibrary || c.Basis == nil {
+		t.Fatalf("fixture: %s %+v", c.Kind, c.Basis)
+	}
+	var premise *Observation
+	for i, p := range c.Basis.Premises {
+		if p.Absence == AbsenceGoCommand {
+			premise = &c.Basis.Premises[i]
+		}
+	}
+	if premise == nil {
+		t.Fatalf("no typed no-command premise: %+v", c.Basis.Premises)
+	}
+	if !reflect.DeepEqual(premise.Witness.Paths, []string{"go.mod", "cmd/tool/helper.go", "lib.go"}) {
+		t.Errorf("premise scope %v must name go.mod and every inspected clause it relies on", premise.Witness.Paths)
+	}
+	st := indexInspection(insp)
+	if err := validateWitness(st, premise.Witness); err != nil {
+		t.Fatalf("published premise does not validate: %v", err)
+	}
+	omitted := premise.Witness
+	omitted.Paths = []string{"go.mod", "lib.go"}
+	if validateWitness(st, omitted) == nil {
+		t.Error("a premise omitting cmd/tool/helper.go validated")
+	}
+	delete(files, "cmd/tool/helper.go")
+	unread := InspectionFromSources("Go", paths, files)
+	if validateWitness(indexInspection(unread), premise.Witness) == nil {
+		t.Error("a premise relying on an unread file validated")
+	}
+	if got := Classify(unread); got.Kind == apimodel.KindLibrary {
+		t.Error("an unread cmd/ file still allowed the library verdict")
+	}
+}

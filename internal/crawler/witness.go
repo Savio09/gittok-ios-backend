@@ -50,6 +50,7 @@ const (
 	constructRustBinTarget   = "cargo.implicit-bin" // listing: src/main.rs or src/bin/*.rs
 	constructRustLibTarget   = "cargo.implicit-lib" // listing: src/lib.rs
 	constructGoNoServer      = "go.no-server"       // scope: the command's package, read, parsed, no server call
+	constructGoNoCommand     = "go.no-command"      // scope: go.mod plus every consulted root/cmd/ package clause, none main
 	constructCompleteReads   = "complete-reads"     // scope: manifests read in full
 	constructCoveringListing = "covering-listing"   // scope: complete reads plus a listing covering Depth segments
 )
@@ -293,6 +294,9 @@ func validateImplicitCargoTarget(st *inspIndex, w Witness) error {
 func validateScope(st *inspIndex, w Witness) error {
 	if len(w.Paths) == 0 {
 		return fmt.Errorf("scope witness %s names no paths", w.Construct)
+	}
+	if w.Construct == constructGoNoCommand {
+		return validateGoNoCommand(st, w)
 	}
 	for _, p := range w.Paths {
 		if !st.complete(p) {
