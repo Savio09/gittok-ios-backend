@@ -105,8 +105,9 @@ const (
 // compVerdict is one component's role and the evidence behind it.
 type compVerdict struct {
 	comp      *component
-	name      string // the name its manifest declares, for dependency matching
-	workspace bool   // its manifest aggregates other components
+	name      string  // the name its manifest declares, for dependency matching
+	nameW     Witness // the field that declares name (located), when known
+	workspace bool    // its manifest aggregates other components
 	status    roleStatus
 	kind      apimodel.RepoKind
 	obs       []Observation // support for kind, when resolved
@@ -209,7 +210,7 @@ func (o Observation) describe() string {
 // component is unresolved. A block that can only establish the same or a
 // lower-precedence role does not change the verdict; it stays a limitation.
 func classifyComponent(ix *repoIndex, cands []candidate) compVerdict {
-	v := compVerdict{comp: ix.comp, name: ix.componentName(), workspace: ix.isWorkspace()}
+	v := compVerdict{comp: ix.comp, name: ix.componentName(), nameW: ix.componentNameWitness(), workspace: ix.isWorkspace()}
 	switch {
 	case len(cands) > 0:
 		chosen := cands[0]
@@ -312,7 +313,7 @@ func resolveRepository(st *inspIndex, vs []compVerdict) Classification {
 	// or depth-limited listing can omit one that would itself be a product, so
 	// that comparison needs a complete listing; the root-resolved case above does
 	// not, because the root manifest speaks for the repository regardless.
-	supporting := supportingComponents(vs)
+	supporting, reasons := supportingComponents(st, vs)
 	var top []*compVerdict
 	// npm workspaces manage linked packages; they do not exclude an application
 	// in the root package. Compare that artifact with members instead of dropping
@@ -343,12 +344,12 @@ func resolveRepository(st *inspIndex, vs []compVerdict) Classification {
 	}
 	switch {
 	case allKind(top, top[0].kind):
-		return decided(top[0], vs, limits, top)
+		return withExclusions(decided(top[0], vs, limits, top), vs, reasons)
 	case len(executables) > 0 && allKind(executables, executables[0].kind):
 		// One executable role beside importable libraries: the same rule as
 		// within a component — an artifact outranks a library — so the libraries
 		// are packages published alongside the product.
-		return decided(executables[0], vs, limits, top)
+		return withExclusions(decided(executables[0], vs, limits, top), vs, reasons)
 	}
 	return abstain(vs, limits, "independent components declare different roles: "+strings.Join(componentRoles(top), ", "), top)
 }
@@ -370,11 +371,20 @@ func componentRoles(top []*compVerdict) []string {
 	return out
 }
 
+// exclusionCause is why supportingComponents set a component aside: its path,
+// or a dependency another component declares on its name.
+type exclusionCause struct {
+	reason ExclusionReason
+	dep    Witness // the depending declaration, for a dependency exclusion
+}
+
 // supportingComponents marks the nested components that support another rather
 // than standing as a product: those under an examples/docs/tooling directory,
-// and those whose declared name another component lists as a dependency.
-func supportingComponents(vs []compVerdict) map[int]bool {
+// and those whose declared name another component lists as a dependency. Each
+// mark keeps its cause, so a comparison can cite why a component was set aside.
+func supportingComponents(st *inspIndex, vs []compVerdict) (map[int]bool, map[int]exclusionCause) {
 	out := map[int]bool{}
+	causes := map[int]exclusionCause{}
 	byName := map[string]int{}
 	for i := 1; i < len(vs); i++ {
 		if vs[i].name != "" {
@@ -382,16 +392,54 @@ func supportingComponents(vs []compVerdict) map[int]bool {
 		}
 		if scopeRank(vs[i].comp.root+"/") >= 2 {
 			out[i] = true
+			causes[i] = exclusionCause{reason: ExcludedByPath}
 		}
 	}
 	for i, v := range vs {
 		for _, d := range v.comp.deps {
 			if j, ok := byName[d.Name]; ok && j != i {
 				out[j] = true
+				if _, have := causes[j]; !have {
+					causes[j] = exclusionCause{reason: ExcludedAsDependency, dep: dependencyWitness(st, d)}
+				}
 			}
 		}
 	}
-	return out
+	return out, causes
+}
+
+// withExclusions records, in a comparison's basis, every role-bearing
+// component that was set aside as supporting, with its validated premises.
+func withExclusions(c Classification, vs []compVerdict, causes map[int]exclusionCause) Classification {
+	if c.Basis == nil {
+		return c
+	}
+	for i := 1; i < len(vs); i++ {
+		cause, ok := causes[i]
+		if !ok || vs[i].status == roleNone {
+			continue
+		}
+		e := Exclusion{Component: vs[i].comp.root, Reason: cause.reason}
+		if vs[i].status == roleResolved {
+			e.Kind = vs[i].kind
+		}
+		switch cause.reason {
+		case ExcludedByPath:
+			if len(vs[i].comp.manifests) > 0 {
+				m := vs[i].comp.manifests[0].path
+				e.Premises = []Observation{{Path: m, Detail: "lies under an example, documentation or tooling directory", Witness: Witness{Kind: WitnessListing, Paths: []string{m}, Construct: constructSupportingPath}}}
+			}
+		case ExcludedAsDependency:
+			if vs[i].nameW.Kind != "" {
+				e.Premises = []Observation{
+					{Path: cause.dep.Path, Detail: "declares a dependency on " + vs[i].name, Witness: cause.dep},
+					{Path: vs[i].nameW.Path, Detail: "declares the name " + vs[i].name, Witness: vs[i].nameW},
+				}
+			}
+		}
+		c.Basis.Excluded = append(c.Basis.Excluded, e)
+	}
+	return c
 }
 
 // decided reports primary's role, keeping every other component's evidence as

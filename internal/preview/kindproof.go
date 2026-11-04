@@ -83,6 +83,31 @@ func kindClaim(in Input, cls crawler.Classification) (candidate, bool) {
 			others = append(others, label+" ("+string(other.Kind)+")")
 			allSame = allSame && other.Kind == b.Kind
 		}
+		// Each role-bearing component set aside as supporting is a premise of
+		// the comparison: state and cite why, or withhold the kind.
+		var excluded []string
+		for _, e := range b.Excluded {
+			if len(e.Premises) == 0 {
+				return candidate{}, false
+			}
+			var reasons []string
+			for _, o := range e.Premises {
+				phrase, srcs, _, ok := premise(in, o)
+				if !ok {
+					return candidate{}, false
+				}
+				reasons = append(reasons, phrase)
+				add(srcs)
+			}
+			role := "role not determined"
+			if e.Kind != "" {
+				role = string(e.Kind)
+			}
+			excluded = append(excluded, "component "+strconv.Quote(e.Component)+" ("+role+") because "+strings.Join(reasons, " and "))
+		}
+		if len(excluded) > 0 {
+			text += " Set aside as supporting: " + strings.Join(excluded, "; ") + "."
+		}
 		switch {
 		case len(others) == 0:
 			text += " It is the only product component in the complete file tree."
@@ -91,7 +116,7 @@ func kindClaim(in Input, cls crawler.Classification) (candidate, bool) {
 		default:
 			text += " The other product components in the complete file tree are " + strings.Join(others, ", ") + "; an executable product outranks importable libraries."
 		}
-		limit += " Components under example, documentation or tooling paths, and packages another component depends on, were treated as supporting."
+
 	}
 	label := "Why this is " + name
 	c := apimodel.Claim{
@@ -173,6 +198,7 @@ func premise(in Input, o crawler.Observation) (string, []apimodel.Source, string
 }
 
 var listingGloss = map[string]string{
+	"supporting-path":  "which lies under an example, documentation or tooling directory",
 	"entry.index-html": "a web app entry page",
 	"entry.src-app":    "an app root component",
 	"entry.src-main":   "an app bootstrap file",

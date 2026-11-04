@@ -214,6 +214,29 @@ type Basis struct {
 	Premises     []Observation
 	ByComparison bool    // decided by comparing components of a complete listing
 	Compared     []Basis // the other compared components (no further nesting)
+	// Excluded records, for a comparison, each role-bearing component set aside
+	// as supporting, with the validated premises of that exclusion.
+	Excluded []Exclusion
+}
+
+// ExclusionReason says why a component was treated as supporting.
+type ExclusionReason string
+
+const (
+	// ExcludedByPath: the component lies under an example, documentation or
+	// tooling directory.
+	ExcludedByPath ExclusionReason = "supporting-path"
+	// ExcludedAsDependency: another component declares a dependency on the
+	// name this component declares.
+	ExcludedAsDependency ExclusionReason = "dependency"
+)
+
+// Exclusion is one component set aside from a product comparison.
+type Exclusion struct {
+	Component string
+	Kind      apimodel.RepoKind // its own role, when resolved
+	Reason    ExclusionReason
+	Premises  []Observation
 }
 
 // VerdictStatus says whether the classifier reached a supported conclusion or

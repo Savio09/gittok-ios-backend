@@ -49,6 +49,7 @@ const (
 	constructAppConfig       = "entry.app-config"   // listing: a web-app build config
 	constructRustBinTarget   = "cargo.implicit-bin" // listing: src/main.rs or src/bin/*.rs
 	constructRustLibTarget   = "cargo.implicit-lib" // listing: src/lib.rs
+	constructSupportingPath  = "supporting-path"    // listing: a component manifest under an example/docs/tooling directory
 	constructGoNoServer      = "go.no-server"       // scope: the command's package, read, parsed, no server call
 	constructGoNoCommand     = "go.no-command"      // scope: go.mod plus every consulted root/cmd/ package clause, none main
 	constructCompleteReads   = "complete-reads"     // scope: manifests read in full
@@ -250,6 +251,13 @@ func validateListing(st *inspIndex, w Witness) error {
 		ok = some(isAppConfig)
 	case constructRustBinTarget, constructRustLibTarget:
 		return validateImplicitCargoTarget(st, w)
+	case constructSupportingPath:
+		for _, p := range w.Paths {
+			if k, ok := manifestKindOf(p); !ok || !k.definesComponent() || scopeRank(dirOf(p)+"/") < 2 {
+				return fmt.Errorf("%s is not a component manifest under an example, documentation or tooling directory", p)
+			}
+		}
+		return nil
 	default:
 		return fmt.Errorf("unknown listing construct %q", w.Construct)
 	}

@@ -237,3 +237,39 @@ func TestKindProofAbstainsWhenTheListingCannotShowAbsence(t *testing.T) {
 		}
 	}
 }
+
+// SW3 (swarm review): a comparison cites why each role-bearing component was
+// set aside; the omitted root dependency changes the result when removed.
+func TestKindProofCitesEachSupportingExclusion(t *testing.T) {
+	files := map[string]string{
+		"package.json":              `{"private":true,"workspaces":["apps/*"],"dependencies":{"sidecar":"*"}}`,
+		"apps/web/package.json":     `{"name":"web","dependencies":{"react":"19"}}`,
+		"apps/sidecar/package.json": `{"name":"sidecar","dependencies":{"express":"5"}}`,
+	}
+	paths := []string{"package.json", "apps/web/package.json", "apps/web/index.html", "apps/sidecar/package.json"}
+	build := func() apimodel.RepoPreview {
+		insp := crawler.InspectionFromSources("JavaScript", paths, files)
+		insp.Revision = crawler.Revision{Ref: proofSHA, Resolved: true}
+		insp.TreeRequest = githubclient.TreeRequestPath("o", "r", proofSHA)
+		return Build(Input{Repo: githubclient.Repo{Owner: "o", Name: "r", FullName: "o/r"}, Inspection: insp})
+	}
+	p := build()
+	proof, ok := kindProof(p)
+	if p.Kind != apimodel.KindFrontend || !ok {
+		t.Fatalf("kind %s, proof %v", p.Kind, ok)
+	}
+	cited := map[string]bool{}
+	for _, s := range allSources(proof) {
+		cited[s.Ref] = true
+	}
+	if !cited["package.json"] || !cited["apps/sidecar/package.json"] {
+		t.Errorf("exclusion premises not cited: %v", cited)
+	}
+	if !strings.Contains(proof.Explanation, `"apps/sidecar" (backend)`) {
+		t.Errorf("exclusion not stated: %q", proof.Explanation)
+	}
+	files["package.json"] = `{"private":true,"workspaces":["apps/*"]}`
+	if p := build(); p.Kind != apimodel.KindOther {
+		t.Errorf("without the cited dependency the result should change, got %s", p.Kind)
+	}
+}

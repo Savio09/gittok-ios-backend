@@ -209,6 +209,28 @@ func (ix *repoIndex) componentName() string {
 	return ""
 }
 
+// componentNameWitness is the field that declares componentName, with its
+// verified location when one exists; the zero Witness when there is none.
+func (ix *repoIndex) componentNameWitness() Witness {
+	var w Witness
+	switch {
+	case ix.pkg != nil && ix.pkg.Name != "":
+		w = Witness{Kind: WitnessField, Path: ix.pkgRef.path, Field: []string{"name"}, Value: ix.pkg.Name}
+	case ix.modPath != "":
+		w = Witness{Kind: WitnessField, Path: ix.goMod.path, Field: []string{"module"}, Value: ix.modPath}
+	case ix.cargoOK && ix.cargoM.Package != nil && ix.cargoM.Package.Name != "":
+		w = Witness{Kind: WitnessField, Path: ix.cargo.path, Field: []string{"package", "name"}, Value: ix.cargoM.Package.Name}
+	case ix.pyHasProject && ix.pyProj.Project.Name != "":
+		w = Witness{Kind: WitnessField, Path: ix.pyproj.path, Field: []string{"project", "name"}, Value: ix.pyProj.Project.Name}
+	default:
+		return w
+	}
+	if validateWitness(ix.st, w) != nil {
+		return Witness{}
+	}
+	return ix.st.locate(w)
+}
+
 // isWorkspace reports whether the component's manifest aggregates other
 // components, possibly alongside a product of its own: a private npm
 // package with "workspaces", a Cargo virtual manifest ([workspace] without

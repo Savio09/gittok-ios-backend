@@ -188,3 +188,42 @@ func TestNPMLibraryAbsenceNeedsACompleteListing(t *testing.T) {
 		})
 	}
 }
+
+// SW3 (swarm review): a nested comparison records why each role-bearing
+// component was set aside as supporting, as typed, validated premises.
+func TestComparisonBasisRecordsEachExclusion(t *testing.T) {
+	files := map[string]string{
+		"package.json":               `{"private":true,"workspaces":["apps/*"],"dependencies":{"sidecar":"*"}}`,
+		"apps/web/package.json":      `{"name":"web","dependencies":{"react":"19"}}`,
+		"apps/sidecar/package.json":  `{"name":"sidecar","dependencies":{"express":"5"}}`,
+		"examples/demo/package.json": `{"name":"demo","dependencies":{"react":"19"}}`,
+	}
+	paths := []string{"package.json", "apps/web/package.json", "apps/web/index.html", "apps/sidecar/package.json", "examples/demo/package.json", "examples/demo/index.html"}
+	insp := InspectionFromSources("JavaScript", paths, files)
+	c := Classify(insp)
+	if c.Kind != apimodel.KindFrontend || c.Basis == nil || !c.Basis.ByComparison {
+		t.Fatalf("fixture: %s %+v", c.Kind, c.Basis)
+	}
+	got := map[string]Exclusion{}
+	for _, e := range c.Basis.Excluded {
+		got[e.Component] = e
+	}
+	side, ok := got["apps/sidecar"]
+	if !ok || side.Reason != ExcludedAsDependency || side.Kind != apimodel.KindBackend {
+		t.Fatalf("sidecar exclusion: %+v (all: %+v)", side, c.Basis.Excluded)
+	}
+	var dep, name bool
+	for _, p := range side.Premises {
+		dep = dep || (p.Witness.Path == "package.json" && reflect.DeepEqual(p.Witness.Field, []string{"dependencies", "sidecar"}))
+		name = name || (p.Witness.Path == "apps/sidecar/package.json" && reflect.DeepEqual(p.Witness.Field, []string{"name"}) && p.Witness.Value == "sidecar")
+	}
+	if !dep || !name {
+		t.Errorf("dependency exclusion must cite the depending field and the declared name: %+v", side.Premises)
+	}
+	if demo, ok := got["examples/demo"]; !ok || demo.Reason != ExcludedByPath || len(demo.Premises) == 0 {
+		t.Errorf("path exclusion: %+v", demo)
+	}
+	for _, e := range c.Basis.Excluded {
+		basisPremisesValidate(t, insp, &Basis{Premises: e.Premises})
+	}
+}
