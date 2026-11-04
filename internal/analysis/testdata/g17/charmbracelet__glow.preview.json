@@ -75,8 +75,10 @@
           "source": {
             "kind": "file",
             "ref": "go.mod",
-            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+            "lines": "6-6",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod#L6-L6"
           },
+          "excerpt": "charm.land/bubbles/v2 v2.1.1",
           "explanation": "\"go.mod\" declares \"charm.land/bubbles/v2\" in \"require\" with declared specification \"v2.1.1\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
@@ -87,8 +89,10 @@
           "source": {
             "kind": "file",
             "ref": "go.mod",
-            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+            "lines": "7-7",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod#L7-L7"
           },
+          "excerpt": "charm.land/bubbletea/v2 v2.0.8",
           "explanation": "\"go.mod\" declares \"charm.land/bubbletea/v2\" in \"require\" with declared specification \"v2.0.8\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
@@ -99,8 +103,10 @@
           "source": {
             "kind": "file",
             "ref": "go.mod",
-            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+            "lines": "8-8",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod#L8-L8"
           },
+          "excerpt": "charm.land/glamour/v2 v2.0.1",
           "explanation": "\"go.mod\" declares \"charm.land/glamour/v2\" in \"require\" with declared specification \"v2.0.1\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
@@ -111,8 +117,10 @@
           "source": {
             "kind": "file",
             "ref": "go.mod",
-            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+            "lines": "9-9",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod#L9-L9"
           },
+          "excerpt": "charm.land/lipgloss/v2 v2.0.6",
           "explanation": "\"go.mod\" declares \"charm.land/lipgloss/v2\" in \"require\" with declared specification \"v2.0.6\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
@@ -123,8 +131,10 @@
           "source": {
             "kind": "file",
             "ref": "go.mod",
-            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+            "lines": "36-36",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod#L36-L36"
           },
+          "excerpt": "github.com/alecthomas/chroma/v2 v2.14.0 // indirect",
           "explanation": "\"go.mod\" declares \"github.com/alecthomas/chroma/v2\" in \"require (indirect)\" with declared specification \"v2.14.0\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
@@ -135,8 +145,10 @@
           "source": {
             "kind": "file",
             "ref": "go.mod",
-            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+            "lines": "10-10",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod#L10-L10"
           },
+          "excerpt": "github.com/atotto/clipboard v0.1.4",
           "explanation": "\"go.mod\" declares \"github.com/atotto/clipboard\" in \"require\" with declared specification \"v0.1.4\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
@@ -147,8 +159,10 @@
           "source": {
             "kind": "file",
             "ref": "go.mod",
-            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+            "lines": "37-37",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod#L37-L37"
           },
+          "excerpt": "github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect",
           "explanation": "\"go.mod\" declares \"github.com/aymanbagabas/go-osc52/v2\" in \"require (indirect)\" with declared specification \"v2.0.1\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
@@ -159,8 +173,10 @@
           "source": {
             "kind": "file",
             "ref": "go.mod",
-            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+            "lines": "38-38",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod#L38-L38"
           },
+          "excerpt": "github.com/aymerick/douceur v0.2.0 // indirect",
           "explanation": "\"go.mod\" declares \"github.com/aymerick/douceur\" in \"require (indirect)\" with declared specification \"v0.2.0\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
@@ -171,8 +187,10 @@
           "source": {
             "kind": "file",
             "ref": "go.mod",
-            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+            "lines": "11-11",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod#L11-L11"
           },
+          "excerpt": "github.com/caarlos0/env/v11 v11.3.1",
           "explanation": "\"go.mod\" declares \"github.com/caarlos0/env/v11\" in \"require\" with declared specification \"v11.3.1\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
@@ -183,8 +201,10 @@
           "source": {
             "kind": "file",
             "ref": "go.mod",
-            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+            "lines": "39-39",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod#L39-L39"
           },
+          "excerpt": "github.com/charmbracelet/colorprofile v0.4.3 // indirect",
           "explanation": "\"go.mod\" declares \"github.com/charmbracelet/colorprofile\" in \"require (indirect)\" with declared specification \"v0.4.3\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
@@ -195,8 +215,10 @@
           "source": {
             "kind": "file",
             "ref": "go.mod",
-            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+            "lines": "40-40",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod#L40-L40"
           },
+          "excerpt": "github.com/charmbracelet/lipgloss v1.1.1-0.20250404203927-76690c660834 // indirect",
           "explanation": "\"go.mod\" declares \"github.com/charmbracelet/lipgloss\" in \"require (indirect)\" with declared specification \"v1.1.1-0.20250404203927-76690c660834\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
@@ -207,8 +229,10 @@
           "source": {
             "kind": "file",
             "ref": "go.mod",
-            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+            "lines": "12-12",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod#L12-L12"
           },
+          "excerpt": "github.com/charmbracelet/log v0.4.2",
           "explanation": "\"go.mod\" declares \"github.com/charmbracelet/log\" in \"require\" with declared specification \"v0.4.2\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
@@ -219,8 +243,10 @@
           "source": {
             "kind": "file",
             "ref": "go.mod",
-            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+            "lines": "41-41",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod#L41-L41"
           },
+          "excerpt": "github.com/charmbracelet/ultraviolet v0.0.0-20260811164956-006e29f97886 // indirect",
           "explanation": "\"go.mod\" declares \"github.com/charmbracelet/ultraviolet\" in \"require (indirect)\" with declared specification \"v0.0.0-20260811164956-006e29f97886\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
@@ -231,8 +257,10 @@
           "source": {
             "kind": "file",
             "ref": "go.mod",
-            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+            "lines": "42-42",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod#L42-L42"
           },
+          "excerpt": "github.com/charmbracelet/x/ansi v0.11.8 // indirect",
           "explanation": "\"go.mod\" declares \"github.com/charmbracelet/x/ansi\" in \"require (indirect)\" with declared specification \"v0.11.8\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
@@ -243,8 +271,10 @@
           "source": {
             "kind": "file",
             "ref": "go.mod",
-            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+            "lines": "43-43",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod#L43-L43"
           },
+          "excerpt": "github.com/charmbracelet/x/cellbuf v0.0.15 // indirect",
           "explanation": "\"go.mod\" declares \"github.com/charmbracelet/x/cellbuf\" in \"require (indirect)\" with declared specification \"v0.0.15\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
@@ -255,8 +285,10 @@
           "source": {
             "kind": "file",
             "ref": "go.mod",
-            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+            "lines": "13-13",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod#L13-L13"
           },
+          "excerpt": "github.com/charmbracelet/x/editor v0.1.0",
           "explanation": "\"go.mod\" declares \"github.com/charmbracelet/x/editor\" in \"require\" with declared specification \"v0.1.0\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
@@ -267,8 +299,10 @@
           "source": {
             "kind": "file",
             "ref": "go.mod",
-            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod"
+            "lines": "44-44",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod#L44-L44"
           },
+          "excerpt": "github.com/charmbracelet/x/exp/slice v0.0.0-20250327172914-2fdc97757edf // indirect",
           "explanation": "\"go.mod\" declares \"github.com/charmbracelet/x/exp/slice\" in \"require (indirect)\" with declared specification \"v0.0.0-20250327172914-2fdc97757edf\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",

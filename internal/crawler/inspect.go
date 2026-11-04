@@ -28,6 +28,7 @@ type inspIndex struct {
 	files         map[string]SourceFile
 	unavail       map[string]string // path -> reason
 	manifestCache map[string]parsedManifest
+	locationCache map[string]map[string][2]int
 	goCache       map[string]goFile
 	serverSpans   map[string]map[[2]int]bool
 }

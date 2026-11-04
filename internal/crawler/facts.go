@@ -153,7 +153,11 @@ func dependencyWitness(st *inspIndex, d depDecl) Witness {
 			}
 		}
 	}
-	return Witness{Kind: WitnessField, Path: d.Source, Field: field, Value: d.Spec}
+	w := Witness{Kind: WitnessField, Path: d.Source, Field: field, Value: d.Spec}
+	if span, supported, located := st.fieldLocation(d.Source, field); supported && located {
+		w.Start, w.End, w.Quote = span[0], span[1], st.files[d.Source].Content[span[0]:span[1]]
+	}
+	return w
 }
 
 func isReadme(p string) bool {

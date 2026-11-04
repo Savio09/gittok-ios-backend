@@ -126,6 +126,24 @@ func validateField(st *inspIndex, w Witness) error {
 	if w.Value != "" && got != w.Value {
 		return fmt.Errorf("%s field %s is %q, not %q", w.Path, strings.Join(w.Field, "."), got, w.Value)
 	}
+	// A locatable field must be declared wholly inside the consumed bytes; a
+	// claimed location must be exactly that declaration's bytes.
+	span, supported, located := st.fieldLocation(w.Path, w.Field)
+	if supported && !located {
+		return fmt.Errorf("%s field %s is not declared wholly inside the consumed bytes", w.Path, strings.Join(w.Field, "."))
+	}
+	if w.Start != 0 || w.End != 0 || w.Quote != "" {
+		if !supported {
+			return fmt.Errorf("%s field %s has no verified source location", w.Path, strings.Join(w.Field, "."))
+		}
+		content, err := consumed(st, w.Path)
+		if err != nil {
+			return err
+		}
+		if w.Start != span[0] || w.End != span[1] || w.Quote != content[span[0]:span[1]] {
+			return fmt.Errorf("%s bytes %d–%d are not the declaration of field %s", w.Path, w.Start, w.End, strings.Join(w.Field, "."))
+		}
+	}
 	return nil
 }
 

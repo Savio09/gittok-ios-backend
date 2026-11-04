@@ -56,7 +56,10 @@ func fileSource(in Input, w crawler.Witness) (apimodel.Source, string, error) {
 	if !found {
 		return apimodel.Source{}, "", fmt.Errorf("unread file")
 	}
-	if w.Kind != crawler.WitnessSpan {
+	// Span witnesses and field witnesses carrying a crawler-verified declaration
+	// location are rendered with lines; other fields cite the whole file.
+	spanned := w.Kind == crawler.WitnessSpan || (w.Kind == crawler.WitnessField && (w.Start != 0 || w.End != 0))
+	if !spanned {
 		return source, "", nil
 	}
 	if w.Start < 0 || w.End <= w.Start || w.End > len(content) || content[w.Start:w.End] != w.Quote {
