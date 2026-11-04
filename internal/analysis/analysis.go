@@ -81,6 +81,7 @@ type Service struct {
 	timeout    time.Duration
 	publicOnly bool
 	cache      *PreviewCache // public services only
+	flights    *group        // coalescing and admission, when enabled
 }
 
 // UseCache enables reuse of completed public previews. It has no effect on a
@@ -99,7 +100,7 @@ func NewService(github GitHub) *Service { return &Service{github: github, timeou
 func NewPublicService(options ...githubclient.Option) *Service {
 	s := NewService(githubclient.New("", options...))
 	s.publicOnly = true
-	return s
+	return s.UseAdmission(DefaultAdmissionLimits())
 }
 
 // Acquire reads metadata and canonically selected files without executing code.

@@ -2,6 +2,7 @@ package analysis
 
 import (
 	"context"
+	"time"
 
 	"github.com/Savio09/gittok-ios-backend/internal/apimodel"
 	"github.com/Savio09/gittok-ios-backend/internal/preview"
@@ -15,8 +16,12 @@ import (
 // valid canonical name, may be answered — from a stored snapshot for exactly
 // that identity, or by acquiring from that same verified metadata. Only a
 // completed bounded inspection is stored.
+//
+// With admission, identical misses for one verified identity share a single
+// acquisition under its own deadline, and excess work fails fast with
+// ErrOverloaded instead of queueing.
 func (s *Service) Preview(ctx context.Context, owner, name string) (apimodel.RepoPreview, error) {
-	if s.cache == nil {
+	if s.cache == nil && s.flights == nil {
 		a, err := s.Acquire(ctx, owner, name)
 		if err != nil {
 			return apimodel.RepoPreview{}, err
@@ -28,24 +33,35 @@ func (s *Service) Preview(ctx context.Context, owner, name string) (apimodel.Rep
 		return apimodel.RepoPreview{}, err
 	}
 	key := CacheKey{RepoID: repo.ID, Owner: repo.Owner, Name: repo.Name}
-	cacheable := repo.ID > 0
+	cacheable := s.cache != nil && repo.ID > 0
 	if cacheable {
 		if p, ok := s.cache.Get(key); ok {
 			return p, nil
 		}
 	}
-	a, err := s.acquireFrom(ctx, repo, owner, name)
-	if err != nil {
-		return apimodel.RepoPreview{}, err
+	var commit string
+	var captured time.Time
+	run := func(ctx context.Context) (apimodel.RepoPreview, bool, error) {
+		a, err := s.acquireFrom(ctx, repo, owner, name)
+		if err != nil {
+			return apimodel.RepoPreview{}, false, err
+		}
+		p, err := s.render(ctx, a)
+		if err != nil {
+			return apimodel.RepoPreview{}, false, err
+		}
+		commit, captured = a.Inspection.Revision.Ref, a.CapturedAt
+		return p, cacheable && a.Outcome.Cacheable(), nil
 	}
-	p, err := s.render(ctx, a)
-	if err != nil {
-		return apimodel.RepoPreview{}, err
+	store := func(p apimodel.RepoPreview) { s.cache.Put(key, commit, captured, p) }
+	if s.flights != nil {
+		return s.flights.do(ctx, key, run, store)
 	}
-	if cacheable && a.Outcome.Cacheable() && ctx.Err() == nil {
-		s.cache.Put(key, a.Inspection.Revision.Ref, a.CapturedAt, p)
+	p, storable, err := run(ctx)
+	if err == nil && storable && ctx.Err() == nil {
+		store(p)
 	}
-	return p, nil
+	return p, err
 }
 
 func (s *Service) render(ctx context.Context, a Result) (apimodel.RepoPreview, error) {
