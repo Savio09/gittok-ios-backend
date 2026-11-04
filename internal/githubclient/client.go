@@ -3,6 +3,7 @@ package githubclient
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"math"
 	"net/http"
@@ -29,9 +30,10 @@ type Client struct {
 	maxRetries  int
 	backoffBase time.Duration
 	sleep       func(time.Duration) // injectable so tests don't actually wait
-	// check, when set, vets every successful response before its body is
-	// decoded; a non-nil result (normally a *PolicyError) is terminal.
+	// check, when set, vets every response before any body is decoded; a
+	// non-nil result (normally a *PolicyError) is terminal.
 	check func(*http.Response) error
+	mode  string
 }
 
 // Option configures a Client. Options exist mainly so tests can point the
@@ -93,6 +95,11 @@ func New(token string, opts ...Option) *Client {
 	for _, opt := range opts {
 		opt(c)
 	}
+	c.mode = "anonymous"
+	if token != "" {
+		c.mode = "token"
+		c.restrictRedirects() // a credential never follows a redirect off-origin
+	}
 	return c
 }
 
@@ -116,11 +123,15 @@ func (c *Client) get(ctx context.Context, path string, v any) error {
 
 		resp, err := c.doOnce(ctx, path)
 		if err != nil {
+			var policy *PolicyError
+			if errors.As(err, &policy) {
+				return policy // a refused redirect is terminal, not transient
+			}
 			lastErr = err // transport error — transient, retry
 			continue
 		}
 
-		if c.check != nil && resp.StatusCode >= 200 && resp.StatusCode < 300 {
+		if c.check != nil {
 			if err := c.check(resp); err != nil {
 				resp.Body.Close()
 				return err // terminal: never decode or retry a rejected response
