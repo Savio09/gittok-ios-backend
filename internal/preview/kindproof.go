@@ -245,7 +245,11 @@ func scopePremise(in Input, o crawler.Observation) (string, []apimodel.Source, s
 	}
 	withTree := func(phrase string) (string, []apimodel.Source, string, bool) {
 		tree, ok := treeSource(in, "git/trees/"+in.Inspection.Revision.Ref)
-		if !ok || !in.Inspection.Scope.Covers(depth) {
+		covered := in.Inspection.Scope.Covers(depth)
+		if w.Construct == "complete-listing" {
+			covered = in.Inspection.Scope.Complete()
+		}
+		if !ok || !covered {
 			return "", nil, "", false
 		}
 		return phrase, append(files, tree), "", true

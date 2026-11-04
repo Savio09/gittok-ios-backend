@@ -53,6 +53,7 @@ const (
 	constructGoNoCommand     = "go.no-command"      // scope: go.mod plus every consulted root/cmd/ package clause, none main
 	constructCompleteReads   = "complete-reads"     // scope: manifests read in full
 	constructCoveringListing = "covering-listing"   // scope: complete reads plus a listing covering Depth segments
+	constructCompleteListing = "complete-listing"   // scope: complete reads plus a listing neither truncated nor depth-limited
 )
 
 // Witness ties an observation to the inspection. Which fields are meaningful
@@ -309,6 +310,11 @@ func validateScope(st *inspIndex, w Witness) error {
 	case constructCoveringListing:
 		if !st.covers(w.Depth) {
 			return fmt.Errorf("the premise needs a listing that covers paths %d segments deep, which this listing does not", w.Depth)
+		}
+		return nil
+	case constructCompleteListing:
+		if !st.scope.Complete() {
+			return fmt.Errorf("the premise needs a complete listing, but this one is truncated or depth-limited")
 		}
 		return nil
 	case constructGoNoServer:

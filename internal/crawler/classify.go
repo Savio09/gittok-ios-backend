@@ -673,15 +673,17 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 				ix.block(apimodel.KindCLI, "cannot conclude the package installs no command: "+ix.st.describe(ix.pkgRef.path))
 				ok = false
 			}
+			// An app shell (index.html) may lie at any depth, so its absence
+			// needs a complete listing, with or without a runtime framework.
 			fw, _ := ix.runtimeWebFramework()
-			if fw != "" && !ix.covers(2) {
-				ix.block(apimodel.KindFrontend, "cannot rule out an app entry for runtime dependency \""+fw+"\": the listing does not cover index.html, src/App or src/main")
+			if !ix.st.scope.Complete() {
+				ix.block(apimodel.KindFrontend, "cannot rule out an app shell: the listing is incomplete, and index.html may lie beyond it")
 				ok = false
 			}
 			if ok {
-				premise := scopeObs(ix.pkgRef.path, []string{ix.pkgRef.path}, constructCompleteReads, 0, AbsenceNPMCommandAndShell, "declares no executable command entry in \"bin\" and the component has no app shell")
+				premise := scopeObs(ix.pkgRef.path, []string{ix.pkgRef.path}, constructCompleteListing, 0, AbsenceNPMCommandAndShell, "declares no executable command entry in \"bin\" and the component has no app shell")
 				if fw != "" {
-					premise = scopeObs(ix.pkgRef.path, []string{ix.pkgRef.path}, constructCoveringListing, ix.base+2, AbsenceNPMCommandAndAppEntry, "declares no executable command entry in \"bin\" and the listing shows no app entry for runtime dependency \""+fw+"\"")
+					premise = scopeObs(ix.pkgRef.path, []string{ix.pkgRef.path}, constructCompleteListing, 0, AbsenceNPMCommandAndAppEntry, "declares no executable command entry in \"bin\" and the listing shows no app entry for runtime dependency \""+fw+"\"")
 				}
 				groups = append(groups, evidenceGroup{
 					fieldObs(ix.pkgRef.path, []string{entryField}, "", `declares a lib entry ("`+entryField+`") and no app or executable command (importable package)`),

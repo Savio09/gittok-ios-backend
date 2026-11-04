@@ -159,3 +159,32 @@ func TestGoNoCommandPremiseNamesEveryInspectedClause(t *testing.T) {
 		t.Error("an unread cmd/ file still allowed the library verdict")
 	}
 }
+
+// SW4 (swarm review): "no app shell" is a listing absence. An app shell
+// (index.html) may sit at any depth, so a truncated or depth-limited listing
+// cannot establish it and the library verdict abstains.
+func TestNPMLibraryAbsenceNeedsACompleteListing(t *testing.T) {
+	for name, tc := range map[string]struct {
+		manifest string
+		scope    TreeScope
+		want     apimodel.RepoKind
+	}{
+		"complete listing":             {`{"main":"./index.js"}`, TreeScope{}, apimodel.KindLibrary},
+		"truncated listing":            {`{"main":"./index.js"}`, TreeScope{Truncated: true}, apimodel.KindOther},
+		"depth-limited listing":        {`{"main":"./index.js"}`, TreeScope{DepthLimited: true, MaxDepth: 4}, apimodel.KindOther},
+		"framework, truncated listing": {`{"main":"./index.js","dependencies":{"react":"19"}}`, TreeScope{Truncated: true}, apimodel.KindOther},
+		"framework, complete listing":  {`{"main":"./index.js","dependencies":{"react":"19"}}`, TreeScope{}, apimodel.KindLibrary},
+	} {
+		t.Run(name, func(t *testing.T) {
+			insp := InspectionFromSources("JavaScript", []string{"package.json", "index.js"}, map[string]string{"package.json": tc.manifest})
+			insp.Scope = tc.scope
+			c := Classify(insp)
+			if c.Kind != tc.want {
+				t.Fatalf("kind %s, want %s: %v", c.Kind, tc.want, c.Evidence())
+			}
+			if c.Basis != nil {
+				basisPremisesValidate(t, insp, c.Basis)
+			}
+		})
+	}
+}

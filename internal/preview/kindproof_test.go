@@ -222,3 +222,18 @@ func TestKindProofCitesEveryConsultedPackageClause(t *testing.T) {
 		t.Errorf("an unread consulted file still displays %s", p.Kind)
 	}
 }
+
+// SW4 (swarm review): a truncated listing never yields a proof that the tree
+// shows no app shell.
+func TestKindProofAbstainsWhenTheListingCannotShowAbsence(t *testing.T) {
+	for name, scope := range map[string]crawler.TreeScope{"truncated": {Truncated: true}, "depth-limited": {DepthLimited: true, MaxDepth: 8}} {
+		insp := crawler.InspectionFromSources("JavaScript", []string{"package.json"}, map[string]string{"package.json": `{"main":"./index.js"}`})
+		insp.Revision = crawler.Revision{Ref: proofSHA, Resolved: true}
+		insp.TreeRequest = githubclient.TreeRequestPath("o", "r", proofSHA)
+		insp.Scope = scope
+		p := Build(Input{Repo: githubclient.Repo{Owner: "o", Name: "r", FullName: "o/r"}, Inspection: insp})
+		if _, ok := kindProof(p); p.Kind != apimodel.KindOther || ok {
+			t.Errorf("%s listing: displayed %s with proof %v", name, p.Kind, ok)
+		}
+	}
+}
