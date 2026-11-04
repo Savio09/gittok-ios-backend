@@ -1,47 +1,15 @@
 package preview
 
 import (
-	"encoding/json"
-	"fmt"
-	"reflect"
 	"strings"
 	"testing"
 
-	"github.com/Savio09/gittok-ios-backend/internal/apimodel"
 	"github.com/Savio09/gittok-ios-backend/internal/crawler"
 )
 
-func TestBuildCapsAndInterleavesComponentsDeterministically(t *testing.T) {
-	in := inputForTest()
-	deps := map[string]string{}
-	for i := 0; i < 100; i++ {
-		deps[fmt.Sprintf("dep%d", i)] = "1"
-	}
-	body, _ := json.Marshal(map[string]any{"dependencies": deps})
-	in.Inspection = crawler.InspectionFromSources("", []string{"a/package.json", "b/package.json"}, map[string]string{"a/package.json": string(body), "b/package.json": string(body)})
-	in.Inspection.Revision = crawler.Revision{Ref: testSHA, Resolved: true}
-	p := Build(in)
-	claims := claimsIn(p)
-	if len(claims) != 24 {
-		t.Fatalf("unbounded output %d", len(claims))
-	}
-	counts := map[string]int{}
-	for _, c := range claims {
-		if c.Source.Kind == apimodel.SourceFile {
-			counts[c.Source.Ref]++
-		}
-	}
-	if counts["a/package.json"] < 10 || counts["b/package.json"] < 10 {
-		t.Fatalf("component starvation %v", counts)
-	}
-	in.Inspection.Files[0], in.Inspection.Files[1] = in.Inspection.Files[1], in.Inspection.Files[0]
-	if !reflect.DeepEqual(p, Build(in)) {
-		t.Fatal("output depends on input order")
-	}
-	if !strings.Contains(p.Sections[len(p.Sections)-1].Body, "24 representative") {
-		t.Fatal("missing output limit")
-	}
-}
+// The bounded, component-sharing budget is covered by
+// TestUnclassifiedComponentsShareABoundedBudget (relevance_test.go), which
+// replaces the earlier expectation of 24 dependency-filled claims.
 
 func TestFileSourcesEscapePathsAndRejectForgedSpans(t *testing.T) {
 	in := inputForTest()

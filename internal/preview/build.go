@@ -56,12 +56,16 @@ func Build(in Input) apimodel.RepoPreview {
 	if len(in.Inspection.Files) == 0 {
 		limits = append(limits, "No selected file contents were available for inspection.")
 	}
-	claims := candidates(in, classification)
-	const maxClaims = 24
-	if len(claims) > maxClaims {
-		claims = claims[:maxClaims]
-		limits = append(limits, "Preview output was limited to 24 representative claims.")
+	all := candidates(in, classification)
+	secondaries := false
+	for _, c := range all {
+		secondaries = secondaries || (c.dep && !c.productDep && c.tier == tierSecondary)
 	}
+	claims, omitted := selectClaims(all, secondaries)
+	if omitted > 0 {
+		limits = append(limits, "Some lower-priority declarations were omitted to keep the preview focused.")
+	}
+	p.Metrics = metadataMetricsFrom(in)
 	for _, kind := range []apimodel.SectionKind{apimodel.SectionIdea, apimodel.SectionHow, apimodel.SectionStack, apimodel.SectionActivity, apimodel.SectionSetup} {
 		section := apimodel.Section{Kind: kind, Title: sectionTitle(kind), EvidenceMode: apimodel.NotExecuted}
 		for _, c := range claims {

@@ -14,10 +14,16 @@ import (
 )
 
 type candidate struct {
-	section   apimodel.SectionKind
-	claim     apimodel.Claim
-	component string
-	round     int
+	section    apimodel.SectionKind
+	claim      apimodel.Claim
+	component  string
+	round      int
+	tier       int  // product relevance, most relevant first (see relevance.go)
+	dep        bool // a dependency declaration (budgeted)
+	productDep bool
+	low        bool // lower priority (budgeted)
+	script     bool
+	readme     bool
 }
 
 func metadataClaims(in Input) []candidate {
@@ -26,17 +32,10 @@ func metadataClaims(in Input) []candidate {
 		key, label, value string
 		section           apimodel.SectionKind
 	}{
-		{"full_name", "Repository identity", r.Owner + "/" + r.Name, apimodel.SectionIdea},
+		// Card metadata (stars, license, last push) is rendered as sourced
+		// metrics instead; identity is the card itself.
 		{"description", "GitHub description", r.Description, apimodel.SectionIdea},
 		{"language", "GitHub primary language", r.Language, apimodel.SectionStack},
-		{"license.spdx_id", "GitHub license identification", r.License, apimodel.SectionActivity},
-		{"stargazers_count", "GitHub star count", strconv.Itoa(r.Stars), apimodel.SectionActivity},
-	}
-	if !r.PushedAt.IsZero() {
-		values = append(values, struct {
-			key, label, value string
-			section           apimodel.SectionKind
-		}{"pushed_at", "Last push reported by GitHub", r.PushedAt.Format(time.RFC3339), apimodel.SectionActivity})
 	}
 	var out []candidate
 	for _, v := range values {
@@ -52,7 +51,11 @@ func metadataClaims(in Input) []candidate {
 		if !in.CapturedAt.IsZero() {
 			limit = "Captured " + in.CapturedAt.UTC().Format(time.RFC3339) + ". " + limit
 		}
-		out = append(out, candidate{section: v.section, claim: apimodel.Claim{Label: v.label, Source: apimodel.Source{Kind: apimodel.SourceMetadata, Ref: v.key, URL: metadataURL(r)}, Explanation: explanation, Supports: "The value reported by GitHub for this repository.", Limit: limit, Confidence: apimodel.Confident}})
+		tier := tierPurpose
+		if v.key == "language" {
+			tier = tierImported
+		}
+		out = append(out, candidate{section: v.section, tier: tier, claim: apimodel.Claim{Label: v.label, Source: apimodel.Source{Kind: apimodel.SourceMetadata, Ref: v.key, URL: metadataURL(r)}, Explanation: explanation, Supports: "The value reported by GitHub for this repository.", Limit: limit, Confidence: apimodel.Confident}})
 	}
 	return out
 }
@@ -142,9 +145,11 @@ func candidates(in Input, cls crawler.Classification) []candidate {
 	var files []candidate
 	rounds := map[string]int{}
 	seen := map[claimKey]bool{}
-	for _, f := range crawler.CollectFacts(in.Inspection) {
+	facts := crawler.CollectFacts(in.Inspection)
+	rank := newRanker(cls, facts, crawler.CollectImports(in.Inspection))
+	for _, f := range facts {
 		c, ok := factClaim(in, f)
-		if !ok {
+		if !ok || !rank.place(f, &c) {
 			continue
 		}
 		if k := keyOf(c.claim); seen[k] {
@@ -152,15 +157,19 @@ func candidates(in Input, cls crawler.Classification) []candidate {
 		} else {
 			seen[k] = true
 		}
-		// Interleave fact families/components before taking second and later facts
-		// from the same bucket, so one large dependency table cannot fill the preview.
-		bucket := string(f.Kind) + "\x00" + f.Component
+		// Within a tier, interleave fact families/components before taking
+		// later facts from the same bucket, so one table cannot fill the tier.
+		bucket := strconv.Itoa(c.tier) + "\x00" + string(f.Kind) + "\x00" + f.Component
 		c.round = rounds[bucket]
 		rounds[bucket]++
 		files = append(files, c)
 	}
+	files = append(out, files...)
 	sort.SliceStable(files, func(i, j int) bool {
 		a, b := files[i], files[j]
+		if a.tier != b.tier {
+			return a.tier < b.tier
+		}
 		if a.round != b.round {
 			return a.round < b.round
 		}
@@ -175,7 +184,7 @@ func candidates(in Input, cls crawler.Classification) []candidate {
 		}
 		return a.claim.Label < b.claim.Label
 	})
-	return append(out, files...)
+	return files
 }
 
 func sectionRank(k apimodel.SectionKind) int {
