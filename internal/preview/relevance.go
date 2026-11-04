@@ -66,9 +66,13 @@ type ranker struct {
 
 func witnessKey(w crawler.Witness) string {
 	if w.Kind == crawler.WitnessSpan {
-		return "span\x00" + w.Path + "\x00" + strconv.Itoa(w.Start) + "\x00" + strconv.Itoa(w.End)
+		return "span " + strconv.Quote(w.Path) + " " + strconv.Itoa(w.Start) + " " + strconv.Itoa(w.End)
 	}
-	return "field\x00" + w.Path + "\x00" + strings.Join(w.Field, "\x00")
+	key := "field " + strconv.Quote(w.Path)
+	for _, f := range w.Field {
+		key += " " + strconv.Quote(f) // quoted segments cannot alias another path
+	}
+	return key
 }
 
 func newRanker(cls crawler.Classification, facts []crawler.Fact, imports []crawler.Import) *ranker {

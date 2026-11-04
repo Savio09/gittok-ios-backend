@@ -106,3 +106,22 @@ func TestPackageJSONLocationTamperingIsRejected(t *testing.T) {
 		}
 	}
 }
+
+// SW1 (swarm review): a legal key containing NUL must not alias a nested
+// field path. Location keys are structural, not joined strings.
+func TestJSONLocationKeysCannotCollide(t *testing.T) {
+	raw := "{\n  \"dependencies\": {\"react\": \"19\"},\n  \"dependencies\\u0000react\": \"UNRELATED\"\n}\n"
+	f, ok := npmFacts(t, raw)["dependency:react"]
+	if !ok || f.Witness.Quote != `"react": "19"` {
+		t.Fatalf("react cites %q, want its own declaration", f.Witness.Quote)
+	}
+	insp := InspectionFromSources("", []string{"package.json"}, map[string]string{"package.json": raw})
+	st := indexInspection(insp)
+	forged := f.Witness
+	other := strings.Index(raw, `"dependencies\u0000react"`)
+	forged.Start, forged.End = other, other+len(`"dependencies\u0000react": "UNRELATED"`)
+	forged.Quote = raw[forged.Start:forged.End]
+	if validateWitness(st, forged) == nil {
+		t.Fatal("the colliding member validated as the react declaration")
+	}
+}

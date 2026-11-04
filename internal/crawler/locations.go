@@ -2,6 +2,7 @@ package crawler
 
 import (
 	"encoding/json"
+	"strconv"
 	"strings"
 )
 
@@ -43,7 +44,28 @@ func locatableField(p string, field []string) bool {
 	return false
 }
 
-func locationKey(field []string) string { return strings.Join(field, "\x00") }
+// locationKey encodes a field path structurally: each segment is a quoted
+// string, so no segment content (a NUL, a separator) can alias another path.
+func locationKey(field []string) string {
+	parts := make([]string, len(field))
+	for i, f := range field {
+		parts[i] = strconv.Quote(f)
+	}
+	return strings.Join(parts, ",")
+}
+
+// descends reports whether path lies strictly below parent.
+func descends(path, parent []string) bool {
+	if len(path) <= len(parent) {
+		return false
+	}
+	for i := range parent {
+		if path[i] != parent[i] {
+			return false
+		}
+	}
+	return true
+}
 
 // locate returns w with the verified location of its field attached, when one
 // exists. The witness's value and semantics are unchanged.
@@ -133,6 +155,7 @@ func goModLocations(p, content string, complete bool) map[string][2]int {
 func jsonLocations(content string) map[string][2]int {
 	dec := json.NewDecoder(strings.NewReader(content))
 	out := map[string][2]int{}
+	paths := map[string][]string{} // key -> its field path, for structural purges
 	var value func(path []string, record bool) (int, bool)
 	value = func(path []string, record bool) (int, bool) {
 		tok, err := dec.Token()
@@ -159,10 +182,10 @@ func jsonLocations(content string) map[string][2]int {
 					// A repeated key replaces the earlier member and everything
 					// recorded beneath it, as decoding into the tree does. Purge
 					// before descending, so the effective member's children stay.
-					prefix := locationKey(member) + "\x00"
-					for k := range out {
-						if strings.HasPrefix(k, prefix) {
+					for k, p := range paths {
+						if descends(p, member) {
 							delete(out, k)
+							delete(paths, k)
 						}
 					}
 				}
@@ -172,6 +195,7 @@ func jsonLocations(content string) map[string][2]int {
 				}
 				if record {
 					out[locationKey(member)] = [2]int{start, end}
+					paths[locationKey(member)] = member
 				}
 			}
 			if end, err := dec.Token(); err != nil || end != json.Delim('}') {
