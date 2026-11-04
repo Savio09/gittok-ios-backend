@@ -80,6 +80,16 @@ type Service struct {
 	github     GitHub
 	timeout    time.Duration
 	publicOnly bool
+	cache      *PreviewCache // public services only
+}
+
+// UseCache enables reuse of completed public previews. It has no effect on a
+// service that is not public-only, whose results are never stored.
+func (s *Service) UseCache(c *PreviewCache) *Service {
+	if s.publicOnly {
+		s.cache = c
+	}
+	return s
 }
 
 func NewService(github GitHub) *Service { return &Service{github: github, timeout: 30 * time.Second} }
@@ -97,22 +107,40 @@ func (s *Service) Acquire(parent context.Context, owner, name string) (Result, e
 	if err := parent.Err(); err != nil {
 		return Result{}, err
 	}
+	repo, err := s.metadata(parent, owner, name)
+	if err != nil {
+		return Result{}, err
+	}
+	return s.acquireFrom(parent, repo, owner, name)
+}
+
+// metadata reads and gates current repository metadata: a public service
+// accepts only a repository GitHub reports public with a valid identity.
+func (s *Service) metadata(parent context.Context, owner, name string) (githubclient.Repo, error) {
 	ctx, cancel := context.WithTimeout(parent, s.timeout)
 	defer cancel()
 	repo, err := s.github.GetRepo(ctx, owner, name)
 	if err != nil {
-		return Result{}, fmt.Errorf("metadata: %w", err)
+		return githubclient.Repo{}, fmt.Errorf("metadata: %w", err)
 	}
 	if err := parent.Err(); err != nil {
-		return Result{}, err
+		return githubclient.Repo{}, err
 	}
-	a := Result{Repo: repo, CapturedAt: time.Now().UTC(), Outcome: OutcomeComplete}
 	if s.publicOnly && !repo.Public {
-		return Result{}, githubclient.ErrNotFound
+		return githubclient.Repo{}, githubclient.ErrNotFound
 	}
 	if s.publicOnly && !preview.ValidIdentity(repo.Owner, repo.Name) {
-		return Result{}, fmt.Errorf("invalid GitHub repository identity")
+		return githubclient.Repo{}, fmt.Errorf("invalid GitHub repository identity")
 	}
+	return repo, nil
+}
+
+// acquireFrom reads canonically selected files for already gated metadata.
+func (s *Service) acquireFrom(parent context.Context, repo githubclient.Repo, owner, name string) (Result, error) {
+	ctx, cancel := context.WithTimeout(parent, s.timeout)
+	defer cancel()
+	var err error
+	a := Result{Repo: repo, CapturedAt: time.Now().UTC(), Outcome: OutcomeComplete}
 	// Follow canonical identity after a redirected metadata lookup. A reused
 	// alias must never select another repository's commits for this metadata.
 	if preview.ValidIdentity(repo.Owner, repo.Name) {

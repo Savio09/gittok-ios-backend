@@ -26,6 +26,11 @@ type Input struct {
 	Limitations []string
 }
 
+// BuilderVersion identifies the preview builder's output semantics. Bump it
+// whenever ranking, schema or claim wording changes, so stored previews built
+// by an older builder are never served as current.
+const BuilderVersion = 2
+
 // Build is pure: no GitHub requests, environment, model calls or current clock.
 func Build(in Input) apimodel.RepoPreview {
 	r := in.Repo
