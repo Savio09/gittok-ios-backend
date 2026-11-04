@@ -82,6 +82,8 @@ type Service struct {
 	publicOnly bool
 	cache      *PreviewCache // public services only
 	flights    *group        // coalescing and admission, when enabled
+
+	afterCacheMiss func() // test hook: runs after a request's cache lookup misses
 }
 
 // UseCache enables reuse of completed public previews. It has no effect on a

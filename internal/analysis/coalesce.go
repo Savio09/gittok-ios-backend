@@ -12,9 +12,12 @@ import (
 // AdmissionLimits bound concurrent preview work in one process. There is no
 // queue: a request beyond these bounds fails immediately with ErrOverloaded.
 type AdmissionLimits struct {
-	MaxActive  int           // distinct acquisitions running at once
-	MaxPerKey  int           // callers joined to one acquisition
-	MaxWaiters int           // callers joined across all acquisitions
+	MaxActive int // distinct acquisitions running at once
+	MaxPerKey int // callers joined to one acquisition
+	// MaxWaiters bounds the callers inside the service at once — checking
+	// visibility or joined to an acquisition. A caller beyond it is refused
+	// before any GitHub request is made.
+	MaxWaiters int
 	Deadline   time.Duration // shared deadline for one acquisition
 }
 
@@ -56,17 +59,36 @@ type flight struct {
 // another caller can join it. A retired generation that completes late never
 // removes or stores over newer work.
 type group struct {
-	limits  AdmissionLimits
-	mu      sync.Mutex
-	flights map[CacheKey]*flight
-	active  int // running acquisitions, including retired ones still finishing
-	waiters int
-	gen     uint64
+	limits   AdmissionLimits
+	mu       sync.Mutex
+	flights  map[CacheKey]*flight
+	active   int // running acquisitions, including retired ones still finishing
+	waiters  int
+	requests int // admitted callers, from entry to exit
+	gen      uint64
 
 	// Test hooks.
 	onJoin  func(CacheKey)
 	onStore func(CacheKey, uint64)
 	onDone  func(CacheKey, uint64)
+}
+
+// enter admits one caller before it does any GitHub work, or refuses it when
+// the bound is reached. There is no queue. Each admitted caller must exit.
+func (g *group) enter() bool {
+	g.mu.Lock()
+	defer g.mu.Unlock()
+	if g.requests >= g.limits.MaxWaiters {
+		return false
+	}
+	g.requests++
+	return true
+}
+
+func (g *group) exit() {
+	g.mu.Lock()
+	g.requests--
+	g.mu.Unlock()
 }
 
 // work produces a preview and whether it may be stored.

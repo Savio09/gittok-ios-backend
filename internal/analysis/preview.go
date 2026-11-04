@@ -28,6 +28,13 @@ func (s *Service) Preview(ctx context.Context, owner, name string) (apimodel.Rep
 		}
 		return s.render(ctx, a)
 	}
+	// Admission comes first: a refused caller makes no GitHub request at all.
+	if s.flights != nil {
+		if !s.flights.enter() {
+			return apimodel.RepoPreview{}, ErrOverloaded
+		}
+		defer s.flights.exit()
+	}
 	repo, err := s.metadata(ctx, owner, name)
 	if err != nil {
 		return apimodel.RepoPreview{}, err
@@ -39,9 +46,20 @@ func (s *Service) Preview(ctx context.Context, owner, name string) (apimodel.Rep
 			return p, nil
 		}
 	}
+	if s.afterCacheMiss != nil {
+		s.afterCacheMiss()
+	}
 	var commit string
 	var captured time.Time
 	run := func(ctx context.Context) (apimodel.RepoPreview, bool, error) {
+		// A previous leader may have stored this identity's result after this
+		// caller's lookup missed: serve it as the hit it is, without restoring
+		// it (its provenance and expiry stay those of the original capture).
+		if cacheable {
+			if p, ok := s.cache.Get(key); ok {
+				return p, false, nil
+			}
+		}
 		a, err := s.acquireFrom(ctx, repo, owner, name)
 		if err != nil {
 			return apimodel.RepoPreview{}, false, err
