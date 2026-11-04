@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 )
 
 // Config holds the validated runtime configuration for the GitTok backend.
@@ -18,9 +19,22 @@ type Config struct {
 	// without it the backend cannot ingest repositories, and GitHub's
 	// unauthenticated rate limit is too low to be useful.
 	GitHubToken string
+	// PublicToken (GITHUB_PUBLIC_TOKEN) is the optional, separate credential
+	// for public repository previews: a classic personal access token with no
+	// OAuth scopes. Empty selects explicit anonymous mode. It is never the
+	// feed's GitHubToken.
+	PublicToken string
+	// PreviewCacheTTL (PREVIEW_CACHE_TTL, a Go duration) bounds how long a
+	// stored preview is served. PreviewCacheDir (PREVIEW_CACHE_DIR) names the
+	// dedicated cache directory; empty selects the default.
+	PreviewCacheTTL time.Duration
+	PreviewCacheDir string
 }
 
-const defaultPort = 8080
+const (
+	defaultPort            = 8080
+	defaultPreviewCacheTTL = 30 * time.Minute
+)
 
 // Load reads configuration from the environment and validates it. It fails
 // loudly — returning an error rather than falling back to a default — when a
@@ -45,6 +59,20 @@ func Load() (Config, error) {
 		}
 		cfg.Port = port
 	}
+
+	cfg.PublicToken = os.Getenv("GITHUB_PUBLIC_TOKEN")
+	if cfg.PublicToken != "" && cfg.PublicToken == cfg.GitHubToken {
+		return Config{}, fmt.Errorf("GITHUB_PUBLIC_TOKEN must be a separate credential from GITHUB_TOKEN")
+	}
+	cfg.PreviewCacheTTL = defaultPreviewCacheTTL
+	if raw := os.Getenv("PREVIEW_CACHE_TTL"); raw != "" {
+		ttl, err := time.ParseDuration(raw)
+		if err != nil || ttl <= 0 {
+			return Config{}, fmt.Errorf("PREVIEW_CACHE_TTL %q must be a positive duration such as 30m", raw)
+		}
+		cfg.PreviewCacheTTL = ttl
+	}
+	cfg.PreviewCacheDir = os.Getenv("PREVIEW_CACHE_DIR")
 
 	return cfg, nil
 }

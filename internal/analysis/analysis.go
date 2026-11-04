@@ -103,6 +103,19 @@ func NewPublicService(options ...githubclient.Option) *Service {
 	return s.UseAdmission(DefaultAdmissionLimits())
 }
 
+// NewPublicServiceFromClient serves public previews through c, which must be
+// anonymous or vetted by githubclient.NewPublic. A general-purpose token
+// client (such as the feed's) is refused: its broader access could expose
+// data the public endpoint must never return.
+func NewPublicServiceFromClient(c *githubclient.Client) (*Service, error) {
+	if c == nil || (c.Mode() != "anonymous" && c.Mode() != "public-token") {
+		return nil, errors.New("public previews need an anonymous or vetted public-only client")
+	}
+	s := NewService(c)
+	s.publicOnly = true
+	return s.UseAdmission(DefaultAdmissionLimits()), nil
+}
+
 // Acquire reads metadata and canonically selected files without executing code.
 func (s *Service) Acquire(parent context.Context, owner, name string) (Result, error) {
 	if err := parent.Err(); err != nil {

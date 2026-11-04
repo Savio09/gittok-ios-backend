@@ -11,7 +11,8 @@ import (
 	"github.com/Savio09/gittok-ios-backend/internal/preview"
 )
 
-// Handler mounts on GET /v1/repos/{id}/preview. Only the anonymous public
+// Handler mounts on GET /v1/repos/{id}/preview and
+// GET /v1/repos/{owner}/{name}/preview. Only the anonymous public
 // service can be exposed; a trusted token service fails closed.
 func (s *Service) Handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -20,6 +21,8 @@ func (s *Service) Handler() http.Handler {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("X-Content-Type-Options", "nosniff")
+		// Visibility is checked per request; no intermediary may answer for us.
+		w.Header().Set("Cache-Control", "no-store")
 		fail := func(status int, message string) {
 			w.WriteHeader(status)
 			_ = json.NewEncoder(w).Encode(map[string]string{"error": message})
@@ -28,7 +31,13 @@ func (s *Service) Handler() http.Handler {
 			fail(503, "preview service unavailable")
 			return
 		}
-		owner, name, ok := strings.Cut(r.PathValue("id"), "/")
+		// The ID is one encoded segment (owner%2Fname) or, additively, two
+		// path segments (/v1/repos/{owner}/{name}/preview).
+		id := r.PathValue("id")
+		if id == "" && r.PathValue("owner") != "" {
+			id = r.PathValue("owner") + "/" + r.PathValue("name")
+		}
+		owner, name, ok := strings.Cut(id, "/")
 		if !ok || !preview.ValidIdentity(owner, name) {
 			fail(400, "invalid repository id; expected owner/name")
 			return
