@@ -17,7 +17,7 @@ func (s *Service) Preview(ctx context.Context, owner, name string) (apimodel.Rep
 	if err := ctx.Err(); err != nil {
 		return apimodel.RepoPreview{}, err
 	}
-	p := preview.Build(preview.Input{Repo: a.Repo, Inspection: a.Inspection, CapturedAt: a.CapturedAt, Limitations: a.Limitations})
+	p := preview.Build(preview.Input{Repo: a.Repo, Inspection: a.Inspection, CapturedAt: a.CapturedAt, Coverage: a.Coverage, Limitations: a.Limitations})
 	if err := ctx.Err(); err != nil {
 		return apimodel.RepoPreview{}, err
 	}

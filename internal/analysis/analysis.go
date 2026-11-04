@@ -29,7 +29,8 @@ type Result struct {
 	Inspection     crawler.Inspection
 	Classification crawler.Classification
 	CapturedAt     time.Time
-	Limitations    []string
+	Limitations    []string // internal diagnostics: paths and technical reasons
+	Coverage       preview.Coverage
 }
 
 // Service has no mutable request state and may be shared by HTTP handlers.
@@ -92,6 +93,7 @@ func (s *Service) Acquire(parent context.Context, owner, name string) (Result, e
 				a.Tree = githubclient.FileTree{Truncated: true}
 				a.Requested = nil
 				a.Inspection.Revision = crawler.Revision{}
+				a.Coverage = preview.Coverage{IdentityUnverified: true}
 				a.Limitations = append(a.Limitations, "Repository identity could not be revalidated after acquisition; file evidence was withheld.")
 			}
 			if err := parent.Err(); err != nil {
@@ -113,26 +115,32 @@ func (s *Service) Acquire(parent context.Context, owner, name string) (Result, e
 	a.Tree.Truncated = true // until a successful tree establishes listing scope
 	ref := repo.DefaultBranch
 	if ref == "" {
+		a.Coverage.FilesNotAcquired = true
 		return finish("GitHub did not report a default branch; file evidence was not acquired.")
 	}
 	if ctx.Err() != nil {
+		a.Coverage.FilesNotAcquired = true
 		return finish("Analysis deadline reached after metadata acquisition.")
 	}
 	ref, err = s.github.ResolveRef(ctx, owner, name, ref)
 	if err != nil || !githubclient.ValidCommitID(ref) {
+		a.Coverage.FilesNotAcquired = true
 		return finish("The default branch could not be pinned to a commit; file evidence was not acquired.")
 	}
 	a.Inspection.Revision = crawler.Revision{Ref: ref, Resolved: true}
 	if ctx.Err() != nil {
+		a.Coverage.FilesNotAcquired = true
 		return finish("Analysis stopped before the tree could be acquired.")
 	}
 	tree, err := s.github.GetTree(ctx, owner, name, ref, githubclient.DefaultTreeLimits())
 	if err != nil {
+		a.Coverage.FilesNotAcquired = true
 		return finish("The file tree could not be acquired; only metadata evidence is available.")
 	}
 	a.Tree = tree
 	for _, entry := range tree.Entries {
 		if entry.Mode == "120000" {
+			a.Coverage.SymlinksExcluded = true
 			a.Limitations = append(a.Limitations, "Symlink contents were excluded from inspection.")
 			break
 		}
@@ -144,6 +152,7 @@ func (s *Service) Acquire(parent context.Context, owner, name string) (Result, e
 	}
 	a.Requested = paths
 	if ctx.Err() != nil {
+		a.Coverage.FilesNotAcquired = true
 		return finish("Analysis stopped before selected contents could be acquired.")
 	}
 	fetched, err := s.github.GetFileContents(ctx, owner, name, ref, paths, githubclient.DefaultContentLimits())
@@ -156,6 +165,7 @@ func (s *Service) Acquire(parent context.Context, owner, name string) (Result, e
 	}
 	a.Fetched = fetched
 	if err != nil {
+		a.Coverage.ContentsIncomplete = true
 		return finish("Selected contents could not all be acquired; only retained evidence was inspected.")
 	}
 	return finish("")

@@ -86,8 +86,8 @@
     },
     {
       "kind": "decision",
-      "title": "Inspection limits",
-      "body": "no decisive frontend / backend / library / CLI / mobile signal was found in the inspected manifests and file tree",
+      "title": "Coverage notes",
+      "body": "The project type could not be confirmed from the inspected files.",
       "evidence_mode": "not_executed"
     }
   ]

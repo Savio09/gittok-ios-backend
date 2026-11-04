@@ -278,3 +278,46 @@ func TestSelectionIgnoresInputOrderAndRepositoryName(t *testing.T) {
 		t.Error("selection depends on the repository's name")
 	}
 }
+
+// Documentation under supporting paths (docs/, examples/, tests/) is not the
+// product's purpose: it is shown only when no other README is available.
+func TestSupportingReadmesYieldToTheProductReadme(t *testing.T) {
+	readmes := func(p apimodel.RepoPreview) []string {
+		var out []string
+		for _, c := range claimsIn(p) {
+			if c.Label == "README passage" {
+				out = append(out, c.Source.Ref)
+			}
+		}
+		return out
+	}
+	files := map[string]string{"README.md": "# P\n\nThe product.\n", "docs/README.md": "# D\n\nContributor notes.\n", "examples/x/README.md": "# E\n\nAn example.\n"}
+	got := readmes(Build(synthetic([]string{"README.md", "docs/README.md", "examples/x/README.md"}, files)))
+	if !reflect.DeepEqual(got, []string{"README.md"}) {
+		t.Errorf("supporting documentation shown beside the product README: %v", got)
+	}
+	delete(files, "README.md")
+	got = readmes(Build(synthetic([]string{"docs/README.md", "examples/x/README.md"}, files)))
+	if len(got) == 0 {
+		t.Error("with no other README, supporting documentation is still the best available description")
+	}
+}
+
+// Setup scripts are product commands; other scripts are lower priority.
+func TestNonSetupScriptsShareTheLowerPriorityBudget(t *testing.T) {
+	p := Build(synthetic([]string{"package.json", "index.html"}, map[string]string{
+		"package.json": `{"name":"app","dependencies":{"react":"18"},"scripts":{"build":"vite build","dev":"vite","lint":"eslint .","format":"prettier -w .","build:docker":"docker build .","release":"np","changeset":"changeset"}}`,
+	}))
+	setup, other := 0, 0
+	for _, c := range claimsIn(p) {
+		switch c.Label {
+		case "Declares command build", "Declares command dev":
+			setup++
+		case "Declares command lint", "Declares command format", "Declares command build:docker", "Declares command release", "Declares command changeset":
+			other++
+		}
+	}
+	if setup != 2 || other > 2 {
+		t.Errorf("setup scripts %d (want 2), other scripts %d (want ≤2)", setup, other)
+	}
+}

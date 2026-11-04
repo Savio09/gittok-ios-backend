@@ -21,10 +21,11 @@ import (
 //	1  attributed purpose: the GitHub description, the product's own README
 //	2  the classification's premises, product entry declarations, setup scripts
 //	3  product declarations its inspected code imports; the primary language
-//	4  other direct product declarations, constructs and scripts
+//	4  other direct product declarations and constructs
 //	5  secondary product components (their own ownership and role kept)
 //	6  lower priority: development/peer/optional/indirect declarations,
-//	   supporting-path facts (tooling, CI, tests, docs, examples), other READMEs
+//	   non-setup scripts, supporting-path facts (tooling, CI, tests, docs,
+//	   examples) and READMEs that are not a component's own
 const (
 	tierKind = iota
 	tierPurpose
@@ -60,6 +61,7 @@ type ranker struct {
 	imports     map[string][]string
 	anyPrimary  bool // some fact lies outside supporting paths
 	secondaries bool // a secondary component declares dependencies
+	mainReadme  bool // some README lies outside supporting paths
 }
 
 func witnessKey(w crawler.Witness) string {
@@ -91,6 +93,9 @@ func newRanker(cls crawler.Classification, facts []crawler.Fact, imports []crawl
 		}
 		if f.Kind == crawler.FactDependency && r.role(f) == tierSecondary {
 			r.secondaries = true
+		}
+		if f.Kind == crawler.FactReadme && !crawler.SupportingPath(f.Witness.Path) {
+			r.mainReadme = true
 		}
 	}
 	return r
@@ -162,7 +167,7 @@ func (r *ranker) place(f crawler.Fact, c *candidate) bool {
 		case setupScripts[f.Name] || premise:
 			c.tier = tierPremise
 		default:
-			c.tier = tierProduct
+			c.tier = tierLow // lint/release/variant scripts are not setup commands
 		}
 	case crawler.FactCommand, crawler.FactTarget:
 		switch {
@@ -186,6 +191,11 @@ func (r *ranker) place(f crawler.Fact, c *candidate) bool {
 		}
 	case crawler.FactReadme:
 		c.readme = true
+		// Supporting documentation describes the product only when nothing
+		// else does.
+		if r.mainReadme && crawler.SupportingPath(f.Witness.Path) {
+			return false
+		}
 		own := path.Dir(f.Witness.Path) == f.Component || (f.Component == "" && !strings.Contains(f.Witness.Path, "/"))
 		switch {
 		case own && role == tierProduct && !support:

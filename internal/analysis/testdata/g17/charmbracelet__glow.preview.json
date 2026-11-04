@@ -232,8 +232,8 @@
     },
     {
       "kind": "decision",
-      "title": "Inspection limits",
-      "body": "Some lower-priority declarations were omitted to keep the preview focused.",
+      "title": "Coverage notes",
+      "body": "Lower-priority declarations are not shown.",
       "evidence_mode": "not_executed"
     }
   ]

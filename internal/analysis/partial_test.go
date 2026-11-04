@@ -32,13 +32,26 @@ func TestNonRoleBearingSkippedAndTruncatedFilesRemainVisible(t *testing.T) {
 	f := &fakeGitHub{repo: githubclient.Repo{Owner: "o", Name: "r", DefaultBranch: "main", Language: "Ruby"}, contents: func(context.Context) (githubclient.FetchedContents, error) {
 		return githubclient.FetchedContents{Files: []githubclient.FileContent{{Path: "LICENSE", Content: "MIT", Size: 100, Truncated: true}}, Skipped: []githubclient.SkippedFile{{Path: "README.md", Reason: "not found"}}}, nil
 	}}
+	// The reader sees the gap in plain terms; the paths and reasons stay in the
+	// internal diagnostics rather than the preview (G17 review, R5).
+	a, err := NewService(f).Acquire(context.Background(), "o", "r")
+	if err != nil {
+		t.Fatal(err)
+	}
+	diagnostics := strings.Join(a.Limitations, "\n")
+	if !strings.Contains(diagnostics, "README.md") || !strings.Contains(diagnostics, "LICENSE") {
+		t.Fatalf("internal diagnostics lost the affected paths: %q", diagnostics)
+	}
 	p, err := NewService(f).Preview(context.Background(), "o", "r")
 	if err != nil {
 		t.Fatal(err)
 	}
 	b, _ := json.Marshal(p)
-	if !strings.Contains(string(b), "README.md") || !strings.Contains(string(b), "LICENSE") {
+	if !strings.Contains(string(b), "could not be read in full") {
 		t.Fatalf("hidden acquisition gap: %s", b)
+	}
+	if strings.Contains(string(b), "README.md") || strings.Contains(string(b), "LICENSE") {
+		t.Fatalf("internal paths in the reader-facing preview: %s", b)
 	}
 }
 

@@ -186,3 +186,7 @@ func TestClaimKeysDistinguishAdditionalSources(t *testing.T) {
 		t.Error("identical claims have different keys")
 	}
 }
+
+func githubTreeFor(owner, name string) string {
+	return githubclient.TreeRequestPath(owner, name, proofSHA)
+}

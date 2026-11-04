@@ -3,7 +3,6 @@ package preview
 import (
 	"fmt"
 	"reflect"
-	"sort"
 	"strings"
 
 	"time"
@@ -17,9 +16,13 @@ import (
 // Input is acquired evidence, not proposed prose. The builder derives its own
 // facts and classification, preventing caller-supplied labels from becoming claims.
 type Input struct {
-	Repo        githubclient.Repo
-	Inspection  crawler.Inspection
-	CapturedAt  time.Time
+	Repo       githubclient.Repo
+	Inspection crawler.Inspection
+	CapturedAt time.Time
+	// Coverage is the typed acquisition state summarized for readers.
+	Coverage Coverage
+	// Limitations are internal diagnostics (paths, provider and parser
+	// reasons). They are kept for developers and never rendered.
 	Limitations []string
 }
 
@@ -45,26 +48,12 @@ func Build(in Input) apimodel.RepoPreview {
 			*field.dest = field.value
 		}
 	}
-	limits := append([]string(nil), in.Limitations...)
-	limits = append(limits, classification.Limitations...)
-	if classification.Status == crawler.VerdictResolved && !explained {
-		limits = append(limits, "The project type could not be confirmed from citable evidence.")
-	}
-	if !in.Inspection.Revision.Resolved {
-		limits = append(limits, "File citations are unavailable because the inspected revision was not pinned.")
-	}
-	if len(in.Inspection.Files) == 0 {
-		limits = append(limits, "No selected file contents were available for inspection.")
-	}
 	all := candidates(in, classification)
 	secondaries := false
 	for _, c := range all {
 		secondaries = secondaries || (c.dep && !c.productDep && c.tier == tierSecondary)
 	}
 	claims, omitted := selectClaims(all, secondaries)
-	if omitted > 0 {
-		limits = append(limits, "Some lower-priority declarations were omitted to keep the preview focused.")
-	}
 	p.Metrics = metadataMetricsFrom(in)
 	for _, kind := range []apimodel.SectionKind{apimodel.SectionIdea, apimodel.SectionHow, apimodel.SectionStack, apimodel.SectionActivity, apimodel.SectionSetup} {
 		section := apimodel.Section{Kind: kind, Title: sectionTitle(kind), EvidenceMode: apimodel.NotExecuted}
@@ -77,15 +66,8 @@ func Build(in Input) apimodel.RepoPreview {
 			p.Sections = append(p.Sections, section)
 		}
 	}
-	if len(limits) > 0 {
-		sort.Strings(limits)
-		unique := make([]string, 0, len(limits))
-		for _, s := range limits {
-			if s != "" && (len(unique) == 0 || unique[len(unique)-1] != s) {
-				unique = append(unique, s)
-			}
-		}
-		p.Sections = append(p.Sections, apimodel.Section{Kind: apimodel.SectionDecision, Title: "Inspection limits", Body: strings.Join(unique, "\n"), EvidenceMode: apimodel.NotExecuted})
+	if notes := coverageNotes(in, classification, explained, omitted); len(notes) > 0 {
+		p.Sections = append(p.Sections, apimodel.Section{Kind: apimodel.SectionDecision, Title: "Coverage notes", Body: strings.Join(notes, "\n"), EvidenceMode: apimodel.NotExecuted})
 	}
 	return p
 }
