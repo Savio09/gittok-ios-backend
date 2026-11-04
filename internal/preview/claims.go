@@ -1,6 +1,7 @@
 package preview
 
 import (
+	"encoding/json"
 	"fmt"
 	"sort"
 	"strconv"
@@ -113,20 +114,44 @@ func factClaim(in Input, f crawler.Fact) (candidate, bool) {
 	return candidate{section: section, claim: c, component: f.Component}, true
 }
 
-func candidates(in Input) []candidate {
-	out := metadataClaims(in)
+// claimKey is the equality definition for claim deduplication: every field of
+// the claim, with AdditionalSources in its unambiguous JSON encoding.
+type claimKey struct {
+	label, excerpt, explanation, supports, limit string
+	source                                       apimodel.Source
+	confidence                                   apimodel.Confidence
+	stance                                       apimodel.Stance
+	additional                                   string
+}
+
+func keyOf(c apimodel.Claim) claimKey {
+	k := claimKey{label: c.Label, excerpt: c.Excerpt, explanation: c.Explanation, supports: c.Supports, limit: c.Limit, source: c.Source, confidence: c.Confidence, stance: c.Stance}
+	if len(c.AdditionalSources) > 0 {
+		b, _ := json.Marshal(c.AdditionalSources) // a []Source of strings always encodes
+		k.additional = string(b)
+	}
+	return k
+}
+
+func candidates(in Input, cls crawler.Classification) []candidate {
+	var out []candidate
+	if kc, ok := kindClaim(in, cls); ok {
+		out = append(out, kc) // the reserved explanation leads the preview
+	}
+	out = append(out, metadataClaims(in)...)
 	var files []candidate
 	rounds := map[string]int{}
-	seen := map[apimodel.Claim]bool{}
+	seen := map[claimKey]bool{}
 	for _, f := range crawler.CollectFacts(in.Inspection) {
 		c, ok := factClaim(in, f)
 		if !ok {
 			continue
 		}
-		if seen[c.claim] {
+		if k := keyOf(c.claim); seen[k] {
 			continue
+		} else {
+			seen[k] = true
 		}
-		seen[c.claim] = true
 		// Interleave fact families/components before taking second and later facts
 		// from the same bucket, so one large dependency table cannot fill the preview.
 		bucket := string(f.Kind) + "\x00" + f.Component

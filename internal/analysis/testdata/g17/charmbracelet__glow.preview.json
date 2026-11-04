@@ -14,6 +14,28 @@
       "title": "Repository descriptions",
       "claims": [
         {
+          "label": "Why this is a CLI",
+          "source": {
+            "kind": "file",
+            "ref": "config_cmd.go",
+            "lines": "1-1",
+            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/config_cmd.go#L1-L1"
+          },
+          "additional_sources": [
+            {
+              "kind": "file",
+              "ref": "go.mod",
+              "lines": "27-27",
+              "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod#L27-L27"
+            }
+          ],
+          "excerpt": "main",
+          "explanation": "Classified as a CLI from the inspected files: \"config_cmd.go\" declares package main; \"go.mod\" declares \"require → github.com/spf13/cobra\" as \"v1.10.2\".",
+          "supports": "GitTok's classification of this repository from the cited premises.",
+          "limit": "An inference from a bounded inspection; the code was not run, and files outside the inspection could change it.",
+          "confidence": "confident"
+        },
+        {
           "label": "Repository identity",
           "source": {
             "kind": "metadata",
@@ -290,20 +312,6 @@
           },
           "excerpt": "github.com/charmbracelet/x/editor v0.1.0",
           "explanation": "\"go.mod\" declares \"github.com/charmbracelet/x/editor\" in \"require\" with declared specification \"v0.1.0\".",
-          "supports": "A dependency declaration in the repository root.",
-          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
-          "confidence": "confident"
-        },
-        {
-          "label": "Declares github.com/charmbracelet/x/exp/slice",
-          "source": {
-            "kind": "file",
-            "ref": "go.mod",
-            "lines": "44-44",
-            "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/go.mod#L44-L44"
-          },
-          "excerpt": "github.com/charmbracelet/x/exp/slice v0.0.0-20250327172914-2fdc97757edf // indirect",
-          "explanation": "\"go.mod\" declares \"github.com/charmbracelet/x/exp/slice\" in \"require (indirect)\" with declared specification \"v0.0.0-20250327172914-2fdc97757edf\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
           "confidence": "confident"

@@ -31,7 +31,9 @@ func Build(in Input) apimodel.RepoPreview {
 	}
 	p := apimodel.RepoPreview{ID: r.Owner + "/" + r.Name, Owner: r.Owner, Name: r.Name, Slug: r.Owner + "/" + r.Name, Kind: apimodel.KindOther, GitHubURL: repoURL(r)}
 	classification := crawler.Classify(in.Inspection)
-	if classification.Status == crawler.VerdictResolved {
+	// The kind is displayed only with an explanation citing its whole basis.
+	_, explained := kindClaim(in, classification)
+	if classification.Status == crawler.VerdictResolved && explained {
 		p.Kind = classification.Kind
 	}
 	for _, field := range []struct {
@@ -45,13 +47,16 @@ func Build(in Input) apimodel.RepoPreview {
 	}
 	limits := append([]string(nil), in.Limitations...)
 	limits = append(limits, classification.Limitations...)
+	if classification.Status == crawler.VerdictResolved && !explained {
+		limits = append(limits, "The project type could not be confirmed from citable evidence.")
+	}
 	if !in.Inspection.Revision.Resolved {
 		limits = append(limits, "File citations are unavailable because the inspected revision was not pinned.")
 	}
 	if len(in.Inspection.Files) == 0 {
 		limits = append(limits, "No selected file contents were available for inspection.")
 	}
-	claims := candidates(in)
+	claims := candidates(in, classification)
 	const maxClaims = 24
 	if len(claims) > maxClaims {
 		claims = claims[:maxClaims]
@@ -104,7 +109,7 @@ func ValidateClaim(in Input, claim apimodel.Claim) error {
 	if !ValidIdentity(in.Repo.Owner, in.Repo.Name) {
 		return fmt.Errorf("invalid repository identity")
 	}
-	for _, c := range candidates(in) {
+	for _, c := range candidates(in, crawler.Classify(in.Inspection)) {
 		if reflect.DeepEqual(c.claim, claim) {
 			return nil
 		}
