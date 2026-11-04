@@ -1,6 +1,7 @@
 package crawler
 
 import (
+	"encoding/json"
 	"strings"
 )
 
@@ -10,39 +11,65 @@ import (
 // established the field's value; it is never found by searching the text.
 //
 // Supported locators:
-//   - go.mod requirements, from x/mod's own syntax positions ("require", path).
+//   - go.mod requirements, from x/mod's own syntax positions ("require", path);
+//   - package.json object members, from encoding/json's token stream.
 //
 // Other fields keep whole-file citations: a span claimed on them is rejected.
 
 // fieldLocation reports where field's effective declaration lies in p.
-// supported is false when no verified locator covers this field; located is
-// false when a supported field has no declaration wholly inside the consumed
-// bytes (for example, one cut by the read limit).
+// supported is false when no verified locator covers this field (including a
+// locator that could not process the file); located is false when a supported
+// field has no declaration wholly inside the consumed bytes (for example, one
+// cut by the read limit).
 func (st *inspIndex) fieldLocation(p string, field []string) (span [2]int, supported, located bool) {
 	if !locatableField(p, field) {
 		return span, false, false
 	}
 	locs := st.fieldLocations(p)
+	if locs == nil {
+		return span, false, false
+	}
 	span, located = locs[locationKey(field)]
 	return span, true, located
 }
 
 func locatableField(p string, field []string) bool {
-	kind, _ := manifestKindOf(p)
-	return kind == kindGoMod && len(field) == 2 && field[0] == "require"
+	switch kind, _ := manifestKindOf(p); kind {
+	case kindGoMod:
+		return len(field) == 2 && field[0] == "require"
+	case kindNPM:
+		return len(field) > 0
+	}
+	return false
 }
 
 func locationKey(field []string) string { return strings.Join(field, "\x00") }
 
-// fieldLocations parses p once per inspection and caches every location.
+// locate returns w with the verified location of its field attached, when one
+// exists. The witness's value and semantics are unchanged.
+func (st *inspIndex) locate(w Witness) Witness {
+	if w.Kind != WitnessField {
+		return w
+	}
+	if span, supported, located := st.fieldLocation(w.Path, w.Field); supported && located {
+		w.Start, w.End, w.Quote = span[0], span[1], st.files[w.Path].Content[span[0]:span[1]]
+	}
+	return w
+}
+
+// fieldLocations parses p once per inspection and caches every location. A
+// nil result means no locator processed the file.
 func (st *inspIndex) fieldLocations(p string) map[string][2]int {
 	if locs, ok := st.locationCache[p]; ok {
 		return locs
 	}
 	var locs map[string][2]int
 	if f, ok := st.files[p]; ok {
-		if kind, _ := manifestKindOf(p); kind == kindGoMod {
+		switch kind, _ := manifestKindOf(p); kind {
+		case kindGoMod:
 			locs = goModLocations(p, f.Content, !f.Truncated)
+		case kindNPM:
+			locs = jsonLocations(f.Content)
 		}
 	}
 	if st.locationCache == nil {
@@ -90,6 +117,83 @@ func goModLocations(p, content string, complete bool) map[string][2]int {
 			continue
 		}
 		out[key] = [2]int{start, end}
+	}
+	return out
+}
+
+// jsonLocations maps every object member's key path to the member's bytes,
+// from the opening quote of its key to the end of its value. It walks
+// encoding/json's token stream, so keys are decoded (escapes included) exactly
+// as the parser that established the field's value decodes them, and a
+// repeated key is represented by its last member, as in the parsed tree.
+// Between tokens only JSON whitespace and separators are skipped; a key's
+// position is never found by searching for its text. Members inside arrays are
+// not addressable fields and are not recorded. Any input the walk does not
+// accept as a single complete JSON value yields nil.
+func jsonLocations(content string) map[string][2]int {
+	dec := json.NewDecoder(strings.NewReader(content))
+	out := map[string][2]int{}
+	var value func(path []string, record bool) (int, bool)
+	value = func(path []string, record bool) (int, bool) {
+		tok, err := dec.Token()
+		if err != nil {
+			return 0, false
+		}
+		switch tok {
+		case json.Delim('{'):
+			for dec.More() {
+				start := int(dec.InputOffset())
+				for start < len(content) && strings.IndexByte(" \t\r\n,", content[start]) >= 0 {
+					start++
+				}
+				if start >= len(content) || content[start] != '"' {
+					return 0, false
+				}
+				key, err := dec.Token()
+				name, isKey := key.(string)
+				if err != nil || !isKey {
+					return 0, false
+				}
+				member := append(append([]string(nil), path...), name)
+				if record {
+					// A repeated key replaces the earlier member and everything
+					// recorded beneath it, as decoding into the tree does. Purge
+					// before descending, so the effective member's children stay.
+					prefix := locationKey(member) + "\x00"
+					for k := range out {
+						if strings.HasPrefix(k, prefix) {
+							delete(out, k)
+						}
+					}
+				}
+				end, ok := value(member, record)
+				if !ok {
+					return 0, false
+				}
+				if record {
+					out[locationKey(member)] = [2]int{start, end}
+				}
+			}
+			if end, err := dec.Token(); err != nil || end != json.Delim('}') {
+				return 0, false
+			}
+		case json.Delim('['):
+			for dec.More() {
+				if _, ok := value(path, false); !ok {
+					return 0, false
+				}
+			}
+			if end, err := dec.Token(); err != nil || end != json.Delim(']') {
+				return 0, false
+			}
+		}
+		return int(dec.InputOffset()), true
+	}
+	if _, ok := value(nil, true); !ok {
+		return nil
+	}
+	if _, err := dec.Token(); err == nil {
+		return nil // trailing data: not a single JSON value
 	}
 	return out
 }

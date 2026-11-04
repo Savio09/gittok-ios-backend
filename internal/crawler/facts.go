@@ -59,11 +59,11 @@ func CollectFacts(insp Inspection) []Fact {
 				if p := parsePackageJSON(m.content); p != nil {
 					for _, name := range sortedKeys(p.Scripts) {
 						if strings.TrimSpace(p.Scripts[name]) != "" {
-							add(Fact{Kind: FactScript, Component: comp.root, Name: name, Spec: p.Scripts[name], Category: "scripts", Witness: Witness{Kind: WitnessField, Path: m.path, Field: []string{"scripts", name}, Value: p.Scripts[name]}})
+							add(Fact{Kind: FactScript, Component: comp.root, Name: name, Spec: p.Scripts[name], Category: "scripts", Witness: st.locate(Witness{Kind: WitnessField, Path: m.path, Field: []string{"scripts", name}, Value: p.Scripts[name]})})
 						}
 					}
 					if cmd, state := p.commandEntry(); state == yes {
-						add(Fact{Kind: FactCommand, Component: comp.root, Name: strings.Join(cmd.field, "."), Spec: cmd.target, Category: "bin", Witness: Witness{Kind: WitnessField, Path: m.path, Field: cmd.field, Value: cmd.target}})
+						add(Fact{Kind: FactCommand, Component: comp.root, Name: strings.Join(cmd.field, "."), Spec: cmd.target, Category: "bin", Witness: st.locate(Witness{Kind: WitnessField, Path: m.path, Field: cmd.field, Value: cmd.target})})
 					}
 				}
 			case kindPyProject:
@@ -153,11 +153,7 @@ func dependencyWitness(st *inspIndex, d depDecl) Witness {
 			}
 		}
 	}
-	w := Witness{Kind: WitnessField, Path: d.Source, Field: field, Value: d.Spec}
-	if span, supported, located := st.fieldLocation(d.Source, field); supported && located {
-		w.Start, w.End, w.Quote = span[0], span[1], st.files[d.Source].Content[span[0]:span[1]]
-	}
-	return w
+	return st.locate(Witness{Kind: WitnessField, Path: d.Source, Field: field, Value: d.Spec})
 }
 
 func isReadme(p string) bool {

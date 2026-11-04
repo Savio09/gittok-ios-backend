@@ -76,3 +76,48 @@ func TestReviewGoDeclarationsCiteExactLocations(t *testing.T) {
 		t.Fatal("no go.mod declaration claims were produced")
 	}
 }
+
+// R4: package.json declarations, including the UI build/dev scripts the review
+// named, cite their exact member lines. Expected line numbers come from a
+// direct scan of the consumed file, not from the crawler's locator.
+func TestReviewJSONDeclarationsCiteExactLocations(t *testing.T) {
+	in := corpusInput(t, "pocketbase__pocketbase.json")
+	var raw []string
+	for _, f := range in.Inspection.Files {
+		if f.Path == "ui/package.json" {
+			raw = strings.Split(f.Content, "\n")
+		}
+	}
+	lineOf := func(literal string) string {
+		for i, l := range raw {
+			if strings.Contains(l, literal) {
+				return strconv.Itoa(i+1) + "-" + strconv.Itoa(i+1)
+			}
+		}
+		return ""
+	}
+	want := map[string]string{
+		"Declares command dev":   lineOf(`"dev": "vite"`),
+		"Declares command build": lineOf(`"build": "dprint fmt && vite build"`),
+	}
+	checked := 0
+	for _, c := range claimsIn(Build(in)) {
+		if c.Source.Ref != "ui/package.json" {
+			continue
+		}
+		checked++
+		if c.Source.Lines == "" || c.Excerpt == "" {
+			t.Errorf("%s: whole-file citation", c.Label)
+			continue
+		}
+		if lines, ok := want[c.Label]; ok && c.Source.Lines != lines {
+			t.Errorf("%s: lines %s, want %s", c.Label, c.Source.Lines, lines)
+		}
+		if text := consumedLines(t, in, c.Source.Ref, c.Source.Lines); !strings.Contains(text, c.Excerpt) {
+			t.Errorf("%s: excerpt %q is not on lines %s (%q)", c.Label, c.Excerpt, c.Source.Lines, text)
+		}
+	}
+	if checked == 0 || want["Declares command dev"] == "" {
+		t.Fatalf("fixture no longer exercises ui/package.json (checked %d)", checked)
+	}
+}

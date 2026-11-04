@@ -111,15 +111,20 @@ func TestClippedGoModCannotPublishACutDeclaration(t *testing.T) {
 // Classification observations that cite a requirement without a span remain
 // valid; a span on a field kind with no verified locator is rejected.
 func TestFieldSpanNeedsAVerifiedLocator(t *testing.T) {
-	insp := InspectionFromSources("", []string{"go.mod", "package.json"}, map[string]string{
+	insp := InspectionFromSources("", []string{"go.mod", "package.json", "Cargo.toml"}, map[string]string{
 		"go.mod":       "module example.com/m\nrequire github.com/a/b v1.0.0\n",
 		"package.json": `{"name":"x"}`,
+		"Cargo.toml":   "[package]\nname = \"x\"\n",
 	})
 	st := indexInspection(insp)
 	if err := validateWitness(st, Witness{Kind: WitnessField, Path: "go.mod", Field: []string{"require", "github.com/a/b"}, Value: "v1.0.0"}); err != nil {
 		t.Errorf("span-free field witness rejected: %v", err)
 	}
-	if validateWitness(st, Witness{Kind: WitnessField, Path: "package.json", Field: []string{"name"}, Value: "x", Start: 1, End: 11, Quote: `"name":"x"`}) == nil {
+	if err := validateWitness(st, Witness{Kind: WitnessField, Path: "package.json", Field: []string{"name"}, Value: "x", Start: 1, End: 11, Quote: `"name":"x"`}); err != nil {
+		t.Errorf("exact JSON member location rejected: %v", err)
+	}
+	// Cargo.toml has no verified locator: a span claimed there cannot be checked.
+	if validateWitness(st, Witness{Kind: WitnessField, Path: "Cargo.toml", Field: []string{"package", "name"}, Value: "x", Start: 10, End: 20, Quote: "name = \"x\""}) == nil {
 		t.Error("accepted an unverifiable field span")
 	}
 }

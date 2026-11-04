@@ -51,7 +51,9 @@ func TestBuildGroundedPreview(t *testing.T) {
 			case "web/package.json":
 				if strings.Contains(c.Label, "react") {
 					dep = true
-					if c.Excerpt != "" || c.Source.Lines != "" || !strings.Contains(c.Explanation, "devDependencies") {
+					// The location is the member's exact bytes in the consumed
+					// one-line file; anything else would be an invented location.
+					if c.Excerpt != `"react":"^19"` || c.Source.Lines != "1-1" || !strings.HasSuffix(c.Source.URL, "#L1-L1") || !strings.Contains(c.Explanation, "devDependencies") {
 						t.Fatalf("invented location or category: %+v", c)
 					}
 				}
