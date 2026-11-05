@@ -1,0 +1,601 @@
+{
+  "metadata": {
+    "Owner": "charmbracelet",
+    "Name": "glow",
+    "FullName": "charmbracelet/glow",
+    "Description": "Render markdown on the CLI, with pizzazz! 💅🏻",
+    "Language": "Go",
+    "Stars": 27883,
+    "License": "MIT",
+    "HTMLURL": "https://github.com/charmbracelet/glow",
+    "PushedAt": "2026-10-05T11:11:20Z",
+    "Topics": [
+      "cli",
+      "excitement",
+      "hacktoberfest",
+      "markdown"
+    ],
+    "DefaultBranch": "main",
+    "Archived": false,
+    "Fork": false,
+    "Public": true,
+    "Metadata": {
+      "archived": {
+        "Value": "false",
+        "Null": false
+      },
+      "description": {
+        "Value": "Render markdown on the CLI, with pizzazz! 💅🏻",
+        "Null": false
+      },
+      "fork": {
+        "Value": "false",
+        "Null": false
+      },
+      "full_name": {
+        "Value": "charmbracelet/glow",
+        "Null": false
+      },
+      "language": {
+        "Value": "Go",
+        "Null": false
+      },
+      "license.spdx_id": {
+        "Value": "MIT",
+        "Null": false
+      },
+      "pushed_at": {
+        "Value": "2026-10-05T11:11:20Z",
+        "Null": false
+      },
+      "stargazers_count": {
+        "Value": "27883",
+        "Null": false
+      }
+    }
+  },
+  "captured_at": "2026-11-02T13:10:01.506376Z",
+  "revision": {
+    "Ref": "8b0600fa445535b9c53194c0d4f7fe3cf700ef3e",
+    "Resolved": true
+  },
+  "tree": {
+    "Entries": [
+      {
+        "Path": ".editorconfig",
+        "Type": "blob",
+        "Size": 276,
+        "Mode": "100644",
+        "SHA": "5de2df8c5766460b43091d29af07636a58406434"
+      },
+      {
+        "Path": ".github",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "7ada593985e9753a33a33ce044bfd8bb3cb10af1"
+      },
+      {
+        "Path": ".github/ISSUE_TEMPLATE",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "6656499bce09f5ac09ebf81756c3c648e10bb61e"
+      },
+      {
+        "Path": ".github/ISSUE_TEMPLATE/bug_report.md",
+        "Type": "blob",
+        "Size": 876,
+        "Mode": "100644",
+        "SHA": "c19be87a593df481fde3b32cf8b65bba97d795ed"
+      },
+      {
+        "Path": ".github/ISSUE_TEMPLATE/config.yml",
+        "Type": "blob",
+        "Size": 120,
+        "Mode": "100644",
+        "SHA": "897a394e035fb4004319ec7053386821bf19b4ec"
+      },
+      {
+        "Path": ".github/ISSUE_TEMPLATE/feature_request.md",
+        "Type": "blob",
+        "Size": 604,
+        "Mode": "100644",
+        "SHA": "11fc491ef1dae316f2b06bbb40eaba9c757fdfd1"
+      },
+      {
+        "Path": ".github/dependabot.yml",
+        "Type": "blob",
+        "Size": 892,
+        "Mode": "100644",
+        "SHA": "320520c5f4bc57b60b6e0740d53899faf6bd2996"
+      },
+      {
+        "Path": ".github/workflows",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "2216e2df98e0c90d3f2046d6251182374e3b0ab1"
+      },
+      {
+        "Path": ".github/workflows/build.yml",
+        "Type": "blob",
+        "Size": 569,
+        "Mode": "100644",
+        "SHA": "4efee44ceb20f082eddbedfc1f70f32f42243b85"
+      },
+      {
+        "Path": ".github/workflows/coverage.yml",
+        "Type": "blob",
+        "Size": 593,
+        "Mode": "100644",
+        "SHA": "1ae8990b4048fcb690840241f39697a60bd1e625"
+      },
+      {
+        "Path": ".github/workflows/dependabot-sync.yml",
+        "Type": "blob",
+        "Size": 419,
+        "Mode": "100644",
+        "SHA": "9b082590bda3f7ec5df3e1032c4f35bb11502e6b"
+      },
+      {
+        "Path": ".github/workflows/goreleaser.yml",
+        "Type": "blob",
+        "Size": 711,
+        "Mode": "100644",
+        "SHA": "fbc204675b1ffbdac66c8113fc3bf8aaee2d35c8"
+      },
+      {
+        "Path": ".github/workflows/lint-sync.yml",
+        "Type": "blob",
+        "Size": 240,
+        "Mode": "100644",
+        "SHA": "43f380fd1254bcc75b6e231c12f89ba38216ffcb"
+      },
+      {
+        "Path": ".github/workflows/lint.yml",
+        "Type": "blob",
+        "Size": 464,
+        "Mode": "100644",
+        "SHA": "8bd31325e1a7b54bb96d9cd768d57bdda7622c70"
+      },
+      {
+        "Path": ".gitignore",
+        "Type": "blob",
+        "Size": 41,
+        "Mode": "100644",
+        "SHA": "8a5159a5ed27940f97f826e83e6d84b313eb3ce2"
+      },
+      {
+        "Path": ".golangci.yml",
+        "Type": "blob",
+        "Size": 695,
+        "Mode": "100644",
+        "SHA": "929cb0ac99f30c1316f6e08a9ebf7a3909594a5c"
+      },
+      {
+        "Path": ".goreleaser.yml",
+        "Type": "blob",
+        "Size": 451,
+        "Mode": "100644",
+        "SHA": "0c539b7624d6693e57690fc14ba89319c2a1b926"
+      },
+      {
+        "Path": "Dockerfile",
+        "Type": "blob",
+        "Size": 97,
+        "Mode": "100644",
+        "SHA": "8719b4eba1a5c5e95478669920b19daf35601b27"
+      },
+      {
+        "Path": "LICENSE",
+        "Type": "blob",
+        "Size": 1080,
+        "Mode": "100644",
+        "SHA": "1e27a6193920fbb7c96ed34e6fe8991742daa3d8"
+      },
+      {
+        "Path": "README.md",
+        "Type": "blob",
+        "Size": 6032,
+        "Mode": "100644",
+        "SHA": "674abae5407bf91f79f10159e753725892768d6c"
+      },
+      {
+        "Path": "Taskfile.yaml",
+        "Type": "blob",
+        "Size": 419,
+        "Mode": "100644",
+        "SHA": "6d8c844f65e3ed9cf6282ba8448076f196392068"
+      },
+      {
+        "Path": "config_cmd.go",
+        "Type": "blob",
+        "Size": 2450,
+        "Mode": "100644",
+        "SHA": "390a1db0dbf9aec0a0e024d56cf4064f7dbf8604"
+      },
+      {
+        "Path": "console_windows.go",
+        "Type": "blob",
+        "Size": 484,
+        "Mode": "100644",
+        "SHA": "2516b16ca70495c7d6aa5839f139e5dbe78a3573"
+      },
+      {
+        "Path": "example.png",
+        "Type": "blob",
+        "Size": 511175,
+        "Mode": "100644",
+        "SHA": "b146f2000bed0727c1eb2bc987ceebe4b86e74cf"
+      },
+      {
+        "Path": "github.go",
+        "Type": "blob",
+        "Size": 1388,
+        "Mode": "100644",
+        "SHA": "fe862e3256ecddec4702388d712bc745a3dbe5f3"
+      },
+      {
+        "Path": "gitlab.go",
+        "Type": "blob",
+        "Size": 1497,
+        "Mode": "100644",
+        "SHA": "68256bec347da543d7cd5e35ccf0c38c3aa8caae"
+      },
+      {
+        "Path": "glow_test.go",
+        "Type": "blob",
+        "Size": 582,
+        "Mode": "100644",
+        "SHA": "8743be29021266b7870837c722c50bcdf2358fe5"
+      },
+      {
+        "Path": "go.mod",
+        "Type": "blob",
+        "Size": 3186,
+        "Mode": "100644",
+        "SHA": "5d320ae461424fb9c9deb4dea25f90c53fb36f9e"
+      },
+      {
+        "Path": "go.sum",
+        "Type": "blob",
+        "Size": 16312,
+        "Mode": "100644",
+        "SHA": "32ff1c621755039b6d6cf5c16c78c81b2c748ea1"
+      },
+      {
+        "Path": "log.go",
+        "Type": "blob",
+        "Size": 937,
+        "Mode": "100644",
+        "SHA": "a864a71c295d171e2a96c6f5a3423f529b688c73"
+      },
+      {
+        "Path": "main.go",
+        "Type": "blob",
+        "Size": 12653,
+        "Mode": "100644",
+        "SHA": "0a24b451379b969e27c36b2995242c343a68c6b4"
+      },
+      {
+        "Path": "man_cmd.go",
+        "Type": "blob",
+        "Size": 713,
+        "Mode": "100644",
+        "SHA": "a179ef742da531c57c5b729f35c325899bacd7c8"
+      },
+      {
+        "Path": "style.go",
+        "Type": "blob",
+        "Size": 220,
+        "Mode": "100644",
+        "SHA": "9119bf5c4a9ef6753864f041569b9c115177a4b3"
+      },
+      {
+        "Path": "ui",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "46f43313538e042ed67c5d1aba11f5ae72c44ecc"
+      },
+      {
+        "Path": "ui/config.go",
+        "Type": "blob",
+        "Size": 464,
+        "Mode": "100644",
+        "SHA": "64eb175a0ae07e7acdfabd12801749585caa9ba8"
+      },
+      {
+        "Path": "ui/editor.go",
+        "Type": "blob",
+        "Size": 439,
+        "Mode": "100644",
+        "SHA": "135a05960faa7c982a392497251be36e42becba3"
+      },
+      {
+        "Path": "ui/ignore_darwin.go",
+        "Type": "blob",
+        "Size": 226,
+        "Mode": "100644",
+        "SHA": "b69437af3466ad40f15dd62f2005b29a5bdca2f3"
+      },
+      {
+        "Path": "ui/ignore_general.go",
+        "Type": "blob",
+        "Size": 161,
+        "Mode": "100644",
+        "SHA": "f4dc8bed021e0a17b0183d206d1143e5589cf6d3"
+      },
+      {
+        "Path": "ui/keys.go",
+        "Type": "blob",
+        "Size": 60,
+        "Mode": "100644",
+        "SHA": "8e13f95a64cef18fdbb6ebc86915339d9999ffb2"
+      },
+      {
+        "Path": "ui/markdown.go",
+        "Type": "blob",
+        "Size": 2896,
+        "Mode": "100644",
+        "SHA": "c67b1dc8c1c455f50c38d145571e41eb5c4e07b0"
+      },
+      {
+        "Path": "ui/pager.go",
+        "Type": "blob",
+        "Size": 10822,
+        "Mode": "100644",
+        "SHA": "cf70807c914d1d8ea5d10021a1c07eed2b2a8d5b"
+      },
+      {
+        "Path": "ui/pager_test.go",
+        "Type": "blob",
+        "Size": 1079,
+        "Mode": "100644",
+        "SHA": "80909eac6afc3327ef0de59a46fde14608fc5f53"
+      },
+      {
+        "Path": "ui/rawpaint.go",
+        "Type": "blob",
+        "Size": 3265,
+        "Mode": "100644",
+        "SHA": "0def1e2b1f1a4f82deec50c3beabfcf7941b96b9"
+      },
+      {
+        "Path": "ui/rawpaint_test.go",
+        "Type": "blob",
+        "Size": 2368,
+        "Mode": "100644",
+        "SHA": "2a714646ec086e98bc80b9a72c5d0638f097caf6"
+      },
+      {
+        "Path": "ui/rawpaint_unix.go",
+        "Type": "blob",
+        "Size": 511,
+        "Mode": "100644",
+        "SHA": "6c2176e772dd8cb7cb073126a7db3cc551eb1974"
+      },
+      {
+        "Path": "ui/rawpaint_windows.go",
+        "Type": "blob",
+        "Size": 265,
+        "Mode": "100644",
+        "SHA": "2b503f72890cae9639cead966d426818ac437b5d"
+      },
+      {
+        "Path": "ui/sort.go",
+        "Type": "blob",
+        "Size": 177,
+        "Mode": "100644",
+        "SHA": "4f389fb1c105c18f081fe0c23de7648b020bc366"
+      },
+      {
+        "Path": "ui/stash.go",
+        "Type": "blob",
+        "Size": 21389,
+        "Mode": "100644",
+        "SHA": "220982f4d8cee2a5295a6baebcf23a4879c10159"
+      },
+      {
+        "Path": "ui/stashhelp.go",
+        "Type": "blob",
+        "Size": 7000,
+        "Mode": "100644",
+        "SHA": "ab6ccab09f7bf8eee874c84161a7703e49576cfb"
+      },
+      {
+        "Path": "ui/stashitem.go",
+        "Type": "blob",
+        "Size": 3659,
+        "Mode": "100644",
+        "SHA": "9841a0d5f80d0e0cd5be0f37a8e8a7725ca58211"
+      },
+      {
+        "Path": "ui/styles.go",
+        "Type": "blob",
+        "Size": 5816,
+        "Mode": "100644",
+        "SHA": "2c22e221f78454520d16bdac59c0c9e406037e60"
+      },
+      {
+        "Path": "ui/ui.go",
+        "Type": "blob",
+        "Size": 10515,
+        "Mode": "100644",
+        "SHA": "583dca996f53349516ebad6bb72079d7091b4ea1"
+      },
+      {
+        "Path": "ui/ui_test.go",
+        "Type": "blob",
+        "Size": 592,
+        "Mode": "100644",
+        "SHA": "a5af4cbd927d57c6178a25fdfc8985f369cb3f9f"
+      },
+      {
+        "Path": "url.go",
+        "Type": "blob",
+        "Size": 1740,
+        "Mode": "100644",
+        "SHA": "f716681c65076ddeacc8fa41c049f5f0e558d2a1"
+      },
+      {
+        "Path": "url_test.go",
+        "Type": "blob",
+        "Size": 1401,
+        "Mode": "100644",
+        "SHA": "9683892aab4a8e68484c7ee819f1acd6fe0b0419"
+      },
+      {
+        "Path": "utils",
+        "Type": "tree",
+        "Size": 0,
+        "Mode": "040000",
+        "SHA": "481887b62e26646fe0cf8ea88d13c25ff44f13e1"
+      },
+      {
+        "Path": "utils/textsize.go",
+        "Type": "blob",
+        "Size": 8426,
+        "Mode": "100644",
+        "SHA": "31201aec669e246906c8d1e04f0c484078e6b210"
+      },
+      {
+        "Path": "utils/textsize_test.go",
+        "Type": "blob",
+        "Size": 6498,
+        "Mode": "100644",
+        "SHA": "e5b08bb0d4a019cd31bb1c277ade9ca5817d0bcb"
+      },
+      {
+        "Path": "utils/utils.go",
+        "Type": "blob",
+        "Size": 3518,
+        "Mode": "100644",
+        "SHA": "bfa59b8003c3977dce478beb75f2b73414f229dc"
+      }
+    ],
+    "Truncated": false,
+    "DepthLimited": false,
+    "MaxDepth": 12
+  },
+  "selected": [
+    "go.mod",
+    "README.md",
+    "Dockerfile",
+    ".github/workflows/build.yml",
+    ".github/workflows/coverage.yml",
+    ".github/workflows/dependabot-sync.yml",
+    ".github/workflows/goreleaser.yml",
+    ".github/workflows/lint-sync.yml",
+    ".github/workflows/lint.yml",
+    "main.go",
+    "config_cmd.go",
+    "console_windows.go",
+    "github.go",
+    "gitlab.go",
+    "glow_test.go",
+    "log.go"
+  ],
+  "consumed": {
+    "Files": [
+      {
+        "Path": "go.mod",
+        "Content": "module charm.land/glow/v3\n\ngo 1.26.7\n\nrequire (\n\tcharm.land/bubbles/v2 v2.1.1\n\tcharm.land/bubbletea/v2 v2.0.8\n\tcharm.land/glamour/v2 v2.0.1\n\tcharm.land/lipgloss/v2 v2.0.6\n\tgithub.com/atotto/clipboard v0.1.4\n\tgithub.com/caarlos0/env/v11 v11.3.1\n\tgithub.com/charmbracelet/log v0.4.2\n\tgithub.com/charmbracelet/x/editor v0.1.0\n\tgithub.com/dustin/go-humanize v1.0.1\n\tgithub.com/fsnotify/fsnotify v1.9.0\n\tgithub.com/mattn/go-runewidth v0.0.24\n\tgithub.com/mitchellh/go-homedir v1.1.0\n\tgithub.com/muesli/cancelreader v0.2.2\n\tgithub.com/muesli/gitcha v0.3.0\n\tgithub.com/muesli/go-app-paths v0.2.2\n\tgithub.com/muesli/mango-cobra v1.3.0\n\tgithub.com/muesli/reflow v0.3.0\n\tgithub.com/muesli/roff v0.1.0\n\tgithub.com/muesli/termenv v0.16.0\n\tgithub.com/rivo/uniseg v0.4.7\n\tgithub.com/sahilm/fuzzy v0.1.3\n\tgithub.com/spf13/cobra v1.10.2\n\tgithub.com/spf13/viper v1.21.0\n\tgolang.org/x/sys v0.47.0\n\tgolang.org/x/term v0.44.0\n\tgolang.org/x/text v0.39.0\n\tmvdan.cc/sh/v3 v3.13.1\n)\n\nrequire (\n\tgithub.com/alecthomas/chroma/v2 v2.14.0 // indirect\n\tgithub.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect\n\tgithub.com/aymerick/douceur v0.2.0 // indirect\n\tgithub.com/charmbracelet/colorprofile v0.4.3 // indirect\n\tgithub.com/charmbracelet/lipgloss v1.1.1-0.20250404203927-76690c660834 // indirect\n\tgithub.com/charmbracelet/ultraviolet v0.0.0-20260811164956-006e29f97886 // indirect\n\tgithub.com/charmbracelet/x/ansi v0.11.8 // indirect\n\tgithub.com/charmbracelet/x/cellbuf v0.0.15 // indirect\n\tgithub.com/charmbracelet/x/exp/slice v0.0.0-20250327172914-2fdc97757edf // indirect\n\tgithub.com/charmbracelet/x/term v0.2.2 // indirect\n\tgithub.com/charmbracelet/x/termios v0.1.1 // indirect\n\tgithub.com/charmbracelet/x/windows v0.2.2 // indirect\n\tgithub.com/clipperhouse/displaywidth v0.11.0 // indirect\n\tgithub.com/clipperhouse/uax29/v2 v2.7.0 // indirect\n\tgithub.com/dlclark/regexp2 v1.11.0 // indirect\n\tgithub.com/go-logfmt/logfmt v0.6.0 // indirect\n\tgithub.com/go-viper/mapstructure/v2 v2.4.0 // indirect\n\tgithub.com/gorilla/css v1.0.1 // indirect\n\tgithub.com/inconshreveable/mousetrap v1.1.0 // indirect\n\tgithub.com/lucasb-eyer/go-colorful v1.4.1 // indirect\n\tgithub.com/mattn/go-isatty v0.0.20 // indirect\n\tgithub.com/microcosm-cc/bluemonday v1.0.27 // indirect\n\tgithub.com/muesli/mango v0.2.0 // indirect\n\tgithub.com/muesli/mango-pflag v0.1.0 // indirect\n\tgithub.com/pelletier/go-toml/v2 v2.2.4 // indirect\n\tgithub.com/sabhiram/go-gitignore v0.0.0-20180611051255-d3107576ba94 // indirect\n\tgithub.com/sagikazarmark/locafero v0.11.0 // indirect\n\tgithub.com/sourcegraph/conc v0.3.1-0.20240121214520-5f936abd7ae8 // indirect\n\tgithub.com/spf13/afero v1.15.0 // indirect\n\tgithub.com/spf13/cast v1.10.0 // indirect\n\tgithub.com/spf13/pflag v1.0.10 // indirect\n\tgithub.com/subosito/gotenv v1.6.0 // indirect\n\tgithub.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect\n\tgithub.com/yuin/goldmark v1.7.17 // indirect\n\tgithub.com/yuin/goldmark-emoji v1.0.5 // indirect\n\tgo.yaml.in/yaml/v3 v3.0.4 // indirect\n\tgolang.org/x/exp v0.0.0-20240604190554-fc45aab8b7f8 // indirect\n\tgolang.org/x/net v0.56.0 // indirect\n\tgolang.org/x/sync v0.22.0 // indirect\n\tgopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect\n)\n",
+        "Size": 3186,
+        "Truncated": false
+      },
+      {
+        "Path": "README.md",
+        "Content": "# Glow\n\nRender markdown on the CLI, with _pizzazz_!\n\n\u003cp align=\"center\"\u003e\n    \u003cimg src=\"https://stuff.charm.sh/glow/glow-banner-github.gif\" alt=\"Glow Logo\"\u003e\n    \u003ca href=\"https://github.com/charmbracelet/glow/releases\"\u003e\u003cimg src=\"https://img.shields.io/github/release/charmbracelet/glow.svg\" alt=\"Latest Release\"\u003e\u003c/a\u003e\n    \u003ca href=\"https://pkg.go.dev/github.com/charmbracelet/glow?tab=doc\"\u003e\u003cimg src=\"https://godoc.org/github.com/golang/gddo?status.svg\" alt=\"GoDoc\"\u003e\u003c/a\u003e\n    \u003ca href=\"https://github.com/charmbracelet/glow/actions\"\u003e\u003cimg src=\"https://github.com/charmbracelet/glow/workflows/build/badge.svg\" alt=\"Build Status\"\u003e\u003c/a\u003e\n    \u003ca href=\"https://goreportcard.com/report/github.com/charmbracelet/glow\"\u003e\u003cimg src=\"https://goreportcard.com/badge/charmbracelet/glow\" alt=\"Go ReportCard\"\u003e\u003c/a\u003e\n\u003c/p\u003e\n\n\u003cp align=\"center\"\u003e\n    \u003cimg src=\"https://github.com/user-attachments/assets/c2246366-f84b-4847-b431-32a61ca07b74\" width=\"800\" alt=\"Glow UI Demo\"\u003e\n\u003c/p\u003e\n\n## What is it?\n\nGlow is a terminal based markdown reader designed from the ground up to bring\nout the beauty—and power—of the CLI.\n\nUse it to discover markdown files, read documentation directly on the command\nline. Glow will find local markdown files in subdirectories or a local\nGit repository.\n\n## Installation\n\n### Package Manager\n\n```bash\n# macOS or Linux\nbrew install glow\n```\n\n```bash\n# macOS (with MacPorts)\nsudo port install glow\n```\n\n```bash\n# Arch Linux (btw)\npacman -S glow\n```\n\n```bash\n# Void Linux\nxbps-install -S glow\n```\n\n```bash\n# Nix shell\nnix-shell -p glow --command glow\n```\n\n```bash\n# FreeBSD\npkg install glow\n```\n\n```bash\n# Solus\neopkg install glow\n```\n\n```bash\n# Windows (with Chocolatey, Scoop, or Winget)\nchoco install glow\nscoop install glow\nwinget install charmbracelet.glow\n```\n\n```bash\n# Android (with termux)\npkg install glow\n```\n\n```bash\n# Ubuntu (Snapcraft)\nsudo snap install glow\n```\n\n```bash\n# Debian/Ubuntu\nsudo mkdir -p /etc/apt/keyrings\ncurl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg\necho \"deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *\" | sudo tee /etc/apt/sources.list.d/charm.list\nsudo apt update \u0026\u0026 sudo apt install glow\n```\n\n```bash\n# Fedora/RHEL\necho '[charm]\nname=Charm\nbaseurl=https://repo.charm.sh/yum/\nenabled=1\ngpgcheck=1\ngpgkey=https://repo.charm.sh/yum/gpg.key' | sudo tee /etc/yum.repos.d/charm.repo\nsudo yum install glow\n```\n\nOr download a binary from the [releases][releases] page. MacOS, Linux, Windows,\nFreeBSD and OpenBSD binaries are available, as well as Debian, RPM, and Alpine\npackages. ARM builds are also available for macOS, Linux, FreeBSD and OpenBSD.\n\n### Go\n\nOr just install it with `go`:\n\n```bash\ngo install charm.land/glow/v3@latest\n```\n\n### Build (requires Go 1.21+)\n\n```bash\ngit clone https://github.com/charmbracelet/glow.git\ncd glow\ngo build\n```\n\n[releases]: https://github.com/charmbracelet/glow/releases\n\n## The TUI\n\nSimply run `glow` without arguments to start the textual user interface and\nbrowse local. Glow will find local markdown files in the\ncurrent directory and below or, if you’re in a Git repository, Glow will search\nthe repo.\n\nMarkdown files can be read with Glow's high-performance pager. Most of the\nkeystrokes you know from `less` are the same, but you can press `?` to list\nthe hotkeys.\n\n## The CLI\n\nIn addition to a TUI, Glow has a CLI for working with Markdown. To format a\ndocument use a markdown source as the primary argument:\n\n```bash\n# Read from file\nglow README.md\n\n# Read from stdin\necho \"[Glow](https://github.com/charmbracelet/glow)\" | glow -\n\n# Fetch README from GitHub / GitLab\nglow github.com/charmbracelet/glow\n\n# Fetch markdown from HTTP\nglow https://host.tld/file.md\n```\n\n### Word Wrapping\n\nThe `-w` flag lets you set a maximum width at which the output will be wrapped:\n\n```bash\nglow -w 60\n```\n\n### Paging\n\nCLI output can be displayed in your preferred pager with the `-p` flag. This defaults\nto the ANSI-aware `less -r` if `$PAGER` is not explicitly set.\n\n### Styles\n\nYou can choose a style with the `-s` flag. When no flag is provided `glow` tries\nto detect your terminal's current background color and automatically picks\neither the `dark` or the `light` style for you.\n\n```bash\nglow -s [dark|light]\n```\n\nAlternatively you can also supply a custom JSON stylesheet:\n\n```bash\nglow -s mystyle.json\n```\n\nFor additional usage details see:\n\n```bash\nglow --help\n```\n\nCheck out the [Glamour Style Section](https://github.com/charmbracelet/glamour/blob/master/styles/gallery/README.md)\nto find more styles. Or [make your own](https://github.com/charmbracelet/glamour/tree/master/styles)!\n\n## The Config File\n\nIf you find yourself supplying the same flags to `glow` all the time, it's\nprobably a good idea to create a config file. Run `glow config`, which will open\nit in your favorite $EDITOR. Alternatively you can manually put a file named\n`glow.yml` in the default config path of you platform. If you're not sure where\nthat is, please refer to `glow --help`.\n\nHere's an example config:\n\n```yaml\n# style name or JSON path (default \"auto\")\nstyle: \"light\"\n# mouse wheel support (TUI-mode only)\nmouse: true\n# use pager to display markdown\npager: true\n# at which column should we word wrap?\nwidth: 80\n# show all files, including hidden and ignored.\nall: false\n# show line numbers (TUI-mode only)\nshowLineNumbers: false\n# preserve newlines in the output\npreserveNewLines: false\n```\n\n## Contributing\n\nSee [contributing][contribute].\n\n[contribute]: https://github.com/charmbracelet/glow/contribute\n\n## Feedback\n\nWe’d love to hear your thoughts on this project. Feel free to drop us a note!\n\n- [Twitter](https://twitter.com/charmcli)\n- [The Fediverse](https://mastodon.social/@charmcli)\n- [Discord](https://charm.sh/chat)\n\n## License\n\n[MIT](https://github.com/charmbracelet/glow/raw/master/LICENSE)\n\n---\n\nPart of [Charm](https://charm.sh).\n\n\u003ca href=\"https://charm.sh/\"\u003e\u003cimg alt=\"The Charm logo\" src=\"https://stuff.charm.sh/charm-badge.jpg\" width=\"400\"\u003e\u003c/a\u003e\n\nCharm热爱开源 • Charm loves open source\n",
+        "Size": 6032,
+        "Truncated": false
+      },
+      {
+        "Path": "Dockerfile",
+        "Content": "FROM gcr.io/distroless/static\nCOPY glow /usr/local/bin/glow\nENTRYPOINT [ \"/usr/local/bin/glow\" ]\n",
+        "Size": 97,
+        "Truncated": false
+      },
+      {
+        "Path": ".github/workflows/build.yml",
+        "Content": "name: build\n\non: [push, pull_request]\n\njobs:\n  build:\n    uses: charmbracelet/meta/.github/workflows/build.yml@main\n\n  snapshot:\n    uses: charmbracelet/meta/.github/workflows/snapshot.yml@main\n    secrets:\n      goreleaser_key: ${{ secrets.GORELEASER_KEY }}\n\n  govulncheck:\n    uses: charmbracelet/meta/.github/workflows/govulncheck.yml@main\n    with:\n      go-version: stable\n\n  semgrep:\n    uses: charmbracelet/meta/.github/workflows/semgrep.yml@main\n\n  ruleguard:\n    uses: charmbracelet/meta/.github/workflows/ruleguard.yml@main\n    with:\n      go-version: \"1.26\"\n",
+        "Size": 569,
+        "Truncated": false
+      },
+      {
+        "Path": ".github/workflows/coverage.yml",
+        "Content": "name: coverage\non: [push, pull_request]\n\njobs:\n  coverage:\n    runs-on: ubuntu-latest\n    env:\n      GO111MODULE: \"on\"\n    steps:\n      - name: Checkout code\n        uses: actions/checkout@v7\n\n      - name: Install Go\n        uses: actions/setup-go@v7\n        with:\n          go-version: stable\n\n      - name: Coverage\n        env:\n          COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}\n        run: |\n          go test -race -covermode atomic -coverprofile=profile.cov ./...\n          go install github.com/mattn/goveralls@latest\n          goveralls -coverprofile=profile.cov -service=github\n",
+        "Size": 593,
+        "Truncated": false
+      },
+      {
+        "Path": ".github/workflows/dependabot-sync.yml",
+        "Content": "name: dependabot-sync\non:\n  schedule:\n    - cron: \"0 0 * * 0\" # every Sunday at midnight\n  workflow_dispatch: # allows manual triggering\n\npermissions:\n  contents: write\n  pull-requests: write\n\njobs:\n  dependabot-sync:\n    uses: charmbracelet/meta/.github/workflows/dependabot-sync.yml@main\n    with:\n      repo_name: ${{ github.event.repository.name }}\n    secrets:\n      gh_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}\n",
+        "Size": 419,
+        "Truncated": false
+      },
+      {
+        "Path": ".github/workflows/goreleaser.yml",
+        "Content": "# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json\n\nname: goreleaser\n\non:\n  push:\n    tags:\n      - v*.*.*\n\nconcurrency:\n  group: goreleaser\n  cancel-in-progress: true\n\njobs:\n  goreleaser:\n    uses: charmbracelet/meta/.github/workflows/goreleaser.yml@main\n    secrets:\n      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}\n      docker_token: ${{ secrets.DOCKERHUB_TOKEN }}\n      gh_pat: ${{ secrets.PERSONAL_ACCESS_TOKEN }}\n      goreleaser_key: ${{ secrets.GORELEASER_KEY }}\n      fury_token: ${{ secrets.FURY_TOKEN }}\n      nfpm_gpg_key: ${{ secrets.NFPM_GPG_KEY }}\n      nfpm_passphrase: ${{ secrets.NFPM_PASSPHRASE }}\n      snapcraft_token: ${{ secrets.SNAPCRAFT_TOKEN }}\n",
+        "Size": 711,
+        "Truncated": false
+      },
+      {
+        "Path": ".github/workflows/lint-sync.yml",
+        "Content": "name: lint-sync\non:\n  schedule:\n    - cron: \"0 0 * * 0\" # every sunday at midnight\n  workflow_dispatch:\n\npermissions:\n  contents: write\n  pull-requests: write\n\njobs:\n  lint:\n    uses: charmbracelet/meta/.github/workflows/lint-sync.yml@main\n",
+        "Size": 240,
+        "Truncated": false
+      },
+      {
+        "Path": ".github/workflows/lint.yml",
+        "Content": "name: lint\non:\n  push:\n  pull_request:\n\njobs:\n  golangci:\n    name: lint\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v7\n      - name: golangci-lint\n        uses: golangci/golangci-lint-action@v9.3.0\n        with:\n          # Optional: golangci-lint command line arguments.\n          args: --issues-exit-code=0\n          # Optional: show only new issues if it's a pull request. The default value is `false`.\n          only-new-issues: true\n",
+        "Size": 464,
+        "Truncated": false
+      },
+      {
+        "Path": "main.go",
+        "Content": "// Package main provides the entry point for the Glow CLI application.\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n\t\"io\"\n\t\"io/fs\"\n\t\"net/http\"\n\t\"net/url\"\n\t\"os\"\n\t\"os/exec\"\n\t\"path/filepath\"\n\t\"strings\"\n\n\t\"mvdan.cc/sh/v3/shell\"\n\n\t\"charm.land/glamour/v2\"\n\t\"charm.land/glamour/v2/styles\"\n\t\"charm.land/glow/v3/ui\"\n\t\"charm.land/glow/v3/utils\"\n\t\"github.com/caarlos0/env/v11\"\n\t\"github.com/charmbracelet/log\"\n\tgap \"github.com/muesli/go-app-paths\"\n\t\"github.com/spf13/cobra\"\n\t\"github.com/spf13/viper\"\n\t\"golang.org/x/term\"\n)\n\nvar (\n\t// Version as provided by goreleaser.\n\tVersion = \"\"\n\t// CommitSHA as provided by goreleaser.\n\tCommitSHA = \"\"\n\n\treadmeNames      = []string{\"README.md\", \"README\", \"Readme.md\", \"Readme\", \"readme.md\", \"readme\"}\n\tconfigFile       string\n\tpager            bool\n\ttui              bool\n\tstyle            string\n\twidth            uint\n\tshowAllFiles     bool\n\tshowLineNumbers  bool\n\tpreserveNewLines bool\n\tmouse            bool\n\n\trootCmd = \u0026cobra.Command{\n\t\tUse:   \"glow [SOURCE|DIR]\",\n\t\tShort: \"Render markdown on the CLI, with pizzazz!\",\n\t\tLong: paragraph(\n\t\t\tfmt.Sprintf(\"\\nRender markdown on the CLI, %s!\", keyword(\"with pizzazz\")),\n\t\t),\n\t\tSilenceErrors:    false,\n\t\tSilenceUsage:     true,\n\t\tTraverseChildren: true,\n\t\tArgs:             cobra.MaximumNArgs(1),\n\t\tValidArgsFunction: func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {\n\t\t\treturn nil, cobra.ShellCompDirectiveDefault\n\t\t},\n\t\tPersistentPreRunE: func(cmd *cobra.Command, _ []string) error {\n\t\t\treturn validateOptions(cmd)\n\t\t},\n\t\tRunE: execute,\n\t}\n)\n\n// source provides a readable markdown source.\ntype source struct {\n\treader io.ReadCloser\n\tURL    string\n}\n\n// sourceFromArg parses an argument and creates a readable source for it.\nfunc sourceFromArg(arg string) (*source, error) {\n\t// from stdin\n\tif arg == \"-\" {\n\t\treturn \u0026source{reader: os.Stdin}, nil\n\t}\n\n\t// a GitHub or GitLab URL (even without the protocol):\n\tsrc, err := readmeURL(arg)\n\tif src != nil \u0026\u0026 err == nil {\n\t\t// if there's an error, try next methods...\n\t\treturn src, nil\n\t}\n\n\t// HTTP(S) URLs:\n\tif u, err := url.ParseRequestURI(arg); err == nil \u0026\u0026 strings.Contains(arg, \"://\") { //nolint:nestif\n\t\tif u.Scheme != \"\" {\n\t\t\tif u.Scheme != \"http\" \u0026\u0026 u.Scheme != \"https\" {\n\t\t\t\treturn nil, fmt.Errorf(\"%s is not a supported protocol\", u.Scheme)\n\t\t\t}\n\t\t\t// consumer of the source is responsible for closing the ReadCloser.\n\t\t\tresp, err := http.Get(u.String()) //nolint: noctx,bodyclose\n\t\t\tif err != nil {\n\t\t\t\treturn nil, fmt.Errorf(\"unable to get url: %w\", err)\n\t\t\t}\n\t\t\tif resp.StatusCode != http.StatusOK {\n\t\t\t\treturn nil, fmt.Errorf(\"HTTP status %d\", resp.StatusCode)\n\t\t\t}\n\t\t\treturn \u0026source{resp.Body, u.String()}, nil\n\t\t}\n\t}\n\n\t// a directory:\n\tif len(arg) == 0 {\n\t\t// use the current working dir if no argument was supplied\n\t\targ = \".\"\n\t}\n\tst, err := os.Stat(arg)\n\tif err == nil \u0026\u0026 st.IsDir() { //nolint:nestif\n\t\tvar src *source\n\t\t_ = filepath.Walk(arg, func(path string, _ os.FileInfo, err error) error {\n\t\t\tif err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\t\t\tfor _, v := range readmeNames {\n\t\t\t\tif strings.EqualFold(filepath.Base(path), v) {\n\t\t\t\t\tr, err := os.Open(path)\n\t\t\t\t\tif err != nil {\n\t\t\t\t\t\tcontinue\n\t\t\t\t\t}\n\n\t\t\t\t\tu, _ := filepath.Abs(path)\n\t\t\t\t\tsrc = \u0026source{r, u}\n\n\t\t\t\t\t// abort filepath.Walk\n\t\t\t\t\treturn errors.New(\"source found\")\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn nil\n\t\t})\n\n\t\tif src != nil {\n\t\t\treturn src, nil\n\t\t}\n\n\t\treturn nil, errors.New(\"missing markdown source\")\n\t}\n\n\tr, err := os.Open(arg)\n\tif err != nil {\n\t\treturn nil, fmt.Errorf(\"unable to open file: %w\", err)\n\t}\n\tu, err := filepath.Abs(arg)\n\tif err != nil {\n\t\treturn nil, fmt.Errorf(\"unable to get absolute path: %w\", err)\n\t}\n\treturn \u0026source{r, u}, nil\n}\n\n// validateStyle checks if the style is a default style, if not, checks that\n// the custom style exists.\nfunc validateStyle(style string) error {\n\tif style != \"auto\" \u0026\u0026 styles.DefaultStyles[style] == nil {\n\t\tstyle = utils.ExpandPath(style)\n\t\tif _, err := os.Stat(style); errors.Is(err, fs.ErrNotExist) {\n\t\t\treturn fmt.Errorf(\"specified style does not exist: %s\", style)\n\t\t} else if err != nil {\n\t\t\treturn fmt.Errorf(\"unable to stat file: %w\", err)\n\t\t}\n\t}\n\treturn nil\n}\n\nfunc validateOptions(cmd *cobra.Command) error {\n\t// grab config values from Viper\n\twidth = viper.GetUint(\"width\")\n\tmouse = viper.GetBool(\"mouse\")\n\tpager = viper.GetBool(\"pager\")\n\ttui = viper.GetBool(\"tui\")\n\tshowAllFiles = viper.GetBool(\"all\")\n\tpreserveNewLines = viper.GetBool(\"preserveNewLines\")\n\tshowLineNumbers = viper.GetBool(\"showLineNumbers\")\n\n\tif pager \u0026\u0026 tui {\n\t\treturn errors.New(\"cannot use both pager and tui\")\n\t}\n\n\t// validate the glamour style\n\tstyle = viper.GetString(\"style\")\n\tif err := validateStyle(style); err != nil {\n\t\treturn err\n\t}\n\n\tisTerminal := term.IsTerminal(int(os.Stdout.Fd()))\n\t// We want to use a special no-TTY style, when stdout is not a terminal\n\t// and there was no specific style passed by arg\n\tif !isTerminal \u0026\u0026 !cmd.Flags().Changed(\"style\") {\n\t\tstyle = \"notty\"\n\t}\n\n\t// Detect terminal width\n\tif !cmd.Flags().Changed(\"width\") { //nolint:nestif\n\t\tif isTerminal \u0026\u0026 width == 0 {\n\t\t\tw, _, err := term.GetSize(int(os.Stdout.Fd()))\n\t\t\tif err == nil {\n\t\t\t\twidth = uint(w) //nolint:gosec\n\t\t\t}\n\n\t\t\tif width \u003e 120 {\n\t\t\t\twidth = 120\n\t\t\t}\n\t\t}\n\t\tif width == 0 {\n\t\t\twidth = 80\n\t\t}\n\t}\n\treturn nil\n}\n\nfunc stdinIsPipe() (bool, error) {\n\tstat, err := os.Stdin.Stat()\n\tif err != nil {\n\t\treturn false, fmt.Errorf(\"unable to open file: %w\", err)\n\t}\n\tif stat.Mode()\u0026os.ModeCharDevice == 0 || stat.Size() \u003e 0 {\n\t\treturn true, nil\n\t}\n\treturn false, nil\n}\n\nfunc execute(cmd *cobra.Command, args []string) error {\n\t// if stdin is a pipe then use stdin for input. note that you can also\n\t// explicitly use a - to read from stdin.\n\tif yes, err := stdinIsPipe(); err != nil {\n\t\treturn err\n\t} else if yes {\n\t\tsrc := \u0026source{reader: os.Stdin}\n\t\tdefer src.reader.Close() //nolint:errcheck\n\t\treturn executeCLI(cmd, src, os.Stdout)\n\t}\n\n\tswitch len(args) {\n\t// TUI running on cwd\n\tcase 0:\n\t\treturn runTUI(\"\", \"\")\n\n\t// TUI with possible dir argument\n\tcase 1:\n\t\t// Validate that the argument is a directory. If it's not treat it as\n\t\t// an argument to the non-TUI version of Glow (via fallthrough).\n\t\tinfo, err := os.Stat(args[0])\n\t\tif err == nil \u0026\u0026 info.IsDir() {\n\t\t\tp, err := filepath.Abs(args[0])\n\t\t\tif err == nil {\n\t\t\t\treturn runTUI(p, \"\")\n\t\t\t}\n\t\t}\n\t\tfallthrough\n\n\t// CLI\n\tdefault:\n\t\tfor _, arg := range args {\n\t\t\tif err := executeArg(cmd, arg, os.Stdout); err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\t\t}\n\t}\n\n\treturn nil\n}\n\nfunc executeArg(cmd *cobra.Command, arg string, w io.Writer) error {\n\t// create an io.Reader from the markdown source in cli-args\n\tsrc, err := sourceFromArg(arg)\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer src.reader.Close() //nolint:errcheck\n\treturn executeCLI(cmd, src, w)\n}\n\nfunc executeCLI(cmd *cobra.Command, src *source, w io.Writer) error {\n\tb, err := io.ReadAll(src.reader)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"unable to read from reader: %w\", err)\n\t}\n\n\tb = utils.RemoveFrontmatter(b)\n\n\t// render\n\tvar baseURL string\n\tu, err := url.ParseRequestURI(src.URL)\n\tif err == nil {\n\t\tu.Path = filepath.Dir(u.Path)\n\t\tbaseURL = u.String() + \"/\"\n\t}\n\n\tisCode := !utils.IsMarkdownFile(src.URL)\n\n\t// initialize glamour\n\tr, err := glamour.NewTermRenderer(\n\t\tutils.GlamourStyle(style, isCode),\n\t\tglamour.WithWordWrap(int(width)), //nolint:gosec\n\t\tglamour.WithBaseURL(baseURL),\n\t\tglamour.WithPreservedNewLines(),\n\t)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"unable to create renderer: %w\", err)\n\t}\n\n\tcontent := string(b)\n\text := filepath.Ext(src.URL)\n\tif isCode {\n\t\tcontent = utils.WrapCodeBlock(string(b), ext)\n\t}\n\n\tout, err := r.Render(content)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"unable to render markdown: %w\", err)\n\t}\n\n\tout = utils.ApplyTextSizing(out)\n\n\t// display\n\tswitch {\n\tcase pager || cmd.Flags().Changed(\"pager\"):\n\t\tpagerCmd := os.Getenv(\"PAGER\")\n\t\tif pagerCmd == \"\" {\n\t\t\tpagerCmd = \"less -r\"\n\t\t}\n\n\t\tfields, err := shell.Fields(pagerCmd, os.Getenv)\n\t\tif err != nil || len(fields) == 0 {\n\t\t\treturn fmt.Errorf(\"unable to parse PAGER command: %s\", pagerCmd)\n\t\t}\n\t\tc := exec.Command(fields[0], fields[1:]...) //nolint:gosec\n\t\tc.Stdin = strings.NewReader(out)\n\t\tc.Stdout = os.Stdout\n\t\tif err := c.Run(); err != nil {\n\t\t\treturn fmt.Errorf(\"unable to run command: %w\", err)\n\t\t}\n\t\treturn nil\n\tcase tui || cmd.Flags().Changed(\"tui\"):\n\t\tpath := \"\"\n\t\tif !isURL(src.URL) {\n\t\t\tpath = src.URL\n\t\t}\n\t\treturn runTUI(path, content)\n\tdefault:\n\t\tif _, err = fmt.Fprint(w, out); err != nil {\n\t\t\treturn fmt.Errorf(\"unable to write to writer: %w\", err)\n\t\t}\n\t\treturn nil\n\t}\n}\n\nfunc runTUI(path string, content string) error {\n\t// detect text sizing support before bubbletea takes over the terminal\n\t_ = utils.TextSizingEnabled()\n\n\t// Read environment to get debugging stuff\n\tcfg, err := env.ParseAs[ui.Config]()\n\tif err != nil {\n\t\treturn fmt.Errorf(\"error parsing config: %v\", err)\n\t}\n\n\t// use style set in env, or auto if unset\n\tif err := validateStyle(cfg.GlamourStyle); err != nil {\n\t\tcfg.GlamourStyle = style\n\t}\n\n\tcfg.Path = path\n\tcfg.ShowAllFiles = showAllFiles\n\tcfg.ShowLineNumbers = showLineNumbers\n\tcfg.GlamourMaxWidth = width\n\tcfg.EnableMouse = mouse\n\tcfg.PreserveNewLines = preserveNewLines\n\n\t// Run Bubble Tea program\n\tprog, cleanup := ui.NewProgram(cfg, content)\n\tdefer cleanup()\n\tif _, err := prog.Run(); err != nil {\n\t\treturn fmt.Errorf(\"unable to run tui program: %w\", err)\n\t}\n\n\treturn nil\n}\n\nfunc main() {\n\tcloser, err := setupLog()\n\tif err != nil {\n\t\tfmt.Println(err)\n\t\tos.Exit(1)\n\t}\n\tif err := rootCmd.Execute(); err != nil {\n\t\t_ = closer()\n\t\tos.Exit(1)\n\t}\n\t_ = closer()\n}\n\nfunc init() {\n\ttryLoadConfigFromDefaultPlaces()\n\tif len(CommitSHA) \u003e= 7 {\n\t\tvt := rootCmd.VersionTemplate()\n\t\trootCmd.SetVersionTemplate(vt[:len(vt)-1] + \" (\" + CommitSHA[0:7] + \")\\n\")\n\t}\n\tif Version == \"\" {\n\t\tVersion = \"unknown (built from source)\"\n\t}\n\trootCmd.Version = Version\n\trootCmd.InitDefaultCompletionCmd()\n\n\t// \"Glow Classic\" cli arguments\n\trootCmd.PersistentFlags().StringVar(\u0026configFile, \"config\", \"\", fmt.Sprintf(\"config file (default %s)\", viper.GetViper().ConfigFileUsed()))\n\trootCmd.Flags().BoolVarP(\u0026pager, \"pager\", \"p\", false, \"display with pager\")\n\trootCmd.Flags().BoolVarP(\u0026tui, \"tui\", \"t\", false, \"display with tui\")\n\trootCmd.Flags().StringVarP(\u0026style, \"style\", \"s\", \"auto\", \"style name or JSON path\")\n\trootCmd.Flags().UintVarP(\u0026width, \"width\", \"w\", 0, \"word-wrap at width (set to 0 to disable)\")\n\trootCmd.Flags().BoolVarP(\u0026showAllFiles, \"all\", \"a\", false, \"show system files and directories (TUI-mode only)\")\n\trootCmd.Flags().BoolVarP(\u0026showLineNumbers, \"line-numbers\", \"l\", false, \"show line numbers (TUI-mode only)\")\n\trootCmd.Flags().BoolVarP(\u0026preserveNewLines, \"preserve-new-lines\", \"n\", false, \"preserve newlines in the output\")\n\trootCmd.Flags().BoolVarP(\u0026mouse, \"mouse\", \"m\", false, \"enable mouse wheel (TUI-mode only)\")\n\t_ = rootCmd.Flags().MarkHidden(\"mouse\")\n\n\t// Config bindings\n\t_ = viper.BindPFlag(\"pager\", rootCmd.Flags().Lookup(\"pager\"))\n\t_ = viper.BindPFlag(\"tui\", rootCmd.Flags().Lookup(\"tui\"))\n\t_ = viper.BindPFlag(\"style\", rootCmd.Flags().Lookup(\"style\"))\n\t_ = viper.BindPFlag(\"width\", rootCmd.Flags().Lookup(\"width\"))\n\t_ = viper.BindPFlag(\"debug\", rootCmd.Flags().Lookup(\"debug\"))\n\t_ = viper.BindPFlag(\"mouse\", rootCmd.Flags().Lookup(\"mouse\"))\n\t_ = viper.BindPFlag(\"preserveNewLines\", rootCmd.Flags().Lookup(\"preserve-new-lines\"))\n\t_ = viper.BindPFlag(\"showLineNumbers\", rootCmd.Flags().Lookup(\"line-numbers\"))\n\t_ = viper.BindPFlag(\"all\", rootCmd.Flags().Lookup(\"all\"))\n\n\tviper.SetDefault(\"style\", \"auto\")\n\tviper.SetDefault(\"width\", 0)\n\tviper.SetDefault(\"all\", true)\n\n\trootCmd.AddCommand(configCmd, manCmd)\n}\n\nfunc tryLoadConfigFromDefaultPlaces() {\n\tscope := gap.NewScope(gap.User, \"glow\")\n\tdirs, err := scope.ConfigDirs()\n\tif err != nil {\n\t\tfmt.Println(\"Could not load find configuration directory.\")\n\t\tos.Exit(1)\n\t}\n\n\tif c := os.Getenv(\"XDG_CONFIG_HOME\"); c != \"\" {\n\t\tdirs = append([]string{filepath.Join(c, \"glow\")}, dirs...)\n\t}\n\n\tif c := os.Getenv(\"GLOW_CONFIG_HOME\"); c != \"\" {\n\t\tdirs = append([]string{c}, dirs...)\n\t}\n\n\tfor _, v := range dirs {\n\t\tviper.AddConfigPath(v)\n\t}\n\n\tviper.SetConfigName(\"glow\")\n\tviper.SetConfigType(\"yaml\")\n\tviper.SetEnvPrefix(\"glow\")\n\tviper.AutomaticEnv()\n\n\tif err := viper.ReadInConfig(); err != nil {\n\t\tif _, ok := err.(viper.ConfigFileNotFoundError); !ok {\n\t\t\tlog.Warn(\"Could not parse configuration file\", \"err\", err)\n\t\t}\n\t}\n\n\tif used := viper.ConfigFileUsed(); used != \"\" {\n\t\tlog.Debug(\"Using configuration file\", \"path\", viper.ConfigFileUsed())\n\t\treturn\n\t}\n\n\tif viper.ConfigFileUsed() == \"\" {\n\t\tconfigFile = filepath.Join(dirs[0], \"glow.yml\")\n\t}\n\tif err := ensureConfigFile(); err != nil {\n\t\tlog.Error(\"Could not create default configuration\", \"error\", err)\n\t}\n}\n",
+        "Size": 12653,
+        "Truncated": false
+      },
+      {
+        "Path": "config_cmd.go",
+        "Content": "package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n\t\"io/fs\"\n\t\"os\"\n\t\"path\"\n\t\"path/filepath\"\n\n\t\"github.com/charmbracelet/x/editor\"\n\t\"github.com/spf13/cobra\"\n\t\"github.com/spf13/viper\"\n)\n\nconst defaultConfig = `# style name or JSON path (default \"auto\")\nstyle: \"auto\"\n# mouse support (TUI-mode only)\nmouse: false\n# use pager to display markdown\npager: false\n# word-wrap at width\nwidth: 80\n# show all files, including hidden and ignored.\nall: false\n`\n\nvar configCmd = \u0026cobra.Command{\n\tUse:     \"config\",\n\tHidden:  false,\n\tShort:   \"Edit the glow config file\",\n\tLong:    paragraph(fmt.Sprintf(\"\\n%s the glow config file. We’ll use EDITOR to determine which editor to use. If the config file doesn't exist, it will be created.\", keyword(\"Edit\"))),\n\tExample: paragraph(\"glow config\\nglow config --config path/to/config.yml\"),\n\tArgs:    cobra.NoArgs,\n\tRunE: func(*cobra.Command, []string) error {\n\t\tif err := ensureConfigFile(); err != nil {\n\t\t\treturn err\n\t\t}\n\n\t\tc, err := editor.Cmd(\"Glow\", configFile)\n\t\tif err != nil {\n\t\t\treturn fmt.Errorf(\"unable to set config file: %w\", err)\n\t\t}\n\t\tc.Stdin = os.Stdin\n\t\tc.Stdout = os.Stdout\n\t\tc.Stderr = os.Stderr\n\t\tif err := c.Run(); err != nil {\n\t\t\treturn fmt.Errorf(\"unable to run command: %w\", err)\n\t\t}\n\n\t\tfmt.Println(\"Wrote config file to:\", configFile)\n\t\treturn nil\n\t},\n}\n\nfunc ensureConfigFile() error {\n\tif configFile == \"\" {\n\t\tconfigFile = viper.GetViper().ConfigFileUsed()\n\t\tif err := os.MkdirAll(filepath.Dir(configFile), 0o755); err != nil { //nolint:gosec\n\t\t\treturn fmt.Errorf(\"could not write configuration file: %w\", err)\n\t\t}\n\t}\n\n\tif ext := path.Ext(configFile); ext != \".yaml\" \u0026\u0026 ext != \".yml\" {\n\t\treturn fmt.Errorf(\"'%s' is not a supported configuration type: use '%s' or '%s'\", ext, \".yaml\", \".yml\")\n\t}\n\n\tif _, err := os.Stat(configFile); errors.Is(err, fs.ErrNotExist) {\n\t\t// File doesn't exist yet, create all necessary directories and\n\t\t// write the default config file\n\t\tif err := os.MkdirAll(filepath.Dir(configFile), 0o700); err != nil {\n\t\t\treturn fmt.Errorf(\"unable create directory: %w\", err)\n\t\t}\n\n\t\tf, err := os.Create(configFile)\n\t\tif err != nil {\n\t\t\treturn fmt.Errorf(\"unable to create config file: %w\", err)\n\t\t}\n\t\tdefer func() { _ = f.Close() }()\n\n\t\tif _, err := f.WriteString(defaultConfig); err != nil {\n\t\t\treturn fmt.Errorf(\"unable to write config file: %w\", err)\n\t\t}\n\t} else if err != nil { // some other error occurred\n\t\treturn fmt.Errorf(\"unable to stat config file: %w\", err)\n\t}\n\treturn nil\n}\n",
+        "Size": 2450,
+        "Truncated": false
+      },
+      {
+        "Path": "console_windows.go",
+        "Content": "// +build windows\n\npackage main\n\nimport (\n\t\"os\"\n\n\t\"golang.org/x/sys/windows\"\n)\n\n// enableAnsiColors enables support for ANSI color sequences in Windows\n// default console. Note that this only works with Windows 10.\nfunc enableAnsiColors() {\n\tstdout := windows.Handle(os.Stdout.Fd())\n\tvar originalMode uint32\n\n\twindows.GetConsoleMode(stdout, \u0026originalMode)\n\twindows.SetConsoleMode(stdout, originalMode|windows.ENABLE_VIRTUAL_TERMINAL_PROCESSING)\n}\n\nfunc init() {\n\tenableAnsiColors()\n}\n",
+        "Size": 484,
+        "Truncated": false
+      },
+      {
+        "Path": "github.go",
+        "Content": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"errors\"\n\t\"fmt\"\n\t\"io\"\n\t\"net/http\"\n\t\"net/url\"\n\t\"strings\"\n)\n\n// findGitHubREADME tries to find the correct README filename in a repository using GitHub API.\nfunc findGitHubREADME(u *url.URL) (*source, error) {\n\towner, repo, ok := strings.Cut(strings.TrimPrefix(u.Path, \"/\"), \"/\")\n\tif !ok {\n\t\treturn nil, fmt.Errorf(\"invalid url: %s\", u.String())\n\t}\n\n\ttype readme struct {\n\t\tDownloadURL string `json:\"download_url\"`\n\t}\n\n\tapiURL := fmt.Sprintf(\"https://api.%s/repos/%s/%s/readme\", u.Hostname(), owner, repo)\n\n\t//nolint:bodyclose\n\t// it is closed on the caller\n\tres, err := http.Get(apiURL) //nolint: gosec,noctx\n\tif err != nil {\n\t\treturn nil, fmt.Errorf(\"unable to get url: %w\", err)\n\t}\n\n\tbody, err := io.ReadAll(res.Body)\n\tif err != nil {\n\t\treturn nil, fmt.Errorf(\"unable to read http response body: %w\", err)\n\t}\n\n\tvar result readme\n\tif err := json.Unmarshal(body, \u0026result); err != nil {\n\t\treturn nil, fmt.Errorf(\"unable to parse json: %w\", err)\n\t}\n\n\tif res.StatusCode == http.StatusOK {\n\t\t//nolint:bodyclose\n\t\t// it is closed on the caller\n\t\tresp, err := http.Get(result.DownloadURL) //nolint: noctx\n\t\tif err != nil {\n\t\t\treturn nil, fmt.Errorf(\"unable to get url: %w\", err)\n\t\t}\n\n\t\tif resp.StatusCode == http.StatusOK {\n\t\t\treturn \u0026source{resp.Body, result.DownloadURL}, nil\n\t\t}\n\t}\n\n\treturn nil, errors.New(\"can't find README in GitHub repository\")\n}\n",
+        "Size": 1388,
+        "Truncated": false
+      },
+      {
+        "Path": "gitlab.go",
+        "Content": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"errors\"\n\t\"fmt\"\n\t\"io\"\n\t\"net/http\"\n\t\"net/url\"\n\t\"strings\"\n)\n\n// findGitLabREADME tries to find the correct README filename in a repository using GitLab API.\nfunc findGitLabREADME(u *url.URL) (*source, error) {\n\towner, repo, ok := strings.Cut(strings.TrimPrefix(u.Path, \"/\"), \"/\")\n\tif !ok {\n\t\treturn nil, fmt.Errorf(\"invalid url: %s\", u.String())\n\t}\n\n\tprojectPath := url.QueryEscape(owner + \"/\" + repo)\n\n\ttype readme struct {\n\t\tReadmeURL string `json:\"readme_url\"`\n\t}\n\n\tapiURL := fmt.Sprintf(\"https://%s/api/v4/projects/%s\", u.Hostname(), projectPath)\n\n\t//nolint:bodyclose\n\t// it is closed on the caller\n\tres, err := http.Get(apiURL) //nolint: gosec,noctx\n\tif err != nil {\n\t\treturn nil, fmt.Errorf(\"unable to get url: %w\", err)\n\t}\n\n\tbody, err := io.ReadAll(res.Body)\n\tif err != nil {\n\t\treturn nil, fmt.Errorf(\"unable to read http response body: %w\", err)\n\t}\n\n\tvar result readme\n\tif err := json.Unmarshal(body, \u0026result); err != nil {\n\t\treturn nil, fmt.Errorf(\"unable to parse json: %w\", err)\n\t}\n\n\treadmeRawURL := strings.ReplaceAll(result.ReadmeURL, \"blob\", \"raw\")\n\n\tif res.StatusCode == http.StatusOK {\n\t\t//nolint:bodyclose\n\t\t// it is closed on the caller\n\t\tresp, err := http.Get(readmeRawURL) //nolint: gosec,noctx\n\t\tif err != nil {\n\t\t\treturn nil, fmt.Errorf(\"unable to get url: %w\", err)\n\t\t}\n\n\t\tif resp.StatusCode == http.StatusOK {\n\t\t\treturn \u0026source{resp.Body, readmeRawURL}, nil\n\t\t}\n\t}\n\n\treturn nil, errors.New(\"can't find README in GitLab repository\")\n}\n",
+        "Size": 1497,
+        "Truncated": false
+      },
+      {
+        "Path": "glow_test.go",
+        "Content": "package main\n\nimport (\n\t\"testing\"\n)\n\nfunc TestGlowFlags(t *testing.T) {\n\ttt := []struct {\n\t\targs  []string\n\t\tcheck func() bool\n\t}{\n\t\t{\n\t\t\targs: []string{\"-p\"},\n\t\t\tcheck: func() bool {\n\t\t\t\treturn pager\n\t\t\t},\n\t\t},\n\t\t{\n\t\t\targs: []string{\"-s\", \"light\"},\n\t\t\tcheck: func() bool {\n\t\t\t\treturn style == \"light\"\n\t\t\t},\n\t\t},\n\t\t{\n\t\t\targs: []string{\"-w\", \"40\"},\n\t\t\tcheck: func() bool {\n\t\t\t\treturn width == 40\n\t\t\t},\n\t\t},\n\t}\n\n\tfor _, v := range tt {\n\t\terr := rootCmd.ParseFlags(v.args)\n\t\tif err != nil {\n\t\t\tt.Fatal(err)\n\t\t}\n\t\tif !v.check() {\n\t\t\tt.Errorf(\"Parsing flag failed: %s\", v.args)\n\t\t}\n\t}\n}\n",
+        "Size": 582,
+        "Truncated": false
+      },
+      {
+        "Path": "log.go",
+        "Content": "package main\n\nimport (\n\t\"fmt\"\n\t\"io\"\n\t\"os\"\n\t\"path/filepath\"\n\n\t\"github.com/charmbracelet/log\"\n\tgap \"github.com/muesli/go-app-paths\"\n)\n\nfunc getLogFilePath() (string, error) {\n\tdir, err := gap.NewScope(gap.User, \"glow\").CacheDir()\n\tif err != nil {\n\t\treturn \"\", fmt.Errorf(\"unable to get cache dir: %w\", err)\n\t}\n\treturn filepath.Join(dir, \"glow.log\"), nil\n}\n\nfunc setupLog() (func() error, error) {\n\tlog.SetOutput(io.Discard)\n\t// Log to file, if set\n\tlogFile, err := getLogFilePath()\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\tif err := os.MkdirAll(filepath.Dir(logFile), 0o755); err != nil { //nolint:gosec\n\t\t// log disabled\n\t\treturn func() error { return nil }, nil //nolint:nilerr\n\t}\n\tf, err := os.OpenFile(logFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0o644) //nolint:gosec\n\tif err != nil {\n\t\t// log disabled\n\t\treturn func() error { return nil }, nil //nolint:nilerr\n\t}\n\tlog.SetOutput(f)\n\tlog.SetLevel(log.DebugLevel)\n\treturn f.Close, nil\n}\n",
+        "Size": 937,
+        "Truncated": false
+      }
+    ],
+    "Skipped": null
+  }
+}

@@ -40,6 +40,10 @@ func TestGetTreeMapsEntriesAndPath(t *testing.T) {
 	if !strings.Contains(gotQuery, "recursive=1") {
 		t.Errorf("query = %q, want recursive=1", gotQuery)
 	}
+	// The recorded provenance is the request the server actually received.
+	if tree.Request != gotPath+"?"+gotQuery {
+		t.Errorf("Request = %q, server received %q", tree.Request, gotPath+"?"+gotQuery)
+	}
 	if tree.Truncated {
 		t.Errorf("Truncated = true, want false")
 	}

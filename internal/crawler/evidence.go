@@ -90,6 +90,9 @@ type Inspection struct {
 	Scope       TreeScope     // the bounds that shaped Paths
 	Files       []SourceFile  // files whose content was read, ordered by path
 	Unavailable []Unavailable // requested paths that could not be read, ordered by path
+	// TreeRequest is the provider request that returned Paths, recorded at
+	// acquisition; "" for a listing that was not acquired from a provider.
+	TreeRequest string
 }
 
 // NewInspection builds an Inspection from the GitHub client's own result types,
@@ -121,6 +124,7 @@ func NewInspection(language string, rev Revision, tree githubclient.FileTree, co
 		Scope:       TreeScope{Truncated: tree.Truncated, DepthLimited: tree.DepthLimited, MaxDepth: tree.MaxDepth},
 		Files:       files,
 		Unavailable: unavail,
+		TreeRequest: tree.Request,
 	}
 }
 
@@ -164,6 +168,78 @@ type Observation struct {
 	// Context marks supporting context (a declared container port, "private":
 	// true) that accompanies a role's evidence but does not establish it.
 	Context bool
+	// Absence names, for a scope witness, what the bounded inspection showed
+	// absent. The witness records which bytes were read; Absence records what
+	// they lack, so a presentation never infers it from Detail prose.
+	Absence AbsenceKind
+}
+
+// AbsenceKind is the typed meaning of a bounded absence premise. Each holds
+// only within its witness's recorded scope, never across the repository.
+type AbsenceKind string
+
+const (
+	// The command's package files and go.mod were read in full: no net/http
+	// server call and no supported server framework requirement.
+	AbsenceGoServer AbsenceKind = "go-server"
+	// go.mod was read in full and the covering listing shows no package main
+	// at the module root or under cmd/.
+	AbsenceGoCommand AbsenceKind = "go-command"
+	// Cargo.toml was read in full: a binary target with no supported
+	// web-framework dependency.
+	AbsenceCargoWebFramework AbsenceKind = "cargo-web-framework"
+	// Cargo.toml was read in full and declares no binary target (with target
+	// autodiscovery disabled).
+	AbsenceCargoBinary AbsenceKind = "cargo-binary"
+	// Cargo.toml declares no [[bin]] table and the covering listing shows no
+	// implicit binary entry.
+	AbsenceCargoBinaryListing AbsenceKind = "cargo-binary-listing"
+	// package.json was read in full and declares no executable command entry;
+	// the listing shows no app shell.
+	AbsenceNPMCommandAndShell AbsenceKind = "npm-command-and-shell"
+	// package.json was read in full and declares no executable command entry;
+	// the covering listing shows no app entry for its runtime framework.
+	AbsenceNPMCommandAndAppEntry AbsenceKind = "npm-command-and-app-entry"
+	// pyproject.toml was read in full and declares no command or GUI entry points.
+	AbsencePythonEntryPoints AbsenceKind = "python-entry-points"
+)
+
+// Basis is the typed support for a resolved verdict, for presentation: the
+// component that decided it and one complete validated evidence group (field
+// witnesses carry their verified locations). When nested components were
+// compared, the other product candidates are recorded with their own basis.
+type Basis struct {
+	Component    string
+	Kind         apimodel.RepoKind
+	Premises     []Observation
+	ByComparison bool    // decided by comparing components of a complete listing
+	Compared     []Basis // the other compared components (no further nesting)
+	// Excluded records, for a comparison, each role-bearing component set aside
+	// as supporting, with the validated premises of that exclusion.
+	Excluded []Exclusion
+}
+
+// ExclusionReason says why a component was treated as supporting.
+type ExclusionReason string
+
+const (
+	// ExcludedByPath: the component lies under an example, documentation or
+	// tooling directory.
+	ExcludedByPath ExclusionReason = "supporting-path"
+	// ExcludedAsDependency: another component declares a dependency on the
+	// name this component declares.
+	ExcludedAsDependency ExclusionReason = "dependency"
+)
+
+// Exclusion is one component set aside from a product comparison.
+type Exclusion struct {
+	Component string
+	Kind      apimodel.RepoKind // its own role, when resolved
+	Reason    ExclusionReason
+	Premises  []Observation
+	// RolePremises establish Kind, separately from why the component was
+	// excluded. Naming a component or depending on it does not prove its role.
+	RolePremises []Observation
 }
 
 // VerdictStatus says whether the classifier reached a supported conclusion or
@@ -193,6 +269,13 @@ type Classification struct {
 	// or, for an abstention, the competing candidates. Each keeps its owner.
 	Secondary   []Observation
 	Limitations []string
+	// Basis is set only for a resolved verdict.
+	Basis *Basis
+	// Products lists the components that are, or could be, the repository's
+	// product, the deciding one first: for a resolved verdict, the deciding
+	// component and any compared product candidates; for an abstention, the
+	// candidates that left it undecided (empty when there were none).
+	Products []string
 }
 
 // Evidence renders the structured verdict as human-readable lines, so existing

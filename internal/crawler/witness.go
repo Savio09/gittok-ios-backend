@@ -49,9 +49,12 @@ const (
 	constructAppConfig       = "entry.app-config"   // listing: a web-app build config
 	constructRustBinTarget   = "cargo.implicit-bin" // listing: src/main.rs or src/bin/*.rs
 	constructRustLibTarget   = "cargo.implicit-lib" // listing: src/lib.rs
+	constructSupportingPath  = "supporting-path"    // listing: a component manifest under an example/docs/tooling directory
 	constructGoNoServer      = "go.no-server"       // scope: the command's package, read, parsed, no server call
+	constructGoNoCommand     = "go.no-command"      // scope: go.mod plus every consulted root/cmd/ package clause, none main
 	constructCompleteReads   = "complete-reads"     // scope: manifests read in full
 	constructCoveringListing = "covering-listing"   // scope: complete reads plus a listing covering Depth segments
+	constructCompleteListing = "complete-listing"   // scope: complete reads plus a listing neither truncated nor depth-limited
 )
 
 // Witness ties an observation to the inspection. Which fields are meaningful
@@ -115,11 +118,7 @@ func validateField(st *inspIndex, w Witness) error {
 	if len(w.Field) == 0 {
 		return fmt.Errorf("field witness on %s names no field", w.Path)
 	}
-	content, err := consumed(st, w.Path)
-	if err != nil {
-		return err
-	}
-	tree, err := manifestTree(w.Path, content)
+	tree, err := st.parsedManifest(w.Path)
 	if err != nil {
 		return fmt.Errorf("%s could not be parsed: %v", w.Path, err)
 	}
@@ -130,7 +129,48 @@ func validateField(st *inspIndex, w Witness) error {
 	if w.Value != "" && got != w.Value {
 		return fmt.Errorf("%s field %s is %q, not %q", w.Path, strings.Join(w.Field, "."), got, w.Value)
 	}
+	// A locatable field must be declared wholly inside the consumed bytes; a
+	// claimed location must be exactly that declaration's bytes.
+	span, supported, located := st.fieldLocation(w.Path, w.Field)
+	if supported && !located {
+		return fmt.Errorf("%s field %s is not declared wholly inside the consumed bytes", w.Path, strings.Join(w.Field, "."))
+	}
+	if w.Start != 0 || w.End != 0 || w.Quote != "" {
+		if !supported {
+			return fmt.Errorf("%s field %s has no verified source location", w.Path, strings.Join(w.Field, "."))
+		}
+		content, err := consumed(st, w.Path)
+		if err != nil {
+			return err
+		}
+		if w.Start != span[0] || w.End != span[1] || w.Quote != content[span[0]:span[1]] {
+			return fmt.Errorf("%s bytes %d–%d are not the declaration of field %s", w.Path, w.Start, w.End, strings.Join(w.Field, "."))
+		}
+	}
 	return nil
+}
+
+type parsedManifest struct {
+	tree map[string]any
+	err  error
+}
+
+// Cache by consumed path for this inspection only. Dependency-rich manifests
+// are parsed once, rather than once for every field witness.
+func (st *inspIndex) parsedManifest(p string) (map[string]any, error) {
+	if cached, ok := st.manifestCache[p]; ok {
+		return cached.tree, cached.err
+	}
+	content, err := consumed(st, p)
+	var tree map[string]any
+	if err == nil {
+		tree, err = manifestTree(p, content)
+	}
+	if st.manifestCache == nil {
+		st.manifestCache = make(map[string]parsedManifest)
+	}
+	st.manifestCache[p] = parsedManifest{tree: tree, err: err}
+	return tree, err
 }
 
 func validateSpan(st *inspIndex, w Witness) error {
@@ -152,15 +192,14 @@ func validateSpan(st *inspIndex, w Witness) error {
 	}
 	switch w.Construct {
 	case constructGoPackageMain, constructGoPackageName:
-		g := analyzeGoFile(st.files[w.Path])
+		g := st.goFile(w.Path)
 		if g.pkgStart != w.Start || g.pkgEnd != w.End || (w.Construct == constructGoPackageMain && g.pkg != "main") {
 			return fmt.Errorf("%s bytes %d–%d are not its package clause %q", w.Path, w.Start, w.End, w.Construct)
 		}
 	case constructGoServerCall:
-		for _, c := range analyzeGoFile(st.files[w.Path]).serverCalls {
-			if c.start == w.Start && c.end == w.End {
-				return nil
-			}
+		st.goFile(w.Path)
+		if st.serverSpans[w.Path][[2]int{w.Start, w.End}] {
+			return nil
 		}
 		return fmt.Errorf("%s bytes %d–%d hold no call resolved to a net/http server entry point", w.Path, w.Start, w.End)
 	case constructDockerExpose:
@@ -212,6 +251,13 @@ func validateListing(st *inspIndex, w Witness) error {
 		ok = some(isAppConfig)
 	case constructRustBinTarget, constructRustLibTarget:
 		return validateImplicitCargoTarget(st, w)
+	case constructSupportingPath:
+		for _, p := range w.Paths {
+			if k, ok := manifestKindOf(p); !ok || !k.definesComponent() || scopeRank(dirOf(p)+"/") < 2 {
+				return fmt.Errorf("%s is not a component manifest under an example, documentation or tooling directory", p)
+			}
+		}
+		return nil
 	default:
 		return fmt.Errorf("unknown listing construct %q", w.Construct)
 	}
@@ -258,6 +304,9 @@ func validateScope(st *inspIndex, w Witness) error {
 	if len(w.Paths) == 0 {
 		return fmt.Errorf("scope witness %s names no paths", w.Construct)
 	}
+	if w.Construct == constructGoNoCommand {
+		return validateGoNoCommand(st, w)
+	}
 	for _, p := range w.Paths {
 		if !st.complete(p) {
 			return fmt.Errorf("the premise needs %s read in full, but %s", p, st.describe(p))
@@ -269,6 +318,11 @@ func validateScope(st *inspIndex, w Witness) error {
 	case constructCoveringListing:
 		if !st.covers(w.Depth) {
 			return fmt.Errorf("the premise needs a listing that covers paths %d segments deep, which this listing does not", w.Depth)
+		}
+		return nil
+	case constructCompleteListing:
+		if !st.scope.Complete() {
+			return fmt.Errorf("the premise needs a complete listing, but this one is truncated or depth-limited")
 		}
 		return nil
 	case constructGoNoServer:

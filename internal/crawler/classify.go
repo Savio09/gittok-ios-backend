@@ -209,6 +209,28 @@ func (ix *repoIndex) componentName() string {
 	return ""
 }
 
+// componentNameWitness is the field that declares componentName, with its
+// verified location when one exists; the zero Witness when there is none.
+func (ix *repoIndex) componentNameWitness() Witness {
+	var w Witness
+	switch {
+	case ix.pkg != nil && ix.pkg.Name != "":
+		w = Witness{Kind: WitnessField, Path: ix.pkgRef.path, Field: []string{"name"}, Value: ix.pkg.Name}
+	case ix.modPath != "":
+		w = Witness{Kind: WitnessField, Path: ix.goMod.path, Field: []string{"module"}, Value: ix.modPath}
+	case ix.cargoOK && ix.cargoM.Package != nil && ix.cargoM.Package.Name != "":
+		w = Witness{Kind: WitnessField, Path: ix.cargo.path, Field: []string{"package", "name"}, Value: ix.cargoM.Package.Name}
+	case ix.pyHasProject && ix.pyProj.Project.Name != "":
+		w = Witness{Kind: WitnessField, Path: ix.pyproj.path, Field: []string{"project", "name"}, Value: ix.pyProj.Project.Name}
+	default:
+		return w
+	}
+	if validateWitness(ix.st, w) != nil {
+		return Witness{}
+	}
+	return ix.st.locate(w)
+}
+
 // isWorkspace reports whether the component's manifest aggregates other
 // components, possibly alongside a product of its own: a private npm
 // package with "workspaces", a Cargo virtual manifest ([workspace] without
@@ -333,8 +355,8 @@ func listingObs(paths []string, construct, detail string) Observation {
 	return o
 }
 
-func scopeObs(file string, paths []string, construct string, depth int, detail string) Observation {
-	return Observation{Path: file, Detail: detail, Witness: Witness{Kind: WitnessScope, Paths: paths, Construct: construct, Depth: depth}}
+func scopeObs(file string, paths []string, construct string, depth int, absence AbsenceKind, detail string) Observation {
+	return Observation{Path: file, Detail: detail, Absence: absence, Witness: Witness{Kind: WitnessScope, Paths: paths, Construct: construct, Depth: depth}}
 }
 
 func contextObs(o Observation) Observation {
@@ -577,7 +599,7 @@ func detectCLI(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 					ix.block(apimodel.KindBackend, "cannot conclude the command starts no server: "+w)
 				}
 				held = held && ok
-				group = append(group, commandObs(cmd), scopeObs(cmd.path, ix.noServerScope(cmd), constructGoNoServer, 0,
+				group = append(group, commandObs(cmd), scopeObs(cmd.path, ix.noServerScope(cmd), constructGoNoServer, 0, AbsenceGoServer,
 					"the command's package was inspected in full and contains no server call (produces a command)"))
 			}
 			if held {
@@ -615,7 +637,7 @@ func detectCLI(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 		case serverDep != "":
 			// a server binary; detectBackend owns it
 		case ix.cargo.complete():
-			groups = append(groups, evidenceGroup{binObs, scopeObs(ix.cargo.path, []string{ix.cargo.path}, constructCompleteReads, 0,
+			groups = append(groups, evidenceGroup{binObs, scopeObs(ix.cargo.path, []string{ix.cargo.path}, constructCompleteReads, 0, AbsenceCargoWebFramework,
 				"a binary target with no web-framework dependency (produces a command)")})
 		default:
 			ix.block(apimodel.KindBackend, "cannot conclude the binary target is a command: "+ix.st.describe(ix.cargo.path)+"; a web-framework dependency may lie in the unread remainder")
@@ -646,7 +668,7 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 				groups = append(groups, evidenceGroup{
 					fieldObs(ix.goMod.path, []string{"module"}, ix.modPath, "declares module "+ix.modPath),
 					spanObs(pkgFile.path, pkgFile.pkgStart, pkgFile.pkgEnd, pkgFile.pkg, constructGoPackageName, "declares package "+pkgFile.pkg+" (importable)"),
-					scopeObs(ix.goMod.path, []string{ix.goMod.path}, constructCoveringListing, ix.base+3,
+					scopeObs(ix.goMod.path, ix.noCommandScope(), constructGoNoCommand, ix.base+3, AbsenceGoCommand,
 						"no package main at the conventional command locations (module root, cmd/)"),
 				})
 			}
@@ -673,15 +695,17 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 				ix.block(apimodel.KindCLI, "cannot conclude the package installs no command: "+ix.st.describe(ix.pkgRef.path))
 				ok = false
 			}
+			// An app shell (index.html) may lie at any depth, so its absence
+			// needs a complete listing, with or without a runtime framework.
 			fw, _ := ix.runtimeWebFramework()
-			if fw != "" && !ix.covers(2) {
-				ix.block(apimodel.KindFrontend, "cannot rule out an app entry for runtime dependency \""+fw+"\": the listing does not cover index.html, src/App or src/main")
+			if !ix.st.scope.Complete() {
+				ix.block(apimodel.KindFrontend, "cannot rule out an app shell: the listing is incomplete, and index.html may lie beyond it")
 				ok = false
 			}
 			if ok {
-				premise := scopeObs(ix.pkgRef.path, []string{ix.pkgRef.path}, constructCompleteReads, 0, "declares no executable command entry in \"bin\" and the component has no app shell")
+				premise := scopeObs(ix.pkgRef.path, []string{ix.pkgRef.path}, constructCompleteListing, 0, AbsenceNPMCommandAndShell, "declares no executable command entry in \"bin\" and the component has no app shell")
 				if fw != "" {
-					premise = scopeObs(ix.pkgRef.path, []string{ix.pkgRef.path}, constructCoveringListing, ix.base+2, "declares no executable command entry in \"bin\" and the listing shows no app entry for runtime dependency \""+fw+"\"")
+					premise = scopeObs(ix.pkgRef.path, []string{ix.pkgRef.path}, constructCompleteListing, 0, AbsenceNPMCommandAndAppEntry, "declares no executable command entry in \"bin\" and the listing shows no app entry for runtime dependency \""+fw+"\"")
 				}
 				groups = append(groups, evidenceGroup{
 					fieldObs(ix.pkgRef.path, []string{entryField}, "", `declares a lib entry ("`+entryField+`") and no app or executable command (importable package)`),
@@ -695,9 +719,9 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 	if libObs, ok := ix.rustLibTarget(); ok {
 		switch bin, _, why := ix.rustBinTarget(); bin {
 		case no:
-			premise := scopeObs(ix.cargo.path, []string{ix.cargo.path}, constructCompleteReads, 0, "no binary target (importable crate)")
+			premise := scopeObs(ix.cargo.path, []string{ix.cargo.path}, constructCompleteReads, 0, AbsenceCargoBinary, "no binary target (importable crate)")
 			if cargoAutobins(ix.cargoM) {
-				premise = scopeObs(ix.cargo.path, []string{ix.cargo.path}, constructCoveringListing, ix.base+4, "no [[bin]] table or implicit binary entry in a covering listing (importable crate)")
+				premise = scopeObs(ix.cargo.path, []string{ix.cargo.path}, constructCoveringListing, ix.base+4, AbsenceCargoBinaryListing, "no [[bin]] table or implicit binary entry in a covering listing (importable crate)")
 			}
 			groups = append(groups, evidenceGroup{libObs, premise})
 		case unknown:
@@ -720,7 +744,7 @@ func detectLibrary(ix *repoIndex) (apimodel.RepoKind, []evidenceGroup) {
 		case !ix.pyProj.dynamicEntryPoints():
 			groups = append(groups, evidenceGroup{
 				fieldObs(ix.pyproj.path, []string{"project"}, "", "declares a static [project] table"),
-				scopeObs(ix.pyproj.path, []string{ix.pyproj.path}, constructCompleteReads, 0, "with no command or GUI entry points (importable package)"),
+				scopeObs(ix.pyproj.path, []string{ix.pyproj.path}, constructCompleteReads, 0, AbsencePythonEntryPoints, "with no command or GUI entry points (importable package)"),
 			})
 		}
 	}
@@ -927,6 +951,26 @@ func (ix *repoIndex) goNoCommandPremise() (bool, []string) {
 		}
 	}
 	return len(why) == 0, dedupe(why)
+}
+
+// noCommandScope is the basis of goNoCommandPremise: go.mod, then every Go
+// source under cmd/ and the read module-root sources whose package clauses it
+// consulted, path-sorted. Its witness re-derives each clause (see
+// validateGoNoCommand), so no premise rests on a tree name alone.
+func (ix *repoIndex) noCommandScope() []string {
+	var files []string
+	for _, p := range ix.goCandidatePaths() {
+		rel := ix.comp.rel(p)
+		if strings.HasPrefix(strings.ToLower(rel), "cmd/") {
+			files = append(files, p)
+		} else if dirOf(p) == ix.comp.root {
+			if g, ok := ix.goFileAt(p); ok && g.pkg != "" {
+				files = append(files, p)
+			}
+		}
+	}
+	sort.Strings(files)
+	return append([]string{ix.goMod.path}, files...)
 }
 
 // goCandidatePaths lists every primary-scope, non-test Go source the component
@@ -1170,17 +1214,18 @@ func dedupe(in []string) []string {
 // --- package.json ------------------------------------------------------------
 
 type packageJSON struct {
-	Name             string            `json:"name"`
-	Private          bool              `json:"private"`
-	Main             string            `json:"main"`
-	Module           string            `json:"module"`
-	Exports          json.RawMessage   `json:"exports"`
-	Bin              json.RawMessage   `json:"bin"`
-	Workspaces       json.RawMessage   `json:"workspaces"`
-	Scripts          map[string]string `json:"scripts"`
-	Dependencies     map[string]string `json:"dependencies"`
-	DevDependencies  map[string]string `json:"devDependencies"`
-	PeerDependencies map[string]string `json:"peerDependencies"`
+	Name                 string            `json:"name"`
+	Private              bool              `json:"private"`
+	Main                 string            `json:"main"`
+	Module               string            `json:"module"`
+	Exports              json.RawMessage   `json:"exports"`
+	Bin                  json.RawMessage   `json:"bin"`
+	Workspaces           json.RawMessage   `json:"workspaces"`
+	Scripts              map[string]string `json:"scripts"`
+	Dependencies         map[string]string `json:"dependencies"`
+	DevDependencies      map[string]string `json:"devDependencies"`
+	PeerDependencies     map[string]string `json:"peerDependencies"`
+	OptionalDependencies map[string]string `json:"optionalDependencies"`
 }
 
 // parsePackageJSON decodes package.json best-effort; malformed JSON yields nil

@@ -56,6 +56,8 @@ func (m *snapshotServer) start(t *testing.T) *httptest.Server {
 				"language": m.s.Language, "default_branch": m.s.RequestedRef, "archived": m.s.Archived,
 				"html_url": m.s.SourceURL,
 			})
+		case strings.HasPrefix(rest, "/commits/"):
+			_ = json.NewEncoder(w).Encode(map[string]string{"sha": m.s.ResolvedSHA})
 		case strings.HasPrefix(rest, "/git/trees/"):
 			m.noteRef(strings.TrimPrefix(rest, "/git/trees/"))
 			tree := make([]map[string]any, 0, len(m.s.Tree.Entries))
@@ -146,19 +148,19 @@ func TestCorpusThroughThePipeline(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			got := a.classification
+			got := a.Classification
 
 			// Acquisition fetched exactly the captured canonical selection, in
 			// order, with one requested ref throughout.
 			if !reflect.DeepEqual(m.requested, s.Selected) {
 				t.Errorf("requested contents differ from the canonical selection:\n got  %v\n want %v", m.requested, s.Selected)
 			}
-			if len(m.refs) != 1 || !m.refs[s.RequestedRef] {
-				t.Errorf("refs used = %v, want only %q", m.refs, s.RequestedRef)
+			if len(m.refs) != 1 || !m.refs[s.ResolvedSHA] {
+				t.Errorf("refs used = %v, want only %q", m.refs, s.ResolvedSHA)
 			}
-			// A branch-only capture is not an immutable revision.
-			if a.insp.Revision.Ref != s.RequestedRef || a.insp.Revision.Resolved {
-				t.Errorf("revision = %+v, want the branch %q, unresolved", a.insp.Revision, s.RequestedRef)
+			// Reads are pinned to the original snapshot commit.
+			if a.Inspection.Revision.Ref != s.ResolvedSHA || !a.Inspection.Revision.Resolved {
+				t.Errorf("revision = %+v, want commit %q, resolved", a.Inspection.Revision, s.ResolvedSHA)
 			}
 
 			if got.Status == crawler.VerdictInconclusive {
@@ -184,7 +186,7 @@ func TestCorpusThroughThePipeline(t *testing.T) {
 			}
 
 			// The pack renders the same validated facts, each with its witness.
-			md := renderPack(a.repo, a.tree, a.requested, a.fetched, got)
+			md := renderPack(a.Repo, a.Tree, a.Requested, a.Fetched, got)
 			if !strings.Contains(md, "**Kind:** "+string(got.Kind)) || !strings.Contains(md, "**Status:** "+string(got.Status)) {
 				t.Errorf("the pack does not show the verdict")
 			}
@@ -251,7 +253,7 @@ func TestCorpusPipelineDegradations(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			got := a.classification
+			got := a.Classification
 			if got.Kind != c.kind || got.Status != c.status {
 				t.Errorf("got %s/%s, want %s/%s:\n%s", got.Kind, got.Status, c.kind, c.status, strings.Join(got.Evidence(), "\n"))
 			}

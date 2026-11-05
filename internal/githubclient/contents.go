@@ -93,6 +93,10 @@ func (c *Client) GetFileContents(
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return result, ctxErr
 			}
+			// A rejected credential is not a missing file: return no data.
+			if errors.Is(err, ErrCredentialPolicy) {
+				return FetchedContents{}, err
+			}
 			if errors.Is(err, ErrNotFound) {
 				skip(path, "not found")
 			} else {

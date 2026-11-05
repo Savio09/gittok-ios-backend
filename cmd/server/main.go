@@ -8,6 +8,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os/signal"
@@ -15,6 +16,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Savio09/gittok-ios-backend/internal/analysis"
 	"github.com/Savio09/gittok-ios-backend/internal/config"
 	"github.com/Savio09/gittok-ios-backend/internal/feed"
 	"github.com/Savio09/gittok-ios-backend/internal/githubclient"
@@ -29,10 +31,15 @@ func main() {
 
 	gh := githubclient.New(cfg.GitHubToken, githubclient.WithUserAgent("gittok-backend"))
 	feedSvc := feed.NewService(gh, selection.Curated(), 10*time.Minute)
+	previewSvc, mode, err := previewService(context.Background(), cfg)
+	if err != nil {
+		log.Fatalf("gittok: preview service: %v", err)
+	}
+	log.Printf("gittok: previews: %s", mode)
 
 	srv := &http.Server{
 		Addr:              ":" + strconv.Itoa(cfg.Port),
-		Handler:           newRouter(feedSvc),
+		Handler:           newRouter(feedSvc, previewSvc),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
@@ -73,13 +80,53 @@ func run(srv *http.Server) error {
 }
 
 // newRouter builds the HTTP handler for the backend: the operational health
-// check and the v1 feed. Further v1 endpoints (preview, profile, events) are
+// check, v1 feed and on-demand preview. Further v1 endpoints (profile, events) are
 // added in later tickets.
-func newRouter(feedSvc *feed.Service) http.Handler {
+func newRouter(feedSvc *feed.Service, previewSvc *analysis.Service) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", handleHealthz)
 	mux.Handle("GET /v1/feed", feedSvc.Handler())
+	mux.Handle("GET /v1/repos/{id}/preview", previewSvc.Handler())
+	mux.Handle("GET /v1/repos/{owner}/{name}/preview", previewSvc.Handler())
 	return mux
+}
+
+// previewService builds the public preview service from its own credential
+// and cache settings, independently of the feed's token. A configured public
+// credential is checked for family and verified once at startup; an unsafe or
+// rejected one is an error, never a fallback to anonymous access. The returned
+// description of the operating mode never contains the credential.
+func previewService(ctx context.Context, cfg config.Config, opts ...githubclient.Option) (*analysis.Service, string, error) {
+	opts = append([]githubclient.Option{githubclient.WithUserAgent("gittok-preview")}, opts...)
+	client, err := githubclient.NewPublic(cfg.PublicToken, opts...)
+	if err != nil {
+		return nil, "", fmt.Errorf("GITHUB_PUBLIC_TOKEN rejected: %w", err)
+	}
+	vctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	if err := client.VerifyCredential(vctx); err != nil {
+		return nil, "", fmt.Errorf("GITHUB_PUBLIC_TOKEN could not be verified as a no-scope public credential: %w", err)
+	}
+	svc, err := analysis.NewPublicServiceFromClient(client)
+	if err != nil {
+		return nil, "", err
+	}
+	limits := analysis.DefaultCacheLimits()
+	limits.TTL = cfg.PreviewCacheTTL
+	dir := cfg.PreviewCacheDir
+	if dir == "" {
+		dir = analysis.DefaultCacheDir()
+	}
+	cache, err := analysis.OpenPreviewCache(dir, limits, time.Now)
+	if err != nil {
+		return nil, "", fmt.Errorf("preview cache: %w", err)
+	}
+	svc.UseCache(cache)
+	access := "public-only token (classic PAT, no OAuth scopes) verified"
+	if client.Mode() == "anonymous" {
+		access = "anonymous GitHub access (60 requests/hour per outbound IP, shared on hosted platforms; set GITHUB_PUBLIC_TOKEN before a demo)"
+	}
+	return svc, fmt.Sprintf("%s; cache %s, TTL %s, %d entries / %d MiB", access, dir, limits.TTL, limits.MaxEntries, limits.MaxBytes>>20), nil
 }
 
 // handleHealthz reports that the process is up and able to serve requests.

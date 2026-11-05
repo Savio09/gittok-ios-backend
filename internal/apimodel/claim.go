@@ -76,6 +76,9 @@ type Source struct {
 	Kind  SourceKind `json:"kind,omitempty"`
 	Ref   string     `json:"ref"`
 	Lines string     `json:"lines,omitempty"`
+	// URL is a canonical source link. File URLs use the inspected commit ID;
+	// metadata URLs identify the mutable provider resource, not code history.
+	URL string `json:"url,omitempty"`
 }
 
 // Claim is the backbone of the schema: one evidence-linked statement about a
@@ -87,6 +90,10 @@ type Claim struct {
 	Label string `json:"label"`
 	// Source is where the evidence comes from.
 	Source Source `json:"source"`
+	// AdditionalSources lists further evidence a multi-premise claim rests on
+	// (for example, every premise of a classification). Source plus these
+	// together cover the claim's whole basis; a client must render all of them.
+	AdditionalSources []Source `json:"additional_sources,omitempty"`
 	// Excerpt is the exact snippet (code, config, log line) the claim rests on,
 	// shown verbatim. Empty when the source is a search that found nothing.
 	Excerpt string `json:"excerpt,omitempty"`

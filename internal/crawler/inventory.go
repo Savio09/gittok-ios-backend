@@ -87,6 +87,7 @@ type depDecl struct {
 	Category string // the declaring table, e.g. "devDependencies", "project.optional-dependencies.docs"
 	Field    string // dotted manifest field path, e.g. "devDependencies.express"
 	Source   string // the manifest's path
+	Optional bool
 }
 
 // component is one independently declared unit of the repository.
@@ -203,7 +204,7 @@ func dirOf(p string) string {
 func manifestDeps(m manifestRef) []depDecl {
 	var out []depDecl
 	add := func(category, name, spec string) {
-		out = append(out, depDecl{Name: name, Spec: spec, Category: category, Field: category + "." + name, Source: m.path})
+		out = append(out, depDecl{Name: name, Spec: spec, Category: category, Field: category + "." + name, Source: m.path, Optional: category == "optionalDependencies" || strings.HasPrefix(category, "project.optional-dependencies.")})
 	}
 	switch m.kind {
 	case kindNPM:
@@ -211,7 +212,7 @@ func manifestDeps(m manifestRef) []depDecl {
 			for _, t := range []struct {
 				cat depCategory
 				m   map[string]string
-			}{{depRuntime, p.Dependencies}, {depDev, p.DevDependencies}, {depPeer, p.PeerDependencies}} {
+			}{{depRuntime, p.Dependencies}, {depDev, p.DevDependencies}, {depPeer, p.PeerDependencies}, {depCategory("optionalDependencies"), p.OptionalDependencies}} {
 				for _, n := range sortedKeys(t.m) {
 					add(string(t.cat), n, t.m[n])
 				}
@@ -234,7 +235,10 @@ func manifestDeps(m manifestRef) []depDecl {
 				m   map[string]any
 			}{{"dependencies", c.Dependencies}, {"dev-dependencies", c.DevDependencies}, {"build-dependencies", c.BuildDependencies}} {
 				for _, n := range sortedKeys(t.m) {
-					add(t.cat, n, tomlSpec(t.m[n]))
+					add(t.cat, n, dependencyVersion(t.m[n]))
+					if table, ok := t.m[n].(map[string]any); ok {
+						out[len(out)-1].Optional, _ = table["optional"].(bool)
+					}
 				}
 			}
 		}
@@ -261,19 +265,19 @@ func manifestDeps(m manifestRef) []depDecl {
 		var p pubspec
 		if yaml.Unmarshal([]byte(m.content), &p) == nil {
 			for _, n := range sortedKeys(p.Dependencies) {
-				add("dependencies", n, "")
+				add("dependencies", n, dependencyVersion(p.Dependencies[n]))
 			}
 			for _, n := range sortedKeys(p.DevDependencies) {
-				add("dev_dependencies", n, "")
+				add("dev_dependencies", n, dependencyVersion(p.DevDependencies[n]))
 			}
 		}
 	}
 	return out
 }
 
-// tomlSpec renders a Cargo dependency value: the version string, or the table's
+// dependencyVersion reads a dependency value: the version string, or the table's
 // "version" key; "" when neither is declared (e.g. a path or git dependency).
-func tomlSpec(v any) string {
+func dependencyVersion(v any) string {
 	switch t := v.(type) {
 	case string:
 		return t

@@ -2,6 +2,8 @@ package githubclient
 
 import (
 	"context"
+	"encoding/hex"
+	"fmt"
 	"net/url"
 )
 
@@ -16,5 +18,18 @@ func (c *Client) ResolveRef(ctx context.Context, owner, name, ref string) (strin
 	if err := c.get(ctx, path, &p); err != nil {
 		return "", err
 	}
+	if !ValidCommitID(p.SHA) {
+		return "", fmt.Errorf("githubclient: invalid full commit ID")
+	}
 	return p.SHA, nil
+}
+
+// ValidCommitID accepts full SHA-1 and SHA-256 object IDs, never branch names
+// or abbreviations. A caller must still obtain the ID by resolving a GitHub ref.
+func ValidCommitID(id string) bool {
+	if len(id) != 40 && len(id) != 64 {
+		return false
+	}
+	_, err := hex.DecodeString(id)
+	return err == nil
 }

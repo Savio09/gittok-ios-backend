@@ -63,3 +63,16 @@ func TestSnapshotFetchedAndRoundTrip(t *testing.T) {
 		t.Errorf("round trip changed the snapshot: %+v, %v", back, err)
 	}
 }
+
+// A captured listing names the GetTree request cmd/corpuscapture made at the
+// recorded commit; without a valid recorded commit no request is claimed.
+func TestSnapshotTreeNamesItsCapturedRequest(t *testing.T) {
+	s := Snapshot{Repo: "o/r", ResolvedSHA: "0123456789abcdef0123456789abcdef01234567"}
+	if got := s.FileTree().Request; got != "/repos/o/r/git/trees/0123456789abcdef0123456789abcdef01234567?recursive=1" {
+		t.Errorf("Request = %q", got)
+	}
+	s.ResolvedSHA = "main"
+	if got := s.FileTree().Request; got != "" {
+		t.Errorf("an unpinned capture claimed request %q", got)
+	}
+}
