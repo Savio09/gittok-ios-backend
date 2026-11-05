@@ -1,7 +1,33 @@
 package apimodel
 
-// Confidence is how much the evidence backs a claim. It is deliberately coarse:
-// the backend either stands behind a claim or flags that it could not confirm
+// EvidenceStatus describes how the cited evidence supports a statement at its
+// stated scope. It says nothing about runtime execution or reader fit.
+type EvidenceStatus string
+
+const (
+	// EvidenceSupported: the source directly establishes the scoped statement.
+	// An attributed README statement supports what its author says, not that
+	// the described behavior works.
+	EvidenceSupported EvidenceStatus = "supported"
+	// EvidenceInferred: a conclusion drawn from cited premises or heuristics.
+	EvidenceInferred EvidenceStatus = "inferred"
+	// EvidenceUnknown: the available evidence cannot determine the answer.
+	EvidenceUnknown EvidenceStatus = "unknown"
+)
+
+// Valid accepts known statuses and empty for legacy optional fields. An empty
+// field makes no evidence guarantee; clients should render it as unknown.
+func (s EvidenceStatus) Valid() bool {
+	switch s {
+	case "", EvidenceSupported, EvidenceInferred, EvidenceUnknown:
+		return true
+	default:
+		return false
+	}
+}
+
+// Confidence is the legacy coarse assessment of support for a claim.
+// The backend either stands behind a claim or flags that it could not confirm
 // it. There is no false precision between the two.
 type Confidence string
 
@@ -104,7 +130,9 @@ type Claim struct {
 	// Limit is what it does NOT establish — e.g. "does not prove runtime
 	// behavior". This is the calibrated-uncertainty guardrail in field form.
 	Limit string `json:"limit,omitempty"`
-	// Confidence is whether the backend stands behind the claim.
+	// EvidenceStatus calibrates support independently of execution and Stance.
+	EvidenceStatus EvidenceStatus `json:"evidence_status,omitempty"`
+	// Confidence is the legacy assessment, retained for older clients.
 	Confidence Confidence `json:"confidence"`
 	// Stance, when set, is how the claim bears on the reader's fit.
 	Stance Stance `json:"stance,omitempty"`

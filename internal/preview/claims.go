@@ -55,7 +55,7 @@ func metadataClaims(in Input) []candidate {
 		if v.key == "language" {
 			tier = tierImported
 		}
-		out = append(out, candidate{section: v.section, tier: tier, claim: apimodel.Claim{Label: v.label, Source: apimodel.Source{Kind: apimodel.SourceMetadata, Ref: v.key, URL: metadataURL(r)}, Explanation: explanation, Supports: "The value reported by GitHub for this repository.", Limit: limit, Confidence: apimodel.Confident}})
+		out = append(out, candidate{section: v.section, tier: tier, claim: apimodel.Claim{Label: v.label, Source: apimodel.Source{Kind: apimodel.SourceMetadata, Ref: v.key, URL: metadataURL(r)}, Explanation: explanation, Supports: "The value reported by GitHub for this repository.", Limit: limit, EvidenceStatus: apimodel.EvidenceSupported, Confidence: apimodel.Confident}})
 	}
 	return out
 }
@@ -65,7 +65,7 @@ func factClaim(in Input, f crawler.Fact) (candidate, bool) {
 	if err != nil {
 		return candidate{}, false
 	}
-	c := apimodel.Claim{Source: source, Excerpt: excerpt, Confidence: apimodel.Confident}
+	c := apimodel.Claim{Source: source, Excerpt: excerpt, EvidenceStatus: apimodel.EvidenceSupported, Confidence: apimodel.Confident}
 	section := apimodel.SectionHow
 	where := "the repository root"
 	if f.Component != "" {
@@ -123,12 +123,13 @@ type claimKey struct {
 	label, excerpt, explanation, supports, limit string
 	source                                       apimodel.Source
 	confidence                                   apimodel.Confidence
+	evidenceStatus                               apimodel.EvidenceStatus
 	stance                                       apimodel.Stance
 	additional                                   string
 }
 
 func keyOf(c apimodel.Claim) claimKey {
-	k := claimKey{label: c.Label, excerpt: c.Excerpt, explanation: c.Explanation, supports: c.Supports, limit: c.Limit, source: c.Source, confidence: c.Confidence, stance: c.Stance}
+	k := claimKey{label: c.Label, excerpt: c.Excerpt, explanation: c.Explanation, supports: c.Supports, limit: c.Limit, source: c.Source, confidence: c.Confidence, evidenceStatus: c.EvidenceStatus, stance: c.Stance}
 	if len(c.AdditionalSources) > 0 {
 		b, _ := json.Marshal(c.AdditionalSources) // a []Source of strings always encodes
 		k.additional = string(b)

@@ -4,6 +4,8 @@
   "name": "rack",
   "slug": "rack/rack",
   "kind": "other",
+  "kind_evidence_status": "unknown",
+  "evidence_mode": "not_executed",
   "language": "Ruby",
   "description": "A modular Ruby web server interface.",
   "github_url": "https://github.com/rack/rack",
@@ -17,7 +19,8 @@
         "ref": "stargazers_count",
         "url": "https://api.github.com/repos/rack/rack"
       },
-      "confidence": "confident"
+      "confidence": "confident",
+      "evidence_status": "supported"
     },
     {
       "key": "last_push",
@@ -28,7 +31,8 @@
         "ref": "pushed_at",
         "url": "https://api.github.com/repos/rack/rack"
       },
-      "confidence": "confident"
+      "confidence": "confident",
+      "evidence_status": "supported"
     }
   ],
   "sections": [
@@ -48,6 +52,7 @@
           "explanation": "\"README.md\" states: \"Rack provides a minimal, modular, and adaptable interface for developing web\\napplications in Ruby. By wrapping HTTP requests and responses in the simplest\\nway possible, it unifies and distills the bridge between web servers, web\\nframeworks, and web application into a single method call.\".",
           "supports": "An attributed documentation passage in the repository root.",
           "limit": "Repository documentation is an author statement; its described behavior was not verified.",
+          "evidence_status": "supported",
           "confidence": "confident"
         },
         {
@@ -60,6 +65,7 @@
           "explanation": "The repository's GitHub description states: \"A modular Ruby web server interface.\".",
           "supports": "The value reported by GitHub for this repository.",
           "limit": "Captured 2026-11-02T13:10:04Z. Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "evidence_status": "supported",
           "confidence": "confident"
         }
       ],
@@ -79,6 +85,7 @@
           "explanation": "GitHub reports language as \"Ruby\".",
           "supports": "The value reported by GitHub for this repository.",
           "limit": "Captured 2026-11-02T13:10:04Z. Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "evidence_status": "supported",
           "confidence": "confident"
         }
       ],
