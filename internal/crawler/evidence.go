@@ -237,6 +237,9 @@ type Exclusion struct {
 	Kind      apimodel.RepoKind // its own role, when resolved
 	Reason    ExclusionReason
 	Premises  []Observation
+	// RolePremises establish Kind, separately from why the component was
+	// excluded. Naming a component or depending on it does not prove its role.
+	RolePremises []Observation
 }
 
 // VerdictStatus says whether the classifier reached a supported conclusion or

@@ -101,6 +101,14 @@ func kindClaim(in Input, cls crawler.Classification) (candidate, bool) {
 			}
 			role := "role not determined"
 			if e.Kind != "" {
+				if _, known := kindNames[e.Kind]; !known || len(e.RolePremises) == 0 {
+					return candidate{}, false
+				}
+				_, roleSources, _, ok := premisesOf(in, crawler.Basis{Premises: e.RolePremises})
+				if !ok {
+					return candidate{}, false
+				}
+				add(roleSources)
 				role = string(e.Kind)
 			}
 			excluded = append(excluded, "component "+strconv.Quote(e.Component)+" ("+role+") because "+strings.Join(reasons, " and "))
@@ -288,7 +296,13 @@ func scopePremise(in Input, o crawler.Observation) (string, []apimodel.Source, s
 		}
 		return withTree(fmt.Sprintf("all %d non-test Go files of the command package in %s, and go.mod, were read in full: they contain no net/http server call and require no recognised server framework", goFiles, where))
 	case crawler.AbsenceGoCommand:
-		return withTree(fmt.Sprintf("%s was read in full; the package clauses of the %d inspected Go files at the module root and under cmd/ declare no package main, and the inspected file tree lists no other Go file under cmd/", manifest, len(w.Paths)-1))
+		// A depth cap can omit commands beyond the conventional entry points.
+		// Keep the display conservative, and describe only the cited package
+		// clauses: a separate module may own other files listed under cmd/.
+		if !in.Inspection.Scope.Complete() {
+			return "", nil, "", false
+		}
+		return withTree(fmt.Sprintf("%s was read in full; the package clauses of the %d inspected Go files at the module root and in this module's cmd/ scope declare no package main", manifest, len(w.Paths)-1))
 	case crawler.AbsenceCargoWebFramework:
 		return manifest + " was read in full and declares no recognised web-framework dependency", files, "", true
 	case crawler.AbsenceCargoBinary:

@@ -225,5 +225,11 @@ func TestComparisonBasisRecordsEachExclusion(t *testing.T) {
 	}
 	for _, e := range c.Basis.Excluded {
 		basisPremisesValidate(t, insp, &Basis{Premises: e.Premises})
+		if e.Kind != "" {
+			if len(e.RolePremises) == 0 {
+				t.Errorf("excluded %s has a role without a retained basis", e.Component)
+			}
+			basisPremisesValidate(t, insp, &Basis{Premises: e.RolePremises})
+		}
 	}
 }

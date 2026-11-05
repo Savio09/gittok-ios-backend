@@ -422,6 +422,7 @@ func withExclusions(c Classification, vs []compVerdict, causes map[int]exclusion
 		e := Exclusion{Component: vs[i].comp.root, Reason: cause.reason}
 		if vs[i].status == roleResolved {
 			e.Kind = vs[i].kind
+			e.RolePremises = vs[i].basis
 		}
 		switch cause.reason {
 		case ExcludedByPath:
