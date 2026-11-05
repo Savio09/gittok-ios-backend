@@ -90,15 +90,34 @@ func newRanker(cls crawler.Classification, facts []crawler.Fact, imports []crawl
 		for _, p := range cls.Products {
 			r.peers[p] = true
 		}
+		for _, o := range cls.Secondary {
+			if r.peers[o.Component] && !o.Context {
+				r.premises[witnessKey(o.Witness)] = true
+			}
+		}
 	}
 	for _, im := range imports {
 		r.imports[im.Component] = append(r.imports[im.Component], im)
+		if !crawler.SupportingPath(im.File) {
+			r.anyPrimary = true
+		}
+	}
+	// Competition requires positive product evidence at an actual outside
+	// path. A root dependency table or README alone is not another product;
+	// validated role evidence also covers products whose code has no imports.
+	for _, observations := range [][]crawler.Observation{cls.Observations, cls.Secondary} {
+		for _, o := range observations {
+			if !o.Context && o.Absence == "" && o.Path != "" && !crawler.SupportingPath(o.Path) {
+				r.anyPrimary = true
+			}
+		}
 	}
 	for _, f := range facts {
-		// Documentation describes a product; it is not competing product
-		// evidence that would make tooling-path code look like a helper.
-		if f.Kind != crawler.FactReadme && !crawler.SupportingPath(f.Witness.Path) {
-			r.anyPrimary = true
+		switch f.Kind {
+		case crawler.FactCommand, crawler.FactTarget, crawler.FactServerCall, crawler.FactGoPackage:
+			if !crawler.SupportingPath(f.Witness.Path) {
+				r.anyPrimary = true
+			}
 		}
 		if f.Kind == crawler.FactReadme && !crawler.SupportingPath(f.Witness.Path) {
 			r.mainReadme = true
@@ -243,50 +262,6 @@ func (r *ranker) place(f crawler.Fact, c *candidate) bool {
 		c.low = true
 	}
 	return true
-}
-
-// selectClaims takes candidates in priority order within the bounded budgets
-// and reports how many were left out. peerQuota, when positive, is each peer
-// product candidate's equal share of the dependency budget, so no candidate's
-// allocation depends on where its name sorts.
-func selectClaims(cands []candidate, secondaries bool, peerQuota int) (out []candidate, omitted int) {
-	var deps, productDeps, low, scripts, readmes int
-	perComponent := map[string]int{}
-	productCap := maxDependencies
-	if secondaries {
-		productCap = maxProductDeps
-	}
-	for _, c := range cands {
-		switch {
-		case len(out) == maxClaims,
-			c.low && low == maxLowPriority,
-			c.dep && deps == maxDependencies,
-			c.dep && c.productDep && productDeps == productCap,
-			c.dep && c.productDep && peerQuota > 0 && perComponent[c.component] == peerQuota,
-			c.script && scripts == maxScripts,
-			c.readme && readmes == maxReadmePassage:
-			omitted++
-			continue
-		}
-		if c.low {
-			low++
-		}
-		if c.dep {
-			deps++
-			if c.productDep {
-				productDeps++
-				perComponent[c.component]++
-			}
-		}
-		if c.script {
-			scripts++
-		}
-		if c.readme {
-			readmes++
-		}
-		out = append(out, c)
-	}
-	return out, omitted
 }
 
 // metadataMetricsFrom renders the card's sourced metadata metrics. A value is

@@ -56,12 +56,21 @@ func TestFactsSourceCallsAreSyntaxNotTestRuntime(t *testing.T) {
 	content := "package main\nimport \"net/http\"\nfunc main(){http.ListenAndServe(\":80\",nil)}\n"
 	insp := InspectionFromSources("Go", []string{"main.go", "main_test.go"}, map[string]string{"main.go": content, "main_test.go": content})
 	facts := CollectFacts(insp)
-	if len(facts) != 1 || facts[0].Kind != FactServerCall || facts[0].Witness.Path != "main.go" {
+	if len(facts) != 2 {
 		t.Fatalf("runtime syntax facts: %+v", facts)
 	}
-	w := facts[0].Witness
-	if content[w.Start:w.End] != w.Quote {
-		t.Fatal("not an exact span")
+	kinds := map[FactKind]bool{}
+	for _, f := range facts {
+		kinds[f.Kind] = true
+		if f.Witness.Path != "main.go" || content[f.Witness.Start:f.Witness.End] != f.Witness.Quote {
+			t.Fatalf("fact is not an exact non-test source span: %+v", f)
+		}
+		if err := ValidateFact(insp, f); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if !kinds[FactServerCall] || !kinds[FactGoPackage] {
+		t.Fatalf("missing source-call or package evidence: %v", kinds)
 	}
 }
 

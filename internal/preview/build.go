@@ -58,20 +58,8 @@ func Build(in Input) apimodel.RepoPreview {
 	for _, c := range all {
 		secondaries = secondaries || (c.dep && !c.productDep && c.tier == tierSecondary)
 	}
-	// An abstention's candidates are peers: split the dependency budget equally.
-	peerQuota := 0
-	if classification.Status != crawler.VerdictResolved && len(classification.Products) > 1 {
-		peers := map[string]bool{}
-		for _, c := range all {
-			if c.dep && c.productDep {
-				peers[c.component] = true
-			}
-		}
-		if len(peers) > 1 {
-			peerQuota = maxDependencies / len(peers)
-		}
-	}
-	claims, omitted := selectClaims(all, secondaries, peerQuota)
+	balancePeers := classification.Status != crawler.VerdictResolved && len(classification.Products) > 1
+	claims, omitted := selectClaims(all, secondaries, balancePeers)
 	p.Metrics = metadataMetricsFrom(in)
 	for _, kind := range []apimodel.SectionKind{apimodel.SectionIdea, apimodel.SectionHow, apimodel.SectionStack, apimodel.SectionActivity, apimodel.SectionSetup} {
 		section := apimodel.Section{Kind: kind, Title: sectionTitle(kind), EvidenceMode: apimodel.NotExecuted}

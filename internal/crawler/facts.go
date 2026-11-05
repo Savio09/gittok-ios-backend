@@ -18,6 +18,10 @@ const (
 	FactTarget     FactKind = "target"
 	FactServerCall FactKind = "server-call"
 	FactReadme     FactKind = "readme"
+	// FactGoPackage is positive source evidence for relevance, even when a
+	// different file supplied the classifier's chosen role. It is not a claim
+	// about the package's runtime behavior.
+	FactGoPackage FactKind = "go-package"
 )
 
 // Fact describes one declaration or construct, never an aggregate product role.
@@ -95,6 +99,9 @@ func CollectFacts(insp Inspection) []Fact {
 			if strings.HasSuffix(strings.ToLower(p), ".go") {
 				g := st.goFile(p)
 				if !g.test {
+					if g.parsed && g.complete && g.pkg != "" {
+						add(Fact{Kind: FactGoPackage, Component: comp.root, Name: g.pkg, Witness: Witness{Kind: WitnessSpan, Path: p, Start: g.pkgStart, End: g.pkgEnd, Quote: g.pkg, Construct: constructGoPackageName}})
+					}
 					for _, call := range g.serverCalls {
 						if call.start < 0 || call.end <= call.start || call.end > len(f.Content) {
 							continue
