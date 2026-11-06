@@ -17,7 +17,9 @@ at startup and rejects zero, negative, malformed or excessive values.
 | `ANALYSIS_MAX_RESPONSE_BYTES` | `16777216` | `33554432` | Decoded HTTP bytes read per response |
 
 Integers are decimal bytes/counts. The timeout uses Go duration syntax. Selection
-keeps the existing source, entry-point and basename sub-caps, so raising the
+keeps the source and entry-point sub-caps. Basename caps apply to repeated
+docs/source/config; independent component manifests use separate directory
+keys (see [G16 selection](g16-selection.md)). Raising the
 overall file cap does not guarantee that many useful files. Lower file/byte caps
 may leave too little evidence to infer a type; unknown is an expected result.
 
