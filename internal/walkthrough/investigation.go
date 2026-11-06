@@ -2,11 +2,10 @@ package walkthrough
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"errors"
 	"path"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -42,6 +41,7 @@ type Investigation struct {
 	tree       githubclient.FileTree
 	bundle     Bundle
 	eligible   map[string]bool
+	sourceIDs  map[string]string
 	components map[string]bool
 	attempted  map[string]bool
 	read       map[string]EvidenceFile
@@ -130,6 +130,18 @@ func (s *Investigation) loadListing() error {
 		case "package.json", "go.mod", "cargo.toml", "pyproject.toml", "setup.py", "pubspec.yaml":
 			s.components[path.Dir(entry.Path)] = true
 		}
+	}
+	// Short opaque handles identify acquired source within this pinned session.
+	// They do not establish trust: retained content, exact spans and independent
+	// review do. Sorted paths keep handles independent of acquisition order.
+	paths := make([]string, 0, len(s.eligible))
+	for p := range s.eligible {
+		paths = append(paths, p)
+	}
+	sort.Strings(paths)
+	s.sourceIDs = make(map[string]string, len(paths))
+	for i, p := range paths {
+		s.sourceIDs[p] = "source-" + strconv.Itoa(i+1)
 	}
 	return nil
 }
@@ -269,8 +281,7 @@ func (s *Investigation) readSource(p string, maxBytes int) (EvidenceFile, error)
 			break
 		}
 	}
-	h := sha256.Sum256([]byte(p + "\x00" + f.Content))
-	e := EvidenceFile{ID: hex.EncodeToString(h[:]), Path: p, Component: component, Content: f.Content, Truncated: f.Truncated}
+	e := EvidenceFile{ID: s.sourceIDs[p], Path: p, Component: component, Content: f.Content, Truncated: f.Truncated}
 	if e.Truncated {
 		s.note("Some inspected source was clipped to the configured byte limit.")
 	}
@@ -348,6 +359,7 @@ func (s *Investigation) withhold() {
 	s.verified = false
 	s.read = map[string]EvidenceFile{}
 	s.eligible = map[string]bool{}
+	s.sourceIDs = map[string]string{}
 }
 
 // Verify is part of the same deadline/quota. It runs after model review and

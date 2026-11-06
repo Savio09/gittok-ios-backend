@@ -97,6 +97,9 @@ func TestInvestigationSharesFileAndByteCapsAcrossReads(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if len(a.ID) > 16 {
+		t.Fatal("source handle is unnecessarily difficult to copy reliably")
+	}
 	again, err := s.Read("main.go")
 	if err != nil || again.ID != a.ID || len(g.reads) != 1 {
 		t.Fatal("duplicate read renewed a quota")
@@ -104,6 +107,9 @@ func TestInvestigationSharesFileAndByteCapsAcrossReads(t *testing.T) {
 	b, err := s.Read("README.md")
 	if err != nil {
 		t.Fatal(err)
+	}
+	if a.ID == b.ID {
+		t.Fatal("distinct source handles collided")
 	}
 	if len(a.Content)+len(b.Content) > 30 {
 		t.Fatal("cumulative byte cap reset")
