@@ -112,6 +112,8 @@ type Source struct {
 // and states the limit of what that evidence proves — so the app can show the
 // reasoning next to the claim and never imply more than the evidence supports.
 type Claim struct {
+	// ID identifies a validated narrative statement when supplied by a story.
+	ID string `json:"id,omitempty"`
 	// Label is the short category or headline, e.g. "Frontend is TypeScript".
 	Label string `json:"label"`
 	// Source is where the evidence comes from.
