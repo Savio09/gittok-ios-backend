@@ -10,10 +10,19 @@ import (
 )
 
 func TestEvidenceInvalidatesPersistedVersionThreePreviews(t *testing.T) {
+	assertOldBuilderInvalidated(t, 3)
+}
+
+func TestRepresentativeSelectionInvalidatesVersionFourPreviews(t *testing.T) {
+	assertOldBuilderInvalidated(t, 4)
+}
+
+func assertOldBuilderInvalidated(t *testing.T, version int) {
+	t.Helper()
 	clock := &fakeClock{time.Now()}
 	dir := t.TempDir()
 	old := openTestCache(t, dir, testLimits(), clock)
-	oldKey := CacheKey{RepoID: 7, Owner: "o", Name: "r", version: 3}
+	oldKey := CacheKey{RepoID: 7, Owner: "o", Name: "r", version: version}
 	stale := apimodel.RepoPreview{ID: "o/r", Owner: "o", Name: "r", Kind: apimodel.KindBackend}
 	if !old.Put(oldKey, "0123456789abcdef0123456789abcdef01234567", clock.t, stale) {
 		t.Fatal("could not seed the pre-evidence cache")
