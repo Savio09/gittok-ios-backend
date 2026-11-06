@@ -1,6 +1,7 @@
 package preview
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"sort"
@@ -138,6 +139,10 @@ func keyOf(c apimodel.Claim) claimKey {
 }
 
 func candidates(in Input, cls crawler.Classification) []candidate {
+	return candidatesContext(context.Background(), in, cls)
+}
+
+func candidatesContext(ctx context.Context, in Input, cls crawler.Classification) []candidate {
 	var out []candidate
 	if kc, ok := kindClaim(in, cls); ok {
 		out = append(out, kc) // the reserved explanation leads the preview
@@ -146,9 +151,12 @@ func candidates(in Input, cls crawler.Classification) []candidate {
 	var files []candidate
 	rounds := map[string]int{}
 	seen := map[claimKey]bool{}
-	facts := crawler.CollectFacts(in.Inspection)
-	rank := newRanker(cls, facts, crawler.CollectImports(in.Inspection))
+	facts := crawler.CollectFactsContext(ctx, in.Inspection)
+	rank := newRanker(cls, facts, crawler.CollectImportsContext(ctx, in.Inspection))
 	for _, f := range facts {
+		if ctx.Err() != nil {
+			return metadataClaims(in)
+		}
 		c, ok := factClaim(in, f)
 		if !ok || !rank.place(f, &c) {
 			continue

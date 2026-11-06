@@ -97,20 +97,32 @@ func newRepoIndex(st *inspIndex, comp *component, language string) *repoIndex {
 		ix.lowerRel[i] = strings.ToLower(comp.rel(p))
 	}
 
+	if st.ctx.Err() != nil {
+		return ix
+	}
 	ix.pkgRef = comp.manifest(kindNPM)
 	if ix.pkgRef.readable() {
 		if ix.pkg = parsePackageJSON(ix.pkgRef.content); ix.pkg == nil {
 			ix.pkgBad = true
 		}
 	}
+	if st.ctx.Err() != nil {
+		return ix
+	}
 	ix.goMod = comp.manifest(kindGoMod)
 	if ix.goMod.readable() {
 		ix.modPath = goModulePath(ix.goMod.content)
 		ix.goModOK = ix.modPath != ""
 	}
+	if st.ctx.Err() != nil {
+		return ix
+	}
 	ix.cargo = comp.manifest(kindCargo)
 	if ix.cargo.readable() {
 		ix.cargoM, ix.cargoOK = parseCargo(ix.cargo.content)
+	}
+	if st.ctx.Err() != nil {
+		return ix
 	}
 	ix.pyproj = comp.manifest(kindPyProject)
 	if ix.pyproj.readable() {
@@ -123,12 +135,18 @@ func newRepoIndex(st *inspIndex, comp *component, language string) *repoIndex {
 	ix.goWork = comp.manifest(kindGoWork)
 
 	for _, p := range comp.paths {
+		if st.ctx.Err() != nil {
+			return ix
+		}
 		if f, ok := st.files[p]; ok && strings.HasSuffix(strings.ToLower(p), ".go") {
 			ix.goFiles = append(ix.goFiles, analyzeGoFile(f))
 		}
 	}
 	sort.Slice(ix.goFiles, func(i, j int) bool { return ix.goFiles[i].path < ix.goFiles[j].path })
 
+	if st.ctx.Err() != nil {
+		return ix
+	}
 	ix.blockUninspectedManifests()
 	if ix.pkg != nil {
 		if _, state := ix.pkg.commandEntry(); state == unknown {

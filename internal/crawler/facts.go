@@ -1,6 +1,7 @@
 package crawler
 
 import (
+	"context"
 	"fmt"
 	"path"
 	"reflect"
@@ -39,9 +40,20 @@ type Fact struct {
 // CollectFacts reuses component inventory and parser semantics independently of
 // role resolution. Every field/construct witness is checked before publication.
 func CollectFacts(insp Inspection) []Fact {
-	st := indexInspection(insp)
+	return CollectFactsContext(context.Background(), insp)
+}
+
+// CollectFactsContext checks cancellation between bounded declarations/files.
+func CollectFactsContext(ctx context.Context, insp Inspection) []Fact {
+	if ctx.Err() != nil {
+		return nil
+	}
+	st := indexInspectionContext(ctx, insp)
 	var out []Fact
 	add := func(f Fact) {
+		if ctx.Err() != nil {
+			return
+		}
 		if !utf8.ValidString(f.Name + f.Spec + f.Component) {
 			return
 		}
@@ -50,11 +62,20 @@ func CollectFacts(insp Inspection) []Fact {
 		}
 	}
 	for _, comp := range buildInventory(st) {
+		if ctx.Err() != nil {
+			return nil
+		}
 		for _, d := range comp.deps {
+			if ctx.Err() != nil {
+				return nil
+			}
 			w := dependencyWitness(st, d)
 			add(Fact{Kind: FactDependency, Component: comp.root, Name: d.Name, Spec: d.Spec, Category: d.Category, Optional: d.Optional, Witness: w})
 		}
 		for _, m := range comp.manifests {
+			if ctx.Err() != nil {
+				return nil
+			}
 			if !m.readable() {
 				continue
 			}
@@ -92,6 +113,9 @@ func CollectFacts(insp Inspection) []Fact {
 			}
 		}
 		for _, p := range comp.paths {
+			if ctx.Err() != nil {
+				return nil
+			}
 			f, read := st.files[p]
 			if !read {
 				continue
@@ -216,10 +240,24 @@ type Import struct {
 // syntax counts: an import string in a comment or a clipped file's unparsed
 // remainder never does. Ordered by component, file and import path.
 func CollectImports(insp Inspection) []Import {
-	st := indexInspection(insp)
+	return CollectImportsContext(context.Background(), insp)
+}
+
+// CollectImportsContext checks cancellation between size-bounded Go files.
+func CollectImportsContext(ctx context.Context, insp Inspection) []Import {
+	if ctx.Err() != nil {
+		return nil
+	}
+	st := indexInspectionContext(ctx, insp)
 	var out []Import
 	for _, comp := range buildInventory(st) {
+		if ctx.Err() != nil {
+			return nil
+		}
 		for _, p := range comp.paths {
+			if ctx.Err() != nil {
+				return nil
+			}
 			if _, read := st.files[p]; !read || !isGoSource(p) {
 				continue
 			}

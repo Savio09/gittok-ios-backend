@@ -17,6 +17,8 @@ type Coverage struct {
 	ContentsIncomplete bool
 	// SymlinksExcluded: symlinked paths were listed but never read.
 	SymlinksExcluded bool
+	// AnalysisIncomplete: the local analysis deadline interrupted interpretation.
+	AnalysisIncomplete bool
 }
 
 // Reader-facing notes, most material first. Each states a gap in what was
@@ -48,6 +50,7 @@ func coverageNotes(in Input, cls crawler.Classification, explained bool, omitted
 	}
 	noFiles := len(insp.Files) == 0 || !insp.Revision.Resolved
 	add(in.Coverage.IdentityUnverified, noteIdentity)
+	add(in.Coverage.AnalysisIncomplete, "The analysis time limit was reached, so only retained evidence is shown.")
 	noneRead := noFiles && insp.Revision.Resolved && !in.Coverage.FilesNotAcquired && len(insp.Unavailable) > 0
 	add(!in.Coverage.IdentityUnverified && noneRead, noteNoneRead)
 	add(!in.Coverage.IdentityUnverified && !noneRead && (in.Coverage.FilesNotAcquired || noFiles), noteMetadata)
