@@ -143,6 +143,9 @@ func (k SectionKind) Valid() bool {
 // architecture diagram inferred from code) carry the runtime guarantee, not
 // just Media.
 type Section struct {
+	// Media is an optional artifact for this ordered content item. Its execution
+	// provenance is independent of source claims and other captures.
+	Media        *Media       `json:"media,omitempty"`
 	Kind         SectionKind  `json:"kind"`
 	Title        string       `json:"title"`
 	Body         string       `json:"body,omitempty"`
