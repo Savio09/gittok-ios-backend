@@ -62,9 +62,10 @@ func TestEngineGeneralizesSourceOnlyContractAcrossRepositoryShapes(t *testing.T)
 				client := &http.Client{Transport: engineRoundTrip(func(request *http.Request) (*http.Response, error) {
 					calls++
 					var wire struct {
-						Input []json.RawMessage `json:"input"`
-						Tools []json.RawMessage `json:"tools"`
-						Text  json.RawMessage   `json:"text"`
+						Input      []json.RawMessage `json:"input"`
+						Tools      []json.RawMessage `json:"tools"`
+						Text       json.RawMessage   `json:"text"`
+						ToolChoice json.RawMessage   `json:"tool_choice"`
 					}
 					if err := json.NewDecoder(request.Body).Decode(&wire); err != nil {
 						t.Fatal(err)
@@ -134,6 +135,13 @@ func TestEngineGeneralizesSourceOnlyContractAcrossRepositoryShapes(t *testing.T)
 					if calls == 2 || calls == 3 && fixture.shape == "mixed" {
 						return engineHTTP(t, engineCall(t, "read_file", map[string]any{"path": path, "start_line": 1, "line_count": 8}, "read-"+fmt.Sprint(calls))), nil
 					}
+					var choice struct {
+						Name string `json:"name"`
+					}
+					_ = json.Unmarshal(wire.ToolChoice, &choice)
+					if choice.Name != "submit_story" {
+						return engineHTTP(t, engineCall(t, "finish_reading", map[string]any{}, "finish")), nil
+					}
 					citation := func(line int) Citation {
 						return Citation{FileID: windows[fixture.path].FileID, StartLine: line, EndLine: line, Quote: lines[line-1]}
 					}
@@ -161,18 +169,20 @@ func TestEngineGeneralizesSourceOnlyContractAcrossRepositoryShapes(t *testing.T)
 					}
 					return engineHTTP(t, engineCall(t, "submit_story", draft, "submit")), nil
 				})}
-				engine, err := NewEngine(engineConfig(), engineLedger(t), WithHTTPClient(client))
+				cfg := engineConfig()
+				cfg.MaxCalls = 8
+				engine, err := NewEngine(cfg, engineLedger(t), WithHTTPClient(client))
 				if err != nil {
 					t.Fatal(err)
 				}
 				accepted, err := engine.Run(context.Background(), fmt.Sprintf("matrix-%d-%s", index, mode), inv, nil)
 				if mode != "complete" && mode != "renamed" {
-					if err == nil || accepted.ID() != "" || reviews != 0 || calls != 3 {
+					if err == nil || accepted.ID() != "" || reviews != 0 || calls != 4 {
 						t.Fatalf("invalid premise/inventory reached paid review: %v calls=%d reviews=%d", err, calls, reviews)
 					}
 					return
 				}
-				expectedCalls := 4
+				expectedCalls := 5
 				if fixture.shape == "mixed" {
 					expectedCalls++
 				}
