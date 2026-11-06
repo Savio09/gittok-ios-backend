@@ -117,6 +117,9 @@ func (c *Client) GetFileContents(
 			continue
 		}
 		limit := perFileCap(limits.MaxFileBytes, remaining)
+		if limit > DefaultMaxResponseBytes {
+			limit = DefaultMaxResponseBytes
+		}
 		var reader io.Reader = base64.NewDecoder(base64.StdEncoding, strings.NewReader(stripWhitespace(payload.Content)))
 		if limit >= 0 {
 			reader = io.LimitReader(reader, int64(limit)+1)

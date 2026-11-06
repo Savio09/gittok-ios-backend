@@ -28,10 +28,10 @@ type RequestBudget struct {
 
 // NewRequestBudget requires positive limits; invalid values select safe defaults.
 func NewRequestBudget(maxCalls, maxResponseBytes int) *RequestBudget {
-	if maxCalls <= 0 {
+	if maxCalls <= 0 || maxCalls > 128 {
 		maxCalls = 80
 	}
-	if maxResponseBytes <= 0 {
+	if maxResponseBytes <= 0 || maxResponseBytes > 32<<20 {
 		maxResponseBytes = DefaultMaxResponseBytes
 	}
 	return &RequestBudget{remaining: maxCalls, responseBytes: maxResponseBytes}
@@ -104,9 +104,12 @@ func (r *responseReader) Read(p []byte) (int, error) {
 		p = p[:r.remaining+1]
 	}
 	n, err := r.ReadCloser.Read(p)
+	allowed := r.remaining
 	r.remaining -= int64(n)
 	if r.remaining < 0 {
-		return n, ErrResponseTooLarge
+		// Never give json.Decoder the sentinel byte: it can accept a complete
+		// JSON value from bytes returned alongside an error and ignore that error.
+		return int(allowed), ErrResponseTooLarge
 	}
 	return n, err
 }

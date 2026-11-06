@@ -5,7 +5,9 @@ import (
 	"encoding/base64"
 	"errors"
 	"io"
+	"math"
 	"net/http"
+	"net/http/httptest"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -119,5 +121,70 @@ func TestContentsDecodeOnlyRetainedPrefix(t *testing.T) {
 	got, err := c.GetFileContents(context.Background(), "o", "r", "main", []string{"large.txt"}, ContentLimits{MaxFileBytes: 64})
 	if err != nil || len(got.Files) != 1 || len(got.Files[0].Content) != 64 || !got.Files[0].Truncated {
 		t.Fatalf("err=%v files=%v skipped=%v", err, got.Files, got.Skipped)
+	}
+}
+
+func TestResponseLimitDoesNotExposeDetectionByteToJSON(t *testing.T) {
+	c := New("", WithHTTPClient(&http.Client{Transport: testBudgetTransport(func(*http.Request) (*http.Response, error) {
+		return &http.Response{StatusCode: 200, Header: http.Header{}, Body: io.NopCloser(strings.NewReader(`{"id":1}`))}, nil
+	})}))
+	ctx := NewRequestBudget(1, 7).Context(context.Background())
+	if _, err := c.GetRepo(ctx, "o", "r"); !errors.Is(err, ErrResponseTooLarge) {
+		t.Fatalf("err=%v", err)
+	}
+}
+
+func TestExcessiveLowLevelLimitsCannotOverflow(t *testing.T) {
+	b := NewRequestBudget(math.MaxInt, math.MaxInt)
+	if b.remaining > 128 || b.responseBytes > 32<<20 {
+		t.Fatalf("unsafe budget: %+v", b)
+	}
+	c := New("", WithHTTPClient(&http.Client{Transport: testBudgetTransport(func(*http.Request) (*http.Response, error) {
+		return &http.Response{StatusCode: 200, Header: http.Header{}, Body: io.NopCloser(strings.NewReader(`{"type":"file","encoding":"base64","size":3,"content":"YWJj"}`))}, nil
+	})}))
+	got, err := c.GetFileContents(b.Context(context.Background()), "o", "r", "main", []string{"f"}, ContentLimits{MaxFileBytes: math.MaxInt, MaxTotalBytes: math.MaxInt})
+	if err != nil || len(got.Files) != 1 || got.Files[0].Content != "abc" {
+		t.Fatalf("got=%+v err=%v", got, err)
+	}
+}
+
+func TestStandardTransportCannotRetryInternally(t *testing.T) {
+	original := http.DefaultTransport.(*http.Transport)
+	c := New("", WithHTTPClient(&http.Client{Transport: original}))
+	isolated := c.httpClient.Transport.(budgetTransport).base.(*http.Transport)
+	if isolated == original || !isolated.DisableKeepAlives || isolated.ForceAttemptHTTP2 || isolated.Protocols.HTTP2() || !isolated.Protocols.HTTP1() {
+		t.Fatal("standard transport can reuse or retry connections internally")
+	}
+}
+
+func TestBudgetedTLSRequestsUseFreshHTTP1Connections(t *testing.T) {
+	var calls atomic.Int32
+	connections := make(chan string, 2)
+	srv := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls.Add(1)
+		if r.ProtoMajor != 1 {
+			t.Errorf("protocol=%s: transport retries can bypass quota", r.Proto)
+		}
+		connections <- r.RemoteAddr
+		io.WriteString(w, `{"id":7}`)
+	}))
+	srv.EnableHTTP2 = true
+	srv.StartTLS()
+	defer srv.Close()
+	transport := srv.Client().Transport.(*http.Transport)
+	transport.TLSClientConfig.NextProtos = []string{"h2", "http/1.1"}
+	transport.ForceAttemptHTTP2 = true
+	c := New("", WithBaseURL(srv.URL), WithHTTPClient(srv.Client()), WithMaxRetries(0))
+	ctx := NewRequestBudget(2, 1024).Context(context.Background())
+	for i := 0; i < 2; i++ {
+		if _, err := c.GetRepo(ctx, "o", "r"); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if first, second := <-connections, <-connections; first == second {
+		t.Fatal("transport reused a connection with hidden retry potential")
+	}
+	if _, err := c.GetRepo(ctx, "o", "r"); !errors.Is(err, ErrCallBudget) || calls.Load() != 2 {
+		t.Fatalf("calls=%d err=%v", calls.Load(), err)
 	}
 }

@@ -98,6 +98,10 @@ func (p *treeResponse) decodeJSON(dec *json.Decoder) error {
 					continue
 				}
 				p.tree.Entries = append(p.tree.Entries, e)
+				if p.limits.MaxEntries > 0 && len(p.tree.Entries) >= p.limits.MaxEntries {
+					p.tree.Truncated = true
+					return nil
+				}
 			}
 			if _, err := dec.Token(); err != nil {
 				return err
