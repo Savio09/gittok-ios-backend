@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"errors"
+	"io"
 	"net/url"
 	"strings"
 )
@@ -71,11 +72,11 @@ func (c *Client) GetFileContents(
 		result.Skipped = append(result.Skipped, SkippedFile{Path: path, Reason: reason})
 	}
 
-	for _, path := range paths {
+	for attempted, path := range paths {
 		if err := ctx.Err(); err != nil {
 			return result, err
 		}
-		if limits.MaxFiles > 0 && len(result.Files) >= limits.MaxFiles {
+		if limits.MaxFiles > 0 && attempted >= limits.MaxFiles {
 			skip(path, "file limit reached")
 			continue
 		}
@@ -92,6 +93,9 @@ func (c *Client) GetFileContents(
 			// file and noticed, if at all, on a next iteration that never comes.
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return result, ctxErr
+			}
+			if errors.Is(err, ErrCallBudget) {
+				return result, err
 			}
 			// A rejected credential is not a missing file: return no data.
 			if errors.Is(err, ErrCredentialPolicy) {
@@ -112,13 +116,17 @@ func (c *Client) GetFileContents(
 			skip(path, "too large to fetch inline")
 			continue
 		}
-		decoded, err := base64.StdEncoding.DecodeString(stripWhitespace(payload.Content))
+		limit := perFileCap(limits.MaxFileBytes, remaining)
+		var reader io.Reader = base64.NewDecoder(base64.StdEncoding, strings.NewReader(stripWhitespace(payload.Content)))
+		if limit >= 0 {
+			reader = io.LimitReader(reader, int64(limit)+1)
+		}
+		decoded, err := io.ReadAll(reader)
 		if err != nil {
 			skip(path, "decode error")
 			continue
 		}
 
-		limit := perFileCap(limits.MaxFileBytes, remaining)
 		content := string(decoded)
 		truncated := false
 		if limit >= 0 && len(content) > limit {

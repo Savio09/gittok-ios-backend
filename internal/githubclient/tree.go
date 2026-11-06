@@ -2,6 +2,8 @@ package githubclient
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"net/url"
 	"strings"
 )
@@ -56,15 +58,63 @@ func DefaultTreeLimits() TreeLimits {
 	return TreeLimits{MaxEntries: 5000, MaxDepth: 12}
 }
 
-type treePayload struct {
-	Truncated bool `json:"truncated"`
-	Tree      []struct {
-		Path string `json:"path"`
-		Type string `json:"type"`
-		Size int    `json:"size"`
-		Mode string `json:"mode"`
-		SHA  string `json:"sha"`
-	} `json:"tree"`
+type treeResponse struct {
+	limits TreeLimits
+	tree   FileTree
+}
+
+// Stream the listing so the entry cap bounds allocation and reading, rather
+// than clipping a fully allocated provider tree. Once capped, the unread tail
+// is unknown regardless of the provider's truncated flag.
+func (p *treeResponse) decodeJSON(dec *json.Decoder) error {
+	if token, err := dec.Token(); err != nil {
+		return err
+	} else if token != json.Delim('{') {
+		return fmt.Errorf("invalid tree response")
+	}
+	for dec.More() {
+		key, err := dec.Token()
+		if err != nil {
+			return err
+		}
+		switch key {
+		case "tree":
+			if token, err := dec.Token(); err != nil {
+				return err
+			} else if token != json.Delim('[') {
+				return fmt.Errorf("invalid tree entries")
+			}
+			for dec.More() {
+				if p.limits.MaxEntries > 0 && len(p.tree.Entries) >= p.limits.MaxEntries {
+					p.tree.Truncated = true
+					return nil
+				}
+				var e TreeEntry
+				if err := dec.Decode(&e); err != nil {
+					return err
+				}
+				if p.limits.MaxDepth > 0 && depth(e.Path) > p.limits.MaxDepth {
+					p.tree.DepthLimited = true
+					continue
+				}
+				p.tree.Entries = append(p.tree.Entries, e)
+			}
+			if _, err := dec.Token(); err != nil {
+				return err
+			}
+		case "truncated":
+			if err := dec.Decode(&p.tree.Truncated); err != nil {
+				return err
+			}
+		default:
+			var discard json.RawMessage
+			if err := dec.Decode(&discard); err != nil {
+				return err
+			}
+		}
+	}
+	_, err := dec.Token()
+	return err
 }
 
 // GetTree fetches a repository's file tree at ref (a branch name or commit SHA),
@@ -73,26 +123,12 @@ type treePayload struct {
 func (c *Client) GetTree(ctx context.Context, owner, name, ref string, limits TreeLimits) (FileTree, error) {
 	path := TreeRequestPath(owner, name, ref)
 
-	var p treePayload
+	p := treeResponse{limits: limits, tree: FileTree{MaxDepth: max(limits.MaxDepth, 0), Request: path}}
 	if err := c.get(ctx, path, &p); err != nil {
 		return FileTree{}, err
 	}
 
-	tree := FileTree{Truncated: p.Truncated, MaxDepth: max(limits.MaxDepth, 0), Request: path}
-	entries := make([]TreeEntry, 0, len(p.Tree))
-	for _, e := range p.Tree {
-		if limits.MaxDepth > 0 && depth(e.Path) > limits.MaxDepth {
-			tree.DepthLimited = true
-			continue
-		}
-		entries = append(entries, TreeEntry{Path: e.Path, Type: e.Type, Size: e.Size, Mode: e.Mode, SHA: e.SHA})
-	}
-	if limits.MaxEntries > 0 && len(entries) > limits.MaxEntries {
-		entries = entries[:limits.MaxEntries]
-		tree.Truncated = true
-	}
-	tree.Entries = entries
-	return tree, nil
+	return p.tree, nil
 }
 
 // depth is the number of path segments: "README.md" is 1, "a/b.go" is 2.

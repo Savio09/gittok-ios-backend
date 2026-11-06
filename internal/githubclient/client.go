@@ -95,6 +95,15 @@ func New(token string, opts ...Option) *Client {
 	for _, opt := range opts {
 		opt(c)
 	}
+	// Copy the caller's client before wrapping its transport; a shared HTTP
+	// client must never acquire another service's mutable configuration.
+	copied := *c.httpClient
+	transport := copied.Transport
+	if transport == nil {
+		transport = http.DefaultTransport
+	}
+	copied.Transport = budgetTransport{base: transport}
+	c.httpClient = &copied
 	c.mode = "anonymous"
 	if token != "" {
 		c.mode = "token"
@@ -114,6 +123,12 @@ func (c *Client) get(ctx context.Context, path string, v any) error {
 	var retryAfter time.Duration
 
 	for attempt := 0; attempt <= c.maxRetries; attempt++ {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		if err := requestBudget(ctx).check(false); err != nil {
+			return err
+		}
 		if attempt > 0 {
 			if err := c.waitBackoff(ctx, backoffDelay(attempt, retryAfter, c.backoffBase)); err != nil {
 				return err
@@ -127,6 +142,9 @@ func (c *Client) get(ctx context.Context, path string, v any) error {
 			if errors.As(err, &policy) {
 				return policy // a refused redirect is terminal, not transient
 			}
+			if errors.Is(err, ErrCallBudget) || ctx.Err() != nil {
+				return err
+			}
 			lastErr = err // transport error — transient, retry
 			continue
 		}
@@ -137,6 +155,7 @@ func (c *Client) get(ctx context.Context, path string, v any) error {
 				return err // terminal: never decode or retry a rejected response
 			}
 		}
+		resp.Body = capResponse(ctx, resp.Body)
 		done, ra, err := classify(resp, c.baseURL+path, v)
 		resp.Body.Close()
 		if done {
@@ -192,7 +211,14 @@ func (c *Client) doOnce(ctx context.Context, path string) (*http.Response, error
 func classify(resp *http.Response, url string, v any) (done bool, retryAfter time.Duration, err error) {
 	switch {
 	case resp.StatusCode >= 200 && resp.StatusCode < 300:
-		if decErr := json.NewDecoder(resp.Body).Decode(v); decErr != nil {
+		dec := json.NewDecoder(resp.Body)
+		var decErr error
+		if streaming, ok := v.(interface{ decodeJSON(*json.Decoder) error }); ok {
+			decErr = streaming.decodeJSON(dec)
+		} else {
+			decErr = dec.Decode(v)
+		}
+		if decErr != nil {
 			return true, 0, decErr
 		}
 		return true, 0, nil
