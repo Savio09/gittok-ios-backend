@@ -46,3 +46,29 @@ be explicit in the final report.
 - https://pkg.go.dev/net/http@go1.25.5#RoundTripper
 - https://pkg.go.dev/context@go1.25.5#WithDeadline
 - https://pkg.go.dev/encoding/base64@go1.25.5#NewDecoder
+
+## Execution and review — November 6
+
+Client slice ac66cf0 and review repair d9de36d add physical attempt quotas,
+bounded response/tree/base64 reads, fresh HTTP/1 connections and cancellable
+production backoff timers. Service slice c6e671d wires configurable limits and
+one absolute deadline through acquisition, coalescing and local interpretation.
+
+Fresh client review identified hidden transport retries, reading a tree tail
+after filling its cap, integer-overflow limits, and leaking the overflow sentinel
+to JSON decoding. A second pass found surviving HTTP/2 ALPN/handlers. These were
+fixed; a real in-process HTTP/2-capable TLS server now verifies fresh HTTP/1
+requests and the exact quota. The final bounded rereview found no remaining
+contract-breaking issue in that repair.
+
+Fresh service review found that classification started later parsers after
+cancellation. Context checkpoints now stop later manifest/Go parser calls, with
+a deterministic checkpoint regression; final bounded rereview found no remaining
+contract violation. Existing stricter admission deadlines remain documented.
+
+Root independently verified the final source with full uncached Go tests, full
+race tests, vet, build and diff checks. All passed, using local transports and
+httptest only. Full logs and the process record are saved in
+[the shared G19 record](../../docs/2026-11-06-g19-hard-limits/README.md).
+Synchronous parsers already running may finish beyond the deadline: this is
+cooperative cancellation with finite input caps, not process CPU preemption.

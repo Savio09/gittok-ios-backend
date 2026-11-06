@@ -57,3 +57,7 @@ in by later tickets.
 Requires Go 1.25+. Configuration is read from the environment (see
 `.env.example`): `GITHUB_TOKEN` is **required** and the server refuses to
 start without it; `PORT` is optional and defaults to `8080`.
+
+Repository acquisition has configurable file, byte, API-attempt and time caps;
+see [analysis limits](docs/analysis-limits.md) for settings and partial-result
+behavior. The defaults inspect up to 16 files / 512 KiB in a 30-second budget.
