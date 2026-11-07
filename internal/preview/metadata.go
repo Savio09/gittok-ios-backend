@@ -26,6 +26,7 @@ func FromMetadata(r githubclient.Repo) apimodel.RepoPreview {
 	}
 	return apimodel.RepoPreview{
 		ID:                 r.FullName,
+		GitHubID:           r.ID,
 		Owner:              r.Owner,
 		Name:               r.Name,
 		Slug:               r.FullName,
