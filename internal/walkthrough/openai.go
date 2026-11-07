@@ -384,7 +384,8 @@ func draftSchema() any {
 	// Official Structured Outputs supports numeric bounds and array maxItems:
 	// https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses
 	citation := schemaObject(map[string]any{"file_id": schemaString(), "start_line": schemaInteger(), "line_count": schemaCount(10)})
-	statement := schemaObject(map[string]any{"id": schemaString(), "kind": schemaEnum("purpose", "action", "mechanism", "result", "design", "handoff"), "text": schemaString(), "sources": schemaArray(citation, maxSources), "limit": schemaString()})
+	visual := schemaObject(map[string]any{"kind": schemaEnum("concept", "terminal", "flow", "comparison", "source"), "title": map[string]any{"type": "string", "maxLength": 56}, "lines": schemaArray(map[string]any{"type": "string", "maxLength": 80}, 4), "focus": map[string]any{"type": "integer", "minimum": 0, "maximum": 6}, "cue": map[string]any{"type": "string", "maxLength": 40}})
+	statement := schemaObject(map[string]any{"id": schemaString(), "kind": schemaEnum("purpose", "action", "mechanism", "result", "design", "handoff"), "text": schemaString(), "sources": schemaArray(citation, maxSources), "limit": schemaString(), "visual": visual})
 	scene := schemaObject(map[string]any{"id": schemaString(), "role": schemaEnum("purpose", "workflow", "design", "handoff"), "statement_ids": schemaArray(schemaString(), maxStatements)})
 	return schemaObject(map[string]any{"statements": schemaArray(statement, maxStatements), "scenes": schemaArray(scene, maxScenes)})
 }

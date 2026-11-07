@@ -156,8 +156,13 @@ func TestEngineGeneralizesSourceOnlyContractAcrossRepositoryShapes(t *testing.T)
 						draft.Scenes = []Scene{{ID: "intro", Role: "purpose", StatementIDs: []string{"purpose"}}, {ID: "flow", Role: "workflow", StatementIDs: []string{"action", "mechanism", "result"}}}
 					}
 					if fixture.pages == 3 {
-						draft.Statements = append(draft.Statements, Statement{ID: "next", Kind: "handoff", Text: "Start investigating " + fixture.path + " at the cited entry.", Sources: []Citation{citation(2)}})
-						draft.Scenes = append(draft.Scenes, Scene{ID: "next", Role: "handoff", StatementIDs: []string{"next"}})
+						draft.Statements = append(draft.Statements, Statement{ID: "detail", Kind: "design", Text: "The cited entry describes the input boundary.", Sources: []Citation{citation(2)}})
+						draft.Scenes = append(draft.Scenes, Scene{ID: "detail", Role: "design", StatementIDs: []string{"detail"}})
+					}
+					draft.Statements = append(draft.Statements, Statement{ID: "next", Kind: "handoff", Text: "Start investigating " + fixture.path + " at the cited entry.", Sources: []Citation{citation(2)}})
+					draft.Scenes = append(draft.Scenes, Scene{ID: "next", Role: "handoff", StatementIDs: []string{"next"}})
+					for i := range draft.Statements {
+						draft.Statements[i].Visual = &apimodel.StoryVisual{Kind: "source", Lines: []string{}, Cue: strings.Fields(draft.Statements[i].Text)[0]}
 					}
 					if mode == "missing-premise" {
 						draft.Statements[2].Sources = nil
@@ -186,7 +191,7 @@ func TestEngineGeneralizesSourceOnlyContractAcrossRepositoryShapes(t *testing.T)
 				if fixture.shape == "mixed" {
 					expectedCalls++
 				}
-				if err != nil || len(accepted.Sections()) != fixture.pages || reviews != 1 || calls != expectedCalls || !inv.Snapshot().Complete {
+				if err != nil || len(accepted.Sections()) != fixture.pages+1 || reviews != 1 || calls != expectedCalls || !inv.Snapshot().Complete {
 					t.Fatalf("same pipeline rejected repository shape: %v pages=%d reviews=%d", err, len(accepted.Sections()), reviews)
 				}
 				for _, section := range accepted.Sections() {
