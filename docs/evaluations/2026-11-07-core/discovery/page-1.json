@@ -1,0 +1,1181 @@
+{
+  "items": [
+    {
+      "id": "Gathin23/cleanyourtv",
+      "github_id": 1423101235,
+      "owner": "Gathin23",
+      "name": "cleanyourtv",
+      "slug": "Gathin23/cleanyourtv",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Python",
+      "description": "Debloat any Android or Google TV over Wi-Fi and get an Apple TV-style home.",
+      "github_url": "https://github.com/Gathin23/cleanyourtv",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "53.6k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "wheresryan22/anatomy",
+      "github_id": 1410124849,
+      "owner": "wheresryan22",
+      "name": "anatomy",
+      "slug": "wheresryan22/anatomy",
+      "kind": "frontend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "JavaScript",
+      "description": "An agent skill for creating detailed, interactive isometric illustrations of real-world machines and complex systems. Generates polished SVGs with optional WebGL shaders and 3D effects.",
+      "github_url": "https://github.com/wheresryan22/anatomy",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "25.7k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "2w",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "deepseek-ai/DeepInfer",
+      "github_id": 1421825221,
+      "owner": "deepseek-ai",
+      "name": "DeepInfer",
+      "slug": "deepseek-ai/DeepInfer",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Python",
+      "description": "DeepInfer: High-performance, large-scale inference framework for DeepSeek models",
+      "github_url": "https://github.com/deepseek-ai/DeepInfer",
+      "license": "Apache-2.0",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "25.6k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "4d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "Apache-2.0",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "deepseek-ai/dsh-superagent-prototype",
+      "github_id": 1440705679,
+      "owner": "deepseek-ai",
+      "name": "dsh-superagent-prototype",
+      "slug": "deepseek-ai/dsh-superagent-prototype",
+      "kind": "frontend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "TypeScript",
+      "description": "Towards a More Autonomous Agent System",
+      "github_url": "https://github.com/deepseek-ai/dsh-superagent-prototype",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "20.6k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "4d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "storytold/craft-anything",
+      "github_id": 1440956372,
+      "owner": "storytold",
+      "name": "craft-anything",
+      "slug": "storytold/craft-anything",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Rust",
+      "description": "Craft Anything: understand how any software works, and craft your own.",
+      "github_url": "https://github.com/storytold/craft-anything",
+      "license": "Apache-2.0",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "19.6k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "Apache-2.0",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "Zagitta/gpu-unlock",
+      "github_id": 1423892373,
+      "owner": "Zagitta",
+      "name": "gpu-unlock",
+      "slug": "Zagitta/gpu-unlock",
+      "kind": "other",
+      "kind_evidence_status": "unknown",
+      "evidence_mode": "not_executed",
+      "language": "C",
+      "description": "Your GeForce runs AI at half speed. This fixes it for 20/30/40 series cards. Up to 2\u00d7 FP16 / BF16 / TF32 tensor throughput",
+      "github_url": "https://github.com/Zagitta/gpu-unlock",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "17.7k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "9d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "ccch1mneyyy/dsh-Go",
+      "github_id": 1432967563,
+      "owner": "ccch1mneyyy",
+      "name": "dsh-Go",
+      "slug": "ccch1mneyyy/dsh-Go",
+      "kind": "cli",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Dart",
+      "description": "dsh-go \u2014 DeepSeek Harness \u88c5\u8fdb\u53e3\u888b\uff1a\u624b\u673a\u672c\u673a\u8fd0\u884c\uff0c\u4e5f\u80fd\u9065\u63a7\u4f60\u7684\u7535\u8111\u3002",
+      "github_url": "https://github.com/ccch1mneyyy/dsh-Go",
+      "license": "AGPL-3.0",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "13.7k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "AGPL-3.0",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "seedds/nxnative",
+      "github_id": 1416502082,
+      "owner": "seedds",
+      "name": "nxnative",
+      "slug": "seedds/nxnative",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Python",
+      "description": "Switch games running natively on iPhone, iPad and Mac: an NSP folder becomes an unsigned IPA (NSO rewriter, Horizon HLE host, NVN\u2192Metal)",
+      "github_url": "https://github.com/seedds/nxnative",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "13.2k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "heydamir/unslop",
+      "github_id": 1438623288,
+      "owner": "heydamir",
+      "name": "unslop",
+      "slug": "heydamir/unslop",
+      "kind": "frontend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "JavaScript",
+      "description": "A Claude skill that turns vibecoded, AI-looking UI into a designed interface",
+      "github_url": "https://github.com/heydamir/unslop",
+      "license": "CC-BY-4.0",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "11.1k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "5d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "CC-BY-4.0",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "pengchujin/aerial-tv",
+      "github_id": 1426780056,
+      "owner": "pengchujin",
+      "name": "aerial-tv",
+      "slug": "pengchujin/aerial-tv",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Kotlin",
+      "description": "\u7ed9\u56fd\u4ea7\u7535\u89c6\u7684\u4e00\u5757\u5e72\u51c0\u684c\u9762\uff1a\u53c2\u7167 tvOS \u8bbe\u8ba1\u7684\u5f00\u6e90 Android TV \u684c\u9762\uff0c\u6ca1\u6709\u5e7f\u544a\uff0c\u5f00\u673a\u81ea\u52a8\u63a5\u7ba1\u3002A tvOS-style launcher for Xiaomi, TCL and other China-market TVs.",
+      "github_url": "https://github.com/pengchujin/aerial-tv",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "10.5k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "1d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "l0ng-ai/openidea",
+      "github_id": 1428347546,
+      "owner": "l0ng-ai",
+      "name": "openidea",
+      "slug": "l0ng-ai/openidea",
+      "kind": "cli",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "TypeScript",
+      "description": "The IDE you know, rebuilt in Rust. IntelliJ IDEA\u2013style keymap, tool windows and search-everywhere in a fast native app: editor, code insight, debugger, Git, terminal, database and HTTP clients for 60+ languages.",
+      "github_url": "https://github.com/l0ng-ai/openidea",
+      "license": "Apache-2.0",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "7.6k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "Apache-2.0",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "HeyPuter/everything",
+      "github_id": 1417456983,
+      "owner": "HeyPuter",
+      "name": "everything",
+      "slug": "HeyPuter/everything",
+      "kind": "frontend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "JavaScript",
+      "description": "We're rebuilding and open-sourcing the world\u2019s software from scratch.",
+      "github_url": "https://github.com/HeyPuter/everything",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "7.5k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "wangzan101/Mika",
+      "github_id": 1438540053,
+      "owner": "wangzan101",
+      "name": "Mika",
+      "slug": "wangzan101/Mika",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Kotlin",
+      "description": "An on-device AI agent for Android that operates apps and the web to get things done for you.",
+      "github_url": "https://github.com/wangzan101/Mika",
+      "license": "Apache-2.0",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "7.5k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "Apache-2.0",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "ly05010419/MacNativeGames",
+      "github_id": 1423689866,
+      "owner": "ly05010419",
+      "name": "MacNativeGames",
+      "slug": "ly05010419/MacNativeGames",
+      "kind": "other",
+      "kind_evidence_status": "unknown",
+      "evidence_mode": "not_executed",
+      "language": "C",
+      "description": "Play your own Tears of the Kingdom and Breath of the Wild natively on Apple silicon Mac, iPhone and iPad. Not an emulator: the game's ARM64 code runs directly, NVN rebuilt on Metal. Bring your own game.",
+      "github_url": "https://github.com/ly05010419/MacNativeGames",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "7.2k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "1d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "unclebob/ub-mode",
+      "github_id": 1433377156,
+      "owner": "unclebob",
+      "name": "ub-mode",
+      "slug": "unclebob/ub-mode",
+      "kind": "other",
+      "kind_evidence_status": "unknown",
+      "evidence_mode": "not_executed",
+      "description": "",
+      "github_url": "https://github.com/unclebob/ub-mode",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "7.2k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "4d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "xiaoyang111222/cn-math-taxonomy",
+      "github_id": 1424183124,
+      "owner": "xiaoyang111222",
+      "name": "cn-math-taxonomy",
+      "slug": "xiaoyang111222/cn-math-taxonomy",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Python",
+      "description": "\u6570\u5b66\uff08\u5c0f\u5b66\u5230\u9ad8\u4e2d\uff09\u3001\u82f1\u8bed\uff08\u4e09\u5e74\u7ea7\u5230\u9ad8\u4e2d\uff09\u3001\u521d\u4e2d\u7269\u7406\u7684\u77e5\u8bc6\u56fe\u8c31\uff1a1644 \u4e2a\u77e5\u8bc6\u70b9\u30012403 \u6761\u5148\u4fee\u8fb9\u30016723 \u9053\u9898\uff0c\u5bf9\u9f50\u8bfe\u6807\uff0c\u9644\u81ea\u9002\u5e94\u524d\u7f6e\u8bca\u65ad\u3002",
+      "github_url": "https://github.com/xiaoyang111222/cn-math-taxonomy",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "7k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "rddmwmddr/android-ad-cleaner",
+      "github_id": 1431851693,
+      "owner": "rddmwmddr",
+      "name": "android-ad-cleaner",
+      "slug": "rddmwmddr/android-ad-cleaner",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Python",
+      "description": "\u5173\u6389\u56fd\u4ea7\u5b89\u5353\u624b\u673a\u7cfb\u7edf\u91cc\u7684\u5e7f\u544a\u3001\u70ed\u641c\u3001\u8d44\u8baf\u63a8\u8350\u548c\u8425\u9500\u63a8\u9001\u3002\u4e0d root\uff0c\u53ef\u8fd8\u539f\uff0c\u652f\u6301 AI \u667a\u80fd\u4f53\u4e00\u952e\u6267\u884c\u3002",
+      "github_url": "https://github.com/rddmwmddr/android-ad-cleaner",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "6.9k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "anhao/ai-pose-gallery-zh",
+      "github_id": 1435695423,
+      "owner": "anhao",
+      "name": "ai-pose-gallery-zh",
+      "slug": "anhao/ai-pose-gallery-zh",
+      "kind": "frontend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "TypeScript",
+      "description": "\u4e2d\u6587\u7248 AI \u59ff\u52bf\u53c2\u8003\u56fe\u5e93 \u00b7 1439 \u7ec4 / 2878 \u5f20\u56fe\u7247 / \u5b8c\u6574\u6c49\u5316 \u00b7 \u96f6\u4f9d\u8d56\u9759\u6001\u753b\u5eca",
+      "github_url": "https://github.com/anhao/ai-pose-gallery-zh",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "6.3k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "3d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "ARahim3/DigUp",
+      "github_id": 1410929004,
+      "owner": "ARahim3",
+      "name": "DigUp",
+      "slug": "ARahim3/DigUp",
+      "kind": "other",
+      "kind_evidence_status": "unknown",
+      "evidence_mode": "not_executed",
+      "language": "Swift",
+      "description": "Search your computer by what's in your files: photos, PDFs, documents, recordings, videos and code. On-device on Mac, Windows and Linux, built on Google DeepMind's EmbeddingGemma 2.",
+      "github_url": "https://github.com/ARahim3/DigUp",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "6.3k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "11d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "simbasjungles/free-my-tv",
+      "github_id": 1426080579,
+      "owner": "simbasjungles",
+      "name": "free-my-tv",
+      "slug": "simbasjungles/free-my-tv",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Java",
+      "description": "A fast, ad-free home screen for Google TV, LG webOS and Samsung Tizen. One button to undo.",
+      "github_url": "https://github.com/simbasjungles/free-my-tv",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "6k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "amosblomqvist/learnharness",
+      "github_id": 1422597771,
+      "owner": "amosblomqvist",
+      "name": "learnharness",
+      "slug": "amosblomqvist/learnharness",
+      "kind": "frontend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "TypeScript",
+      "description": "Agent harness for learning difficult things.",
+      "github_url": "https://github.com/amosblomqvist/learnharness",
+      "license": "AGPL-3.0",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "6k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "AGPL-3.0",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "Jakeschincariol/day-trader-skill",
+      "github_id": 1427126014,
+      "owner": "Jakeschincariol",
+      "name": "day-trader-skill",
+      "slug": "Jakeschincariol/day-trader-skill",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Python",
+      "description": "11 Claude skills for day trading: scan thousands of charts, track breaking news, time every entry and exit, and replay every outcome before you risk a dollar.",
+      "github_url": "https://github.com/Jakeschincariol/day-trader-skill",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "5.9k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "2w",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "patch-gg/pixelfx",
+      "github_id": 1439372976,
+      "owner": "patch-gg",
+      "name": "pixelfx",
+      "slug": "patch-gg/pixelfx",
+      "kind": "frontend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "JavaScript",
+      "description": "244 pixel art effects, every one a small piece of code. Plus a Claude Code skill to make your own.",
+      "github_url": "https://github.com/patch-gg/pixelfx",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "5.7k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "7d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "valentderah/totk-pc-recomp",
+      "github_id": 1438394948,
+      "owner": "valentderah",
+      "name": "totk-pc-recomp",
+      "slug": "valentderah/totk-pc-recomp",
+      "kind": "other",
+      "kind_evidence_status": "unknown",
+      "evidence_mode": "not_executed",
+      "language": "C",
+      "description": "Static recompilation of The Legend of Zelda: Tears of the Kingdom to native Windows and Linux x86-64, with a Vulkan renderer. Game files not included.",
+      "github_url": "https://github.com/valentderah/totk-pc-recomp",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "5.6k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "T-Auto/dsh-ops",
+      "github_id": 1409893258,
+      "owner": "T-Auto",
+      "name": "dsh-ops",
+      "slug": "T-Auto/dsh-ops",
+      "kind": "frontend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "JavaScript",
+      "description": "A toolkit for low-level operations in DSH, designed to reduce token usage and task execution time / DSH \u5e95\u5c42\u64cd\u4f5c\u5de5\u5177\u63d2\u4ef6\uff0c\u65e8\u5728\u51cf\u5c11 Token \u6d88\u8017\u4e0e\u4efb\u52a1\u8017\u65f6",
+      "github_url": "https://github.com/T-Auto/dsh-ops",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "5.5k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    }
+  ],
+  "next_cursor": "eyJ2ZXJzaW9uIjoxLCJkYXRlIjoiMjAyNi0xMS0wNyIsInBhZ2UiOjJ9"
+}

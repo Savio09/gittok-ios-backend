@@ -1,0 +1,436 @@
+{
+  "http_status": 200,
+  "elapsed_seconds": 39.03,
+  "job": {
+    "id": "b62a9e384c6249a98f9aebf8bdca570e",
+    "state": "ready",
+    "poll_after_ms": 0,
+    "preview": {
+      "presentation": "walkthrough",
+      "id": "pocketbase/pocketbase",
+      "owner": "pocketbase",
+      "name": "pocketbase",
+      "slug": "pocketbase/pocketbase",
+      "kind": "other",
+      "kind_evidence_status": "unknown",
+      "evidence_mode": "not_executed",
+      "language": "Go",
+      "description": "PocketBase is a backend for applications: its README describes a built-in database, file and user management, an admin dashboard, and a web API.\n\nOne practical use is letting an application retrieve stored records from a collection and receive a JSON response.",
+      "github_url": "https://github.com/pocketbase/pocketbase",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "61605",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count",
+            "url": "https://api.github.com/repos/pocketbase/pocketbase"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id",
+            "url": "https://api.github.com/repos/pocketbase/pocketbase"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_push",
+          "label": "last push reported by GitHub",
+          "value": "2026-10-26T18:07:11Z",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at",
+            "url": "https://api.github.com/repos/pocketbase/pocketbase"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ],
+      "sections": [
+        {
+          "id": "scene-v1-efa12259b24ee9f3a766905f91e4b1142cf024f552b80ba52e89bb5302663eb7",
+          "kind": "idea",
+          "title": "What it does",
+          "body": "PocketBase is a backend for applications: its README describes a built-in database, file and user management, an admin dashboard, and a web API.\n\nOne practical use is letting an application retrieve stored records from a collection and receive a JSON response.",
+          "claims": [
+            {
+              "id": "statement-v1-8eeebc0c98fe0897d7404609de760e5f1e2a55faf9aa72cefe377210d37c99a8",
+              "visual": {
+                "kind": "concept",
+                "title": "PocketBase",
+                "lines": [
+                  "Database + users + files",
+                  "Dashboard + web API"
+                ],
+                "focus": 0,
+                "cue": "backend"
+              },
+              "label": "Purpose",
+              "source": {
+                "kind": "file",
+                "ref": "README.md",
+                "lines": "17-22",
+                "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/README.md#L17-L22"
+              },
+              "excerpt": "[PocketBase](https://pocketbase.io) is an open source Go backend that includes:\n\n- embedded database (_SQLite_) with **realtime subscriptions**\n- built-in **files and users management**\n- convenient **Admin dashboard UI**\n- and simple **REST-ish API**\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "PocketBase is a backend for applications: its README describes a built-in database, file and user management, an admin dashboard, and a web API.",
+              "limit": "Product capabilities are attributed to the README, not independently demonstrated. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-d9294d7e49d6d0eb4de395066031f9a90a0096f8e98f163e8dc401c6d43fc7e8",
+              "visual": {
+                "kind": "flow",
+                "title": "Read application data",
+                "lines": [
+                  "Application requests collection records",
+                  "Server returns JSON"
+                ],
+                "focus": 0,
+                "cue": "retrieve"
+              },
+              "label": "Purpose",
+              "source": {
+                "kind": "file",
+                "ref": "apis/record_crud.go",
+                "lines": "27-32",
+                "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/apis/record_crud.go#L27-L32"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "apis/record_crud.go",
+                  "lines": "87-89",
+                  "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/apis/record_crud.go#L87-L89"
+                },
+                {
+                  "kind": "file",
+                  "ref": "apis/record_crud.go",
+                  "lines": "124-126",
+                  "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/apis/record_crud.go#L124-L126"
+                }
+              ],
+              "excerpt": "func bindRecordCrudApi(app core.App, rg *router.RouterGroup[*core.RequestEvent]) {\n\tsubGroup := rg.Group(\"/collections/{collection}/records\").Unbind(DefaultRateLimitMiddlewareId)\n\tsubGroup.GET(\"\", recordsList)\n\tsubGroup.GET(\"/{id}\", recordView)\n\tsubGroup.POST(\"\", recordCreate(true, nil)).Bind(dynamicCollectionBodyLimit(\"\"))\n\tsubGroup.PATCH(\"/{id}\", recordUpdate(true, nil)).Bind(dynamicCollectionBodyLimit(\"\"))\n\n\n\trecords := []*core.Record{}\n\tresult, err := searchProvider.ParseAndExec(e.Request.URL.Query().Encode(), &records)\n\tif err != nil {\n\n\n\t\treturn execAfterSuccessTx(true, e.App, func() error {\n\t\t\treturn e.JSON(http.StatusOK, e.Result)\n\t\t})\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "One practical use is letting an application retrieve stored records from a collection and receive a JSON response.",
+              "limit": "Representative use inferred from the inspected record-list endpoint; no application or dataset was run. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "storyboard": {
+            "version": 1,
+            "beats": [
+              {
+                "id": "beat-v1-ce072ad0e2ccaf167c3f94ad66b693df7e79d9085d370be1087fd4722081a6fe",
+                "claim_id": "statement-v1-8eeebc0c98fe0897d7404609de760e5f1e2a55faf9aa72cefe377210d37c99a8"
+              },
+              {
+                "id": "beat-v1-e73f934c7edd503378a32a51772ce3535b60f3126934c3b9ea9023b7b535f1dd",
+                "claim_id": "statement-v1-d9294d7e49d6d0eb4de395066031f9a90a0096f8e98f163e8dc401c6d43fc7e8"
+              }
+            ]
+          },
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-4643b4a68324f02066e72db8d9c9cd83fd2122415a06fea9dd71ef584e48aebf",
+          "kind": "how",
+          "title": "How it works",
+          "body": "For example, suppose a tasks collection already exists. Ask to list its records.\n\nFor this example, assume its list rule allows public access and the request passes the rate limit.\n\nThe server builds a record query, then its search component processes the request's query options and fetches records.\n\nBefore responding, it passes those records through a response-preparation step.\n\nOn success, the application receives the list result as JSON with HTTP status 200.",
+          "claims": [
+            {
+              "id": "statement-v1-c86fc7b6af6d8f65e66b974abe118dcce0b70e00fe19e927e680b03930f95071",
+              "visual": {
+                "kind": "terminal",
+                "title": "Illustrative relative request",
+                "lines": [
+                  "GET /collections/tasks/records"
+                ],
+                "focus": 1,
+                "cue": "tasks"
+              },
+              "label": "Input",
+              "source": {
+                "kind": "file",
+                "ref": "apis/record_crud.go",
+                "lines": "27-29",
+                "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/apis/record_crud.go#L27-L29"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "apis/record_crud.go",
+                  "lines": "36-39",
+                  "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/apis/record_crud.go#L36-L39"
+                }
+              ],
+              "excerpt": "func bindRecordCrudApi(app core.App, rg *router.RouterGroup[*core.RequestEvent]) {\n\tsubGroup := rg.Group(\"/collections/{collection}/records\").Unbind(DefaultRateLimitMiddlewareId)\n\tsubGroup.GET(\"\", recordsList)\n\n\nfunc recordsList(e *core.RequestEvent) error {\n\tcollection, err := e.App.FindCachedCollectionByNameOrId(e.Request.PathValue(\"collection\"))\n\tif err != nil || collection == nil {\n\t\treturn e.NotFoundError(\"Missing collection context.\", err)\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "For example, suppose a tasks collection already exists. Ask to list its records.",
+              "limit": "Illustrative request uses the inspected relative route; assumes an existing collection named tasks, a permitted request, and successful processing. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-e381ee26a0eede31a6f855602836e3560cedd7cade4651c925f8efcf6f574d9e",
+              "visual": {
+                "kind": "concept",
+                "title": "Successful-path conditions",
+                "lines": [
+                  "Existing tasks collection",
+                  "Public list rule: empty, not null",
+                  "Within rate limit"
+                ],
+                "focus": 0,
+                "cue": "public access"
+              },
+              "label": "Input",
+              "source": {
+                "kind": "file",
+                "ref": "apis/record_crud.go",
+                "lines": "42-50",
+                "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/apis/record_crud.go#L42-L50"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "apis/record_crud.go",
+                  "lines": "52-54",
+                  "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/apis/record_crud.go#L52-L54"
+                },
+                {
+                  "kind": "file",
+                  "ref": "apis/record_crud.go",
+                  "lines": "66-71",
+                  "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/apis/record_crud.go#L66-L71"
+                }
+              ],
+              "excerpt": "\terr = checkCollectionRateLimit(e, collection, \"list\")\n\tif err != nil {\n\t\treturn err\n\t}\n\n\trequestInfo, err := e.RequestInfo()\n\tif err != nil {\n\t\treturn firstApiError(err, e.BadRequestError(\"\", err))\n\t}\n\n\n\tif collection.ListRule == nil && !requestInfo.HasSuperuserAuth() {\n\t\treturn e.ForbiddenError(\"Only superusers can perform this action.\", nil)\n\t}\n\n\n\tif !requestInfo.HasSuperuserAuth() && collection.ListRule != nil && *collection.ListRule != \"\" {\n\t\texpr, err := search.FilterData(*collection.ListRule).BuildExpr(fieldsResolver)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tquery.AndWhere(expr)\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "For this example, assume its list rule allows public access and the request passes the rate limit.",
+              "limit": "Selected successful path assumes collection lookup, rate-limit check, and request-info construction succeed; an empty non-nil list rule permits proceeding without superuser authentication. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-3661a5b69b7bb7f47f19610659c239838d646674f8905be864b037b4094887ba",
+              "visual": {
+                "kind": "flow",
+                "title": "Request to records",
+                "lines": [
+                  "RecordQuery(collection)",
+                  "search.NewProvider(...).Query(query)",
+                  "ParseAndExec(..., &records)"
+                ],
+                "focus": 0,
+                "cue": "builds"
+              },
+              "label": "Mechanism",
+              "source": {
+                "kind": "file",
+                "ref": "apis/record_crud.go",
+                "lines": "62-64",
+                "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/apis/record_crud.go#L62-L64"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "apis/record_crud.go",
+                  "lines": "80-88",
+                  "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/apis/record_crud.go#L80-L88"
+                }
+              ],
+              "excerpt": "\tquery := e.App.RecordQuery(collection)\n\n\tfieldsResolver := core.NewRecordFieldResolver(e.App, collection, requestInfo, true)\n\n\n\tsearchProvider := search.NewProvider(fieldsResolver).Query(query)\n\n\t// use rowid when available to minimize the need of a covering index with the \"id\" field\n\tif !collection.IsView() {\n\t\tsearchProvider.CountCol(\"_rowid_\")\n\t}\n\n\trecords := []*core.Record{}\n\tresult, err := searchProvider.ParseAndExec(e.Request.URL.Query().Encode(), &records)\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "The server builds a record query, then its search component processes the request's query options and fetches records.",
+              "limit": "Describes the inspected handler, not independently inspected database execution internals. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-1354a3610529afa7bf211205f714642a8deae7a9f95b2588ffb6c61ee24c2f29",
+              "visual": {
+                "kind": "flow",
+                "title": "Prepare returned records",
+                "lines": [
+                  "RecordsListRequestEvent",
+                  "EnrichRecords(e.RequestEvent, e.Records)"
+                ],
+                "focus": 0,
+                "cue": "Before responding"
+              },
+              "label": "Mechanism",
+              "source": {
+                "kind": "file",
+                "ref": "apis/record_crud.go",
+                "lines": "93-102",
+                "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/apis/record_crud.go#L93-L102"
+              },
+              "excerpt": "\tevent := new(core.RecordsListRequestEvent)\n\tevent.RequestEvent = e\n\tevent.Collection = collection\n\tevent.Records = records\n\tevent.Result = result\n\n\treturn e.App.OnRecordsListRequest().Trigger(event, func(e *core.RecordsListRequestEvent) error {\n\t\tif err := EnrichRecords(e.RequestEvent, e.Records); err != nil {\n\t\t\treturn firstApiError(err, e.InternalServerError(\"Failed to enrich records\", err))\n\t\t}\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Before responding, it passes those records through a response-preparation step.",
+              "limit": "Only establishes the call to response preparation; does not claim specific transformations inside EnrichRecords. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-09ed0db7067e6b99d9db67f781399b13365e4e0a22586ed03957c68c867b5cf8",
+              "visual": {
+                "kind": "concept",
+                "title": "Useful outcome",
+                "lines": [
+                  "200 OK \u2014 JSON list result"
+                ],
+                "focus": 1,
+                "cue": "status 200"
+              },
+              "label": "Result",
+              "source": {
+                "kind": "file",
+                "ref": "apis/record_crud.go",
+                "lines": "124-126",
+                "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/apis/record_crud.go#L124-L126"
+              },
+              "excerpt": "\t\treturn execAfterSuccessTx(true, e.App, func() error {\n\t\t\treturn e.JSON(http.StatusOK, e.Result)\n\t\t})\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "On success, the application receives the list result as JSON with HTTP status 200.",
+              "limit": "Successful source path, not observed output; no particular task records or response schema are claimed. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "storyboard": {
+            "version": 1,
+            "beats": [
+              {
+                "id": "beat-v1-2109a2997a984cca2e4bf66045edd894d9bf19f7296ce562a6e5f8614a2ae950",
+                "claim_id": "statement-v1-c86fc7b6af6d8f65e66b974abe118dcce0b70e00fe19e927e680b03930f95071"
+              },
+              {
+                "id": "beat-v1-65c270a54f8a6c22beec7e83bc96b74676e46fcbc9f98dbbc1ef5eeff1333ef2",
+                "claim_id": "statement-v1-e381ee26a0eede31a6f855602836e3560cedd7cade4651c925f8efcf6f574d9e"
+              },
+              {
+                "id": "beat-v1-ec73be59f9f79303952d688365ccdb1545a37bb356bd4d9355b6b130230129a8",
+                "claim_id": "statement-v1-3661a5b69b7bb7f47f19610659c239838d646674f8905be864b037b4094887ba"
+              },
+              {
+                "id": "beat-v1-f5b6109b38e20784020d86ce980c983f489d66b9fb852312ccd04011292c0c33",
+                "claim_id": "statement-v1-1354a3610529afa7bf211205f714642a8deae7a9f95b2588ffb6c61ee24c2f29"
+              },
+              {
+                "id": "beat-v1-c61fb41543a5f2a877e448b1c992dfaa85e925c80b96b65a118bc628b0e392cc",
+                "claim_id": "statement-v1-09ed0db7067e6b99d9db67f781399b13365e4e0a22586ed03957c68c867b5cf8"
+              }
+            ]
+          },
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-ca45bba5af0dcd5c9a762fc8c91e4c1ba4a4ce803f26cc14d01f69efd724eb96",
+          "kind": "stack",
+          "title": "A closer look",
+          "body": "A useful design idea: for ordinary users, a nonempty list rule becomes a query condition, restricting which records are returned.",
+          "claims": [
+            {
+              "id": "statement-v1-26e3497e4ca354ab01b4b184fe29667a5fe96adcc84a32c2267ad65df537b95d",
+              "visual": {
+                "kind": "flow",
+                "title": "Access rules also filter records",
+                "lines": [
+                  "Nonempty collection.ListRule",
+                  "BuildExpr(fieldsResolver)",
+                  "query.AndWhere(expr)"
+                ],
+                "focus": 0,
+                "cue": "query condition"
+              },
+              "label": "Design",
+              "source": {
+                "kind": "file",
+                "ref": "apis/record_crud.go",
+                "lines": "66-71",
+                "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/apis/record_crud.go#L66-L71"
+              },
+              "excerpt": "\tif !requestInfo.HasSuperuserAuth() && collection.ListRule != nil && *collection.ListRule != \"\" {\n\t\texpr, err := search.FilterData(*collection.ListRule).BuildExpr(fieldsResolver)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tquery.AndWhere(expr)\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "A useful design idea: for ordinary users, a nonempty list rule becomes a query condition, restricting which records are returned.",
+              "limit": "Describes non-superuser requests with a nonempty list rule; does not imply the example's empty rule adds a filter. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "storyboard": {
+            "version": 1,
+            "beats": [
+              {
+                "id": "beat-v1-a255ac220387a511209e947d7d62567d40dbdb2135b002cb97559053989693b7",
+                "claim_id": "statement-v1-26e3497e4ca354ab01b4b184fe29667a5fe96adcc84a32c2267ad65df537b95d"
+              }
+            ]
+          },
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-e9bfd40883c160129667194c68ba26b54efa9313451379900187d83389880452",
+          "kind": "handoff",
+          "title": "Where to look next",
+          "body": "Next, investigate the response-preparation call to understand what happens to records between retrieval and JSON delivery.",
+          "claims": [
+            {
+              "id": "statement-v1-11d43ab5d5827613c956d5375dc66b5c42388fd15fb379b2845345570b56bfaf",
+              "visual": {
+                "kind": "source",
+                "title": "apis/record_crud.go",
+                "lines": [
+                  "\treturn e.App.OnRecordsListRequest().Trigger(event, func(e *core.RecordsListRequestEvent) error {",
+                  "\t\tif err := EnrichRecords(e.RequestEvent, e.Records); err != nil {",
+                  "\t\t\treturn firstApiError(err, e.InternalServerError(\"Failed to enrich records\", err))",
+                  "\t\t}"
+                ],
+                "focus": 0,
+                "cue": "Next"
+              },
+              "label": "Next step",
+              "source": {
+                "kind": "file",
+                "ref": "apis/record_crud.go",
+                "lines": "99-102",
+                "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/apis/record_crud.go#L99-L102"
+              },
+              "excerpt": "\treturn e.App.OnRecordsListRequest().Trigger(event, func(e *core.RecordsListRequestEvent) error {\n\t\tif err := EnrichRecords(e.RequestEvent, e.Records); err != nil {\n\t\t\treturn firstApiError(err, e.InternalServerError(\"Failed to enrich records\", err))\n\t\t}\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Next, investigate the response-preparation call to understand what happens to records between retrieval and JSON delivery.",
+              "limit": "Suggested next reading follows a visible call site; the helper implementation was not inspected. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "storyboard": {
+            "version": 1,
+            "beats": [
+              {
+                "id": "beat-v1-f56a8eb3b1143c39fba8db42bb4cc1a2e8bd09e70e8d781d76f9e27f860f78cc",
+                "claim_id": "statement-v1-11d43ab5d5827613c956d5375dc66b5c42388fd15fb379b2845345570b56bfaf"
+              }
+            ]
+          },
+          "evidence_mode": "not_executed"
+        }
+      ]
+    }
+  }
+}

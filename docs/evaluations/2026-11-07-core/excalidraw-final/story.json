@@ -1,0 +1,370 @@
+{
+  "job": {
+    "id": "0a7305f60fd4605b4134aa910c5989e0",
+    "state": "ready",
+    "poll_after_ms": 0,
+    "preview": {
+      "presentation": "walkthrough",
+      "id": "excalidraw/excalidraw",
+      "owner": "excalidraw",
+      "name": "excalidraw",
+      "slug": "excalidraw/excalidraw",
+      "kind": "other",
+      "kind_evidence_status": "unknown",
+      "evidence_mode": "not_executed",
+      "language": "TypeScript",
+      "description": "Excalidraw is an open-source, hand-drawn-style whiteboard: a place to sketch ideas visually, with collaboration and end-to-end encryption.",
+      "github_url": "https://github.com/excalidraw/excalidraw",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "135277",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count",
+            "url": "https://api.github.com/repos/excalidraw/excalidraw"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id",
+            "url": "https://api.github.com/repos/excalidraw/excalidraw"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_push",
+          "label": "last push reported by GitHub",
+          "value": "2026-11-07T07:35:37Z",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at",
+            "url": "https://api.github.com/repos/excalidraw/excalidraw"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ],
+      "sections": [
+        {
+          "id": "scene-v1-11ad168f476b44e634737c589c351a5579cba8856cab7adfbfa32fb118aa930e",
+          "kind": "idea",
+          "title": "What it does",
+          "body": "Excalidraw is an open-source, hand-drawn-style whiteboard: a place to sketch ideas visually, with collaboration and end-to-end encryption.",
+          "claims": [
+            {
+              "id": "statement-v1-0b10beee840bddc0e5e39b330f52b00b87ec4ebef773efe180b6f1feada62b0a",
+              "visual": {
+                "kind": "concept",
+                "title": "What Excalidraw is",
+                "lines": [
+                  "Hand-drawn-style whiteboard",
+                  "Sketch ideas visually"
+                ],
+                "focus": 1,
+                "cue": "whiteboard"
+              },
+              "label": "Purpose",
+              "source": {
+                "kind": "file",
+                "ref": "README.md",
+                "lines": "17-18",
+                "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/README.md#L17-L18"
+              },
+              "excerpt": "    An open source virtual hand-drawn style whiteboard. </br>\n    Collaborative and end-to-end encrypted. </br>\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Excalidraw is an open-source, hand-drawn-style whiteboard: a place to sketch ideas visually, with collaboration and end-to-end encryption.",
+              "limit": "README product description, not an observed session. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "storyboard": {
+            "version": 1,
+            "beats": [
+              {
+                "id": "beat-v1-196a806d759fbf0ec360da6420bf40d955d4bf9323020a077fb68a560f16f4bc",
+                "claim_id": "statement-v1-0b10beee840bddc0e5e39b330f52b00b87ec4ebef773efe180b6f1feada62b0a"
+              }
+            ]
+          },
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-641badcfce9239c0be8e9b9f56439e4df02905a8ee3f15c1410451c76aadac15",
+          "kind": "how",
+          "title": "How it works",
+          "body": "Take an existing drawing without image attachments and create a shareable link. The export function receives drawing elements, settings, and files.\n\nIt generates an encryption key, serializes the drawing as JSON, converts that text to bytes, and passes the key into compression.\n\nAssuming preparation and the request succeed, and the response parses with a truthy identifier, the posted payload can become a link.\n\nThe app places that identifier and key after the URL\u2019s hash sign.\n\nOnce the awaited file-save call also completes, the function returns the shareable URL with no error message.",
+          "claims": [
+            {
+              "id": "statement-v1-afd6867a7fded36bd67d3b95fd2dcca8c43f99c075398621a96cce9ac0a9f1a0",
+              "visual": {
+                "kind": "flow",
+                "title": "Task: share a drawing",
+                "lines": [
+                  "Existing drawing; no image attachments",
+                  "Export elements, settings, and files"
+                ],
+                "focus": 1,
+                "cue": "existing drawing"
+              },
+              "label": "Input",
+              "source": {
+                "kind": "file",
+                "ref": "excalidraw-app/data/index.ts",
+                "lines": "248-257",
+                "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L248-L257"
+              },
+              "excerpt": "export const exportToBackend = async (\n  elements: readonly ExcalidrawElement[],\n  appState: Partial<AppState>,\n  files: BinaryFiles,\n): Promise<ExportToBackendResult> => {\n  const encryptionKey = await generateEncryptionKey(\"string\");\n\n  const payload = await compressData(\n    new TextEncoder().encode(\n      serializeAsJSON(elements, appState, files, \"database\"),\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Take an existing drawing without image attachments and create a shareable link. The export function receives drawing elements, settings, and files.",
+              "limit": "Task described at the export function boundary; no UI entry point asserted. Source interpretation only; execution was not observed. Source components: excalidraw-app.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-bae0f6f2396de73cad18957187be1ada8595eb1109e167718c944884d4d09347",
+              "visual": {
+                "kind": "flow",
+                "title": "Prepare the drawing",
+                "lines": [
+                  "Generate key",
+                  "Drawing \u2192 JSON \u2192 bytes",
+                  "Compress with key"
+                ],
+                "focus": 0,
+                "cue": "encryption key"
+              },
+              "label": "Mechanism",
+              "source": {
+                "kind": "file",
+                "ref": "excalidraw-app/data/index.ts",
+                "lines": "253-260",
+                "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L253-L260"
+              },
+              "excerpt": "  const encryptionKey = await generateEncryptionKey(\"string\");\n\n  const payload = await compressData(\n    new TextEncoder().encode(\n      serializeAsJSON(elements, appState, files, \"database\"),\n    ),\n    { encryptionKey },\n  );\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "It generates an encryption key, serializes the drawing as JSON, converts that text to bytes, and passes the key into compression.",
+              "limit": "Caller operations only; helper internals not inspected. Source interpretation only; execution was not observed. Source components: excalidraw-app.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-12cf57d1635164225a90107682179a88873c09c2eee1c04fb5c9ac1efad8c848",
+              "visual": {
+                "kind": "flow",
+                "title": "Successful storage path",
+                "lines": [
+                  "Prepared payload",
+                  "POST payload.buffer",
+                  "Parsed response with truthy id"
+                ],
+                "focus": 2,
+                "cue": "posted payload"
+              },
+              "label": "Mechanism",
+              "source": {
+                "kind": "file",
+                "ref": "excalidraw-app/data/index.ts",
+                "lines": "276-281",
+                "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L276-L281"
+              },
+              "excerpt": "    const response = await fetch(BACKEND_V2_POST, {\n      method: \"POST\",\n      body: payload.buffer,\n    });\n    const json = await response.json();\n    if (json.id) {\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Assuming preparation and the request succeed, and the response parses with a truthy identifier, the posted payload can become a link.",
+              "limit": "Selected successful path requires preparation, request, and response parsing to succeed and a truthy response id. Source interpretation only; execution was not observed. Source components: excalidraw-app.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-225f694c30371096abfcce83553eb5f749b7903716470186ca329d97110a04b1",
+              "visual": {
+                "kind": "concept",
+                "title": "Build the sharing address",
+                "lines": [
+                  "#json=<id>,<encryptionKey>"
+                ],
+                "focus": 1,
+                "cue": "hash sign"
+              },
+              "label": "Mechanism",
+              "source": {
+                "kind": "file",
+                "ref": "excalidraw-app/data/index.ts",
+                "lines": "281-286",
+                "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L281-L286"
+              },
+              "excerpt": "    if (json.id) {\n      const url = new URL(window.location.href);\n      // We need to store the key (and less importantly the id) as hash instead\n      // of queryParam in order to never send it to the server\n      url.hash = `json=${json.id},${encryptionKey}`;\n      const urlString = url.toString();\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "The app places that identifier and key after the URL\u2019s hash sign.",
+              "limit": "URL construction is conditional on the response id. Source interpretation only; execution was not observed. Source components: excalidraw-app.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-26cc8aa9e704f4075db85b7bff498c54d9913a4f4f7dad1fb193f017ab325974",
+              "visual": {
+                "kind": "flow",
+                "title": "Useful result: a link to pass along",
+                "lines": [
+                  "File-save call completes",
+                  "Return URL; errorMessage: null"
+                ],
+                "focus": 2,
+                "cue": "shareable URL"
+              },
+              "label": "Result",
+              "source": {
+                "kind": "file",
+                "ref": "excalidraw-app/data/index.ts",
+                "lines": "288-293",
+                "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L288-L293"
+              },
+              "excerpt": "      await saveFilesToFirebase({\n        prefix: `/files/shareLinks/${json.id}`,\n        files: filesToUpload,\n      });\n\n      return { url: urlString, errorMessage: null };\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Once the awaited file-save call also completes, the function returns the shareable URL with no error message.",
+              "limit": "Successful return additionally requires the awaited file-save call to complete; no runtime success asserted. Source interpretation only; execution was not observed. Source components: excalidraw-app.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "storyboard": {
+            "version": 1,
+            "beats": [
+              {
+                "id": "beat-v1-1f5aea3eafc0900f00ef5f936ad9ca86f06982df4ccfbd4b00e49cc6cd261ffc",
+                "claim_id": "statement-v1-afd6867a7fded36bd67d3b95fd2dcca8c43f99c075398621a96cce9ac0a9f1a0"
+              },
+              {
+                "id": "beat-v1-ac2f0045e3fd7e3e7c232a5d66b798d8e75bdc7897b8dceb361a40a89a2f6dab",
+                "claim_id": "statement-v1-bae0f6f2396de73cad18957187be1ada8595eb1109e167718c944884d4d09347"
+              },
+              {
+                "id": "beat-v1-f623ebb224f3e967e293bb0b6ab9471458fa02a730c94c675ecefc75dad9ff8f",
+                "claim_id": "statement-v1-12cf57d1635164225a90107682179a88873c09c2eee1c04fb5c9ac1efad8c848"
+              },
+              {
+                "id": "beat-v1-943ef8a6bb9d1741c339c39c0e1fe34e023ec8b7808303379cf15cd0ed45b5b9",
+                "claim_id": "statement-v1-225f694c30371096abfcce83553eb5f749b7903716470186ca329d97110a04b1"
+              },
+              {
+                "id": "beat-v1-6e22f948e1e6292f9ec9ed25ced719cf616cf86d768fdc4b2c181719e53220e0",
+                "claim_id": "statement-v1-26cc8aa9e704f4075db85b7bff498c54d9913a4f4f7dad1fb193f017ab325974"
+              }
+            ]
+          },
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-86b8dfe04528b5b49632c0a6b404d592f2e108f2a66fcd824e90d0e5dfdad7f2",
+          "kind": "stack",
+          "title": "A closer look",
+          "body": "Using the fragment rather than a query parameter is deliberate: the comment says this keeps the key from being sent to the server.",
+          "claims": [
+            {
+              "id": "statement-v1-6438c6b6933333c94d3bb40b80da29a8bc02cf1d9b2bca7a22c9c0b5dc0ea491",
+              "visual": {
+                "kind": "source",
+                "title": "excalidraw-app/data/index.ts",
+                "lines": [
+                  "      const url = new URL(window.location.href);",
+                  "      // We need to store the key (and less importantly the id) as hash instead",
+                  "      // of queryParam in order to never send it to the server",
+                  "      url.hash = `json=${json.id},${encryptionKey}`;",
+                  "      const urlString = url.toString();"
+                ],
+                "focus": 0,
+                "cue": "fragment"
+              },
+              "label": "Design",
+              "source": {
+                "kind": "file",
+                "ref": "excalidraw-app/data/index.ts",
+                "lines": "282-286",
+                "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L282-L286"
+              },
+              "excerpt": "      const url = new URL(window.location.href);\n      // We need to store the key (and less importantly the id) as hash instead\n      // of queryParam in order to never send it to the server\n      url.hash = `json=${json.id},${encryptionKey}`;\n      const urlString = url.toString();\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Using the fragment rather than a query parameter is deliberate: the comment says this keeps the key from being sent to the server.",
+              "limit": "URL placement rationale from source comment, not a general security audit. Source interpretation only; execution was not observed. Source components: excalidraw-app.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "storyboard": {
+            "version": 1,
+            "beats": [
+              {
+                "id": "beat-v1-532af5661df86611d1568e3c51b7daa8e27d20de6472a5e81f74eabf4507adc0",
+                "claim_id": "statement-v1-6438c6b6933333c94d3bb40b80da29a8bc02cf1d9b2bca7a22c9c0b5dc0ea491"
+              }
+            ]
+          },
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-82f70e1649ca2aed159bd1e89b19b5c3938188efc169d4da451e72dca35c3090",
+          "kind": "handoff",
+          "title": "Where to look next",
+          "body": "Next, follow the JSON serializer imported in excalidraw-app/data/index.ts. Investigate what its database mode retains before compression; those helper internals are not established here.",
+          "claims": [
+            {
+              "id": "statement-v1-369e2a6af3110775f74c71822edf883f7d9776e9b57461731ce98cb3ba50f793",
+              "visual": {
+                "kind": "flow",
+                "title": "Handoff: inspect serialization",
+                "lines": [
+                  "excalidraw-app/data/index.ts",
+                  "serializeAsJSON(..., \"database\")",
+                  "Investigate retained data before compression"
+                ],
+                "focus": 0,
+                "cue": "JSON serializer"
+              },
+              "label": "Next step",
+              "source": {
+                "kind": "file",
+                "ref": "excalidraw-app/data/index.ts",
+                "lines": "10-10",
+                "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L10-L10"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "excalidraw-app/data/index.ts",
+                  "lines": "255-260",
+                  "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L255-L260"
+                }
+              ],
+              "excerpt": "import { serializeAsJSON } from \"@excalidraw/excalidraw/data/json\";\n\n\n  const payload = await compressData(\n    new TextEncoder().encode(\n      serializeAsJSON(elements, appState, files, \"database\"),\n    ),\n    { encryptionKey },\n  );\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Next, follow the JSON serializer imported in excalidraw-app/data/index.ts. Investigate what its database mode retains before compression; those helper internals are not established here.",
+              "limit": "Suggested investigation, not a claim about serialization internals or an existing issue. Source interpretation only; execution was not observed. Source components: excalidraw-app.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "storyboard": {
+            "version": 1,
+            "beats": [
+              {
+                "id": "beat-v1-22b08cc3c49bdce7c2b5cdb9f4222bd83b96f1d15c66a8fb391a53992d19b11e",
+                "claim_id": "statement-v1-369e2a6af3110775f74c71822edf883f7d9776e9b57461731ce98cb3ba50f793"
+              }
+            ]
+          },
+          "evidence_mode": "not_executed"
+        }
+      ]
+    }
+  }
+}
