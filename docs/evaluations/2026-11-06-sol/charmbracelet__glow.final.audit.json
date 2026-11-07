@@ -1,0 +1,16 @@
+{
+  "repository": "charmbracelet/glow",
+  "job_id": "3850c4da2bd923c6b2d61404278a6635",
+  "scenes": 4,
+  "claims": 8,
+  "citations": 20,
+  "unique_files": 2,
+  "commits": [
+    "8b0600fa445535b9c53194c0d4f7fe3cf700ef3e"
+  ],
+  "errors": [],
+  "source_audit_passed": true,
+  "semantic_quality": "Requires recorded human assessment; exact source comparison alone does not establish meaning.",
+  "source_transport": "Independently fetched public GitHub contents API with raw media type; no credentials.",
+  "assessor": "AI reviewer agent using the source-quality rubric; not human participant evaluation."
+}

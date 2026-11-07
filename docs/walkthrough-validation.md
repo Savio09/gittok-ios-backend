@@ -198,6 +198,22 @@ The semantic assessments were performed by AI reviewer agents using the product
 rubric. They are not human participant evaluation or owner acceptance; those
 remain separate validation work for the capstone.
 
+Final runtime verification rebuilt the normal backend from `bc01c8d`, including
+the entry-ranking and blank-line fixes, and restarted only owned port 18082.
+Another authorized Glow run reached ready in 31.01 seconds (four settled calls,
+$0.118259); twenty citations across eight claims/two files were independently
+verified exactly. The core source-to-render-to-stdout story is supported.
+Separate semantic assessment found a localized counterexample: the width prose
+omits the additional `isTerminal` condition. Its contextual wording/limit does
+not fully state that premise. The provider reviewer had accepted it, demonstrating
+that independent model review still misses factual precision errors.
+
+This final run is a qualified source/workflow success, not a clean semantic pass.
+SAV-52 remains open for conditional-claim precision and owner acceptance. Total
+spending/reservations are $0.813610 of the unchanged $2 window. No additional
+generation or accounting reset followed this finding. The final artifacts retain
+the actual prose and explicitly recorded defect; they were not silently edited.
+
 Process finding: too much defensive implementation preceded the first useful
 live result. Future model-backed slices should establish a small genuine source
 → story → reviewed artifact path early, then expand measured coverage and bounds.

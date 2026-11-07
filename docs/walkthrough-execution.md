@@ -43,6 +43,23 @@ Live acceptance evidence for the library and CLI is in
 `docs/evaluations/2026-11-06-sol/`. This establishes the first source-only slice;
 broader repository coverage and actual sandbox observations remain further work.
 
+## Remaining review finding
+
+The final committed build produced another exact-citation Glow story, but its
+optional width explanation omitted a nested terminal-output condition. Keep
+SAV-52 open for that semantic precision gap and owner acceptance. Next work:
+
+1. Add a held-out semantic evaluation pair: a conditional implementation, an
+   overbroad statement that omits a nested guard, and a correctly scoped variant.
+   Synthetic tests should use generic conditions rather than repository names.
+2. Require the semantic reviewer to enumerate necessary branch predicates and
+   reject a missing premise even when a vague limit or surrounding prose hints
+   at it. Establish actual model behavior on the negative and positive controls;
+   a stubbed reviewer cannot prove this property.
+3. Reassess live prose under the existing budget before closing the ticket.
+   Preserve the recorded counterexample and source-only status. Runtime sandbox
+   work remains separate; it does not repair static semantic overclaims.
+
 ## Validation
 
 Per-increment RED/GREEN logs, fresh adversarial review, then full Go tests/race/

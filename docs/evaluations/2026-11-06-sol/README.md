@@ -11,6 +11,7 @@ Input accounting uses the conservative $2.50/M cache-write ceiling; output $10/M
 | `chalk/strip-ansi` | Ready in 29.8 seconds; 2 settled model calls | $0.042028 | 18 exact citations, 10 claims, 4 scenes, 5 pinned files; reviewer-agent source-quality assessment passed |
 | `charmbracelet/glow`, before context fitting | Initial writer preflight failed; 0 model calls | $0 | Preserved as `charmbracelet__glow.preflight.json` |
 | `charmbracelet/glow`, after context fitting | Ready in 32.35 seconds; 4 settled model calls | $0.130476 | 22 exact citations, 9 claims, 4 scenes, 2 pinned files; reviewer-agent source-quality assessment passed |
+| `charmbracelet/glow`, final code `bc01c8d` | Ready in 31.01 seconds; 4 settled model calls | $0.118259 | 20 exact citations, 8 claims, 4 scenes, 2 files; core workflow supported, one conditional wording defect |
 
 The accepted story explains a concrete CSI-containing string through validation,
 fast-path checks and regex replacement to a test-asserted result. It attributes
@@ -33,7 +34,15 @@ Semantic assessment was performed by AI reviewer agents using the product rubric
 not human study participants. Owner acceptance and participant evaluation remain
 separate work; the reviewer is not a truth oracle.
 
-Total accounting after these controls: $0.695351 charged or reserved, including
+The final-code artifact and audit use the `.final.json` / `.final.audit.json`
+suffixes. Its width explanation omits an additional condition: terminal-width
+detection requires stdout to be a terminal, as well as an unchanged width flag
+and zero configured width. The source and workflow are useful, but this wording
+is not fully entailed. The automated publication reviewer accepted it; the separate
+reviewer agent caught it. This is evidence of the semantic gate's remaining
+limitations, not an unqualified clean semantic pass.
+
+Total accounting after these controls: $0.813610 charged or reserved, including
 two earlier unknown outcomes that were retained. This is not a provider invoice.
 Library and CLI successes do not establish universal repository coverage. Model
 selection, source-context and submission fixes changed during this investigation;
