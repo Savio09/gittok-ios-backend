@@ -1,0 +1,15 @@
+{
+  "repository": "chalk/strip-ansi",
+  "job_id": "8057dc4f50401c03665f00ae05d0574f",
+  "claims": 10,
+  "citations": 12,
+  "scenes": 4,
+  "unique_files": 3,
+  "commits": [
+    "622cca7b5dd4621cf85e5b517f396f94d8959d2e"
+  ],
+  "errors": [],
+  "source_audit_passed": true,
+  "spoken_words": 156,
+  "semantic_quality": "Requires separate assessment; exact source matching alone does not establish meaning."
+}

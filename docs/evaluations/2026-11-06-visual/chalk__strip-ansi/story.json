@@ -1,0 +1,437 @@
+{
+  "http_status": 200,
+  "elapsed_seconds": 29.1,
+  "job": {
+    "id": "8057dc4f50401c03665f00ae05d0574f",
+    "state": "ready",
+    "poll_after_ms": 0,
+    "preview": {
+      "presentation": "walkthrough",
+      "id": "chalk/strip-ansi",
+      "owner": "chalk",
+      "name": "strip-ansi",
+      "slug": "chalk/strip-ansi",
+      "kind": "other",
+      "kind_evidence_status": "unknown",
+      "evidence_mode": "not_executed",
+      "language": "JavaScript",
+      "description": "Need the text without terminal styling? strip-ansi turns an ANSI-decorated string into plain text.\n\nImport stripAnsi, then pass the string directly; the README\u2019s underlined Unicorn example returns just \u201cUnicorn.\u201d\n\nIt also handles terminal hyperlinks: the documented link example keeps \u201cClick\u201d while removing its escape wrapper.\n\nAlready-clean text needs no special handling: tests expect \u201cfoo bar\u201d and the empty string to remain unchanged.",
+      "github_url": "https://github.com/chalk/strip-ansi",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "499",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count",
+            "url": "https://api.github.com/repos/chalk/strip-ansi"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id",
+            "url": "https://api.github.com/repos/chalk/strip-ansi"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_push",
+          "label": "last push reported by GitHub",
+          "value": "2026-09-18T19:15:54Z",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at",
+            "url": "https://api.github.com/repos/chalk/strip-ansi"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ],
+      "sections": [
+        {
+          "id": "scene-v1-0c782ebea3effe1a7b3e96f268b9ba331eac20c70705b6c2befd846d4098e71b",
+          "kind": "idea",
+          "title": "What it does",
+          "body": "Need the text without terminal styling? strip-ansi turns an ANSI-decorated string into plain text.\n\nImport stripAnsi, then pass the string directly; the README\u2019s underlined Unicorn example returns just \u201cUnicorn.\u201d\n\nIt also handles terminal hyperlinks: the documented link example keeps \u201cClick\u201d while removing its escape wrapper.\n\nAlready-clean text needs no special handling: tests expect \u201cfoo bar\u201d and the empty string to remain unchanged.",
+          "claims": [
+            {
+              "id": "statement-v1-f0e9f13171691e1ad492837440488ae7e17452c74cb8a2eb5ed7f907fbb54f9a",
+              "visual": {
+                "kind": "comparison",
+                "title": "Remove styling escapes",
+                "lines": [
+                  "Input: '\\u001B[4mUnicorn\\u001B[0m'",
+                  "Result: 'Unicorn'"
+                ],
+                "focus": 1,
+                "cue": "terminal styling"
+              },
+              "label": "Purpose",
+              "source": {
+                "kind": "file",
+                "ref": "readme.md",
+                "lines": "17-19",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/readme.md#L17-L19"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "readme.md",
+                  "lines": "20-20",
+                  "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/readme.md#L20-L20"
+                }
+              ],
+              "excerpt": "import stripAnsi from 'strip-ansi';\n\nstripAnsi('\\u001B[4mUnicorn\\u001B[0m');\n\n\n//=> 'Unicorn'\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Need the text without terminal styling? strip-ansi turns an ANSI-decorated string into plain text.",
+              "limit": "A representative need, grounded in the documented string-cleaning use; not an execution claim. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-27152a0f3a7f27fa3215c835c32a271d79bd9354fdabedd8e1ecf02b98efff37",
+              "visual": {
+                "kind": "concept",
+                "title": "A string-in, string-out call",
+                "lines": [
+                  "import stripAnsi from 'strip-ansi';"
+                ],
+                "focus": 1,
+                "cue": "Import stripAnsi"
+              },
+              "label": "Input",
+              "source": {
+                "kind": "file",
+                "ref": "readme.md",
+                "lines": "17-20",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/readme.md#L17-L20"
+              },
+              "excerpt": "import stripAnsi from 'strip-ansi';\n\nstripAnsi('\\u001B[4mUnicorn\\u001B[0m');\n//=> 'Unicorn'\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Import stripAnsi, then pass the string directly; the README\u2019s underlined Unicorn example returns just \u201cUnicorn.\u201d",
+              "limit": "Usage is shown in documentation, not run here. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-6d0190cf4f025047fe2abf2da2817b8ad48cd3ae8d40a8f45512c1e0636dde60",
+              "visual": {
+                "kind": "comparison",
+                "title": "Keep the visible label",
+                "lines": [
+                  "Input: terminal hyperlink labeled Click",
+                  "Result: 'Click'"
+                ],
+                "focus": 2,
+                "cue": "terminal hyperlinks"
+              },
+              "label": "Result",
+              "source": {
+                "kind": "file",
+                "ref": "readme.md",
+                "lines": "22-23",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/readme.md#L22-L23"
+              },
+              "excerpt": "stripAnsi('\\u001B]8;;https://github.com\\u0007Click\\u001B]8;;\\u0007');\n//=> 'Click'\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "It also handles terminal hyperlinks: the documented link example keeps \u201cClick\u201d while removing its escape wrapper.",
+              "limit": "Attributed documented example; not observed output. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-20f736f13dd5cacbb68414eb402158aed8df8c77fec6f0114d642d849a4f74c2",
+              "visual": {
+                "kind": "comparison",
+                "title": "Plain strings stay plain",
+                "lines": [
+                  "Input: 'foo bar' or ''",
+                  "Result: 'foo bar' or '' respectively"
+                ],
+                "focus": 0,
+                "cue": "Already-clean text"
+              },
+              "label": "Result",
+              "source": {
+                "kind": "file",
+                "ref": "test.js",
+                "lines": "30-36",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/test.js#L30-L36"
+              },
+              "excerpt": "test('return string as-is if no ANSI codes', t => {\n\tt.is(stripAnsi('foo bar'), 'foo bar');\n});\n\ntest('return empty string as-is', t => {\n\tt.is(stripAnsi(''), '');\n});\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Already-clean text needs no special handling: tests expect \u201cfoo bar\u201d and the empty string to remain unchanged.",
+              "limit": "Reports test assertions, not a test run. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "storyboard": {
+            "version": 1,
+            "beats": [
+              {
+                "id": "beat-v1-2b54266fda3efbbbad14489ea65b1e464207133fceb7a7e3b50aca2aff2dc9f4",
+                "claim_id": "statement-v1-f0e9f13171691e1ad492837440488ae7e17452c74cb8a2eb5ed7f907fbb54f9a"
+              },
+              {
+                "id": "beat-v1-ef0376099738de6f51871865cafd9c9877ad42e050938c9264d4e66bada795fb",
+                "claim_id": "statement-v1-27152a0f3a7f27fa3215c835c32a271d79bd9354fdabedd8e1ecf02b98efff37"
+              },
+              {
+                "id": "beat-v1-f18133e4a326643a7e3f339b995a518c0c25b0ce48d0e5bbc392eae3fc05cc62",
+                "claim_id": "statement-v1-6d0190cf4f025047fe2abf2da2817b8ad48cd3ae8d40a8f45512c1e0636dde60"
+              },
+              {
+                "id": "beat-v1-22d46262ebb7757b4edad10e26d750af7038fab4e7a4393187952d4383bd7e6c",
+                "claim_id": "statement-v1-20f736f13dd5cacbb68414eb402158aed8df8c77fec6f0114d642d849a4f74c2"
+              }
+            ]
+          },
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-e47e73a2175302cf33ec5ba76f2c9678852bdc93bfe58fe4e1e8ec2b414ddee1",
+          "kind": "how",
+          "title": "How it works",
+          "body": "Inside index.js, the call first checks the input type; anything other than a string throws TypeError.\n\nFor decorated input, a regular expression created by ansi-regex supplies the matches, and replace removes them.\n\nA test makes that outcome concrete: combined styling around \u201cbar\u201d is expected to produce \u201cbar.\u201d",
+          "claims": [
+            {
+              "id": "statement-v1-829fafce5d4ca647b961249070be06aaad5c34bb66ef698cb8bffa4d4f7d82b6",
+              "visual": {
+                "kind": "flow",
+                "title": "Validate before stripping",
+                "lines": [
+                  "Input \u2192 typeof check",
+                  "Non-string \u2192 TypeError",
+                  "String \u2192 escape-introducer check"
+                ],
+                "focus": 0,
+                "cue": "checks the input type"
+              },
+              "label": "Input",
+              "source": {
+                "kind": "file",
+                "ref": "index.js",
+                "lines": "5-8",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/index.js#L5-L8"
+              },
+              "excerpt": "export default function stripAnsi(string) {\n\tif (typeof string !== 'string') {\n\t\tthrow new TypeError(`Expected a \\`string\\`, got \\`${typeof string}\\``);\n\t}\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Inside index.js, the call first checks the input type; anything other than a string throws TypeError.",
+              "limit": "Implementation behavior, including invalid-input behavior; no invocation claimed. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-2238bf6f5001b393a0755a42629705bf9fdd65c507f155c88c52eab1b71e26c5",
+              "visual": {
+                "kind": "flow",
+                "title": "The removal path",
+                "lines": [
+                  "ansiRegex() \u2192 regex",
+                  "string.replace(regex, '') \u2192 cleaned string"
+                ],
+                "focus": 0,
+                "cue": "replace removes them"
+              },
+              "label": "Mechanism",
+              "source": {
+                "kind": "file",
+                "ref": "index.js",
+                "lines": "1-3",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/index.js#L1-L3"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "index.js",
+                  "lines": "18-18",
+                  "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/index.js#L18-L18"
+                }
+              ],
+              "excerpt": "import ansiRegex from 'ansi-regex';\n\nconst regex = ansiRegex();\n\n\n\treturn string.replace(regex, '');\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "For decorated input, a regular expression created by ansi-regex supplies the matches, and replace removes them.",
+              "limit": "The matching expression's internals were not inspected; only its creation and use are established. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-117d24277ffe5f1c8b8bfc1aa6e409d9414ed7c7c938e034543b3c5ce88cd6d0",
+              "visual": {
+                "kind": "comparison",
+                "title": "Several styles, one text result",
+                "lines": [
+                  "Input: '\\u001B[0;33;49;3;9;4mbar\\u001B[0m'",
+                  "Expected: 'bar'"
+                ],
+                "focus": 2,
+                "cue": "combined styling"
+              },
+              "label": "Result",
+              "source": {
+                "kind": "file",
+                "ref": "test.js",
+                "lines": "12-14",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/test.js#L12-L14"
+              },
+              "excerpt": "test('strip reset;setfg;setbg;italics;strike;underline sequence from string', t => {\n\tt.is(stripAnsi('\\u001B[0;33;49;3;9;4mbar\\u001B[0m'), 'bar');\n});\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "A test makes that outcome concrete: combined styling around \u201cbar\u201d is expected to produce \u201cbar.\u201d",
+              "limit": "Test expectation corroborates the stripping path; tests were not executed. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "storyboard": {
+            "version": 1,
+            "beats": [
+              {
+                "id": "beat-v1-7f39cecb8a2beef057cd56ec283f2064f037cc023d78410a816c279a209004e6",
+                "claim_id": "statement-v1-829fafce5d4ca647b961249070be06aaad5c34bb66ef698cb8bffa4d4f7d82b6"
+              },
+              {
+                "id": "beat-v1-edf78722219310f9378fc9f19e5ba3c57ffba98f1a54cd214b9b60b59bea9463",
+                "claim_id": "statement-v1-2238bf6f5001b393a0755a42629705bf9fdd65c507f155c88c52eab1b71e26c5"
+              },
+              {
+                "id": "beat-v1-af58fe0a2408da73724866913b04954d6e0df598fe740b86be8802bc004c531a",
+                "claim_id": "statement-v1-117d24277ffe5f1c8b8bfc1aa6e409d9414ed7c7c938e034543b3c5ce88cd6d0"
+              }
+            ]
+          },
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-3e3abdefea6bdf81fa82b2f179bd61b35a657a07227b4277d67854408822e081",
+          "kind": "stack",
+          "title": "A closer look",
+          "body": "The key shortcut is an early return when neither ESC nor the eight-bit CSI introducer appears.\n\nThe source also explains why it leaves regex state alone: replace resets lastIndex automatically.",
+          "claims": [
+            {
+              "id": "statement-v1-96246e555def52509d40c693114168311491edfb6d67c87ba561dbcbefb84511",
+              "visual": {
+                "kind": "flow",
+                "title": "Skip replacement for plain text",
+                "lines": [
+                  "No U+001B and no U+009B",
+                  "Return original string"
+                ],
+                "focus": 0,
+                "cue": "early return"
+              },
+              "label": "Design",
+              "source": {
+                "kind": "file",
+                "ref": "index.js",
+                "lines": "10-13",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/index.js#L10-L13"
+              },
+              "excerpt": "\t// Fast path: ANSI codes require ESC (7-bit) or CSI (8-bit) introducer\n\tif (!string.includes('\\u001B') && !string.includes('\\u009B')) {\n\t\treturn string;\n\t}\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "The key shortcut is an early return when neither ESC nor the eight-bit CSI introducer appears.",
+              "limit": "Describes the explicit branch, without claiming measured performance. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-054622eba90aef9eecdfddd12e1b9ebb3127fc65eb55bcd4d545fd53a3def882",
+              "visual": {
+                "kind": "source",
+                "title": "index.js",
+                "lines": [
+                  "\t// Even though the regex is global, we don't need to reset the `.lastIndex`",
+                  "\t// because unlike `.exec()` and `.test()`, `.replace()` does it automatically",
+                  "\t// and doing it manually has a performance penalty.",
+                  "\treturn string.replace(regex, '');"
+                ],
+                "focus": 0,
+                "cue": "source also explains"
+              },
+              "label": "Design",
+              "source": {
+                "kind": "file",
+                "ref": "index.js",
+                "lines": "15-18",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/index.js#L15-L18"
+              },
+              "excerpt": "\t// Even though the regex is global, we don't need to reset the `.lastIndex`\n\t// because unlike `.exec()` and `.test()`, `.replace()` does it automatically\n\t// and doing it manually has a performance penalty.\n\treturn string.replace(regex, '');\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "The source also explains why it leaves regex state alone: replace resets lastIndex automatically.",
+              "limit": "Attributes the regex-state rationale to the source comment, not an independent benchmark. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "storyboard": {
+            "version": 1,
+            "beats": [
+              {
+                "id": "beat-v1-48380dcf79d451ab8149b225ef226f9068e854745fa640ff3b4d382b01825b54",
+                "claim_id": "statement-v1-96246e555def52509d40c693114168311491edfb6d67c87ba561dbcbefb84511"
+              },
+              {
+                "id": "beat-v1-cdd6085b0f2958d276f6a645101256ec2a97b1d4a89087dff4c51b83f89d3813",
+                "claim_id": "statement-v1-054622eba90aef9eecdfddd12e1b9ebb3127fc65eb55bcd4d545fd53a3def882"
+              }
+            ]
+          },
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-92d319ae6622a56261ed8e0fa002ecc099062eab2de847ab20ab08a6eebc614f",
+          "kind": "handoff",
+          "title": "Where to look next",
+          "body": "Next, inspect the OSC and eight-bit CSI tests to understand which less-visible control sequences this suite covers.",
+          "claims": [
+            {
+              "id": "statement-v1-0842f40f96e270f7d34421cbb2cf682be336c5e1d7de94ec4d5fe97be6a97aea",
+              "visual": {
+                "kind": "concept",
+                "title": "Explore control-sequence coverage",
+                "lines": [
+                  "test.js: OSC with BEL terminator",
+                  "test.js: U+009B color sequence"
+                ],
+                "focus": 0,
+                "cue": "OSC and eight-bit CSI"
+              },
+              "label": "Next step",
+              "source": {
+                "kind": "file",
+                "ref": "test.js",
+                "lines": "20-28",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/test.js#L20-L28"
+              },
+              "excerpt": "test('strip OSC sequence with BEL terminator', t => {\n\tconst input = '\\u001B[2J\\u001B[m\\u001B[HABC\\r\\n\\u001B]0;C:\\\\WINDOWS\\\\system32\\\\cmd.exe\\u0007\\u001B[?25h';\n\tconst output = stripAnsi(input);\n\tt.is(output, 'ABC\\r\\n');\n});\n\ntest('strip color from string using 8-bit CSI introducer', t => {\n\tt.is(stripAnsi('\\u009B31mfoo\\u009B39m'), 'foo');\n});\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Next, inspect the OSC and eight-bit CSI tests to understand which less-visible control sequences this suite covers.",
+              "limit": "Suggested source investigation, not an assertion of exhaustive coverage or executed tests. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "storyboard": {
+            "version": 1,
+            "beats": [
+              {
+                "id": "beat-v1-582a98c52578fbefa8bb539b3fdd12f60f4b964b46b807c21ed07f33bcee2546",
+                "claim_id": "statement-v1-0842f40f96e270f7d34421cbb2cf682be336c5e1d7de94ec4d5fe97be6a97aea"
+              }
+            ]
+          },
+          "evidence_mode": "not_executed"
+        }
+      ]
+    }
+  }
+}

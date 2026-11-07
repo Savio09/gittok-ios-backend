@@ -1,0 +1,60 @@
+{
+  "window_id": "capstone-2026-11-06",
+  "window_cap_usd": 2,
+  "job_cap_usd": 0.5,
+  "charged_or_reserved_usd": 1.373401,
+  "reservation_entries": 107,
+  "unsettled_prior_outcomes": 2,
+  "reset": false,
+  "provider_invoice": false,
+  "jobs": {
+    "chalk__strip-ansi": {
+      "job_id": "8057dc4f50401c03665f00ae05d0574f",
+      "state": "ready",
+      "reservation_entries": 2,
+      "charged_or_reserved_usd": 0.039703,
+      "unsettled": 0,
+      "released_unused_reservations": 0
+    },
+    "charmbracelet__glow-withheld": {
+      "job_id": "69680228da1f8a1176173bb4b63d4915",
+      "state": "failed",
+      "reservation_entries": 2,
+      "charged_or_reserved_usd": 0.07459,
+      "unsettled": 0,
+      "released_unused_reservations": 0
+    },
+    "sindresorhus__strip-ansi-cli-withheld": {
+      "job_id": "dac1fef3e728231d843706525c963cc5",
+      "state": "failed",
+      "reservation_entries": 2,
+      "charged_or_reserved_usd": 0.038615,
+      "unsettled": 0,
+      "released_unused_reservations": 0
+    },
+    "charmbracelet__glow-correction-cap-withheld": {
+      "job_id": "1558d7403c18f7a6ce360c7799466ee4",
+      "state": "failed",
+      "reservation_entries": 2,
+      "charged_or_reserved_usd": 0.072333,
+      "unsettled": 0,
+      "released_unused_reservations": 0
+    },
+    "charmbracelet__glow-bounded-correction-withheld": {
+      "job_id": "a544ded5ad2b5f996c853ba950c9e000",
+      "state": "failed",
+      "reservation_entries": 4,
+      "charged_or_reserved_usd": 0.12605,
+      "unsettled": 0,
+      "released_unused_reservations": 1
+    },
+    "sindresorhus__strip-ansi-cli": {
+      "job_id": "028d950591b871c40994f2b889961f9c",
+      "state": "ready",
+      "reservation_entries": 4,
+      "charged_or_reserved_usd": 0.078776,
+      "unsettled": 0,
+      "released_unused_reservations": 0
+    }
+  }
+}

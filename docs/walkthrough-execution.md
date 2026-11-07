@@ -72,3 +72,7 @@ live acceptance. Azure observations remain SAV-53, a separate actual-run gate.
 No main merge, push or cloud provisioning is required by these code increments.
 Owner's prior research/documentation remains untouched. API secrets stay outside
 prompts, version control, the iOS app and target execution environments.
+
+## Visual follow-up — November6
+
+The approved narrated-visual increment supersedes the next-work list above. The real nested-guard negative/positive pair passed, complete retained cited files now reach review, and Folio renders typed visuals from actual speech callbacks. The previous counterexample remains historical evidence; model reliability and owner acceptance remain qualified. See `visual-walkthrough-execution.md` and `evaluations/2026-11-06-visual/` for the current implementation, review repairs, failed controls and verification.

@@ -1,0 +1,6 @@
+=== RUN   TestLiveNestedGuardSemanticPair
+    live_guard_evaluation_test.go:110: variant=omitted whole_accepted=false export_accepted=false
+    live_guard_evaluation_test.go:110: variant=scoped whole_accepted=true export_accepted=true
+--- PASS: TestLiveNestedGuardSemanticPair (13.28s)
+PASS
+ok  	github.com/Savio09/gittok-ios-backend/internal/walkthrough	13.431s
