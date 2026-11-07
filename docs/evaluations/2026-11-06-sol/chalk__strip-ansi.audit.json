@@ -1,0 +1,25 @@
+{
+  "repository": "chalk/strip-ansi",
+  "job_id": "3b186767984b280abc1ea3c35629673f",
+  "scenes": 4,
+  "claims": 10,
+  "citations": 18,
+  "unique_files": 5,
+  "commits": [
+    "622cca7b5dd4621cf85e5b517f396f94d8959d2e"
+  ],
+  "errors": [],
+  "source_audit_passed": true,
+  "semantic_quality": "Reviewer-agent assessment passed for this source-only control story.",
+  "source_transport": "Independently fetched public GitHub contents API with raw media type; no credentials.",
+  "semantic_assessment": {
+    "passed": true,
+    "purpose": "Explains removal of ANSI escape sequences from strings.",
+    "workflow": "Exact existing CSI test input passes string validation and introducer fast-path checks, then shared-regex replacement; the cited test asserts the resulting foo.",
+    "design": "Explains the ordinary-string fast path and shared global-regex state; performance explanation is attributed to source comments and not presented as measured.",
+    "handoff": "Points to actual terminal-link and OSC tests and the explicitly uninspected ansi-regex dependency; includes sourced test command.",
+    "limits": "Every scene is not_executed, every claim is inferred, tests are asserted expectations rather than claimed test runs. No material unsupported fact identified.",
+    "scope": "One small-library source-only control; does not establish Glow/Rack generalization."
+  },
+  "assessor": "AI reviewer agent using the source-quality rubric; not human participant evaluation."
+}

@@ -1,0 +1,337 @@
+{
+  "http_status": 200,
+  "elapsed_seconds": 32.35,
+  "job": {
+    "id": "cfd6bd96f3f8ecabe1acfacbc894116b",
+    "state": "ready",
+    "poll_after_ms": 0,
+    "preview": {
+      "presentation": "walkthrough",
+      "id": "charmbracelet/glow",
+      "owner": "charmbracelet",
+      "name": "glow",
+      "slug": "charmbracelet/glow",
+      "kind": "other",
+      "kind_evidence_status": "unknown",
+      "evidence_mode": "not_executed",
+      "language": "Go",
+      "description": "Glow is for reading Markdown without leaving the terminal. Its README describes a terminal-based Markdown reader, and its CLI exposes `glow [SOURCE|DIR]` with the purpose of rendering Markdown on the command line.",
+      "github_url": "https://github.com/charmbracelet/glow",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "27945",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count",
+            "url": "https://api.github.com/repos/charmbracelet/glow"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id",
+            "url": "https://api.github.com/repos/charmbracelet/glow"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_push",
+          "label": "last push reported by GitHub",
+          "value": "2026-11-04T12:06:23Z",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at",
+            "url": "https://api.github.com/repos/charmbracelet/glow"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ],
+      "sections": [
+        {
+          "id": "scene-v1-bb6f1bea7aa2a60262d89d651eff0bd18293bf03f0a10f5af9fc32f93b833b9f",
+          "kind": "idea",
+          "title": "What it does",
+          "body": "Glow is for reading Markdown without leaving the terminal. Its README describes a terminal-based Markdown reader, and its CLI exposes `glow [SOURCE|DIR]` with the purpose of rendering Markdown on the command line.",
+          "claims": [
+            {
+              "id": "statement-v1-63cb7458baddf4625553142e9fe6d556db0fe8f3d4f2e62bbc6a44316d1c6fc1",
+              "label": "Purpose",
+              "source": {
+                "kind": "file",
+                "ref": "README.md",
+                "lines": "19-24",
+                "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/README.md#L19-L24"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "main.go",
+                  "lines": "47-51",
+                  "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L47-L51"
+                }
+              ],
+              "excerpt": "Glow is a terminal based markdown reader designed from the ground up to bring\nout the beauty\u2014and power\u2014of the CLI.\n\nUse it to discover markdown files, read documentation directly on the command\nline. Glow will find local markdown files in subdirectories or a local\nGit repository.\n\n\n\trootCmd = &cobra.Command{\n\t\tUse:   \"glow [SOURCE|DIR]\",\n\t\tShort: \"Render markdown on the CLI, with pizzazz!\",\n\t\tLong: paragraph(\n\t\t\tfmt.Sprintf(\"\\nRender markdown on the CLI, %s!\", keyword(\"with pizzazz\")),\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Glow is for reading Markdown without leaving the terminal. Its README describes a terminal-based Markdown reader, and its CLI exposes `glow [SOURCE|DIR]` with the purpose of rendering Markdown on the command line.",
+              "limit": "The reader description is attributed to the README; the concrete path below is limited to CLI rendering, not interactive file discovery. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-142139b838fe5538626c27a14778afcb78e204866f75fa9077c413e7ac2872ec",
+          "kind": "how",
+          "title": "How it works",
+          "body": "A representative action is piping Markdown into `glow`, for example `printf '# Hello\\n' | glow`. `execute` checks stdin before handling arguments; when stdin is a pipe, it wraps stdin as a source and calls `executeCLI` with stdout as the destination.\n\n`executeCLI` reads the entire source into memory, returns a contextual error if reading fails, and passes the bytes through `utils.RemoveFrontmatter` before preparing the renderer.\n\nThe CLI constructs a Glamour terminal renderer with a selected style, word-wrap width, base URL, and preserved newlines. It uses `IsMarkdownFile` to decide whether to wrap the input as a code block, calls `Render` on the resulting content, and then applies `utils.ApplyTextSizing` to the rendered text.\n\nWith neither pager nor TUI selected, the resulting rendered text is printed to the supplied writer\u2014stdout for this pipe path. A write failure is returned as an error; success returns normally. This makes the pipeline a direct input-to-terminal rendering path rather than launching the file browser.",
+          "claims": [
+            {
+              "id": "statement-v1-2a8c1a283aea8eb90eb2dfb86f15698b7bb7a516f3e8ce55963cce076645a221",
+              "label": "Input",
+              "source": {
+                "kind": "file",
+                "ref": "main.go",
+                "lines": "223-232",
+                "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L223-L232"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "main.go",
+                  "lines": "212-220",
+                  "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L212-L220"
+                }
+              ],
+              "excerpt": "func execute(cmd *cobra.Command, args []string) error {\n\t// if stdin is a pipe then use stdin for input. note that you can also\n\t// explicitly use a - to read from stdin.\n\tif yes, err := stdinIsPipe(); err != nil {\n\t\treturn err\n\t} else if yes {\n\t\tsrc := &source{reader: os.Stdin}\n\t\tdefer src.reader.Close() //nolint:errcheck\n\t\treturn executeCLI(cmd, src, os.Stdout)\n\t}\n\n\nfunc stdinIsPipe() (bool, error) {\n\tstat, err := os.Stdin.Stat()\n\tif err != nil {\n\t\treturn false, fmt.Errorf(\"unable to open file: %w\", err)\n\t}\n\tif stat.Mode()&os.ModeCharDevice == 0 || stat.Size() > 0 {\n\t\treturn true, nil\n\t}\n\treturn false, nil\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "A representative action is piping Markdown into `glow`, for example `printf '# Hello\\n' | glow`. `execute` checks stdin before handling arguments; when stdin is a pipe, it wraps stdin as a source and calls `executeCLI` with stdout as the destination.",
+              "limit": "Representative input, not an executed command. Assumes ordinary CLI settings without pager or TUI selection. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-17012b732b4a92c47d4fc28a9b879fcd7ee564e64d27a1b061c7056d21937278",
+              "label": "Mechanism",
+              "source": {
+                "kind": "file",
+                "ref": "main.go",
+                "lines": "274-283",
+                "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L274-L283"
+              },
+              "excerpt": "func executeCLI(cmd *cobra.Command, src *source, w io.Writer) error {\n\tb, err := io.ReadAll(src.reader)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"unable to read from reader: %w\", err)\n\t}\n\n\tb = utils.RemoveFrontmatter(b)\n\n\t// render\n\tvar baseURL string\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "`executeCLI` reads the entire source into memory, returns a contextual error if reading fails, and passes the bytes through `utils.RemoveFrontmatter` before preparing the renderer.",
+              "limit": "Only the call to the frontmatter helper was inspected; its parsing rules are not established here. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-442e01b4c6fda4459d748132bb434a1393acd87d55616fb3b6be73ef9d7a6c86",
+              "label": "Mechanism",
+              "source": {
+                "kind": "file",
+                "ref": "main.go",
+                "lines": "290-298",
+                "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L290-L298"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "main.go",
+                  "lines": "303-312",
+                  "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L303-L312"
+                },
+                {
+                  "kind": "file",
+                  "ref": "main.go",
+                  "lines": "314-314",
+                  "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L314-L314"
+                }
+              ],
+              "excerpt": "\tisCode := !utils.IsMarkdownFile(src.URL)\n\n\t// initialize glamour\n\tr, err := glamour.NewTermRenderer(\n\t\tutils.GlamourStyle(style, isCode),\n\t\tglamour.WithWordWrap(int(width)), //nolint:gosec\n\t\tglamour.WithBaseURL(baseURL),\n\t\tglamour.WithPreservedNewLines(),\n\t)\n\n\n\tcontent := string(b)\n\text := filepath.Ext(src.URL)\n\tif isCode {\n\t\tcontent = utils.WrapCodeBlock(string(b), ext)\n\t}\n\n\tout, err := r.Render(content)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"unable to render markdown: %w\", err)\n\t}\n\n\n\tout = utils.ApplyTextSizing(out)\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "The CLI constructs a Glamour terminal renderer with a selected style, word-wrap width, base URL, and preserved newlines. It uses `IsMarkdownFile` to decide whether to wrap the input as a code block, calls `Render` on the resulting content, and then applies `utils.ApplyTextSizing` to the rendered text.",
+              "limit": "Describes renderer configuration and calls visible in this repository, not Glamour internals or an observed rendering. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-84f9cc9720526d2f529110862661a1e096c5c3b7d2527163d24afa82b5b0b88b",
+              "label": "Result",
+              "source": {
+                "kind": "file",
+                "ref": "main.go",
+                "lines": "228-231",
+                "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L228-L231"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "main.go",
+                  "lines": "340-345",
+                  "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L340-L345"
+                }
+              ],
+              "excerpt": "\t} else if yes {\n\t\tsrc := &source{reader: os.Stdin}\n\t\tdefer src.reader.Close() //nolint:errcheck\n\t\treturn executeCLI(cmd, src, os.Stdout)\n\n\n\t\treturn runTUI(path, content)\n\tdefault:\n\t\tif _, err = fmt.Fprint(w, out); err != nil {\n\t\t\treturn fmt.Errorf(\"unable to write to writer: %w\", err)\n\t\t}\n\t\treturn nil\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "With neither pager nor TUI selected, the resulting rendered text is printed to the supplied writer\u2014stdout for this pipe path. A write failure is returned as an error; success returns normally. This makes the pipeline a direct input-to-terminal rendering path rather than launching the file browser.",
+              "limit": "Expected control flow on success, not captured output. The exact visual treatment of the sample is not established by the inspected helper implementations. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-28922b7ef4b878c6f4d88a9ad1d45b643cb5dc6d87e21dbd1b868f8bad22d7f0",
+          "kind": "stack",
+          "title": "A closer look",
+          "body": "A useful design idea is adapting presentation to the output destination. Option validation selects the `notty` style when stdout is not a terminal and the style flag was not explicitly changed. Without an explicit width flag, it can detect terminal width, cap that detected width at 120, and fall back to 80 when width remains zero.\n\nInput acquisition is separated from rendering by a small `source` structure containing an `io.ReadCloser` and a URL string. Both the piped-input path and `executeArg` converge on `executeCLI`, so the renderer consumes a common source abstraction instead of handling argument resolution itself.",
+          "claims": [
+            {
+              "id": "statement-v1-2d60734ae86628dba386ff897a1eb7dcf63c0809e1a5cbf2ceae4c07bf075c36",
+              "label": "Design",
+              "source": {
+                "kind": "file",
+                "ref": "main.go",
+                "lines": "186-191",
+                "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L186-L191"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "main.go",
+                  "lines": "193-199",
+                  "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L193-L199"
+                },
+                {
+                  "kind": "file",
+                  "ref": "main.go",
+                  "lines": "201-208",
+                  "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L201-L208"
+                }
+              ],
+              "excerpt": "\tisTerminal := term.IsTerminal(int(os.Stdout.Fd()))\n\t// We want to use a special no-TTY style, when stdout is not a terminal\n\t// and there was no specific style passed by arg\n\tif !isTerminal && !cmd.Flags().Changed(\"style\") {\n\t\tstyle = \"notty\"\n\t}\n\n\n\t// Detect terminal width\n\tif !cmd.Flags().Changed(\"width\") { //nolint:nestif\n\t\tif isTerminal && width == 0 {\n\t\t\tw, _, err := term.GetSize(int(os.Stdout.Fd()))\n\t\t\tif err == nil {\n\t\t\t\twidth = uint(w) //nolint:gosec\n\t\t\t}\n\n\n\t\t\tif width > 120 {\n\t\t\t\twidth = 120\n\t\t\t}\n\t\t}\n\t\tif width == 0 {\n\t\t\twidth = 80\n\t\t}\n\t}\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "A useful design idea is adapting presentation to the output destination. Option validation selects the `notty` style when stdout is not a terminal and the style flag was not explicitly changed. Without an explicit width flag, it can detect terminal width, cap that detected width at 120, and fall back to 80 when width remains zero.",
+              "limit": "This is the exact condition in option validation: it checks whether the style flag changed, not whether any configuration source supplied a style. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-53023f3fe601f0e09ebb77f891b0b72fb2fdcc4327feea9ac17f2d8243f14706",
+              "label": "Design",
+              "source": {
+                "kind": "file",
+                "ref": "main.go",
+                "lines": "67-71",
+                "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L67-L71"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "main.go",
+                  "lines": "264-272",
+                  "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L264-L272"
+                },
+                {
+                  "kind": "file",
+                  "ref": "main.go",
+                  "lines": "228-231",
+                  "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L228-L231"
+                }
+              ],
+              "excerpt": "// source provides a readable markdown source.\ntype source struct {\n\treader io.ReadCloser\n\tURL    string\n}\n\n\nfunc executeArg(cmd *cobra.Command, arg string, w io.Writer) error {\n\t// create an io.Reader from the markdown source in cli-args\n\tsrc, err := sourceFromArg(arg)\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer src.reader.Close() //nolint:errcheck\n\treturn executeCLI(cmd, src, w)\n}\n\n\n\t} else if yes {\n\t\tsrc := &source{reader: os.Stdin}\n\t\tdefer src.reader.Close() //nolint:errcheck\n\t\treturn executeCLI(cmd, src, os.Stdout)\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Input acquisition is separated from rendering by a small `source` structure containing an `io.ReadCloser` and a URL string. Both the piped-input path and `executeArg` converge on `executeCLI`, so the renderer consumes a common source abstraction instead of handling argument resolution itself.",
+              "limit": "The common boundary is inferred from the inspected stdin and argument paths; URL fetching and interactive UI internals are outside this story. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-3066ad4a4c68e9238f23e11dd4c3729eed747b02b2a4f9cdd6f520ac68b00dcb",
+          "kind": "setup",
+          "title": "Where to look next",
+          "body": "To investigate the interactive branch next, start at `execute` in `main.go`: no arguments route to `runTUI`, and a directory argument also routes there. Follow `runTUI` as it fills the UI configuration and calls `ui.NewProgram(cfg, content)`; that is the handoff from CLI dispatch to the interactive program.\n\nFor changes to direct rendering instead, begin with `executeCLI` and the `--style` and `--width` flags in `main.go`. The flags expose a style name or JSON path and a wrapping width; the renderer construction is where those values enter the rendering pipeline.",
+          "claims": [
+            {
+              "id": "statement-v1-d3698c7f4fb20af5704df71fa110ac541af0ea09ec018f11adbcfe62d54399b3",
+              "label": "Next step",
+              "source": {
+                "kind": "file",
+                "ref": "main.go",
+                "lines": "234-238",
+                "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L234-L238"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "main.go",
+                  "lines": "241-248",
+                  "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L241-L248"
+                },
+                {
+                  "kind": "file",
+                  "ref": "main.go",
+                  "lines": "364-369",
+                  "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L364-L369"
+                },
+                {
+                  "kind": "file",
+                  "ref": "main.go",
+                  "lines": "371-376",
+                  "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L371-L376"
+                }
+              ],
+              "excerpt": "\tswitch len(args) {\n\t// TUI running on cwd\n\tcase 0:\n\t\treturn runTUI(\"\", \"\")\n\n\n\n\t\t// Validate that the argument is a directory. If it's not treat it as\n\t\t// an argument to the non-TUI version of Glow (via fallthrough).\n\t\tinfo, err := os.Stat(args[0])\n\t\tif err == nil && info.IsDir() {\n\t\t\tp, err := filepath.Abs(args[0])\n\t\t\tif err == nil {\n\t\t\t\treturn runTUI(p, \"\")\n\t\t\t}\n\n\n\tcfg.Path = path\n\tcfg.ShowAllFiles = showAllFiles\n\tcfg.ShowLineNumbers = showLineNumbers\n\tcfg.GlamourMaxWidth = width\n\tcfg.EnableMouse = mouse\n\tcfg.PreserveNewLines = preserveNewLines\n\n\n\t// Run Bubble Tea program\n\tprog, cleanup := ui.NewProgram(cfg, content)\n\tdefer cleanup()\n\tif _, err := prog.Run(); err != nil {\n\t\treturn fmt.Errorf(\"unable to run tui program: %w\", err)\n\t}\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "To investigate the interactive branch next, start at `execute` in `main.go`: no arguments route to `runTUI`, and a directory argument also routes there. Follow `runTUI` as it fills the UI configuration and calls `ui.NewProgram(cfg, content)`; that is the handoff from CLI dispatch to the interactive program.",
+              "limit": "A suggested reading route through inspected code, not a claim about uninspected UI behavior. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-768c8b3254bf22ebbbd6fb396cf439d30c0d3542af0b3f252a03e67b4c24b2d4",
+              "label": "Next step",
+              "source": {
+                "kind": "file",
+                "ref": "main.go",
+                "lines": "407-411",
+                "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L407-L411"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "main.go",
+                  "lines": "292-298",
+                  "url": "https://github.com/charmbracelet/glow/blob/8b0600fa445535b9c53194c0d4f7fe3cf700ef3e/main.go#L292-L298"
+                }
+              ],
+              "excerpt": "\trootCmd.PersistentFlags().StringVar(&configFile, \"config\", \"\", fmt.Sprintf(\"config file (default %s)\", viper.GetViper().ConfigFileUsed()))\n\trootCmd.Flags().BoolVarP(&pager, \"pager\", \"p\", false, \"display with pager\")\n\trootCmd.Flags().BoolVarP(&tui, \"tui\", \"t\", false, \"display with tui\")\n\trootCmd.Flags().StringVarP(&style, \"style\", \"s\", \"auto\", \"style name or JSON path\")\n\trootCmd.Flags().UintVarP(&width, \"width\", \"w\", 0, \"word-wrap at width (set to 0 to disable)\")\n\n\n\t// initialize glamour\n\tr, err := glamour.NewTermRenderer(\n\t\tutils.GlamourStyle(style, isCode),\n\t\tglamour.WithWordWrap(int(width)), //nolint:gosec\n\t\tglamour.WithBaseURL(baseURL),\n\t\tglamour.WithPreservedNewLines(),\n\t)\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "For changes to direct rendering instead, begin with `executeCLI` and the `--style` and `--width` flags in `main.go`. The flags expose a style name or JSON path and a wrapping width; the renderer construction is where those values enter the rendering pipeline.",
+              "limit": "Only flag registration and the renderer call site are covered; helper behavior needs further inspection. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "evidence_mode": "not_executed"
+        }
+      ]
+    }
+  }
+}
