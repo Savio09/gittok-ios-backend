@@ -246,7 +246,7 @@ func TestOneOrManyScenesNeverPublishUnreferencedText(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(a.Sections()) != 3 || a.Sections()[1].Kind != apimodel.SectionStack || a.Sections()[2].Kind != apimodel.SectionSetup {
+	if len(a.Sections()) != 3 || a.Sections()[1].Kind != apimodel.SectionStack || a.Sections()[2].Kind != apimodel.SectionHandoff {
 		t.Fatalf("role mapping: %+v", a.Sections())
 	}
 }
