@@ -22,6 +22,11 @@ func initialContextRequest(bundle Bundle, paths []string, windows []sourceWindow
 // Only presentation windows change; the pinned acquired Bundle stays intact.
 func (e *Engine) fittedInitialRequest(bundle Bundle, paths []string) (responseRequest, error) {
 	windows := initialEvidenceWindows(bundle.Files)
+	// Prefer a funded research/composition pair. Saturating a single final
+	// request must not silently disable all source tools at production prices.
+	probe, _ := initialContextRequest(bundle, paths, nil)
+	_, forced := e.writerTurn(probe, &engineBudget{}, false)
+	preferResearch := !forced
 	fit := func(projected []sourceWindow) (responseRequest, bool) {
 		request, err := initialContextRequest(bundle, paths, projected)
 		if err != nil {
@@ -29,6 +34,10 @@ func (e *Engine) fittedInitialRequest(bundle Bundle, paths []string) (responseRe
 		}
 		final, _ := e.writerTurn(request, &engineBudget{}, true)
 		_, err = e.prepareRequest(&engineBudget{}, final, false)
+		if err == nil && preferResearch {
+			_, forced := e.writerTurn(request, &engineBudget{}, false)
+			return request, !forced
+		}
 		return request, err == nil
 	}
 	if request, ok := fit(windows); ok {
@@ -58,29 +67,68 @@ func (e *Engine) fittedInitialRequest(bundle Bundle, paths []string) (responseRe
 		}
 		return best, found
 	}
-	core := windows[anchor]
-	if _, ok := fit([]sourceWindow{core}); !ok {
-		var found bool
-		core, found = trim(nil, core)
-		if !found {
-			return responseRequest{}, ErrGenerationBudget
+	// Give purpose and product code a foothold before either can consume the
+	// entire initial allowance. Expansion below still uses exact wire preflight.
+	order := []int{anchor}
+	for i, window := range windows {
+		if i != anchor && strings.HasPrefix(strings.ToLower(path.Base(window.Path)), "readme") {
+			order = append(order, i)
+			break
 		}
 	}
-	selected := []sourceWindow{core}
-	for i, window := range windows {
-		if i == anchor {
-			continue
-		}
-		candidate := append(append([]sourceWindow(nil), selected...), window)
+	selected := make([]sourceWindow, 0, len(windows))
+	selectedIndexes := map[int]int{}
+	for _, i := range order {
+		small := clippedInitialWindow(windows[i], min(512, initialWindowBytes(windows[i])))
+		candidate := append(append([]sourceWindow(nil), selected...), small)
 		if _, ok := fit(candidate); ok {
+			selectedIndexes[i] = len(selected)
 			selected = candidate
-			continue
 		}
-		// Drop expensive secondary code rather than crowding out a short
-		// purpose/usage document. Metadata can retain an honestly clipped prefix.
-		if !initialCodeContext(window.Path) {
-			if partial, ok := trim(selected, window); ok {
-				selected = append(selected, partial)
+	}
+	if len(selected) == 0 {
+		core, ok := trim(nil, windows[anchor])
+		if !ok {
+			return responseRequest{}, ErrGenerationBudget
+		}
+		selectedIndexes[anchor] = 0
+		selected = append(selected, core)
+	}
+	// Expand the already reserved purpose window first; keep the product foothold.
+	if len(order) > 1 {
+		order[0], order[1] = order[1], order[0]
+	}
+	included := map[int]bool{}
+	for _, i := range order {
+		included[i] = true
+	}
+	for i := range windows {
+		if !included[i] {
+			order = append(order, i)
+		}
+	}
+	for _, i := range order {
+		slot, present := selectedIndexes[i]
+		low, high := 1, initialWindowBytes(windows[i])
+		for low <= high {
+			mid := low + (high-low)/2
+			candidate := append([]sourceWindow(nil), selected...)
+			window := clippedInitialWindow(windows[i], mid)
+			if present {
+				candidate[slot] = window
+			} else {
+				candidate = append(candidate, window)
+			}
+			if _, ok := fit(candidate); ok {
+				selected = candidate
+				if !present {
+					slot = len(selected) - 1
+					selectedIndexes[i] = slot
+					present = true
+				}
+				low = mid + 1
+			} else {
+				high = mid - 1
 			}
 		}
 	}

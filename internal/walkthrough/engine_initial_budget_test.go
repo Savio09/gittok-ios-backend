@@ -32,7 +32,7 @@ func initialBudgetWindows(t *testing.T, request responseRequest) []sourceWindow 
 	return packet.Windows
 }
 
-func TestInitialProjectionFitsExactFinalCostWithoutLosingCoreOrAcquiredRegistry(t *testing.T) {
+func TestInitialProjectionFundsResearchAndFinalWithoutLosingPurposeOrAcquiredRegistry(t *testing.T) {
 	bundle := budgetContextBundle()
 	before := engineJSON(t, bundle)
 	cfg := engineConfig()
@@ -65,17 +65,15 @@ func TestInitialProjectionFitsExactFinalCostWithoutLosingCoreOrAcquiredRegistry(
 	core, docs := false, false
 	for _, window := range initialBudgetWindows(t, request) {
 		if window.FileID == "code" {
-			core = len(window.Lines) == 479 && !window.Truncated
-			found := false
-			for _, line := range window.Lines {
-				found = found || line.Number == 309 && strings.Contains(line.Text, "renderProduct")
-			}
-			core = core && found
+			core = len(window.Lines) > 0 && window.Lines[0].Number == 1 && (len(window.Lines) == 479 || window.Truncated)
 		}
 		docs = docs || window.FileID == "doc" && len(window.Lines) > 0 && strings.Contains(window.Lines[0].Text, "Render a user's input into useful output.")
 	}
 	if !core || !docs || engineJSON(t, bundle) != before {
-		t.Fatal("fitting lost complete core, useful docs, or mutated acquired registry")
+		t.Fatal("fitting lost product context, useful docs, or mutated acquired registry")
+	}
+	if _, forced := engine.writerTurn(request, &engineBudget{}, false); forced {
+		t.Fatal("fitting left no affordable source exploration for deep implementation")
 	}
 	if _, err := ledger.Reserve("preflight-proof", "all", 1000000); err != nil {
 		t.Fatalf("preflight mutated paid accounting: %v", err)
