@@ -55,12 +55,12 @@ type reservedCall struct {
 func (e *Engine) reserveRevisionPair(jobID string, usedCalls int, rewriteMicros, reviewMicros int64) (*reservedCall, *reservedCall, error) {
 	first, err := e.ledger.Reserve(jobID, "responses-v1-"+strconv.Itoa(usedCalls+1), rewriteMicros)
 	if err != nil || first.AlreadyReserved {
-		return nil, nil, ErrProviderUnavailable
+		return nil, nil, providerReservationError(err)
 	}
 	second, err := e.ledger.Reserve(jobID, "responses-v1-"+strconv.Itoa(usedCalls+2), reviewMicros)
 	if err != nil || second.AlreadyReserved {
 		_ = e.ledger.Settle(first, 0)
-		return nil, nil, ErrProviderUnavailable
+		return nil, nil, providerReservationError(err)
 	}
 	return &reservedCall{jobID: jobID, call: usedCalls + 1, reservation: first}, &reservedCall{jobID: jobID, call: usedCalls + 2, reservation: second}, nil
 }

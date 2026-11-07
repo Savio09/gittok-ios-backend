@@ -1,7 +1,11 @@
 package walkthrough
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
+	"github.com/Savio09/gittok-ios-backend/internal/generation"
+	"net/http"
 	"strings"
 	"testing"
 )
@@ -108,5 +112,44 @@ func TestFundedFreshFinalSurvivesBoundedWindowAndLargeResearchContinuation(t *te
 	_ = json.Unmarshal([]byte(msg.Content), &packet)
 	if len(packet.Requested) != 1 || engineJSON(t, packet.Requested[0]) != engineJSON(t, window) {
 		t.Fatal("funding dropped mandatory acquired lines")
+	}
+}
+
+func TestExhaustedWindowIsDistinguishableWithoutPayingProvider(t *testing.T) {
+	ledger := engineLedger(t)
+	if _, err := ledger.Reserve("prior-unknown", "hold", 999_999); err != nil {
+		t.Fatal(err)
+	}
+	calls := 0
+	engine, err := NewEngine(engineConfig(), ledger, WithHTTPClient(&http.Client{Transport: engineRoundTrip(func(*http.Request) (*http.Response, error) { calls++; return nil, ErrProviderUnavailable })}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	message, _ := inputMessage(map[string]string{"source": "bounded fixture"})
+	_, err = engine.respond(context.Background(), "unfunded-cold", &engineBudget{}, responseRequest{Input: []json.RawMessage{message}, MaxOutputTokens: 1024}, true)
+	if !errors.Is(err, generation.ErrBudgetExceeded) || !errors.Is(err, ErrProviderUnavailable) || calls != 0 {
+		t.Fatalf("spend limit hidden as generic failure or provider called: %v calls=%d", err, calls)
+	}
+}
+
+func TestRevisionPairPreservesBudgetFailureAndReleasesOnlyUnusedReservation(t *testing.T) {
+	for _, tc := range []struct {
+		name                 string
+		prior, first, second int64
+	}{{"first", 950_000, 60_000, 60_000}, {"second", 700_000, 200_000, 200_000}} {
+		t.Run(tc.name, func(t *testing.T) {
+			ledger := engineLedger(t)
+			if _, err := ledger.Reserve("prior-unknown", "hold", tc.prior); err != nil {
+				t.Fatal(err)
+			}
+			e := &Engine{ledger: ledger}
+			_, _, err := e.reserveRevisionPair("refused-pair", 0, tc.first, tc.second)
+			if !errors.Is(err, generation.ErrBudgetExceeded) || !errors.Is(err, ErrProviderUnavailable) {
+				t.Fatal("pair erased the spending limit", err)
+			}
+			if _, err = ledger.Reserve("remaining-proof", "hold", 1_000_000-tc.prior); err != nil {
+				t.Fatal("unused first reservation remained charged", err)
+			}
+		})
 	}
 }
