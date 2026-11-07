@@ -114,12 +114,10 @@ func (e *Engine) Run(ctx context.Context, jobID string, inv *Investigation, stag
 			return Accepted{}, ErrSourceUnavailable
 		}
 	}
-	initial := initialEvidenceWindows(bundle.Files)
-	message, err := inputMessage(map[string]any{"identity": bundle.Identity, "limitations": bundle.Limitations, "listed_paths": inv.FindPaths("", 40), "inspected_source_windows": initial})
+	request, err := e.fittedInitialRequest(bundle, inv.FindPaths("", 40))
 	if err != nil {
 		return Accepted{}, err
 	}
-	request := responseRequest{Instructions: writerInstructions, Input: []json.RawMessage{message}, Tools: writerTools(), ToolChoice: "required"}
 	budget := engineBudget{}
 	seenCalls := map[string]bool{}
 	finishRequested := false
