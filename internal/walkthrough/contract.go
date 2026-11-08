@@ -50,11 +50,12 @@ type Citation struct {
 // Statement is the only source of factual scene prose. Kind is one of purpose,
 // action, mechanism, result, design or handoff. Limit is reviewed with Text.
 type Statement struct {
-	ID      string     `json:"id"`
-	Kind    string     `json:"kind"`
-	Text    string     `json:"text"`
-	Sources []Citation `json:"sources"`
-	Limit   string     `json:"limit"`
+	ID      string                `json:"id"`
+	Kind    string                `json:"kind"`
+	Text    string                `json:"text"`
+	Sources []Citation            `json:"sources"`
+	Limit   string                `json:"limit"`
+	Visual  *apimodel.StoryVisual `json:"visual,omitempty"`
 }
 
 // Scene orders statement references; it has no independent prose escape hatch.
@@ -106,8 +107,14 @@ func (a Accepted) Sections() []apimodel.Section {
 	}
 	sections := append([]apimodel.Section(nil), a.sections...)
 	for i := range sections {
+		if sections[i].Storyboard != nil {
+			storyboard := *sections[i].Storyboard
+			storyboard.Beats = append([]apimodel.StoryboardBeat(nil), storyboard.Beats...)
+			sections[i].Storyboard = &storyboard
+		}
 		sections[i].Claims = append([]apimodel.Claim(nil), sections[i].Claims...)
 		for j := range sections[i].Claims {
+			sections[i].Claims[j].Visual = copyVisual(sections[i].Claims[j].Visual)
 			sections[i].Claims[j].AdditionalSources = append([]apimodel.Source(nil), sections[i].Claims[j].AdditionalSources...)
 		}
 	}

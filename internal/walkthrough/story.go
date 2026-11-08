@@ -46,10 +46,12 @@ func Accept(bundle Bundle, draft Draft, review Review) (Accepted, error) {
 		files[file.ID] = file
 	}
 	sections := make([]apimodel.Section, 0, len(draft.Scenes))
+	seenVisualClaims := make(map[string]bool)
 	prose := 0
 	for index, scene := range draft.Scenes {
 		section := sceneSection(scene.Role)
 		body := make([]string, 0, len(scene.StatementIDs))
+		beats := make([]apimodel.StoryboardBeat, 0, len(scene.StatementIDs))
 		for _, id := range scene.StatementIDs {
 			decision, found := decisions[id]
 			if !found || !decision.Accepted {
@@ -57,14 +59,29 @@ func Accept(bundle Bundle, draft Draft, review Review) (Accepted, error) {
 			}
 			statement := statements[id]
 			claim := renderClaim(bundle.Identity, statement, files)
-			prose += utf8.RuneCountInString(statement.Text)*2 + utf8.RuneCountInString(claim.Limit) + utf8.RuneCountInString(claim.Explanation)
+			prose += utf8.RuneCountInString(statement.Text)*2 + utf8.RuneCountInString(claim.Limit) + utf8.RuneCountInString(claim.Explanation) + visualProse(claim.Visual)
 			if prose > maxProseChars {
 				return Accepted{}, errors.New("walkthrough: rendered prose limit exceeded")
 			}
 			section.Claims = append(section.Claims, claim)
+			if claim.Visual != nil {
+				if seenVisualClaims[claim.ID] {
+					return Accepted{}, errors.New("walkthrough: duplicate visual claim")
+				}
+				seenVisualClaims[claim.ID] = true
+				beatID := contentID("beat", struct {
+					Identity        Identity
+					Scene, Position int
+					ClaimID         string
+				}{bundle.Identity, index, len(beats), claim.ID})
+				beats = append(beats, apimodel.StoryboardBeat{ID: beatID, ClaimID: claim.ID})
+			}
 			body = append(body, statement.Text)
 		}
 		section.Body = strings.Join(body, "\n\n")
+		if len(beats) == len(section.Claims) {
+			section.Storyboard = &apimodel.Storyboard{Version: 1, Beats: beats}
+		}
 		section.ID = contentID("scene", struct {
 			Identity Identity
 			Position int
@@ -106,6 +123,7 @@ func renderClaim(identity Identity, statement Statement, files map[string]Eviden
 		limit += " Source components: " + strings.Join(components, ", ") + "."
 	}
 	claim := apimodel.Claim{
+		Visual: renderVisual(statement, files),
 		Label:  statementLabel(statement.Kind),
 		Source: sources[0], AdditionalSources: sources[1:],
 		Excerpt:     strings.Join(quotes, "\n\n"),
@@ -142,7 +160,7 @@ func sceneSection(role string) apimodel.Section {
 	case "design":
 		section.Kind, section.Title = apimodel.SectionStack, "A closer look"
 	case "handoff":
-		section.Kind, section.Title = apimodel.SectionSetup, "Where to look next"
+		section.Kind, section.Title = apimodel.SectionHandoff, "Where to look next"
 	}
 	return section
 }

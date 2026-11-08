@@ -21,6 +21,7 @@ func groundDraft(bundle Bundle, draft Draft) (Draft, error) {
 	}
 	draft.Statements = append([]Statement(nil), draft.Statements...)
 	for i := range draft.Statements {
+		draft.Statements[i].Visual = copyVisual(draft.Statements[i].Visual)
 		if len(draft.Statements[i].Sources) > maxSources {
 			return Draft{}, ErrStoryRejected
 		}
