@@ -1,0 +1,58 @@
+{
+  "id": "Savio09/face-recognition",
+  "owner": "Savio09",
+  "name": "face-recognition",
+  "slug": "Savio09/face-recognition",
+  "kind": "other",
+  "language": "Python",
+  "description": "",
+  "github_url": "https://github.com/Savio09/face-recognition",
+  "sections": [
+    {
+      "kind": "idea",
+      "title": "Repository descriptions",
+      "claims": [
+        {
+          "label": "README passage",
+          "source": {
+            "kind": "file",
+            "ref": "README.md",
+            "lines": "1-1",
+            "url": "https://github.com/Savio09/face-recognition/blob/90750d921bed3768bd59328109e90f66b593eb86/README.md#L1-L1"
+          },
+          "excerpt": "This is the Face Detection model that was built easily in Python. ",
+          "explanation": "\"README.md\" states: \"This is the Face Detection model that was built easily in Python. \".",
+          "supports": "An attributed documentation passage in the repository root.",
+          "limit": "Repository documentation is an author statement; its described behavior was not verified.",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "stack",
+      "title": "Declared stack",
+      "claims": [
+        {
+          "label": "GitHub primary language",
+          "source": {
+            "kind": "metadata",
+            "ref": "language",
+            "url": "https://api.github.com/repos/Savio09/face-recognition"
+          },
+          "explanation": "GitHub reports language as \"Python\".",
+          "supports": "The value reported by GitHub for this repository.",
+          "limit": "Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "decision",
+      "title": "Coverage notes",
+      "body": "The project type could not be confirmed from the inspected files.",
+      "evidence_mode": "not_executed"
+    }
+  ]
+}

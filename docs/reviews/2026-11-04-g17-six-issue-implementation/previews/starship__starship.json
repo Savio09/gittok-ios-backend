@@ -1,0 +1,208 @@
+{
+  "id": "starship/starship",
+  "owner": "starship",
+  "name": "starship",
+  "slug": "starship/starship",
+  "kind": "cli",
+  "language": "Rust",
+  "description": "",
+  "github_url": "https://github.com/starship/starship",
+  "sections": [
+    {
+      "kind": "idea",
+      "title": "Repository descriptions",
+      "claims": [
+        {
+          "label": "Why this is a CLI",
+          "source": {
+            "kind": "api",
+            "ref": "src/main.rs",
+            "url": "https://api.github.com/repos/starship/starship/git/trees/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6?recursive=1"
+          },
+          "additional_sources": [
+            {
+              "kind": "file",
+              "ref": "Cargo.toml",
+              "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/Cargo.toml"
+            }
+          ],
+          "explanation": "Classified as a CLI from the inspected files: the file tree lists \"src/main.rs\", Cargo's implicit binary target for \"Cargo.toml\"; \"Cargo.toml\" declares \"dependencies → clap\".",
+          "supports": "GitTok's classification of this repository from the cited premises.",
+          "limit": "An inference from a bounded inspection; the code was not run, and files outside the inspection could change it.",
+          "confidence": "confident"
+        },
+        {
+          "label": "README passage",
+          "source": {
+            "kind": "file",
+            "ref": "README.md",
+            "lines": "3-7",
+            "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/README.md#L3-L7"
+          },
+          "excerpt": "    width=\"400\"\n    src=\"https://raw.githubusercontent.com/starship/starship/main/media/logo.png\"\n    alt=\"Starship – Cross-shell prompt\"\n  /\u003e\n\u003c/p\u003e",
+          "explanation": "\"README.md\" states: \"    width=\\\"400\\\"\\n    src=\\\"https://raw.githubusercontent.com/starship/starship/main/media/logo.png\\\"\\n    alt=\\\"Starship – Cross-shell prompt\\\"\\n  /\u003e\\n\u003c/p\u003e\".",
+          "supports": "An attributed documentation passage in the repository root.",
+          "limit": "Repository documentation is an author statement; its described behavior was not verified.",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "stack",
+      "title": "Declared stack",
+      "claims": [
+        {
+          "label": "GitHub primary language",
+          "source": {
+            "kind": "metadata",
+            "ref": "language",
+            "url": "https://api.github.com/repos/starship/starship"
+          },
+          "explanation": "GitHub reports language as \"Rust\".",
+          "supports": "The value reported by GitHub for this repository.",
+          "limit": "Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares clap",
+          "source": {
+            "kind": "file",
+            "ref": "Cargo.toml",
+            "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/Cargo.toml"
+          },
+          "explanation": "\"Cargo.toml\" declares \"clap\" in \"dependencies\" with declared specification \"4.6.7\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares clap_complete",
+          "source": {
+            "kind": "file",
+            "ref": "Cargo.toml",
+            "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/Cargo.toml"
+          },
+          "explanation": "\"Cargo.toml\" declares \"clap_complete\" in \"dependencies\" with declared specification \"4.6.11\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares clap_complete_nushell",
+          "source": {
+            "kind": "file",
+            "ref": "Cargo.toml",
+            "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/Cargo.toml"
+          },
+          "explanation": "\"Cargo.toml\" declares \"clap_complete_nushell\" in \"dependencies\" with declared specification \"4.6.2\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares dirs",
+          "source": {
+            "kind": "file",
+            "ref": "Cargo.toml",
+            "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/Cargo.toml"
+          },
+          "explanation": "\"Cargo.toml\" declares \"dirs\" in \"dependencies\" with declared specification \"7.0.0\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares dunce",
+          "source": {
+            "kind": "file",
+            "ref": "Cargo.toml",
+            "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/Cargo.toml"
+          },
+          "explanation": "\"Cargo.toml\" declares \"dunce\" in \"dependencies\" with declared specification \"1.0.5\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares gix",
+          "source": {
+            "kind": "file",
+            "ref": "Cargo.toml",
+            "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/Cargo.toml"
+          },
+          "explanation": "\"Cargo.toml\" declares \"gix\" in \"dependencies\" with declared specification \"0.90.0\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares guess_host_triple",
+          "source": {
+            "kind": "file",
+            "ref": "Cargo.toml",
+            "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/Cargo.toml"
+          },
+          "explanation": "\"Cargo.toml\" declares \"guess_host_triple\" in \"dependencies\" with declared specification \"0.1.5\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares home",
+          "source": {
+            "kind": "file",
+            "ref": "Cargo.toml",
+            "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/Cargo.toml"
+          },
+          "explanation": "\"Cargo.toml\" declares \"home\" in \"dependencies\" with declared specification \"0.5.12\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "setup",
+      "title": "Declared commands",
+      "claims": [
+        {
+          "label": "Declares command build",
+          "source": {
+            "kind": "file",
+            "ref": "docs/package.json",
+            "lines": "4-4",
+            "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/docs/package.json#L4-L4"
+          },
+          "excerpt": "\"build\": \"vitepress build\"",
+          "explanation": "\"docs/package.json\" declares field \"scripts → build\" as \"vitepress build\".",
+          "supports": "A static command declaration in component \"docs\".",
+          "limit": "The command was not executed; success and required environment were not verified.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares command dev",
+          "source": {
+            "kind": "file",
+            "ref": "docs/package.json",
+            "lines": "3-3",
+            "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/docs/package.json#L3-L3"
+          },
+          "excerpt": "\"dev\": \"vitepress dev\"",
+          "explanation": "\"docs/package.json\" declares field \"scripts → dev\" as \"vitepress dev\".",
+          "supports": "A static command declaration in component \"docs\".",
+          "limit": "The command was not executed; success and required environment were not verified.",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "decision",
+      "title": "Coverage notes",
+      "body": "Lower-priority declarations are not shown.",
+      "evidence_mode": "not_executed"
+    }
+  ]
+}

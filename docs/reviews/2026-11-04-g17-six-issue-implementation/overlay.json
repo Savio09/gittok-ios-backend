@@ -1,0 +1,16 @@
+{
+  "Replace": {
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/analysis/review_previous_builder_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-repair-recheck/root-cache_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/analysis/review_recheck_cache_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-repair-recheck/cache_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/preview/product_recheck_adjacent_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-repair-recheck/product_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/preview/swarm_product_review_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-repair-recheck/product-helpers_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/preview/source_recheck_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-repair-recheck/sources_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/preview/source_independent_review_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-repair-recheck/source-helpers_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/analysis/review_security_overlay_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-swarm-review/security/analysis_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/githubclient/review_security_overlay_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-swarm-review/security/redirect_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/preview/adversarial_ranking_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-six-issue-implementation/ranking-adversarial_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/preview/adversarial_source_review_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-six-issue-implementation/source-adversarial_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/analysis/adversarial_source_review_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-six-issue-implementation/cache-restart-adversarial_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/preview/implementation_capture_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-six-issue-implementation/capture_test.go.txt"
+  }
+}

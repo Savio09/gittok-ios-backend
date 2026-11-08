@@ -1,0 +1,10 @@
+{
+  "Replace": {
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/preview/swarm_product_review_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-swarm-review/product/review_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/analysis/cache_review_swarm_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-swarm-review/cache/cache_review_overlay_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/analysis/preview.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-swarm-review/cache/preview_instrumented.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/analysis/review_security_overlay_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-swarm-review/security/analysis_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/githubclient/review_security_overlay_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-swarm-review/security/redirect_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/preview/source_independent_review_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-swarm-review/sources/adversarial_test.go.txt"
+  }
+}

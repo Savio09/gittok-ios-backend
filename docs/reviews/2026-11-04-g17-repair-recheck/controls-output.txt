@@ -1,0 +1,1154 @@
+=== RUN   TestRepairPeerFrameworkGetsSemanticPriority
+    product_recheck_adjacent_test.go:21: status=inconclusive products=[a m] secondary=[{Path:a/main.go Detail:package main (produces a binary) Supports: Component:a Role:cli Witness:a/main.go bytes 8–12 (go.package-main) Context:false Absence:} {Path:a/go.mod Detail:requires "github.com/spf13/cobra" (CLI framework) Supports: Component:a Role:cli Witness:a/go.mod field require.github.com/spf13/cobra Context:false Absence:} {Path:m/package.json Detail:declares "react" (19) in dependencies (web framework) Supports: Component:m Role:frontend Witness:m/package.json field dependencies.react Context:false Absence:} {Path:m/index.html Detail:web app entry (index.html) Supports: Component:m Role:frontend Witness:listing entry.index-html over m/index.html Context:false Absence:}] dependencies=[Declares github.com/spf13/cobra @a/go.mod Declares a0 @m/package.json Declares a1 @m/package.json Declares a2 @m/package.json Declares a3 @m/package.json]
+    product_recheck_adjacent_test.go:22: the frontend candidate's decisive declaration was displaced by unrelated alphabetic declarations
+--- FAIL: TestRepairPeerFrameworkGetsSemanticPriority (0.00s)
+=== RUN   TestRepairToolProductSurvivesRootTooling
+    product_recheck_adjacent_test.go:36: status=inconclusive products=[] before=[Declares github.com/spf13/cobra @tools/app/go.mod Declares github.com/spf13/pflag @tools/app/go.mod Declares golang.org/x/term @tools/app/go.mod] server=true; after=[Declares prettier @package.json Declares github.com/spf13/cobra @tools/app/go.mod] server=false
+    product_recheck_adjacent_test.go:37: root development-only manifest removed sole actual product source construct
+--- FAIL: TestRepairToolProductSurvivesRootTooling (0.00s)
+=== RUN   TestRepairPeerQuotaDoesNotPreferDevelopmentToImportedProduct
+    product_recheck_adjacent_test.go:52: status=inconclusive products=[a m] deps=[Declares example.com/product0 @a/go.mod Declares example.com/product1 @a/go.mod Declares example.com/product2 @a/go.mod Declares example.com/product3 @a/go.mod Declares react @m/package.json Declares eslint @package.json Declares prettier @package.json]
+    product_recheck_adjacent_test.go:55: development-only declaration admitted while imported product declarations were excluded by equal-share quota
+    product_recheck_adjacent_test.go:55: development-only declaration admitted while imported product declarations were excluded by equal-share quota
+--- FAIL: TestRepairPeerQuotaDoesNotPreferDevelopmentToImportedProduct (0.00s)
+=== RUN   TestRepairRecordedAdditionalRepositories
+    product_recheck_adjacent_test.go:62: starship__starship.json kind=cli claims=13 status=resolved products=[] deps=[Declares clap @Cargo.toml Declares clap_complete @Cargo.toml Declares clap_complete_nushell @Cargo.toml Declares dirs @Cargo.toml Declares dunce @Cargo.toml Declares gix @Cargo.toml Declares guess_host_triple @Cargo.toml Declares home @Cargo.toml]
+    product_recheck_adjacent_test.go:62: excalidraw__excalidraw.json kind=other claims=17 status=inconclusive products=[excalidraw-app packages/common packages/element packages/excalidraw packages/fractional-indexing packages/laser-pointer packages/math packages/utils] deps=[Declares @excalidraw/random-username @excalidraw-app/package.json Declares @sentry/browser @excalidraw-app/package.json Declares callsites @excalidraw-app/package.json Declares firebase @excalidraw-app/package.json Declares i18next-browser-languagedetector @excalidraw-app/package.json Declares idb-keyval @excalidraw-app/package.json Declares @docusaurus/core @dev-docs/package.json Declares @docusaurus/preset-classic @dev-docs/package.json]
+    product_recheck_adjacent_test.go:62: Savio09__plantly.json kind=mobile claims=14 status=resolved products=[] deps=[Declares react-native @package.json Declares @expo/vector-icons @package.json Declares @react-native-async-storage/async-storage @package.json Declares date-fns @package.json Declares expo @package.json Declares expo-constants @package.json Declares expo-dev-client @package.json Declares expo-file-system @package.json]
+    product_recheck_adjacent_test.go:62: Savio09__face-recognition.json kind=other claims=2 status=inconclusive products=[] deps=[]
+--- PASS: TestRepairRecordedAdditionalRepositories (0.13s)
+=== RUN   TestRepairToolProductWithinRootGoModule
+    product_recheck_adjacent_test.go:73: classification={Kind:other Status:inconclusive Observations:[] Secondary:[] Limitations:[no importable Go package clause was inspected; the module's packages are unknown the repository root's role could not be determined from the inspected evidence, so no nested component can stand in for it] Basis:<nil> Products:[]} deps=[Declares example.com/zproduct @go.mod Declares github.com/spf13/cobra @go.mod] server=false
+    product_recheck_adjacent_test.go:74: root manifest alone hides sole tool product's source construct
+--- FAIL: TestRepairToolProductWithinRootGoModule (0.00s)
+=== RUN   TestRepairRecordedExcalidrawPreservesPeerFramework
+    product_recheck_adjacent_test.go:83: products=[excalidraw-app packages/common packages/element packages/excalidraw packages/fractional-indexing packages/laser-pointer packages/math packages/utils] inspectedReactFact=true validatedReactObservation=true selectedReact=false dependencies=[Declares @excalidraw/random-username @excalidraw-app/package.json Declares @sentry/browser @excalidraw-app/package.json Declares callsites @excalidraw-app/package.json Declares firebase @excalidraw-app/package.json Declares i18next-browser-languagedetector @excalidraw-app/package.json Declares idb-keyval @excalidraw-app/package.json Declares @docusaurus/core @dev-docs/package.json Declares @docusaurus/preset-classic @dev-docs/package.json]
+    product_recheck_adjacent_test.go:85: actual Excalidraw app framework omitted while docs dependencies retained
+--- FAIL: TestRepairRecordedExcalidrawPreservesPeerFramework (0.01s)
+=== RUN   TestIndependentSourceNULCollision
+    source_independent_review_test.go:23: {
+          "id": "o/r",
+          "owner": "o",
+          "name": "r",
+          "slug": "o/r",
+          "kind": "frontend",
+          "description": "",
+          "github_url": "https://github.com/o/r",
+          "sections": [
+            {
+              "kind": "idea",
+              "title": "Repository descriptions",
+              "claims": [
+                {
+                  "label": "Why this is a frontend",
+                  "source": {
+                    "kind": "file",
+                    "ref": "package.json",
+                    "lines": "2-2",
+                    "url": "https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/package.json#L2-L2"
+                  },
+                  "additional_sources": [
+                    {
+                      "kind": "api",
+                      "ref": "index.html",
+                      "url": "https://api.github.com/repos/o/r/git/trees/0123456789abcdef0123456789abcdef01234567?recursive=1"
+                    }
+                  ],
+                  "excerpt": "\"react\": \"19\"",
+                  "explanation": "Classified as a frontend from the inspected files: \"package.json\" declares \"dependencies → react\" as \"19\"; the file tree lists \"index.html\", a web app entry page.",
+                  "supports": "GitTok's classification of this repository from the cited premises.",
+                  "limit": "An inference from a bounded inspection; the code was not run, and files outside the inspection could change it.",
+                  "confidence": "confident"
+                }
+              ],
+              "evidence_mode": "not_executed"
+            },
+            {
+              "kind": "stack",
+              "title": "Declared stack",
+              "claims": [
+                {
+                  "label": "Declares react",
+                  "source": {
+                    "kind": "file",
+                    "ref": "package.json",
+                    "lines": "2-2",
+                    "url": "https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/package.json#L2-L2"
+                  },
+                  "excerpt": "\"react\": \"19\"",
+                  "explanation": "\"package.json\" declares \"react\" in \"dependencies\" with declared specification \"19\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                }
+              ],
+              "evidence_mode": "not_executed"
+            }
+          ]
+        }
+--- PASS: TestIndependentSourceNULCollision (0.00s)
+=== RUN   TestIndependentSourceAbsencePremiseFiles
+    source_independent_review_test.go:39: {
+          "label": "Why this is a library",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "url": "https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/go.mod"
+          },
+          "additional_sources": [
+            {
+              "kind": "file",
+              "ref": "lib.go",
+              "lines": "1-1",
+              "url": "https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/lib.go#L1-L1"
+            },
+            {
+              "kind": "file",
+              "ref": "cmd/tool/helper.go",
+              "url": "https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/cmd/tool/helper.go"
+            },
+            {
+              "kind": "file",
+              "ref": "lib.go",
+              "url": "https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/lib.go"
+            },
+            {
+              "kind": "api",
+              "ref": "git/trees/0123456789abcdef0123456789abcdef01234567",
+              "url": "https://api.github.com/repos/o/r/git/trees/0123456789abcdef0123456789abcdef01234567?recursive=1"
+            }
+          ],
+          "explanation": "Classified as a library from the inspected files: \"go.mod\" declares \"module\" as \"example.com/lib\"; \"lib.go\" declares package \"lib\"; \"go.mod\" was read in full; the package clauses of the 2 inspected Go files at the module root and under cmd/ declare no package main, and the inspected file tree lists no other Go file under cmd/.",
+          "supports": "GitTok's classification of this repository from the cited premises.",
+          "limit": "An inference from a bounded inspection; the code was not run, and files outside the inspection could change it.",
+          "confidence": "confident"
+        }
+--- PASS: TestIndependentSourceAbsencePremiseFiles (0.00s)
+=== RUN   TestIndependentSourceWorkspacePremises
+    source_independent_review_test.go:54: {
+          "label": "Why this is a frontend",
+          "source": {
+            "kind": "file",
+            "ref": "apps/web/package.json",
+            "lines": "1-1",
+            "url": "https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/apps/web/package.json#L1-L1"
+          },
+          "additional_sources": [
+            {
+              "kind": "api",
+              "ref": "apps/web/index.html",
+              "url": "https://api.github.com/repos/o/r/git/trees/0123456789abcdef0123456789abcdef01234567?recursive=1"
+            },
+            {
+              "kind": "api",
+              "ref": "git/trees/0123456789abcdef0123456789abcdef01234567",
+              "url": "https://api.github.com/repos/o/r/git/trees/0123456789abcdef0123456789abcdef01234567?recursive=1"
+            },
+            {
+              "kind": "file",
+              "ref": "package.json",
+              "lines": "1-1",
+              "url": "https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/package.json#L1-L1"
+            },
+            {
+              "kind": "file",
+              "ref": "apps/sidecar/package.json",
+              "lines": "1-1",
+              "url": "https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/apps/sidecar/package.json#L1-L1"
+            }
+          ],
+          "excerpt": "\"react\":\"19\"",
+          "explanation": "Classified as a frontend from component \"apps/web\"'s inspected files: \"apps/web/package.json\" declares \"dependencies → react\" as \"19\"; the file tree lists \"apps/web/index.html\", a web app entry page. Set aside as supporting: component \"apps/sidecar\" (backend) because \"package.json\" declares \"dependencies → sidecar\" as \"*\" and \"apps/sidecar/package.json\" declares \"name\" as \"sidecar\". It is the only product component in the complete file tree.",
+          "supports": "GitTok's classification of this repository from the cited premises.",
+          "limit": "An inference from a bounded inspection; the code was not run, and files outside the inspection could change it.",
+          "confidence": "confident"
+        }
+--- PASS: TestIndependentSourceWorkspacePremises (0.00s)
+=== RUN   TestIndependentSourceDuplicateObjects
+    source_independent_review_test.go:66: facts=[{Kind:dependency Component: Name:left-pad Spec:1 Category:dependencies Optional:false Witness:package.json field dependencies.left-pad} {Kind:script Component: Name:dev Spec:vite Category:scripts Optional:false Witness:package.json field scripts.dev}] class={Kind:other Status:inconclusive Observations:[] Secondary:[] Limitations:[rejected frontend evidence (declares "react" (19) in dependencies (web framework); witness package.json field dependencies.react): package.json has no field dependencies.react no decisive frontend / backend / library / CLI / mobile signal was found in the inspected manifests and file tree] Basis:<nil> Products:[]}
+--- PASS: TestIndependentSourceDuplicateObjects (0.00s)
+=== RUN   TestIndependentSourceRealCorpus
+=== RUN   TestIndependentSourceRealCorpus/cli__cli.json
+    source_independent_review_test.go:73: {
+          "id": "cli/cli",
+          "owner": "cli",
+          "name": "cli",
+          "slug": "cli/cli",
+          "kind": "cli",
+          "language": "Go",
+          "description": "",
+          "github_url": "https://github.com/cli/cli",
+          "sections": [
+            {
+              "kind": "idea",
+              "title": "Repository descriptions",
+              "claims": [
+                {
+                  "label": "Why this is a CLI",
+                  "source": {
+                    "kind": "file",
+                    "ref": "cmd/gen-docs/main.go",
+                    "lines": "1-1",
+                    "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/cmd/gen-docs/main.go#L1-L1"
+                  },
+                  "additional_sources": [
+                    {
+                      "kind": "file",
+                      "ref": "cmd/gh/main.go",
+                      "lines": "1-1",
+                      "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/cmd/gh/main.go#L1-L1"
+                    },
+                    {
+                      "kind": "file",
+                      "ref": "go.mod",
+                      "lines": "50-50",
+                      "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/go.mod#L50-L50"
+                    }
+                  ],
+                  "excerpt": "main",
+                  "explanation": "Classified as a CLI from the inspected files: \"cmd/gen-docs/main.go\" declares package main; \"cmd/gh/main.go\" declares package main; \"go.mod\" declares \"require → github.com/spf13/cobra\" as \"v1.10.2\".",
+                  "supports": "GitTok's classification of this repository from the cited premises.",
+                  "limit": "An inference from a bounded inspection; the code was not run, and files outside the inspection could change it.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "README passage",
+                  "source": {
+                    "kind": "file",
+                    "ref": "README.md",
+                    "lines": "3-3",
+                    "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/README.md#L3-L3"
+                  },
+                  "excerpt": "GitHub CLI, or the gh CLI, is GitHub on the command line. It brings pull requests, issues, and other GitHub concepts to the terminal next to where you are already working with `git` and your code.",
+                  "explanation": "\"README.md\" states: \"GitHub CLI, or the gh CLI, is GitHub on the command line. It brings pull requests, issues, and other GitHub concepts to the terminal next to where you are already working with `git` and your code.\".",
+                  "supports": "An attributed documentation passage in the repository root.",
+                  "limit": "Repository documentation is an author statement; its described behavior was not verified.",
+                  "confidence": "confident"
+                }
+              ],
+              "evidence_mode": "not_executed"
+            },
+            {
+              "kind": "stack",
+              "title": "Declared stack",
+              "claims": [
+                {
+                  "label": "Declares github.com/spf13/cobra",
+                  "source": {
+                    "kind": "file",
+                    "ref": "go.mod",
+                    "lines": "50-50",
+                    "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/go.mod#L50-L50"
+                  },
+                  "excerpt": "github.com/spf13/cobra v1.10.2",
+                  "explanation": "\"go.mod\" declares \"github.com/spf13/cobra\" in \"require\" with declared specification \"v1.10.2\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares github.com/spf13/pflag",
+                  "source": {
+                    "kind": "file",
+                    "ref": "go.mod",
+                    "lines": "51-51",
+                    "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/go.mod#L51-L51"
+                  },
+                  "excerpt": "github.com/spf13/pflag v1.0.10",
+                  "explanation": "\"go.mod\" declares \"github.com/spf13/pflag\" in \"require\" with declared specification \"v1.0.10\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "GitHub primary language",
+                  "source": {
+                    "kind": "metadata",
+                    "ref": "language",
+                    "url": "https://api.github.com/repos/cli/cli"
+                  },
+                  "explanation": "GitHub reports language as \"Go\".",
+                  "supports": "The value reported by GitHub for this repository.",
+                  "limit": "Provider metadata is mutable and does not verify implementation or runtime behavior.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares charm.land/bubbles/v2",
+                  "source": {
+                    "kind": "file",
+                    "ref": "go.mod",
+                    "lines": "8-8",
+                    "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/go.mod#L8-L8"
+                  },
+                  "excerpt": "charm.land/bubbles/v2 v2.2.1",
+                  "explanation": "\"go.mod\" declares \"charm.land/bubbles/v2\" in \"require\" with declared specification \"v2.2.1\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares charm.land/bubbletea/v2",
+                  "source": {
+                    "kind": "file",
+                    "ref": "go.mod",
+                    "lines": "9-9",
+                    "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/go.mod#L9-L9"
+                  },
+                  "excerpt": "charm.land/bubbletea/v2 v2.1.0",
+                  "explanation": "\"go.mod\" declares \"charm.land/bubbletea/v2\" in \"require\" with declared specification \"v2.1.0\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares charm.land/glamour/v2",
+                  "source": {
+                    "kind": "file",
+                    "ref": "go.mod",
+                    "lines": "10-10",
+                    "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/go.mod#L10-L10"
+                  },
+                  "excerpt": "charm.land/glamour/v2 v2.0.2-0.20261015065741-010543cac1a0",
+                  "explanation": "\"go.mod\" declares \"charm.land/glamour/v2\" in \"require\" with declared specification \"v2.0.2-0.20261015065741-010543cac1a0\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares charm.land/huh/v2",
+                  "source": {
+                    "kind": "file",
+                    "ref": "go.mod",
+                    "lines": "11-11",
+                    "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/go.mod#L11-L11"
+                  },
+                  "excerpt": "charm.land/huh/v2 v2.0.3",
+                  "explanation": "\"go.mod\" declares \"charm.land/huh/v2\" in \"require\" with declared specification \"v2.0.3\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares charm.land/lipgloss/v2",
+                  "source": {
+                    "kind": "file",
+                    "ref": "go.mod",
+                    "lines": "12-12",
+                    "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/go.mod#L12-L12"
+                  },
+                  "excerpt": "charm.land/lipgloss/v2 v2.0.6",
+                  "explanation": "\"go.mod\" declares \"charm.land/lipgloss/v2\" in \"require\" with declared specification \"v2.0.6\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares github.com/AlecAivazis/survey/v2",
+                  "source": {
+                    "kind": "file",
+                    "ref": "go.mod",
+                    "lines": "13-13",
+                    "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/go.mod#L13-L13"
+                  },
+                  "excerpt": "github.com/AlecAivazis/survey/v2 v2.3.7",
+                  "explanation": "\"go.mod\" declares \"github.com/AlecAivazis/survey/v2\" in \"require\" with declared specification \"v2.3.7\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                }
+              ],
+              "evidence_mode": "not_executed"
+            },
+            {
+              "kind": "decision",
+              "title": "Coverage notes",
+              "body": "Lower-priority declarations are not shown.",
+              "evidence_mode": "not_executed"
+            }
+          ]
+        }
+    source_independent_review_test.go:81: inspected 12 positioned source links
+=== RUN   TestIndependentSourceRealCorpus/pocketbase__pocketbase.json
+    source_independent_review_test.go:73: {
+          "id": "pocketbase/pocketbase",
+          "owner": "pocketbase",
+          "name": "pocketbase",
+          "slug": "pocketbase/pocketbase",
+          "kind": "other",
+          "language": "Go",
+          "description": "",
+          "github_url": "https://github.com/pocketbase/pocketbase",
+          "sections": [
+            {
+              "kind": "idea",
+              "title": "Repository descriptions",
+              "claims": [
+                {
+                  "label": "README passage",
+                  "source": {
+                    "kind": "file",
+                    "ref": "README.md",
+                    "lines": "1-1",
+                    "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/README.md#L1-L1"
+                  },
+                  "excerpt": "**⚠️ The repo has moved to https://ganigeorgiev.com/pocketbase/pocketbase.**",
+                  "explanation": "\"README.md\" states: \"**⚠️ The repo has moved to https://ganigeorgiev.com/pocketbase/pocketbase.**\".",
+                  "supports": "An attributed documentation passage in the repository root.",
+                  "limit": "Repository documentation is an author statement; its described behavior was not verified.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "README passage",
+                  "source": {
+                    "kind": "file",
+                    "ref": "ui/README.md",
+                    "lines": "1-2",
+                    "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/ui/README.md#L1-L2"
+                  },
+                  "excerpt": "PocketBase Superuser dashboard UI\n======================================================================",
+                  "explanation": "\"ui/README.md\" states: \"PocketBase Superuser dashboard UI\\n======================================================================\".",
+                  "supports": "An attributed documentation passage in component \"ui\".",
+                  "limit": "Repository documentation is an author statement; its described behavior was not verified.",
+                  "confidence": "confident"
+                }
+              ],
+              "evidence_mode": "not_executed"
+            },
+            {
+              "kind": "stack",
+              "title": "Declared stack",
+              "claims": [
+                {
+                  "label": "Declares github.com/fatih/color",
+                  "source": {
+                    "kind": "file",
+                    "ref": "go.mod",
+                    "lines": "10-10",
+                    "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/go.mod#L10-L10"
+                  },
+                  "excerpt": "github.com/fatih/color v1.19.0",
+                  "explanation": "\"go.mod\" declares \"github.com/fatih/color\" in \"require\" with declared specification \"v1.19.0\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "GitHub primary language",
+                  "source": {
+                    "kind": "metadata",
+                    "ref": "language",
+                    "url": "https://api.github.com/repos/pocketbase/pocketbase"
+                  },
+                  "explanation": "GitHub reports language as \"Go\".",
+                  "supports": "The value reported by GitHub for this repository.",
+                  "limit": "Provider metadata is mutable and does not verify implementation or runtime behavior.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares github.com/pocketbase/ozzo-validation/v4",
+                  "source": {
+                    "kind": "file",
+                    "ref": "go.mod",
+                    "lines": "16-16",
+                    "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/go.mod#L16-L16"
+                  },
+                  "excerpt": "github.com/pocketbase/ozzo-validation/v4 v4.3.0",
+                  "explanation": "\"go.mod\" declares \"github.com/pocketbase/ozzo-validation/v4\" in \"require\" with declared specification \"v4.3.0\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares github.com/spf13/cast",
+                  "source": {
+                    "kind": "file",
+                    "ref": "go.mod",
+                    "lines": "18-18",
+                    "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/go.mod#L18-L18"
+                  },
+                  "excerpt": "github.com/spf13/cast v1.10.0",
+                  "explanation": "\"go.mod\" declares \"github.com/spf13/cast\" in \"require\" with declared specification \"v1.10.0\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares github.com/spf13/cobra",
+                  "source": {
+                    "kind": "file",
+                    "ref": "go.mod",
+                    "lines": "19-19",
+                    "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/go.mod#L19-L19"
+                  },
+                  "excerpt": "github.com/spf13/cobra v1.10.2",
+                  "explanation": "\"go.mod\" declares \"github.com/spf13/cobra\" in \"require\" with declared specification \"v1.10.2\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares github.com/disintegration/imaging",
+                  "source": {
+                    "kind": "file",
+                    "ref": "go.mod",
+                    "lines": "6-6",
+                    "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/go.mod#L6-L6"
+                  },
+                  "excerpt": "github.com/disintegration/imaging v1.6.2",
+                  "explanation": "\"go.mod\" declares \"github.com/disintegration/imaging\" in \"require\" with declared specification \"v1.6.2\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares github.com/domodwyer/mailyak/v3",
+                  "source": {
+                    "kind": "file",
+                    "ref": "go.mod",
+                    "lines": "7-7",
+                    "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/go.mod#L7-L7"
+                  },
+                  "excerpt": "github.com/domodwyer/mailyak/v3 v3.6.2",
+                  "explanation": "\"go.mod\" declares \"github.com/domodwyer/mailyak/v3\" in \"require\" with declared specification \"v3.6.2\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares leaflet",
+                  "source": {
+                    "kind": "file",
+                    "ref": "ui/package.json",
+                    "lines": "10-10",
+                    "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/ui/package.json#L10-L10"
+                  },
+                  "excerpt": "\"leaflet\": \"^1.9.4\"",
+                  "explanation": "\"ui/package.json\" declares \"leaflet\" in \"dependencies\" with declared specification \"^1.9.4\".",
+                  "supports": "A dependency declaration in component \"ui\".",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares pocketbase",
+                  "source": {
+                    "kind": "file",
+                    "ref": "ui/package.json",
+                    "lines": "11-11",
+                    "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/ui/package.json#L11-L11"
+                  },
+                  "excerpt": "\"pocketbase\": \"^0.28.1\"",
+                  "explanation": "\"ui/package.json\" declares \"pocketbase\" in \"dependencies\" with declared specification \"^0.28.1\".",
+                  "supports": "A dependency declaration in component \"ui\".",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                }
+              ],
+              "evidence_mode": "not_executed"
+            },
+            {
+              "kind": "setup",
+              "title": "Declared commands",
+              "claims": [
+                {
+                  "label": "Declares command build",
+                  "source": {
+                    "kind": "file",
+                    "ref": "ui/package.json",
+                    "lines": "7-7",
+                    "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/ui/package.json#L7-L7"
+                  },
+                  "excerpt": "\"build\": \"dprint fmt \u0026\u0026 vite build\"",
+                  "explanation": "\"ui/package.json\" declares field \"scripts → build\" as \"dprint fmt \u0026\u0026 vite build\".",
+                  "supports": "A static command declaration in component \"ui\".",
+                  "limit": "The command was not executed; success and required environment were not verified.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares command dev",
+                  "source": {
+                    "kind": "file",
+                    "ref": "ui/package.json",
+                    "lines": "6-6",
+                    "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/ui/package.json#L6-L6"
+                  },
+                  "excerpt": "\"dev\": \"vite\"",
+                  "explanation": "\"ui/package.json\" declares field \"scripts → dev\" as \"vite\".",
+                  "supports": "A static command declaration in component \"ui\".",
+                  "limit": "The command was not executed; success and required environment were not verified.",
+                  "confidence": "confident"
+                }
+              ],
+              "evidence_mode": "not_executed"
+            },
+            {
+              "kind": "decision",
+              "title": "Coverage notes",
+              "body": "The project type could not be confirmed from the inspected files.\nLower-priority declarations are not shown.",
+              "evidence_mode": "not_executed"
+            }
+          ]
+        }
+    source_independent_review_test.go:81: inspected 12 positioned source links
+=== RUN   TestIndependentSourceRealCorpus/starship__starship.json
+    source_independent_review_test.go:73: {
+          "id": "starship/starship",
+          "owner": "starship",
+          "name": "starship",
+          "slug": "starship/starship",
+          "kind": "cli",
+          "language": "Rust",
+          "description": "",
+          "github_url": "https://github.com/starship/starship",
+          "sections": [
+            {
+              "kind": "idea",
+              "title": "Repository descriptions",
+              "claims": [
+                {
+                  "label": "Why this is a CLI",
+                  "source": {
+                    "kind": "api",
+                    "ref": "src/main.rs",
+                    "url": "https://api.github.com/repos/starship/starship/git/trees/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6?recursive=1"
+                  },
+                  "additional_sources": [
+                    {
+                      "kind": "file",
+                      "ref": "Cargo.toml",
+                      "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/Cargo.toml"
+                    }
+                  ],
+                  "explanation": "Classified as a CLI from the inspected files: the file tree lists \"src/main.rs\", Cargo's implicit binary target for \"Cargo.toml\"; \"Cargo.toml\" declares \"dependencies → clap\".",
+                  "supports": "GitTok's classification of this repository from the cited premises.",
+                  "limit": "An inference from a bounded inspection; the code was not run, and files outside the inspection could change it.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "README passage",
+                  "source": {
+                    "kind": "file",
+                    "ref": "README.md",
+                    "lines": "3-7",
+                    "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/README.md#L3-L7"
+                  },
+                  "excerpt": "    width=\"400\"\n    src=\"https://raw.githubusercontent.com/starship/starship/main/media/logo.png\"\n    alt=\"Starship – Cross-shell prompt\"\n  /\u003e\n\u003c/p\u003e",
+                  "explanation": "\"README.md\" states: \"    width=\\\"400\\\"\\n    src=\\\"https://raw.githubusercontent.com/starship/starship/main/media/logo.png\\\"\\n    alt=\\\"Starship – Cross-shell prompt\\\"\\n  /\u003e\\n\u003c/p\u003e\".",
+                  "supports": "An attributed documentation passage in the repository root.",
+                  "limit": "Repository documentation is an author statement; its described behavior was not verified.",
+                  "confidence": "confident"
+                }
+              ],
+              "evidence_mode": "not_executed"
+            },
+            {
+              "kind": "stack",
+              "title": "Declared stack",
+              "claims": [
+                {
+                  "label": "GitHub primary language",
+                  "source": {
+                    "kind": "metadata",
+                    "ref": "language",
+                    "url": "https://api.github.com/repos/starship/starship"
+                  },
+                  "explanation": "GitHub reports language as \"Rust\".",
+                  "supports": "The value reported by GitHub for this repository.",
+                  "limit": "Provider metadata is mutable and does not verify implementation or runtime behavior.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares clap",
+                  "source": {
+                    "kind": "file",
+                    "ref": "Cargo.toml",
+                    "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/Cargo.toml"
+                  },
+                  "explanation": "\"Cargo.toml\" declares \"clap\" in \"dependencies\" with declared specification \"4.6.7\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares clap_complete",
+                  "source": {
+                    "kind": "file",
+                    "ref": "Cargo.toml",
+                    "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/Cargo.toml"
+                  },
+                  "explanation": "\"Cargo.toml\" declares \"clap_complete\" in \"dependencies\" with declared specification \"4.6.11\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares clap_complete_nushell",
+                  "source": {
+                    "kind": "file",
+                    "ref": "Cargo.toml",
+                    "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/Cargo.toml"
+                  },
+                  "explanation": "\"Cargo.toml\" declares \"clap_complete_nushell\" in \"dependencies\" with declared specification \"4.6.2\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares dirs",
+                  "source": {
+                    "kind": "file",
+                    "ref": "Cargo.toml",
+                    "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/Cargo.toml"
+                  },
+                  "explanation": "\"Cargo.toml\" declares \"dirs\" in \"dependencies\" with declared specification \"7.0.0\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares dunce",
+                  "source": {
+                    "kind": "file",
+                    "ref": "Cargo.toml",
+                    "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/Cargo.toml"
+                  },
+                  "explanation": "\"Cargo.toml\" declares \"dunce\" in \"dependencies\" with declared specification \"1.0.5\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares gix",
+                  "source": {
+                    "kind": "file",
+                    "ref": "Cargo.toml",
+                    "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/Cargo.toml"
+                  },
+                  "explanation": "\"Cargo.toml\" declares \"gix\" in \"dependencies\" with declared specification \"0.90.0\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares guess_host_triple",
+                  "source": {
+                    "kind": "file",
+                    "ref": "Cargo.toml",
+                    "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/Cargo.toml"
+                  },
+                  "explanation": "\"Cargo.toml\" declares \"guess_host_triple\" in \"dependencies\" with declared specification \"0.1.5\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares home",
+                  "source": {
+                    "kind": "file",
+                    "ref": "Cargo.toml",
+                    "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/Cargo.toml"
+                  },
+                  "explanation": "\"Cargo.toml\" declares \"home\" in \"dependencies\" with declared specification \"0.5.12\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                }
+              ],
+              "evidence_mode": "not_executed"
+            },
+            {
+              "kind": "setup",
+              "title": "Declared commands",
+              "claims": [
+                {
+                  "label": "Declares command build",
+                  "source": {
+                    "kind": "file",
+                    "ref": "docs/package.json",
+                    "lines": "4-4",
+                    "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/docs/package.json#L4-L4"
+                  },
+                  "excerpt": "\"build\": \"vitepress build\"",
+                  "explanation": "\"docs/package.json\" declares field \"scripts → build\" as \"vitepress build\".",
+                  "supports": "A static command declaration in component \"docs\".",
+                  "limit": "The command was not executed; success and required environment were not verified.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares command dev",
+                  "source": {
+                    "kind": "file",
+                    "ref": "docs/package.json",
+                    "lines": "3-3",
+                    "url": "https://github.com/starship/starship/blob/5e9e2c8c5f6dcb9c148c12dee1afd1166530b0e6/docs/package.json#L3-L3"
+                  },
+                  "excerpt": "\"dev\": \"vitepress dev\"",
+                  "explanation": "\"docs/package.json\" declares field \"scripts → dev\" as \"vitepress dev\".",
+                  "supports": "A static command declaration in component \"docs\".",
+                  "limit": "The command was not executed; success and required environment were not verified.",
+                  "confidence": "confident"
+                }
+              ],
+              "evidence_mode": "not_executed"
+            },
+            {
+              "kind": "decision",
+              "title": "Coverage notes",
+              "body": "Lower-priority declarations are not shown.",
+              "evidence_mode": "not_executed"
+            }
+          ]
+        }
+    source_independent_review_test.go:81: inspected 3 positioned source links
+=== RUN   TestIndependentSourceRealCorpus/excalidraw__excalidraw.json
+    source_independent_review_test.go:73: {
+          "id": "excalidraw/excalidraw",
+          "owner": "excalidraw",
+          "name": "excalidraw",
+          "slug": "excalidraw/excalidraw",
+          "kind": "other",
+          "language": "TypeScript",
+          "description": "",
+          "github_url": "https://github.com/excalidraw/excalidraw",
+          "sections": [
+            {
+              "kind": "idea",
+              "title": "Repository descriptions",
+              "claims": [
+                {
+                  "label": "README passage",
+                  "source": {
+                    "kind": "file",
+                    "ref": "README.md",
+                    "lines": "17-21",
+                    "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/README.md#L17-L21"
+                  },
+                  "excerpt": "    An open source virtual hand-drawn style whiteboard. \u003c/br\u003e\n    Collaborative and end-to-end encrypted. \u003c/br\u003e\n  \u003cbr /\u003e\n  \u003c/h2\u003e\n\u003c/div\u003e",
+                  "explanation": "\"README.md\" states: \"    An open source virtual hand-drawn style whiteboard. \u003c/br\u003e\\n    Collaborative and end-to-end encrypted. \u003c/br\u003e\\n  \u003cbr /\u003e\\n  \u003c/h2\u003e\\n\u003c/div\u003e\".",
+                  "supports": "An attributed documentation passage in the repository root.",
+                  "limit": "Repository documentation is an author statement; its described behavior was not verified.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "README passage",
+                  "source": {
+                    "kind": "file",
+                    "ref": "dev-docs/README.md",
+                    "lines": "3-3",
+                    "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/dev-docs/README.md#L3-L3"
+                  },
+                  "excerpt": "This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.",
+                  "explanation": "\"dev-docs/README.md\" states: \"This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.\".",
+                  "supports": "An attributed documentation passage in component \"dev-docs\".",
+                  "limit": "Repository documentation is an author statement; its described behavior was not verified.",
+                  "confidence": "confident"
+                }
+              ],
+              "evidence_mode": "not_executed"
+            },
+            {
+              "kind": "stack",
+              "title": "Declared stack",
+              "claims": [
+                {
+                  "label": "GitHub primary language",
+                  "source": {
+                    "kind": "metadata",
+                    "ref": "language",
+                    "url": "https://api.github.com/repos/excalidraw/excalidraw"
+                  },
+                  "explanation": "GitHub reports language as \"TypeScript\".",
+                  "supports": "The value reported by GitHub for this repository.",
+                  "limit": "Provider metadata is mutable and does not verify implementation or runtime behavior.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares @excalidraw/random-username",
+                  "source": {
+                    "kind": "file",
+                    "ref": "excalidraw-app/package.json",
+                    "lines": "29-29",
+                    "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/excalidraw-app/package.json#L29-L29"
+                  },
+                  "excerpt": "\"@excalidraw/random-username\": \"1.0.0\"",
+                  "explanation": "\"excalidraw-app/package.json\" declares \"@excalidraw/random-username\" in \"dependencies\" with declared specification \"1.0.0\".",
+                  "supports": "A dependency declaration in component \"excalidraw-app\".",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares @sentry/browser",
+                  "source": {
+                    "kind": "file",
+                    "ref": "excalidraw-app/package.json",
+                    "lines": "30-30",
+                    "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/excalidraw-app/package.json#L30-L30"
+                  },
+                  "excerpt": "\"@sentry/browser\": \"9.0.1\"",
+                  "explanation": "\"excalidraw-app/package.json\" declares \"@sentry/browser\" in \"dependencies\" with declared specification \"9.0.1\".",
+                  "supports": "A dependency declaration in component \"excalidraw-app\".",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares callsites",
+                  "source": {
+                    "kind": "file",
+                    "ref": "excalidraw-app/package.json",
+                    "lines": "31-31",
+                    "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/excalidraw-app/package.json#L31-L31"
+                  },
+                  "excerpt": "\"callsites\": \"4.2.0\"",
+                  "explanation": "\"excalidraw-app/package.json\" declares \"callsites\" in \"dependencies\" with declared specification \"4.2.0\".",
+                  "supports": "A dependency declaration in component \"excalidraw-app\".",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares firebase",
+                  "source": {
+                    "kind": "file",
+                    "ref": "excalidraw-app/package.json",
+                    "lines": "32-32",
+                    "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/excalidraw-app/package.json#L32-L32"
+                  },
+                  "excerpt": "\"firebase\": \"11.3.1\"",
+                  "explanation": "\"excalidraw-app/package.json\" declares \"firebase\" in \"dependencies\" with declared specification \"11.3.1\".",
+                  "supports": "A dependency declaration in component \"excalidraw-app\".",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares i18next-browser-languagedetector",
+                  "source": {
+                    "kind": "file",
+                    "ref": "excalidraw-app/package.json",
+                    "lines": "33-33",
+                    "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/excalidraw-app/package.json#L33-L33"
+                  },
+                  "excerpt": "\"i18next-browser-languagedetector\": \"6.1.4\"",
+                  "explanation": "\"excalidraw-app/package.json\" declares \"i18next-browser-languagedetector\" in \"dependencies\" with declared specification \"6.1.4\".",
+                  "supports": "A dependency declaration in component \"excalidraw-app\".",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares idb-keyval",
+                  "source": {
+                    "kind": "file",
+                    "ref": "excalidraw-app/package.json",
+                    "lines": "34-34",
+                    "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/excalidraw-app/package.json#L34-L34"
+                  },
+                  "excerpt": "\"idb-keyval\": \"6.0.3\"",
+                  "explanation": "\"excalidraw-app/package.json\" declares \"idb-keyval\" in \"dependencies\" with declared specification \"6.0.3\".",
+                  "supports": "A dependency declaration in component \"excalidraw-app\".",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares @docusaurus/core",
+                  "source": {
+                    "kind": "file",
+                    "ref": "dev-docs/package.json",
+                    "lines": "18-18",
+                    "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/dev-docs/package.json#L18-L18"
+                  },
+                  "excerpt": "\"@docusaurus/core\": \"2.2.0\"",
+                  "explanation": "\"dev-docs/package.json\" declares \"@docusaurus/core\" in \"dependencies\" with declared specification \"2.2.0\".",
+                  "supports": "A dependency declaration in component \"dev-docs\".",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares @docusaurus/preset-classic",
+                  "source": {
+                    "kind": "file",
+                    "ref": "dev-docs/package.json",
+                    "lines": "19-19",
+                    "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/dev-docs/package.json#L19-L19"
+                  },
+                  "excerpt": "\"@docusaurus/preset-classic\": \"2.2.0\"",
+                  "explanation": "\"dev-docs/package.json\" declares \"@docusaurus/preset-classic\" in \"dependencies\" with declared specification \"2.2.0\".",
+                  "supports": "A dependency declaration in component \"dev-docs\".",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                }
+              ],
+              "evidence_mode": "not_executed"
+            },
+            {
+              "kind": "setup",
+              "title": "Declared commands",
+              "claims": [
+                {
+                  "label": "Declares command build",
+                  "source": {
+                    "kind": "file",
+                    "ref": "excalidraw-app/package.json",
+                    "lines": "48-48",
+                    "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/excalidraw-app/package.json#L48-L48"
+                  },
+                  "excerpt": "\"build\": \"yarn build:app \u0026\u0026 yarn build:version\"",
+                  "explanation": "\"excalidraw-app/package.json\" declares field \"scripts → build\" as \"yarn build:app \u0026\u0026 yarn build:version\".",
+                  "supports": "A static command declaration in component \"excalidraw-app\".",
+                  "limit": "The command was not executed; success and required environment were not verified.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares command serve",
+                  "source": {
+                    "kind": "file",
+                    "ref": "excalidraw-app/package.json",
+                    "lines": "51-51",
+                    "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/excalidraw-app/package.json#L51-L51"
+                  },
+                  "excerpt": "\"serve\": \"npx http-server build -a localhost -p 5001 -o\"",
+                  "explanation": "\"excalidraw-app/package.json\" declares field \"scripts → serve\" as \"npx http-server build -a localhost -p 5001 -o\".",
+                  "supports": "A static command declaration in component \"excalidraw-app\".",
+                  "limit": "The command was not executed; success and required environment were not verified.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares command start",
+                  "source": {
+                    "kind": "file",
+                    "ref": "excalidraw-app/package.json",
+                    "lines": "49-49",
+                    "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/excalidraw-app/package.json#L49-L49"
+                  },
+                  "excerpt": "\"start\": \"yarn \u0026\u0026 vite\"",
+                  "explanation": "\"excalidraw-app/package.json\" declares field \"scripts → start\" as \"yarn \u0026\u0026 vite\".",
+                  "supports": "A static command declaration in component \"excalidraw-app\".",
+                  "limit": "The command was not executed; success and required environment were not verified.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares command build",
+                  "source": {
+                    "kind": "file",
+                    "ref": "package.json",
+                    "lines": "67-67",
+                    "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/package.json#L67-L67"
+                  },
+                  "excerpt": "\"build\": \"yarn --cwd ./excalidraw-app build\"",
+                  "explanation": "\"package.json\" declares field \"scripts → build\" as \"yarn --cwd ./excalidraw-app build\".",
+                  "supports": "A static command declaration in the repository root.",
+                  "limit": "The command was not executed; success and required environment were not verified.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares command build",
+                  "source": {
+                    "kind": "file",
+                    "ref": "dev-docs/package.json",
+                    "lines": "8-8",
+                    "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/dev-docs/package.json#L8-L8"
+                  },
+                  "excerpt": "\"build\": \"docusaurus build\"",
+                  "explanation": "\"dev-docs/package.json\" declares field \"scripts → build\" as \"docusaurus build\".",
+                  "supports": "A static command declaration in component \"dev-docs\".",
+                  "limit": "The command was not executed; success and required environment were not verified.",
+                  "confidence": "confident"
+                },
+                {
+                  "label": "Declares command build-node",
+                  "source": {
+                    "kind": "file",
+                    "ref": "package.json",
+                    "lines": "53-53",
+                    "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/package.json#L53-L53"
+                  },
+                  "excerpt": "\"build-node\": \"node ./scripts/build-node.js\"",
+                  "explanation": "\"package.json\" declares field \"scripts → build-node\" as \"node ./scripts/build-node.js\".",
+                  "supports": "A static command declaration in the repository root.",
+                  "limit": "The command was not executed; success and required environment were not verified.",
+                  "confidence": "confident"
+                }
+              ],
+              "evidence_mode": "not_executed"
+            },
+            {
+              "kind": "decision",
+              "title": "Coverage notes",
+              "body": "The project type could not be confirmed from the inspected files.\nLower-priority declarations are not shown.",
+              "evidence_mode": "not_executed"
+            }
+          ]
+        }
+    source_independent_review_test.go:81: inspected 16 positioned source links
+--- PASS: TestIndependentSourceRealCorpus (0.03s)
+    --- PASS: TestIndependentSourceRealCorpus/cli__cli.json (0.01s)
+    --- PASS: TestIndependentSourceRealCorpus/pocketbase__pocketbase.json (0.01s)
+    --- PASS: TestIndependentSourceRealCorpus/starship__starship.json (0.00s)
+    --- PASS: TestIndependentSourceRealCorpus/excalidraw__excalidraw.json (0.01s)
+=== RUN   TestIndependentSourceIncompleteAbsence
+    source_independent_review_test.go:91: kind=other proof=false {
+          "label": "",
+          "source": {
+            "ref": ""
+          },
+          "explanation": "",
+          "confidence": ""
+        }
+--- PASS: TestIndependentSourceIncompleteAbsence (0.00s)
+=== RUN   TestIndependentSourceNormalPositions
+=== RUN   TestIndependentSourceNormalPositions/Go_grouped_quoted_CRLF
+=== RUN   TestIndependentSourceNormalPositions/Go_duplicate_effective
+=== RUN   TestIndependentSourceNormalPositions/Go_clipped_final_token
+=== RUN   TestIndependentSourceNormalPositions/Go_malformed
+=== RUN   TestIndependentSourceNormalPositions/JSON_nested_duplicate_escaped_multiline
+=== RUN   TestIndependentSourceNormalPositions/JSON_duplicate_parent_overwritten
+=== RUN   TestIndependentSourceNormalPositions/JSON_malformed_clipped
+--- PASS: TestIndependentSourceNormalPositions (0.00s)
+    --- PASS: TestIndependentSourceNormalPositions/Go_grouped_quoted_CRLF (0.00s)
+    --- PASS: TestIndependentSourceNormalPositions/Go_duplicate_effective (0.00s)
+    --- PASS: TestIndependentSourceNormalPositions/Go_clipped_final_token (0.00s)
+    --- PASS: TestIndependentSourceNormalPositions/Go_malformed (0.00s)
+    --- PASS: TestIndependentSourceNormalPositions/JSON_nested_duplicate_escaped_multiline (0.00s)
+    --- PASS: TestIndependentSourceNormalPositions/JSON_duplicate_parent_overwritten (0.00s)
+    --- PASS: TestIndependentSourceNormalPositions/JSON_malformed_clipped (0.00s)
+=== RUN   TestSourceRecheckGoCommandBeyondDepth
+    source_recheck_test.go:16: depth-limited: kind=library proof=true {"label":"Why this is a library","source":{"kind":"file","ref":"go.mod","url":"https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/go.mod"},"additional_sources":[{"kind":"file","ref":"lib.go","lines":"1-1","url":"https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/lib.go#L1-L1"},{"kind":"file","ref":"lib.go","url":"https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/lib.go"},{"kind":"api","ref":"git/trees/0123456789abcdef0123456789abcdef01234567","url":"https://api.github.com/repos/o/r/git/trees/0123456789abcdef0123456789abcdef01234567?recursive=1"}],"explanation":"Classified as a library from the inspected files: \"go.mod\" declares \"module\" as \"example.com/lib\"; \"lib.go\" declares package \"lib\"; \"go.mod\" was read in full; the package clauses of the 1 inspected Go files at the module root and under cmd/ declare no package main, and the inspected file tree lists no other Go file under cmd/.","supports":"GitTok's classification of this repository from the cited premises.","limit":"An inference from a bounded inspection; the code was not run, and files outside the inspection could change it.","confidence":"confident"}
+    source_recheck_test.go:19: complete: kind=cli
+    source_recheck_test.go:20: depth cap cannot establish no other Go file under cmd/
+--- FAIL: TestSourceRecheckGoCommandBeyondDepth (0.00s)
+=== RUN   TestSourceRecheckRootUninspectedAlternativePackage
+    source_recheck_test.go:29: unread alternative: kind=library proof=true {"label":"Why this is a library","source":{"kind":"file","ref":"go.mod","url":"https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/go.mod"},"additional_sources":[{"kind":"file","ref":"lib.go","lines":"3-3","url":"https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/lib.go#L3-L3"},{"kind":"file","ref":"lib.go","url":"https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/lib.go"},{"kind":"api","ref":"git/trees/0123456789abcdef0123456789abcdef01234567","url":"https://api.github.com/repos/o/r/git/trees/0123456789abcdef0123456789abcdef01234567?recursive=1"}],"explanation":"Classified as a library from the inspected files: \"go.mod\" declares \"module\" as \"example.com/lib\"; \"lib.go\" declares package \"lib\"; \"go.mod\" was read in full; the package clauses of the 1 inspected Go files at the module root and under cmd/ declare no package main, and the inspected file tree lists no other Go file under cmd/.","supports":"GitTok's classification of this repository from the cited premises.","limit":"An inference from a bounded inspection; the code was not run, and files outside the inspection could change it.","confidence":"confident"}
+    source_recheck_test.go:31: read alternative: kind=cli
+    source_recheck_test.go:32: no-command proof does not rule out listed unread root alternative package
+--- FAIL: TestSourceRecheckRootUninspectedAlternativePackage (0.00s)
+=== RUN   TestSourceRecheckExcludedKindSource
+    source_recheck_test.go:41: {"label":"Why this is a frontend","source":{"kind":"file","ref":"apps/web/package.json","lines":"3-3","url":"https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/apps/web/package.json#L3-L3"},"additional_sources":[{"kind":"api","ref":"apps/web/index.html","url":"https://api.github.com/repos/o/r/git/trees/0123456789abcdef0123456789abcdef01234567?recursive=1"},{"kind":"api","ref":"git/trees/0123456789abcdef0123456789abcdef01234567","url":"https://api.github.com/repos/o/r/git/trees/0123456789abcdef0123456789abcdef01234567?recursive=1"},{"kind":"file","ref":"package.json","lines":"4-4","url":"https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/package.json#L4-L4"},{"kind":"file","ref":"apps/sidecar/package.json","lines":"2-2","url":"https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/apps/sidecar/package.json#L2-L2"}],"excerpt":"\"react\":\"19\"","explanation":"Classified as a frontend from component \"apps/web\"'s inspected files: \"apps/web/package.json\" declares \"dependencies → react\" as \"19\"; the file tree lists \"apps/web/index.html\", a web app entry page. Set aside as supporting: component \"apps/sidecar\" (backend) because \"package.json\" declares \"dependencies → sidecar\" as \"*\" and \"apps/sidecar/package.json\" declares \"name\" as \"sidecar\". It is the only product component in the complete file tree.","supports":"GitTok's classification of this repository from the cited premises.","limit":"An inference from a bounded inspection; the code was not run, and files outside the inspection could change it.","confidence":"confident"}
+    source_recheck_test.go:45: explanation asserts excluded sidecar is backend without a citation covering its backend premise
+--- FAIL: TestSourceRecheckExcludedKindSource (0.00s)
+=== RUN   TestSwarmToolProductWithREADME
+    swarm_product_review_test.go:23: without README: [Declares github.com/spf13/cobra @tools/app/go.mod Declares github.com/spf13/pflag @tools/app/go.mod Declares golang.org/x/term @tools/app/go.mod], server=true; with README: [Declares github.com/spf13/cobra @tools/app/go.mod Declares github.com/spf13/pflag @tools/app/go.mod Declares golang.org/x/term @tools/app/go.mod], server=true
+--- PASS: TestSwarmToolProductWithREADME (0.00s)
+=== RUN   TestSwarmHelperImportsDisplaceProduct
+    swarm_product_review_test.go:40: classification: []; declarations: [Declares github.com/spf13/cobra @go.mod Declares example.com/zproduct @go.mod Declares example.com/ahelper0 @go.mod Declares example.com/ahelper1 @go.mod Declares example.com/ahelper2 @go.mod Declares example.com/ahelper3 @go.mod Declares example.com/ahelper4 @go.mod Declares example.com/ahelper5 @go.mod]; imports: [{ cmd/app/main.go example.com/zproduct} { cmd/app/main.go github.com/spf13/cobra} { script/helper.go example.com/ahelper0} { script/helper.go example.com/ahelper1} { script/helper.go example.com/ahelper2} { script/helper.go example.com/ahelper3} { script/helper.go example.com/ahelper4} { script/helper.go example.com/ahelper5} { script/helper.go example.com/ahelper6} { script/helper.go example.com/ahelper7} { script/helper.go example.com/ahelper8}]
+--- PASS: TestSwarmHelperImportsDisplaceProduct (0.00s)
+=== RUN   TestSwarmInconclusiveCandidatesArePeers
+    swarm_product_review_test.go:57: unresolved component a: verdict=inconclusive products=[a m] deps=[Declares github.com/spf13/cobra @a/go.mod Declares example.com/d0 @a/go.mod Declares react @m/package.json Declares example.com/d1 @a/go.mod Declares z0 @m/package.json Declares example.com/d2 @a/go.mod Declares z1 @m/package.json Declares z2 @m/package.json]
+    swarm_product_review_test.go:57: unresolved component z: verdict=inconclusive products=[m z] deps=[Declares github.com/spf13/cobra @z/go.mod Declares react @m/package.json Declares example.com/d0 @z/go.mod Declares z0 @m/package.json Declares example.com/d1 @z/go.mod Declares z1 @m/package.json Declares example.com/d2 @z/go.mod Declares z2 @m/package.json]
+    swarm_product_review_test.go:73: charmbracelet__glow.json: kind cli, 12 claims, deps [Declares github.com/spf13/cobra @go.mod Declares charm.land/glamour/v2 @go.mod Declares github.com/caarlos0/env/v11 @go.mod Declares github.com/charmbracelet/log @go.mod Declares github.com/charmbracelet/x/editor @go.mod Declares github.com/muesli/go-app-paths @go.mod Declares github.com/spf13/viper @go.mod Declares golang.org/x/sys @go.mod]
+    swarm_product_review_test.go:73: rack__rack.json: kind other, 3 claims, deps []
+--- PASS: TestSwarmInconclusiveCandidatesArePeers (0.01s)
+=== RUN   TestSwarmCaptureOutputs
+    swarm_product_review_test.go:81: cli__cli.json: kind cli, 11 claims, deps [Declares github.com/spf13/cobra @go.mod Declares github.com/spf13/pflag @go.mod Declares charm.land/bubbles/v2 @go.mod Declares charm.land/bubbletea/v2 @go.mod Declares charm.land/glamour/v2 @go.mod Declares charm.land/huh/v2 @go.mod Declares charm.land/lipgloss/v2 @go.mod Declares github.com/AlecAivazis/survey/v2 @go.mod]
+    swarm_product_review_test.go:81: pocketbase__pocketbase.json: kind other, 13 claims, deps [Declares github.com/fatih/color @go.mod Declares github.com/pocketbase/ozzo-validation/v4 @go.mod Declares github.com/spf13/cast @go.mod Declares github.com/spf13/cobra @go.mod Declares github.com/disintegration/imaging @go.mod Declares github.com/domodwyer/mailyak/v3 @go.mod Declares leaflet @ui/package.json Declares pocketbase @ui/package.json]
+--- PASS: TestSwarmCaptureOutputs (0.02s)
+FAIL
+FAIL	github.com/Savio09/gittok-ios-backend/internal/preview	0.392s
+=== RUN   TestReviewPriorBuilderSnapshotsMustNotSurviveRepair
+    review_previous_builder_test.go:20: old version=2 current=2 returned kind=backend metadata=1 refs=0 trees=0 contents=0
+    review_previous_builder_test.go:21: pre-repair builder snapshot was served instead of being rebuilt
+--- FAIL: TestReviewPriorBuilderSnapshotsMustNotSurviveRepair (0.00s)
+=== RUN   TestRecheckSwarmPreservesStoredCaptureAndExpiry
+    review_recheck_cache_test.go:49: same stored bytes/capture/commit/expiry after deferred leader hit; original TTL expiry reacquired once
+--- PASS: TestRecheckSwarmPreservesStoredCaptureAndExpiry (0.00s)
+=== RUN   TestRecheckSwarmAdmissionBoundsWarmVisibilityAndReleasesCanceledCallers
+    review_recheck_cache_test.go:93: 100 refused warm callers made no HTTP request; canceled visibility freed capacity; final requests/waiters/active=0; metadata=5 refs=1 trees=1
+--- PASS: TestRecheckSwarmAdmissionBoundsWarmVisibilityAndReleasesCanceledCallers (0.00s)
+FAIL
+FAIL	github.com/Savio09/gittok-ios-backend/internal/analysis	0.195s
+FAIL

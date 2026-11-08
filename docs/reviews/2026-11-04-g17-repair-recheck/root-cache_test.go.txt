@@ -1,0 +1,22 @@
+package analysis
+import (
+ "context"
+ "testing"
+ "time"
+ "github.com/Savio09/gittok-ios-backend/internal/apimodel"
+)
+func TestReviewPriorBuilderSnapshotsMustNotSurviveRepair(t *testing.T) {
+ clock := &fakeClock{time.Now()}
+ dir := t.TempDir()
+ cache := openTestCache(t, dir, testLimits(), clock)
+ oldKey := CacheKey{RepoID:7,Owner:"o",Name:"r",version:2}
+ stale := apimodel.RepoPreview{ID:"o/r",Owner:"o",Name:"r",Slug:"o/r",Kind:apimodel.KindBackend}
+ if !cache.Put(oldKey,"0123456789abcdef0123456789abcdef01234567", clock.t, stale) { t.Fatal("seed") }
+ reopened := openTestCache(t,dir,testLimits(),clock)
+ gh := &countingGitHub{repo:publicMeta()}
+ s := NewService(gh); s.publicOnly=true; s.UseCache(reopened)
+ got,err:=s.Preview(context.Background(),"o","r")
+ if err!=nil {t.Fatal(err)}
+ t.Logf("old version=2 current=%d returned kind=%s metadata=%d refs=%d trees=%d contents=%d",builderVersion(),got.Kind,gh.metadata,gh.refs,gh.trees,gh.contentsN)
+ if gh.refs==0 || gh.trees==0 {t.Fatal("pre-repair builder snapshot was served instead of being rebuilt")}
+}

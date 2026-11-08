@@ -1,0 +1,116 @@
+package preview
+
+import (
+ "encoding/json"
+ "strings"
+ "testing"
+ "github.com/Savio09/gittok-ios-backend/internal/apimodel"
+ "github.com/Savio09/gittok-ios-backend/internal/crawler"
+ "github.com/Savio09/gittok-ios-backend/internal/githubclient"
+)
+
+func reviewSourceInput(language string, paths []string, files map[string]string) Input {
+ i := crawler.InspectionFromSources(language, paths, files)
+ i.Revision = crawler.Revision{Ref: proofSHA, Resolved:true}
+ i.TreeRequest = githubclient.TreeRequestPath("o","r",proofSHA)
+ return Input{Repo:githubclient.Repo{Owner:"o",Name:"r",FullName:"o/r"},Inspection:i}
+}
+
+func TestIndependentSourceNULCollision(t *testing.T) {
+ raw := "{\n  \"dependencies\": {\"react\": \"19\"},\n  \"dependencies\\u0000react\": \"UNRELATED\"\n}\n"
+ in := reviewSourceInput("JavaScript", []string{"package.json","index.html"},map[string]string{"package.json":raw})
+ p:=Build(in)
+ b,_:=json.MarshalIndent(p,"","  "); t.Log(string(b))
+ found:=false
+ for _, c:=range claimsIn(p) {
+  if c.Label=="Declares react" {
+   found=true
+   if c.Excerpt!=`"react": "19"` {t.Errorf("real react declaration cited unrelated source: %q at %s",c.Excerpt,c.Source.Lines)}
+  }
+ }
+ if !found {t.Fatal("react fact missing")}
+}
+
+func TestIndependentSourceAbsencePremiseFiles(t *testing.T) {
+ files:=map[string]string{"go.mod":"module example.com/lib\n","lib.go":"package lib\nfunc F() {}\n","cmd/tool/helper.go":"package helper\n"}
+ in:=reviewSourceInput("Go",[]string{"go.mod","lib.go","cmd/tool/helper.go"},files)
+ p:=Build(in); c,ok:=kindProof(p)
+ if p.Kind!=apimodel.KindLibrary || !ok {t.Fatalf("fixture kind=%s proof=%v",p.Kind,ok)}
+ b,_:=json.MarshalIndent(c,"","  "); t.Log(string(b))
+ cited:=false
+ for _,s:=range allSources(c) {cited=cited || s.Kind==apimodel.SourceFile && s.Ref=="cmd/tool/helper.go"}
+ if !cited {t.Error("absence of cmd package main relies on read helper.go, but proof has no citation for it")}
+ delete(files,"cmd/tool/helper.go")
+ unread:=Build(reviewSourceInput("Go",[]string{"go.mod","lib.go","cmd/tool/helper.go"},files))
+ if unread.Kind!=apimodel.KindOther {t.Fatalf("unread necessary package still resolves %s",unread.Kind)}
+}
+
+func TestIndependentSourceWorkspacePremises(t *testing.T) {
+ files:=map[string]string{"package.json":`{"private":true,"workspaces":["apps/*"],"dependencies":{"sidecar":"*"}}`,"apps/web/package.json":`{"name":"web","dependencies":{"react":"19"}}`,"apps/sidecar/package.json":`{"name":"sidecar","dependencies":{"express":"5"}}`}
+ paths:=[]string{"package.json","apps/web/package.json","apps/web/index.html","apps/sidecar/package.json"}
+ in:=reviewSourceInput("JavaScript",paths,files)
+ p:=Build(in); c,ok:=kindProof(p)
+ if p.Kind!=apimodel.KindFrontend || !ok {t.Fatalf("fixture kind=%s proof=%v",p.Kind,ok)}
+ b,_:=json.MarshalIndent(c,"","  "); t.Log(string(b))
+ cited:=false
+ for _,s:=range allSources(c) {cited=cited || s.Kind==apimodel.SourceFile && s.Ref=="package.json"}
+ if !cited {t.Error("root workspace/dependency metadata needed to exclude sidecar is absent from proof")}
+ files["package.json"]=`{"private":true,"workspaces":["apps/*"]}`
+ other:=Build(reviewSourceInput("JavaScript",paths,files))
+ if other.Kind!=apimodel.KindOther {t.Errorf("changed omitted premise does not affect classification as expected: %s",other.Kind)}
+}
+
+func TestIndependentSourceDuplicateObjects(t *testing.T) {
+ raw:=`{"scripts":{"build":"vite build"},"scripts":{"dev":"vite"},"dependencies":{"react":"19"},"dependencies":{"left-pad":"1"}}`
+ in:=reviewSourceInput("JavaScript",[]string{"package.json","index.html"},map[string]string{"package.json":raw})
+ t.Logf("facts=%+v class=%+v",crawler.CollectFacts(in.Inspection),crawler.Classify(in.Inspection))
+}
+
+func TestIndependentSourceRealCorpus(t *testing.T) {
+ for _,name:=range []string{"cli__cli.json","pocketbase__pocketbase.json","starship__starship.json","excalidraw__excalidraw.json"} {
+  t.Run(name,func(t *testing.T){
+   in:=corpusInput(t,name); p:=Build(in)
+   q,_:=json.MarshalIndent(p,"","  "); t.Log(string(q))
+   count:=0
+   for _,c:=range claimsIn(p) {for _,s:=range allSources(c) {
+    if s.Kind!=apimodel.SourceFile || s.Lines=="" {continue}
+    raw:=consumedLines(t,in,s.Ref,s.Lines)
+    if c.Source==s && c.Excerpt!="" && !strings.Contains(raw,c.Excerpt) {t.Errorf("excerpt not within independently read inclusive lines: %+v",c)}
+    count++
+   }}
+   t.Logf("inspected %d positioned source links",count)
+  })
+ }
+}
+
+func TestIndependentSourceIncompleteAbsence(t *testing.T) {
+ in:=reviewSourceInput("JavaScript",[]string{"package.json"},map[string]string{"package.json":`{"main":"./index.js"}`})
+ in.Inspection.Scope.Truncated=true
+ p:=Build(in)
+ c,ok:=kindProof(p)
+ b,_:=json.MarshalIndent(c,"","  "); t.Logf("kind=%s proof=%v %s",p.Kind,ok,b)
+ if p.Kind!=apimodel.KindOther {t.Error("resolved library proof claims tree shows no app shell, despite truncated listing")}
+}
+
+func TestIndependentSourceNormalPositions(t *testing.T) {
+ cases:=[]struct{name,path,raw,want string;truncated bool}{
+  {"Go grouped quoted CRLF","go.mod","module example.com/tool\r\nrequire (\r\n\t\"example.com/a\" v1.0.0 // indirect\r\n)\r\n",`"example.com/a" v1.0.0 // indirect`,false},
+  {"Go duplicate effective","go.mod","module example.com/tool\nrequire example.com/a v1.0.0\nrequire example.com/a v1.1.0\n","require example.com/a v1.1.0",false},
+  {"Go clipped final token","go.mod","module example.com/tool\nrequire example.com/a v1.0","",true},
+  {"Go malformed","go.mod","module example.com/tool\nrequire example.com/a INVALID\n","",false},
+  {"JSON nested duplicate escaped multiline","package.json","{\r\n\"config\":{\"dependencies\":{\"react\":\"BAD\"}},\r\n\"dependencies\":{\"react\":\"OLD\",\"re\\u0061ct\":\n\"19\"}}", "\"re\\u0061ct\":\n\"19\"",false},
+  {"JSON duplicate parent overwritten","package.json",`{"dependencies":{"react":"OLD"},"dependencies":{"react":"19"}}`,`"react":"19"`,false},
+  {"JSON malformed clipped","package.json",`{"dependencies":{"react":"19"`,"",true},
+ }
+ for _,tc:=range cases {t.Run(tc.name,func(t *testing.T){
+  in:=reviewSourceInput("",[]string{tc.path},map[string]string{tc.path:tc.raw})
+  in.Inspection.Files[0].Truncated=tc.truncated
+  var dep *crawler.Fact
+  facts:=crawler.CollectFacts(in.Inspection)
+  for i:=range facts {if facts[i].Kind==crawler.FactDependency {dep=&facts[i]}}
+  if tc.want=="" {if dep!=nil {t.Errorf("unexpected fact %+v",*dep)};return}
+  if dep==nil {t.Fatal("no dependency")}
+  w:=dep.Witness
+  if w.Quote!=tc.want || w.Start!=strings.Index(tc.raw,tc.want) || tc.raw[w.Start:w.End]!=tc.want {t.Errorf("wrong declaration: %+v",w)}
+ })}
+}

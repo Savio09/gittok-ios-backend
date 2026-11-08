@@ -1,0 +1,94 @@
+package analysis
+
+import (
+ "context"
+ "errors"
+ "fmt"
+ "net/http"
+ "net/http/httptest"
+ "os"
+ "path/filepath"
+ "reflect"
+ "strings"
+ "sync/atomic"
+ "testing"
+ "time"
+
+ "github.com/Savio09/gittok-ios-backend/internal/githubclient"
+)
+
+func TestRecheckSwarmPreservesStoredCaptureAndExpiry(t *testing.T) {
+ h,s:=gatedServer(t)
+ var clock atomic.Int64
+ start:=time.Now().UTC()
+ clock.Store(start.UnixNano())
+ s.cache.now=func() time.Time {return time.Unix(0,clock.Load()).UTC()}
+ first:=startPreview(s)
+ <-h.treeStarted
+ missed,proceed:=make(chan struct{}),make(chan struct{})
+ s.afterCacheMiss=func(){close(missed);<-proceed}
+ second:=make(chan outcome,1)
+ go func(){p,err:=s.Preview(context.Background(),"o","r");second<-outcome{p,err}}()
+ <-missed
+ close(h.treeRelease)
+ if err:=<-first;err!=nil {t.Fatal(err)}
+ files,err:=filepath.Glob(filepath.Join(s.cache.dir,"*.json"));if err!=nil||len(files)!=1 {t.Fatalf("files %v %v",files,err)}
+ before,err:=os.ReadFile(files[0]);if err!=nil {t.Fatal(err)}
+ saved,ok:=s.cache.Get(CacheKey{RepoID:7,Owner:"o",Name:"r"});if !ok {t.Fatal("first result not cached")}
+ clock.Store(start.Add(10*time.Minute).UnixNano())
+ close(proceed)
+ got:=<-second
+ if got.err!=nil||!reflect.DeepEqual(saved,got.p) {t.Fatalf("leader cache hit changed original preview: %v",got.err)}
+ after,err:=os.ReadFile(files[0]);if err!=nil {t.Fatal(err)}
+ if string(before)!=string(after) {t.Fatal("leader cache hit rewrote capture/commit/expiry")}
+ if h.refs.Load()!=1||h.trees.Load()!=1 {t.Fatalf("second acquisition: refs %d trees %d",h.refs.Load(),h.trees.Load())}
+ s.afterCacheMiss=nil
+ clock.Store(start.Add(31*time.Minute).UnixNano())
+ if _,err:=s.Preview(context.Background(),"o","r");err!=nil {t.Fatal(err)}
+ if h.refs.Load()!=2||h.trees.Load()!=2 {t.Fatalf("original expiry was extended: refs %d trees %d",h.refs.Load(),h.trees.Load())}
+ t.Log("same stored bytes/capture/commit/expiry after deferred leader hit; original TTL expiry reacquired once")
+}
+
+func TestRecheckSwarmAdmissionBoundsWarmVisibilityAndReleasesCanceledCallers(t *testing.T) {
+ var metadata,refs,trees atomic.Int32
+ var gate atomic.Bool
+ entered:=make(chan struct{},16)
+ release:=make(chan struct{})
+ srv:=httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter,r *http.Request){
+  switch {
+  case strings.Contains(r.URL.Path,"/commits/"):
+   refs.Add(1);fmt.Fprint(w,`{"sha":"0123456789abcdef0123456789abcdef01234567"}`)
+  case strings.Contains(r.URL.Path,"/git/trees/"):
+   trees.Add(1);fmt.Fprint(w,`{"tree":[],"truncated":false}`)
+  case r.URL.Path=="/repos/o/r":
+   metadata.Add(1)
+   if gate.Load(){entered<-struct{}{};select {case <-release:case <-r.Context().Done():return}}
+   fmt.Fprint(w,`{"id":7,"owner":{"login":"o"},"name":"r","full_name":"o/r","private":false,"default_branch":"main"}`)
+  default:w.WriteHeader(http.StatusNotFound)
+  }
+ }))
+ defer srv.Close()
+ s:=NewPublicService(githubclient.WithBaseURL(srv.URL),githubclient.WithMaxRetries(0))
+ c,err:=OpenPreviewCache(t.TempDir(),DefaultCacheLimits(),time.Now);if err!=nil {t.Fatal(err)}
+ s.UseCache(c).UseAdmission(AdmissionLimits{MaxActive:1,MaxPerKey:1,MaxWaiters:2,Deadline:30*time.Second})
+ if _,err:=s.Preview(context.Background(),"o","r");err!=nil {t.Fatal(err)}
+ coldMeta:=metadata.Load()
+ gate.Store(true)
+ ctxA,cancelA:=context.WithCancel(context.Background())
+ ctxB,cancelB:=context.WithCancel(context.Background())
+ defer cancelA();defer cancelB()
+ start:=func(ctx context.Context)<-chan error{done:=make(chan error,1);go func(){_,err:=s.Preview(ctx,"o","r");done<-err}();return done}
+ a,b:=start(ctxA),start(ctxB)
+ <-entered;<-entered
+ for i:=0;i<100;i++ {if err:=<-start(context.Background());!errors.Is(err,ErrOverloaded){t.Fatalf("overload %d: %v",i,err)}}
+ if got:=metadata.Load()-coldMeta;got!=2 {t.Fatalf("refused warm requests paid metadata work: %d",got)}
+ cancelA();if err:=<-a;!errors.Is(err,context.Canceled){t.Fatalf("canceled visibility request: %v",err)}
+ replacement:=start(context.Background());<-entered
+ cancelB();if err:=<-b;!errors.Is(err,context.Canceled){t.Fatalf("second canceled visibility request: %v",err)}
+ close(release)
+ if err:=<-replacement;err!=nil {t.Fatal(err)}
+ if refs.Load()!=1||trees.Load()!=1 {t.Fatalf("warm requests unexpectedly reacquired: refs %d trees %d",refs.Load(),trees.Load())}
+ s.flights.mu.Lock();requests,waiters,active:=s.flights.requests,s.flights.waiters,s.flights.active;s.flights.mu.Unlock()
+ if requests!=0||waiters!=0||active!=0 {t.Fatalf("admission leaked: requests=%d waiters=%d active=%d",requests,waiters,active)}
+ t.Logf("100 refused warm callers made no HTTP request; canceled visibility freed capacity; final requests/waiters/active=0; metadata=%d refs=%d trees=%d",metadata.Load(),refs.Load(),trees.Load())
+}

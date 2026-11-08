@@ -1,0 +1,33 @@
+Baseline: 82eb571
+Date: 2026-11-04
+Command: GOCACHE=/tmp/gittok-g17-go-build go test -v ./internal/preview ./internal/analysis -run '^TestReviewRepro' -count=1
+Exit: 1 (expected: reproduction of review findings)
+
+TestReviewReproProductSelection FAIL
+  kind=cli
+  product/non-.github declarations=9
+  .github helper declarations=9
+  cobra included=false
+  highlighted HTTP call source=script/api-host-gateway/gateway/main.go
+
+TestReviewReproPreciseDeclarations FAIL
+  20 PocketBase declaration claims omit line ranges.
+  Includes ui/package.json build/dev commands, dprint, vite and root Go declarations.
+
+TestReviewReproKindExplanation FAIL
+  displayed kind=cli
+  no visible claim explains the classification
+
+TestReviewReproUserFacingLimits FAIL
+  displayed diagnostic bytes=1126
+  technical diagnostics appear directly in the preview
+
+TestReviewReproRepeatPreviewCost FAIL
+  two identical previews:
+    metadata reads=4
+    tree reads=2
+    contents batches=2
+  ref resolutions also repeat; no cache/coalescing path exists
+
+Tests use recorded source snapshots and synthetic service stubs, not live GitHub.
+This record summarizes the observed command output; original test source is archived alongside it.

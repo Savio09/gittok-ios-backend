@@ -1,0 +1,63 @@
+=== RUN   TestReviewAdversarial
+=== RUN   TestReviewAdversarial/rust_implicit_cli
+    review_adversarial_test.go:24: got other, want cli; evidence=["no decisive frontend / backend / library / CLI / mobile signal in the manifests or file tree"]
+=== RUN   TestReviewAdversarial/rust_implicit_library
+    review_adversarial_test.go:24: got other, want library; evidence=["no decisive frontend / backend / library / CLI / mobile signal in the manifests or file tree"]
+=== RUN   TestReviewAdversarial/python_modern_cli
+    review_adversarial_test.go:24: got library, want cli; evidence=["pyproject.toml: packaging metadata with no console_scripts (importable package)"]
+=== RUN   TestReviewAdversarial/python_requirements_backend
+    review_adversarial_test.go:24: got other, want backend; evidence=["no decisive frontend / backend / library / CLI / mobile signal in the manifests or file tree"]
+=== RUN   TestReviewAdversarial/python_tooling_is_not_library
+    review_adversarial_test.go:24: got library, want other; evidence=["pyproject.toml: packaging metadata with no console_scripts (importable package)"]
+=== RUN   TestReviewAdversarial/python_project_name_is_not_dependency
+    review_adversarial_test.go:24: got backend, want library; evidence=["pyproject.toml: depends on \"flask\" (web framework)"]
+=== RUN   TestReviewAdversarial/npm_cli_with_vite_build_tool
+    review_adversarial_test.go:24: got frontend, want cli; evidence=["package.json: depends on \"vite\" (^5) (web framework)" "package.json: has a dev/start script (runnable app)"]
+=== RUN   TestReviewAdversarial/go_comment_is_not_http_server
+    review_adversarial_test.go:24: got backend, want cli; evidence=["cmd/tool/main.go: package main (produces a binary)" "Go source calls http.ListenAndServe (starts an HTTP server)"]
+=== RUN   TestReviewAdversarial/go_dependency_comment_is_not_dependency
+    review_adversarial_test.go:24: got backend, want cli; evidence=["cmd/tool/main.go: package main (produces a binary)" "go.mod: requires \"gin-gonic/gin\" (server framework)"]
+=== RUN   TestReviewAdversarial/flutter_comment_is_not_sdk
+    review_adversarial_test.go:24: got mobile, want other; evidence=["pubspec.yaml: declares the Flutter SDK (mobile)"]
+=== RUN   TestReviewAdversarial/go_library_example_is_not_main_product
+    review_adversarial_test.go:24: got backend, want library; evidence=["examples/server/main.go: package main (produces a binary)" "Go source calls http.ListenAndServe (starts an HTTP server)"]
+--- FAIL: TestReviewAdversarial (0.00s)
+    --- FAIL: TestReviewAdversarial/rust_implicit_cli (0.00s)
+    --- FAIL: TestReviewAdversarial/rust_implicit_library (0.00s)
+    --- FAIL: TestReviewAdversarial/python_modern_cli (0.00s)
+    --- FAIL: TestReviewAdversarial/python_requirements_backend (0.00s)
+    --- FAIL: TestReviewAdversarial/python_tooling_is_not_library (0.00s)
+    --- FAIL: TestReviewAdversarial/python_project_name_is_not_dependency (0.00s)
+    --- FAIL: TestReviewAdversarial/npm_cli_with_vite_build_tool (0.00s)
+    --- FAIL: TestReviewAdversarial/go_comment_is_not_http_server (0.00s)
+    --- FAIL: TestReviewAdversarial/go_dependency_comment_is_not_dependency (0.00s)
+    --- FAIL: TestReviewAdversarial/flutter_comment_is_not_sdk (0.00s)
+    --- FAIL: TestReviewAdversarial/go_library_example_is_not_main_product (0.00s)
+=== RUN   TestReviewManifestDeterminism
+    review_adversarial_test.go:34: identical input classification counts: map[library:890 mobile:110]
+    review_adversarial_test.go:35: identical input yields different repository kinds
+--- FAIL: TestReviewManifestDeterminism (0.00s)
+=== RUN   TestReviewStoredEvidence
+=== RUN   TestReviewStoredEvidence/Savio09__face-recognition
+    review_adversarial_test.go:45: stored evidence results: map[other:1000]; sample={Kind:other Evidence:[no decisive frontend / backend / library / CLI / mobile signal in the manifests or file tree]}
+=== RUN   TestReviewStoredEvidence/Savio09__plantly
+    review_adversarial_test.go:45: stored evidence results: map[mobile:1000]; sample={Kind:mobile Evidence:[package.json: depends on "react-native" (0.74.5) (mobile framework) package.json: depends on "expo" (~51.0.28) (mobile framework)]}
+=== RUN   TestReviewStoredEvidence/excalidraw__excalidraw
+    review_adversarial_test.go:45: stored evidence results: map[frontend:1000]; sample={Kind:frontend Evidence:[package.json: depends on "react" (18.2.0) (web framework) index.html present (web app entry) package.json: "private": true (not a published package)]}
+=== RUN   TestReviewStoredEvidence/pocketbase__pocketbase
+    review_adversarial_test.go:45: stored evidence results: map[frontend:1000]; sample={Kind:frontend Evidence:[package.json: depends on "vite" (^8.0.0) (web framework) index.html present (web app entry) package.json: "private": true (not a published package)]}
+    review_adversarial_test.go:46: PocketBase backend is not classified as backend from supplied evidence
+--- FAIL: TestReviewStoredEvidence (0.06s)
+    --- PASS: TestReviewStoredEvidence/Savio09__face-recognition (0.00s)
+    --- PASS: TestReviewStoredEvidence/Savio09__plantly (0.02s)
+    --- PASS: TestReviewStoredEvidence/excalidraw__excalidraw (0.03s)
+    --- FAIL: TestReviewStoredEvidence/pocketbase__pocketbase (0.02s)
+=== RUN   TestReviewMissingSource
+    review_adversarial_test.go:53: no entry-point contents fetched: {Kind:cli Evidence:[cmd/service/main.go present (Go command entry point) entry point under cmd/ with no server signal (produces a command)]}
+--- PASS: TestReviewMissingSource (0.00s)
+=== RUN   TestReviewEvidenceProvenance
+    review_adversarial_test.go:58: nested manifest provenance: {Kind:mobile Evidence:[package.json: depends on "expo" (51) (mobile framework)]}
+--- PASS: TestReviewEvidenceProvenance (0.00s)
+FAIL
+FAIL	github.com/Savio09/gittok-ios-backend/internal/crawler	0.165s
+FAIL

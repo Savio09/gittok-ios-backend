@@ -1,0 +1,32 @@
+package crawler
+
+import (
+ "testing"
+ "github.com/Savio09/gittok-ios-backend/internal/apimodel"
+)
+
+func TestSecondReviewBoundaries(t *testing.T) {
+ cases:=[]struct{
+  name,lang string
+  paths []string
+  sources map[string]string
+  mutate func(*Inspection)
+  forbidden apimodel.RepoKind
+ }{
+  {name:"truncated_listing_cannot_prove_whole_command_package_read",lang:"Go",paths:[]string{"go.mod","cmd/service/main.go"},sources:map[string]string{"go.mod":"module example.com/service\n","cmd/service/main.go":"package main\nfunc main(){}\n"},mutate:func(i *Inspection){i.Scope.Truncated=true},forbidden:apimodel.KindCLI},
+  {name:"test_only_http_call_is_not_product_backend",lang:"Go",paths:[]string{"go.mod","cmd/tool/main.go","cmd/tool/main_test.go"},sources:map[string]string{"go.mod":"module example.com/tool\n","cmd/tool/main.go":"package main\nfunc main(){}\n","cmd/tool/main_test.go":"package main\nimport (\"net/http\"; \"testing\")\nfunc TestHTTP(t *testing.T){ http.ListenAndServe(\":8080\",nil) }\n"},forbidden:apimodel.KindBackend},
+  {name:"unread_package_clause_in_clipped_cmd_file_is_not_library_proof",lang:"Go",paths:[]string{"go.mod","lib.go","cmd/service/entry.go"},sources:map[string]string{"go.mod":"module example.com/core\n","lib.go":"package core\n","cmd/service/entry.go":"package "},mutate:func(i *Inspection){for n:=range i.Files{if i.Files[n].Path=="cmd/service/entry.go"{i.Files[n].Truncated=true;i.Files[n].Size=1000}}},forbidden:apimodel.KindLibrary},
+  {name:"unparsed_command_package_is_not_library_proof",lang:"Go",paths:[]string{"go.mod","lib.go","cmd/service/entry.go"},sources:map[string]string{"go.mod":"module example.com/core\n","lib.go":"package core\n","cmd/service/entry.go":"package ???\n"},forbidden:apimodel.KindLibrary},
+  {name:"private_workspace_root_app_is_not_discarded",lang:"TypeScript",paths:[]string{"package.json","index.html","src/App.tsx","packages/core/package.json"},sources:map[string]string{"package.json":`{"name":"actual-app","private":true,"workspaces":["packages/*"],"dependencies":{"react":"18"}}`,"packages/core/package.json":`{"name":"core","exports":"./dist/index.js"}`},forbidden:apimodel.KindLibrary},
+  {name:"rust_depth_three_cannot_rule_out_multifile_binary",lang:"Rust",paths:[]string{"Cargo.toml","src/lib.rs","src/bin/tool"},sources:map[string]string{"Cargo.toml":"[package]\nname='core'\nversion='0.1.0'\nedition='2021'\n"},mutate:func(i *Inspection){i.Scope=TreeScope{DepthLimited:true,MaxDepth:3}},forbidden:apimodel.KindLibrary},
+  {name:"nested_rust_helper_is_not_a_binary_target",lang:"Rust",paths:[]string{"Cargo.toml","src/lib.rs","src/bin/tool/support.rs"},sources:map[string]string{"Cargo.toml":"[package]\nname='core'\nversion='0.1.0'\nedition='2021'\n"},forbidden:apimodel.KindCLI},
+  {name:"empty_npm_bin_does_not_install_a_command",lang:"TypeScript",paths:[]string{"package.json","src/index.ts"},sources:map[string]string{"package.json":`{"name":"core","exports":"./dist/index.js","bin":{}}`},forbidden:apimodel.KindCLI},
+  {name:"lookalike_module_path_is_not_gin_framework",lang:"Go",paths:[]string{"go.mod","main.go"},sources:map[string]string{"go.mod":"module example.com/tool\n\nrequire example.com/gin-gonic/gin-helper v1.0.0\n","main.go":"package main\nfunc main(){}\n"},forbidden:apimodel.KindBackend},
+ }
+ for _,c:=range cases{t.Run(c.name,func(t *testing.T){
+  i:=InspectionFromSources(c.lang,c.paths,c.sources);if c.mutate!=nil{c.mutate(&i)}
+  got:=Classify(i)
+  t.Logf("kind=%s status=%s evidence=%v",got.Kind,got.Status,got.Evidence())
+  if got.Kind==c.forbidden&&got.Status==VerdictResolved{t.Errorf("unsupported resolved %s",got.Kind)}
+ })}
+}

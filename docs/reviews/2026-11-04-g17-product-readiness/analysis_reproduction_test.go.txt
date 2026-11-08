@@ -1,0 +1,41 @@
+package analysis
+
+import (
+	"context"
+	"testing"
+
+	"github.com/Savio09/gittok-ios-backend/internal/githubclient"
+)
+
+type reviewCounter struct {
+	fakeGitHub
+	metadataCalls, treeCalls, contentBatches int
+}
+
+func (c *reviewCounter) GetRepo(ctx context.Context, o, n string) (githubclient.Repo, error) {
+	c.metadataCalls++
+	return c.fakeGitHub.GetRepo(ctx, o, n)
+}
+func (c *reviewCounter) GetTree(ctx context.Context, o, n, ref string, l githubclient.TreeLimits) (githubclient.FileTree, error) {
+	c.treeCalls++
+	return c.fakeGitHub.GetTree(ctx, o, n, ref, l)
+}
+func (c *reviewCounter) GetFileContents(ctx context.Context, o, n, ref string, p []string, l githubclient.ContentLimits) (githubclient.FetchedContents, error) {
+	c.contentBatches++
+	return c.fakeGitHub.GetFileContents(ctx, o, n, ref, p, l)
+}
+
+func TestReviewReproRepeatPreviewCost(t *testing.T) {
+	c := &reviewCounter{fakeGitHub: fakeGitHub{repo: githubclient.Repo{ID: 1, Owner: "o", Name: "r", FullName: "o/r", Public: true, DefaultBranch: "main"}}}
+	s := NewService(c)
+	s.publicOnly = true
+	for i := 0; i < 2; i++ {
+		if _, err := s.Preview(context.Background(), "o", "r"); err != nil {
+			t.Fatal(err)
+		}
+	}
+	t.Logf("two identical previews: metadata=%d trees=%d content batches=%d", c.metadataCalls, c.treeCalls, c.contentBatches)
+	if c.treeCalls > 1 || c.contentBatches > 1 {
+		t.Error("repeat preview repeats complete acquisition")
+	}
+}

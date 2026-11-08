@@ -1,0 +1,30 @@
+package preview
+import (
+ "testing"
+ "github.com/Savio09/gittok-ios-backend/internal/apimodel"
+ "github.com/Savio09/gittok-ios-backend/internal/crawler"
+)
+func TestAdversarialExcludedMultiPremiseGoRole(t *testing.T) {
+ in := synthetic([]string{"apps/web/package.json", "apps/web/index.html", "examples/tool/go.mod", "examples/tool/main.go"}, map[string]string{
+ "apps/web/package.json": `{"dependencies":{"react":"19"}}`,
+ "examples/tool/go.mod": "module example.com/tool\nrequire github.com/spf13/cobra v1.8.0\n",
+ "examples/tool/main.go": "package main\nfunc main() {}\n",
+ })
+ cls:=crawler.Classify(in.Inspection)
+ if cls.Basis==nil || len(cls.Basis.Excluded)!=1 || cls.Basis.Excluded[0].Kind!=apimodel.KindCLI { t.Fatalf("fixture: %+v", cls) }
+ if len(cls.Basis.Excluded[0].RolePremises)<2 {t.Fatal("fixture needs conjunctive role")}
+ proof,ok:=kindProof(Build(in)); if !ok {t.Fatal("complete proof missing")}
+ got:=map[string]bool{}
+ for _,s:=range allSources(proof) { if s.Kind==apimodel.SourceFile { got[s.Ref]=true } }
+ for _,p:=range []string{"examples/tool/go.mod","examples/tool/main.go"} {if !got[p] {t.Errorf("role source missing: %s",p)}}
+ for _,scope:=range []crawler.TreeScope{{Truncated:true},{DepthLimited:true,MaxDepth:100}} {
+ in.Inspection.Scope=scope
+ if p:=Build(in); p.Kind!=apimodel.KindOther {t.Fatalf("bounded comparison displayed proof: %s",p.Kind)}
+ }
+ in.Inspection.Scope=crawler.TreeScope{}
+ for i:=range cls.Basis.Excluded[0].RolePremises {
+ corrupted:=crawler.Classify(in.Inspection)
+ corrupted.Basis.Excluded[0].RolePremises[i].Witness.Path="missing.go"
+ if _,ok:=kindClaim(in,corrupted); ok {t.Errorf("unsupported excluded role premise %d was displayed",i)}
+ }
+}

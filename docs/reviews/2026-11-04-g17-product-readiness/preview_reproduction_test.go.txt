@@ -1,0 +1,100 @@
+package preview
+
+import (
+	"path/filepath"
+	"strings"
+	"testing"
+
+	"github.com/Savio09/gittok-ios-backend/internal/apimodel"
+	"github.com/Savio09/gittok-ios-backend/internal/corpus"
+	"github.com/Savio09/gittok-ios-backend/internal/crawler"
+	"github.com/Savio09/gittok-ios-backend/internal/githubclient"
+)
+
+func reviewInput(t *testing.T, file string) Input {
+	t.Helper()
+	s, err := corpus.Load(filepath.Join("..", "crawler", "testdata", "corpus", file))
+	if err != nil {
+		t.Fatal(err)
+	}
+	owner, name, _ := strings.Cut(s.Repo, "/")
+	// Only metadata actually recorded by the historical snapshot is supplied.
+	repo := githubclient.Repo{Owner: owner, Name: name, FullName: s.Repo, Language: s.Language, Metadata: map[string]githubclient.MetadataField{"full_name": {Value: s.Repo}, "language": {Value: s.Language}}}
+	return Input{Repo: repo, Inspection: crawler.NewInspection(s.Language, crawler.Revision{Ref: s.ResolvedSHA, Resolved: true}, s.FileTree(), s.Fetched(s.Selected))}
+}
+
+func TestReviewReproProductSelection(t *testing.T) {
+	in := reviewInput(t, "cli__cli.json")
+	p := Build(in)
+	product, helpers, sourceCalls := 0, 0, 0
+	cobra := false
+	for _, c := range claimsIn(p) {
+		if strings.HasPrefix(c.Label, "Declares ") && c.Source.Kind == apimodel.SourceFile {
+			if strings.HasPrefix(c.Source.Ref, ".github/") {
+				helpers++
+			} else {
+				product++
+			}
+		}
+		if c.Label == "Declares github.com/spf13/cobra" {
+			cobra = true
+		}
+		if c.Label == "Contains net/http call" {
+			sourceCalls++
+			t.Logf("prominent call source: %s", c.Source.Ref)
+		}
+	}
+	t.Logf("kind=%s product declarations=%d helper declarations=%d cobra included=%v source calls=%d", p.Kind, product, helpers, cobra, sourceCalls)
+	if !cobra {
+		t.Error("primary CLI framework was displaced")
+	}
+	if helpers > product {
+		t.Error("helper declarations dominate product declarations")
+	}
+	if sourceCalls > 0 {
+		t.Error("helper HTTP gateway is presented as the source walkthrough")
+	}
+}
+
+func TestReviewReproPreciseDeclarations(t *testing.T) {
+	in := reviewInput(t, "pocketbase__pocketbase.json")
+	missing := 0
+	for _, c := range claimsIn(Build(in)) {
+		if c.Source.Kind == apimodel.SourceFile && (c.Source.Ref == "go.mod" || c.Source.Ref == "ui/package.json") && strings.HasPrefix(c.Label, "Declares ") {
+			if c.Source.Lines == "" {
+				missing++
+				t.Logf("whole-file citation: %s — %s", c.Source.Ref, c.Label)
+			}
+		}
+	}
+	if missing > 0 {
+		t.Errorf("%d declarations omit available source positions", missing)
+	}
+}
+
+func TestReviewReproKindExplanation(t *testing.T) {
+	p := Build(reviewInput(t, "cli__cli.json"))
+	explained := false
+	for _, s := range p.Sections {
+		for _, c := range s.Claims {
+			if strings.Contains(c.Explanation, "classified") || strings.Contains(c.Explanation, "classification") || strings.Contains(c.Supports, "classification") {
+				explained = true
+			}
+		}
+	}
+	if p.Kind != apimodel.KindOther && !explained {
+		t.Errorf("displayed kind %s has no visible evidence explanation", p.Kind)
+	}
+}
+
+func TestReviewReproUserFacingLimits(t *testing.T) {
+	p := Build(reviewInput(t, "cli__cli.json"))
+	for _, s := range p.Sections {
+		if s.Kind == apimodel.SectionDecision {
+			t.Logf("displayed diagnostic bytes: %d", len(s.Body))
+			if len(s.Body) > 600 || strings.Contains(s.Body, ".github/") || strings.Contains(s.Body, "decisive") {
+				t.Error("technical diagnostics appear directly in the preview")
+			}
+		}
+	}
+}

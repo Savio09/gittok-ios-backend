@@ -1,0 +1,86 @@
+package preview
+import (
+ "encoding/json"
+ "fmt"
+ "strings"
+ "testing"
+ "github.com/Savio09/gittok-ios-backend/internal/crawler"
+)
+
+func TestRepairPeerFrameworkGetsSemanticPriority(t *testing.T) {
+ deps:=map[string]string{"react":"19"}
+ for i:=0;i<9;i++ {deps[fmt.Sprintf("a%d",i)]="1"}
+ b,_:=json.Marshal(map[string]any{"dependencies":deps})
+ files:=map[string]string{
+ "a/go.mod":"module example.com/app\nrequire github.com/spf13/cobra v1.8.0\n",
+ "a/main.go":"package main\nimport \"github.com/spf13/cobra\"\nfunc main(){ _ = cobra.Command{} }\n",
+ "m/package.json":string(b),
+ }
+ in:=synthetic([]string{"a/go.mod","a/main.go","m/package.json","m/index.html"},files)
+ cls:=crawler.Classify(in.Inspection);p:=Build(in)
+ t.Logf("status=%s products=%v secondary=%+v dependencies=%v",cls.Status,cls.Products,cls.Secondary,depLabels(p))
+ if !measure(p).labels["Declares react"] {t.Error("the frontend candidate's decisive declaration was displaced by unrelated alphabetic declarations")}
+}
+
+func TestRepairToolProductSurvivesRootTooling(t *testing.T) {
+ paths:=[]string{"tools/app/go.mod","tools/app/main.go","README.md"}
+ files:=map[string]string{
+ "README.md":"# App\n\nThe product command.\n",
+ "tools/app/go.mod":"module example.com/app\nrequire (\n github.com/spf13/cobra v1.8.0\n github.com/spf13/pflag v1.0.5\n golang.org/x/term v0.20.0\n)\n",
+ "tools/app/main.go":"package main\nimport (\n \"github.com/spf13/cobra\"\n \"net/http\"\n)\nfunc main(){_=cobra.Command{};http.ListenAndServe(\":8080\",nil)}\n",
+ }
+ before:=Build(synthetic(paths,files))
+ files["package.json"]=`{"private":true,"devDependencies":{"prettier":"3"}}`
+ paths=append(paths,"package.json")
+ in:=synthetic(paths,files);cls:=crawler.Classify(in.Inspection);after:=Build(in)
+ t.Logf("status=%s products=%v before=%v server=%v; after=%v server=%v",cls.Status,cls.Products,depLabels(before),measure(before).labels["Contains net/http call"],depLabels(after),measure(after).labels["Contains net/http call"])
+ if !measure(after).labels["Contains net/http call"] {t.Error("root development-only manifest removed sole actual product source construct")}
+}
+
+func TestRepairPeerQuotaDoesNotPreferDevelopmentToImportedProduct(t *testing.T) {
+ mod:="module example.com/app\nrequire (\n github.com/spf13/cobra v1.8.0\n"
+ source:="package main\nimport (\n \"github.com/spf13/cobra\"\n"
+ for i:=0;i<8;i++ {mod+=fmt.Sprintf(" example.com/product%d v1.0.0\n",i);source+=fmt.Sprintf(" _ \"example.com/product%d\"\n",i)}
+ mod+=")\n";source+=")\nfunc main(){_=cobra.Command{}}\n"
+ files:=map[string]string{
+ "package.json":`{"private":true,"devDependencies":{"eslint":"9","prettier":"3"}}`,
+ "a/go.mod":mod,"a/main.go":source,
+ "m/package.json":`{"dependencies":{"react":"19"}}`,
+ }
+ in:=synthetic([]string{"package.json","a/go.mod","a/main.go","m/package.json","m/index.html"},files)
+ cls:=crawler.Classify(in.Inspection);p:=Build(in)
+ t.Logf("status=%s products=%v deps=%v",cls.Status,cls.Products,depLabels(p))
+ seen:=measure(p).labels
+ for _,c:=range claimsIn(p){
+ if strings.HasPrefix(c.Label,"Declares ")&&strings.Contains(c.Explanation,`in "devDependencies"`)&&!seen["Declares example.com/product7"] {t.Error("development-only declaration admitted while imported product declarations were excluded by equal-share quota")}
+ }
+}
+
+func TestRepairRecordedAdditionalRepositories(t *testing.T) {
+ for _,name:=range []string{"starship__starship.json","excalidraw__excalidraw.json","Savio09__plantly.json","Savio09__face-recognition.json"} {
+ in:=corpusInput(t,name);cls:=crawler.Classify(in.Inspection);p:=Build(in)
+ t.Logf("%s kind=%s claims=%d status=%s products=%v deps=%v",name,p.Kind,len(claimsIn(p)),cls.Status,cls.Products,depLabels(p))
+ for _,c:=range claimsIn(p) {if err:=ValidateClaim(in,c);err!=nil {t.Error(err)}}
+ }
+}
+
+func TestRepairToolProductWithinRootGoModule(t *testing.T) {
+ files:=map[string]string{
+ "go.mod":"module example.com/app\nrequire (\n github.com/spf13/cobra v1.8.0\n example.com/zproduct v1.0.0\n)\n",
+ "tools/app/main.go":"package main\nimport (\n \"github.com/spf13/cobra\"\n \"example.com/zproduct\"\n \"net/http\"\n)\nfunc main(){_=cobra.Command{};zproduct.Run();http.ListenAndServe(\":8080\",nil)}\n",
+ }
+ in:=synthetic([]string{"go.mod","tools/app/main.go"},files);p:=Build(in)
+ t.Logf("classification=%+v deps=%v server=%v",crawler.Classify(in.Inspection),depLabels(p),measure(p).labels["Contains net/http call"])
+ if !measure(p).labels["Contains net/http call"] {t.Error("root manifest alone hides sole tool product's source construct")}
+}
+
+func TestRepairRecordedExcalidrawPreservesPeerFramework(t *testing.T) {
+ in:=corpusInput(t,"excalidraw__excalidraw.json");cls:=crawler.Classify(in.Inspection);p:=Build(in)
+ var hasReactFact,hasReactObservation,hasReactClaim bool
+ for _,f:=range crawler.CollectFacts(in.Inspection){if f.Component=="excalidraw-app"&&f.Name=="react" {hasReactFact=true}}
+ for _,o:=range cls.Secondary {if o.Component=="excalidraw-app"&&o.Witness.Path=="excalidraw-app/package.json" {for _,f:=range o.Witness.Field {if f=="react" {hasReactObservation=true}}}}
+ for _,c:=range claimsIn(p){if c.Label=="Declares react"&&c.Source.Ref=="excalidraw-app/package.json"{hasReactClaim=true}}
+ t.Logf("products=%v inspectedReactFact=%v validatedReactObservation=%v selectedReact=%v dependencies=%v",cls.Products,hasReactFact,hasReactObservation,hasReactClaim,depLabels(p))
+ if !hasReactFact||!hasReactObservation {t.Fatal("fixture does not carry inspected decisive React field")}
+ if !hasReactClaim {t.Error("actual Excalidraw app framework omitted while docs dependencies retained")}
+}

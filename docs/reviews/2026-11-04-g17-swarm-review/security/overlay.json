@@ -1,0 +1,6 @@
+{
+  "Replace": {
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/analysis/review_security_overlay_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-swarm-review/security/analysis_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/githubclient/review_security_overlay_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-swarm-review/security/redirect_test.go.txt"
+  }
+}

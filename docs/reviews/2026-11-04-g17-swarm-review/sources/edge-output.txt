@@ -1,0 +1,48 @@
+=== RUN   TestIndependentSourceIncompleteAbsence
+    source_independent_review_test.go:91: kind=library proof=true {
+          "label": "Why this is a library",
+          "source": {
+            "kind": "file",
+            "ref": "package.json",
+            "lines": "1-1",
+            "url": "https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/package.json#L1-L1"
+          },
+          "additional_sources": [
+            {
+              "kind": "file",
+              "ref": "package.json",
+              "url": "https://github.com/o/r/blob/0123456789abcdef0123456789abcdef01234567/package.json"
+            },
+            {
+              "kind": "api",
+              "ref": "git/trees/0123456789abcdef0123456789abcdef01234567",
+              "url": "https://api.github.com/repos/o/r/git/trees/0123456789abcdef0123456789abcdef01234567?recursive=1"
+            }
+          ],
+          "excerpt": "\"main\":\"./index.js\"",
+          "explanation": "Classified as a library from the inspected files: \"package.json\" declares \"main\"; \"package.json\" was read in full and declares no executable command, and the inspected file tree shows no app shell.",
+          "supports": "GitTok's classification of this repository from the cited premises.",
+          "limit": "An inference from a bounded inspection; the code was not run, and files outside the inspection could change it.",
+          "confidence": "confident"
+        }
+    source_independent_review_test.go:92: resolved library proof claims tree shows no app shell, despite truncated listing
+--- FAIL: TestIndependentSourceIncompleteAbsence (0.00s)
+=== RUN   TestIndependentSourceNormalPositions
+=== RUN   TestIndependentSourceNormalPositions/Go_grouped_quoted_CRLF
+=== RUN   TestIndependentSourceNormalPositions/Go_duplicate_effective
+=== RUN   TestIndependentSourceNormalPositions/Go_clipped_final_token
+=== RUN   TestIndependentSourceNormalPositions/Go_malformed
+=== RUN   TestIndependentSourceNormalPositions/JSON_nested_duplicate_escaped_multiline
+=== RUN   TestIndependentSourceNormalPositions/JSON_duplicate_parent_overwritten
+=== RUN   TestIndependentSourceNormalPositions/JSON_malformed_clipped
+--- PASS: TestIndependentSourceNormalPositions (0.00s)
+    --- PASS: TestIndependentSourceNormalPositions/Go_grouped_quoted_CRLF (0.00s)
+    --- PASS: TestIndependentSourceNormalPositions/Go_duplicate_effective (0.00s)
+    --- PASS: TestIndependentSourceNormalPositions/Go_clipped_final_token (0.00s)
+    --- PASS: TestIndependentSourceNormalPositions/Go_malformed (0.00s)
+    --- PASS: TestIndependentSourceNormalPositions/JSON_nested_duplicate_escaped_multiline (0.00s)
+    --- PASS: TestIndependentSourceNormalPositions/JSON_duplicate_parent_overwritten (0.00s)
+    --- PASS: TestIndependentSourceNormalPositions/JSON_malformed_clipped (0.00s)
+FAIL
+FAIL	github.com/Savio09/gittok-ios-backend/internal/preview	0.254s
+FAIL

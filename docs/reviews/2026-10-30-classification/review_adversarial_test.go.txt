@@ -1,0 +1,59 @@
+package crawler
+
+import (
+ "encoding/json"
+ "os"
+ "testing"
+ "github.com/Savio09/gittok-ios-backend/internal/apimodel"
+)
+
+func TestReviewAdversarial(t *testing.T) {
+ cases := []struct{name, language string; paths []string; files map[string]string; want apimodel.RepoKind}{
+  {"rust_implicit_cli", "Rust", []string{"Cargo.toml","src/main.rs"}, map[string]string{"Cargo.toml":"[package]\nname = \"tool\"\nversion = \"0.1.0\"\n[dependencies]\nclap = \"4\"\n"}, apimodel.KindCLI},
+  {"rust_implicit_library", "Rust", []string{"Cargo.toml","src/lib.rs"}, map[string]string{"Cargo.toml":"[package]\nname = \"math\"\nversion = \"0.1.0\"\n"}, apimodel.KindLibrary},
+  {"python_modern_cli", "Python", []string{"pyproject.toml","src/tool.py"}, map[string]string{"pyproject.toml":"[project]\nname = \"tool\"\nversion = \"0.1.0\"\n[project.scripts]\ntool = \"tool:main\"\n"}, apimodel.KindCLI},
+  {"python_requirements_backend", "Python", []string{"requirements.txt","app.py"}, map[string]string{"requirements.txt":"Flask==3.0.0\n", "app.py":"from flask import Flask\napp = Flask(__name__)\n"}, apimodel.KindBackend},
+  {"python_tooling_is_not_library", "Python", []string{"pyproject.toml","script.py"}, map[string]string{"pyproject.toml":"[tool.ruff]\nline-length = 88\n"}, apimodel.KindOther},
+  {"python_project_name_is_not_dependency", "Python", []string{"pyproject.toml"}, map[string]string{"pyproject.toml":"[project]\nname = \"flask-utils\"\nversion = \"0.1.0\"\ndependencies = []\n"}, apimodel.KindLibrary},
+  {"npm_cli_with_vite_build_tool", "TypeScript", []string{"package.json","src/cli.ts"}, map[string]string{"package.json":`{"name":"tool","bin":{"tool":"dist/cli.js"},"devDependencies":{"vite":"^5"},"scripts":{"dev":"vite build --watch"}}`}, apimodel.KindCLI},
+  {"go_comment_is_not_http_server", "Go", []string{"go.mod","cmd/tool/main.go"}, map[string]string{"go.mod":"module example.com/tool\n", "cmd/tool/main.go":"package main\n// ListenAndServe would be used for a future web mode.\nfunc main() {}\n"}, apimodel.KindCLI},
+  {"go_dependency_comment_is_not_dependency", "Go", []string{"go.mod","cmd/tool/main.go"}, map[string]string{"go.mod":"module example.com/tool\n// migration note: no longer uses github.com/gin-gonic/gin\n", "cmd/tool/main.go":"package main\nfunc main() {}\n"}, apimodel.KindCLI},
+  {"flutter_comment_is_not_sdk", "Dart", []string{"pubspec.yaml","lib/math.dart"}, map[string]string{"pubspec.yaml":"name: math\n# No flutter dependency; ordinary Dart library.\nenvironment:\n  sdk: ^3.0.0\n"}, apimodel.KindOther},
+  {"go_library_example_is_not_main_product", "Go", []string{"go.mod","client.go","examples/server/main.go"}, map[string]string{"go.mod":"module example.com/client\n", "client.go":"package client\n", "examples/server/main.go":"package main\nimport \"net/http\"\nfunc main(){http.ListenAndServe(\":8000\",nil)}\n"}, apimodel.KindLibrary},
+ }
+ for _, c := range cases {t.Run(c.name,func(t *testing.T){got:=Classify(c.language,c.paths,c.files);if got.Kind!=c.want {t.Errorf("got %s, want %s; evidence=%q",got.Kind,c.want,got.Evidence)}})}
+}
+
+func TestReviewManifestDeterminism(t *testing.T) {
+ files:=map[string]string{
+  "package.json":`{"name":"core","main":"dist/index.js"}`,
+  "examples/mobile/package.json":`{"dependencies":{"expo":"51"}}`,
+ }
+ seen:=map[apimodel.RepoKind]int{}
+ for i:=0;i<1000;i++ {seen[Classify("TypeScript",[]string{"package.json","src/index.ts","examples/mobile/package.json"},files).Kind]++}
+ t.Logf("identical input classification counts: %v",seen)
+ if len(seen)>1 {t.Errorf("identical input yields different repository kinds")}
+}
+
+func TestReviewStoredEvidence(t *testing.T) {
+ var fixtures []struct{Name,Language string;Paths []string;Manifests map[string]string}
+ b,err:=os.ReadFile("review_fixtures.json");if err!=nil{t.Fatal(err)}
+ if err=json.Unmarshal(b,&fixtures);err!=nil{t.Fatal(err)}
+ for _,f:=range fixtures {t.Run(f.Name,func(t *testing.T){
+  seen:=map[apimodel.RepoKind]int{}
+  for i:=0;i<1000;i++ {seen[Classify(f.Language,f.Paths,f.Manifests).Kind]++}
+  t.Logf("stored evidence results: %v; sample=%+v",seen,Classify(f.Language,f.Paths,f.Manifests))
+  if f.Name=="pocketbase__pocketbase" && seen[apimodel.KindBackend]!=1000 {t.Error("PocketBase backend is not classified as backend from supplied evidence")}
+ })}
+}
+
+func TestReviewMissingSource(t *testing.T) {
+ files:=map[string]string{"go.mod":"module example.com/service\n"}
+ got:=Classify("Go",[]string{"go.mod","cmd/service/main.go","internal/server/server.go"},files)
+ t.Logf("no entry-point contents fetched: %+v",got)
+}
+
+func TestReviewEvidenceProvenance(t *testing.T) {
+ got:=Classify("TypeScript",[]string{"apps/mobile/package.json"},map[string]string{"apps/mobile/package.json":`{"dependencies":{"expo":"51"}}`})
+ t.Logf("nested manifest provenance: %+v",got)
+}

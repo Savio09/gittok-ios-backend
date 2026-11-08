@@ -1,0 +1,101 @@
+Reviewed branch: fortune/classification-review-repairs
+Reviewed commit: 0ca94e4d4f9349a5df2ae1bf2cf42c15f64a5709
+Baseline: 3bf15746e053a391e95d7752c9c97684187bb774
+
+Existing tracked suite, original working tree:
+GOCACHE=/tmp/gittok-review-go-cache go test -count=1 ./...       PASS
+GOCACHE=/tmp/gittok-review-go-cache go test -race -count=1 ./... PASS
+GOCACHE=/tmp/gittok-review-go-cache go vet ./...                PASS
+GOCACHE=/tmp/gittok-review-go-cache go build ./...              PASS (rerun with module-cache access)
+git diff --check                                             PASS
+
+Isolated archive of HEAD, with reviewer-only tests:
+GOCACHE=/tmp/gittok-review-go-cache go test -count=1 -run TestReviewer -v ./internal/crawler ./internal/githubclient
+Exit code: 1
+These are selected adversarial cases, not an estimate of overall accuracy.
+
+=== RUN   TestReviewerRepairBoundaries
+=== RUN   TestReviewerRepairBoundaries/unavailable_root_manifest_cannot_promote_example
+    reviewer_validation_test.go:38: kind=mobile status=resolved evidence=[examples/mobile/package.json: depends on "expo" (51) (mobile framework)]
+    reviewer_validation_test.go:39: unsupported resolved mobile verdict
+=== RUN   TestReviewerRepairBoundaries/truncated_go_entry_is_not_proof_of_no_server
+    reviewer_validation_test.go:38: kind=cli status=resolved evidence=[cmd/api/main.go: package main (produces a binary) entry point under cmd/ with no server signal in the inspected source (produces a command)]
+    reviewer_validation_test.go:39: unsupported resolved cli verdict
+=== RUN   TestReviewerRepairBoundaries/unparseable_go_entry_is_not_proof_of_no_server
+    reviewer_validation_test.go:38: kind=cli status=resolved evidence=[cmd/api/main.go: package main (produces a binary) entry point under cmd/ with no server signal in the inspected source (produces a command)]
+    reviewer_validation_test.go:39: unsupported resolved cli verdict
+=== RUN   TestReviewerRepairBoundaries/go_method_name_is_not_http_identity
+    reviewer_validation_test.go:38: kind=backend status=resolved evidence=[cmd/tool/main.go: package main (produces a binary) cmd/tool/main.go: calls http.ListenAndServe (starts an HTTP server)]
+    reviewer_validation_test.go:39: unsupported resolved backend verdict
+=== RUN   TestReviewerRepairBoundaries/unused_http_server_literal_is_not_a_start_call
+    reviewer_validation_test.go:38: kind=backend status=resolved evidence=[cmd/tool/main.go: package main (produces a binary) cmd/tool/main.go: calls http.ListenAndServe (starts an HTTP server)]
+    reviewer_validation_test.go:39: unsupported resolved backend verdict
+=== RUN   TestReviewerRepairBoundaries/optional_python_docs_extra_is_not_runtime
+    reviewer_validation_test.go:38: kind=backend status=resolved evidence=[pyproject.toml: declares a dependency on "flask" (web framework) limitation: secondary component (library): pyproject.toml: packaging metadata with no command entry points (importable package)]
+    reviewer_validation_test.go:39: unsupported resolved backend verdict
+=== RUN   TestReviewerRepairBoundaries/js_dev_express_is_not_product_backend
+    reviewer_validation_test.go:38: kind=backend status=resolved evidence=[package.json: depends on "express" (5) (server framework) limitation: secondary component (cli): package.json: declares a "bin" field (installs a command)]
+    reviewer_validation_test.go:39: unsupported resolved backend verdict
+=== RUN   TestReviewerRepairBoundaries/js_peer_expo_is_not_mobile_product
+    reviewer_validation_test.go:38: kind=mobile status=resolved evidence=[package.json: depends on "expo" (51) (mobile framework) limitation: secondary component (library): package.json: declares a lib entry ("main"/"module"/"exports") and no app or bin (importable package)]
+    reviewer_validation_test.go:39: unsupported resolved mobile verdict
+=== RUN   TestReviewerRepairBoundaries/nested_ui_does_not_replace_root_library
+    reviewer_validation_test.go:38: kind=frontend status=resolved evidence=[package.json: depends on "react" (18) (web framework) ui/index.html: web app entry (index.html)]
+    reviewer_validation_test.go:39: unsupported resolved frontend verdict
+=== RUN   TestReviewerRepairBoundaries/secondary_go_module_does_not_replace_root_library
+    reviewer_validation_test.go:38: kind=backend status=resolved evidence=[packages/demo/main.go: package main (produces a binary) packages/demo/main.go: calls http.ListenAndServe (starts an HTTP server)]
+    reviewer_validation_test.go:39: unsupported resolved backend verdict
+=== RUN   TestReviewerRepairBoundaries/docker_port_alone_does_not_establish_backend
+    reviewer_validation_test.go:38: kind=backend status=resolved evidence=[Dockerfile: declares EXPOSE 8080 (a container network port)]
+    reviewer_validation_test.go:39: unsupported resolved backend verdict
+=== RUN   TestReviewerRepairBoundaries/rust_incomplete_tree_cannot_prove_no_bin
+    reviewer_validation_test.go:38: kind=library status=resolved evidence=[Cargo.toml: a library target and no binary target (importable crate) limitation: the file listing was truncated; a signal absent from it cannot be treated as absent from the repository]
+    reviewer_validation_test.go:39: unsupported resolved library verdict
+=== RUN   TestReviewerRepairBoundaries/python_truncated_manifest_cannot_prove_no_scripts
+    reviewer_validation_test.go:38: kind=library status=resolved evidence=[pyproject.toml: packaging metadata with no command entry points (importable package)]
+    reviewer_validation_test.go:39: unsupported resolved library verdict
+=== RUN   TestReviewerRepairBoundaries/legacy_python_comment_is_not_cli_declaration
+    reviewer_validation_test.go:38: kind=cli status=resolved evidence=[setup.py: defines console_scripts (installs a command)]
+    reviewer_validation_test.go:39: unsupported resolved cli verdict
+=== RUN   TestReviewerRepairBoundaries/named_go_source_not_read_is_not_proof_of_no_main
+    reviewer_validation_test.go:38: kind=library status=resolved evidence=[go.mod: present with no package main in the tree (importable Go module)]
+    reviewer_validation_test.go:39: unsupported resolved library verdict
+--- FAIL: TestReviewerRepairBoundaries (0.00s)
+    --- FAIL: TestReviewerRepairBoundaries/unavailable_root_manifest_cannot_promote_example (0.00s)
+    --- FAIL: TestReviewerRepairBoundaries/truncated_go_entry_is_not_proof_of_no_server (0.00s)
+    --- FAIL: TestReviewerRepairBoundaries/unparseable_go_entry_is_not_proof_of_no_server (0.00s)
+    --- FAIL: TestReviewerRepairBoundaries/go_method_name_is_not_http_identity (0.00s)
+    --- FAIL: TestReviewerRepairBoundaries/unused_http_server_literal_is_not_a_start_call (0.00s)
+    --- FAIL: TestReviewerRepairBoundaries/optional_python_docs_extra_is_not_runtime (0.00s)
+    --- FAIL: TestReviewerRepairBoundaries/js_dev_express_is_not_product_backend (0.00s)
+    --- FAIL: TestReviewerRepairBoundaries/js_peer_expo_is_not_mobile_product (0.00s)
+    --- FAIL: TestReviewerRepairBoundaries/nested_ui_does_not_replace_root_library (0.00s)
+    --- FAIL: TestReviewerRepairBoundaries/secondary_go_module_does_not_replace_root_library (0.00s)
+    --- FAIL: TestReviewerRepairBoundaries/docker_port_alone_does_not_establish_backend (0.00s)
+    --- FAIL: TestReviewerRepairBoundaries/rust_incomplete_tree_cannot_prove_no_bin (0.00s)
+    --- FAIL: TestReviewerRepairBoundaries/python_truncated_manifest_cannot_prove_no_scripts (0.00s)
+    --- FAIL: TestReviewerRepairBoundaries/legacy_python_comment_is_not_cli_declaration (0.00s)
+    --- FAIL: TestReviewerRepairBoundaries/named_go_source_not_read_is_not_proof_of_no_main (0.00s)
+=== RUN   TestReviewerArchivedPackReplay
+=== RUN   TestReviewerArchivedPackReplay/Savio09__face-recognition
+    reviewer_validation_test.go:51: kind=other status=inconclusive observations=[] limitations=[the file listing was depth-limited; files below the depth cap were not listed, so a deeper entry point may exist no decisive frontend / backend / library / CLI / mobile signal was found in the inspected manifests and file tree]
+=== RUN   TestReviewerArchivedPackReplay/Savio09__plantly
+    reviewer_validation_test.go:51: kind=mobile status=resolved observations=[{package.json depends on "react-native" (0.74.5) (mobile framework) } {package.json depends on "expo" (~51.0.28) (mobile framework) }] limitations=[the file listing was depth-limited; files below the depth cap were not listed, so a deeper entry point may exist secondary component (library): package.json: declares a lib entry ("main"/"module"/"exports") and no app or bin (importable package)]
+=== RUN   TestReviewerArchivedPackReplay/excalidraw__excalidraw
+    reviewer_validation_test.go:51: kind=other status=inconclusive observations=[] limitations=[the file listing was depth-limited; files below the depth cap were not listed, so a deeper entry point may exist no decisive frontend / backend / library / CLI / mobile signal was found in the inspected manifests and file tree]
+=== RUN   TestReviewerArchivedPackReplay/pocketbase__pocketbase
+    reviewer_validation_test.go:51: kind=other status=inconclusive observations=[] limitations=[the file listing was depth-limited; files below the depth cap were not listed, so a deeper entry point may exist no decisive frontend / backend / library / CLI / mobile signal was found in the inspected manifests and file tree]
+--- PASS: TestReviewerArchivedPackReplay (0.00s)
+    --- PASS: TestReviewerArchivedPackReplay/Savio09__face-recognition (0.00s)
+    --- PASS: TestReviewerArchivedPackReplay/Savio09__plantly (0.00s)
+    --- PASS: TestReviewerArchivedPackReplay/excalidraw__excalidraw (0.00s)
+    --- PASS: TestReviewerArchivedPackReplay/pocketbase__pocketbase (0.00s)
+FAIL
+FAIL	github.com/Savio09/gittok-ios-backend/internal/crawler	0.307s
+=== RUN   TestReviewerCancellationOnFinalContentsRequest
+    reviewer_validation_test.go:16: err=<nil> skipped=[{main.go fetch error: Get "http://127.0.0.1:59717/repos/o/r/contents/main.go?ref=main": context canceled}]
+    reviewer_validation_test.go:17: final contents cancellation must return context.Canceled; got <nil>
+--- FAIL: TestReviewerCancellationOnFinalContentsRequest (0.00s)
+FAIL
+FAIL	github.com/Savio09/gittok-ios-backend/internal/githubclient	0.307s
+FAIL

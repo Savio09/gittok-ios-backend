@@ -1,0 +1,53 @@
+package crawler
+
+import (
+ "testing"
+"encoding/json"
+"os"
+ "github.com/Savio09/gittok-ios-backend/internal/apimodel"
+)
+
+func TestReviewerRepairBoundaries(t *testing.T) {
+ tests := []struct {
+  name, language string
+  paths []string
+  sources map[string]string
+  mutate func(*Inspection)
+  forbidden apimodel.RepoKind
+ }{
+  {name:"unavailable_root_manifest_cannot_promote_example",language:"TypeScript",paths:[]string{"package.json","examples/mobile/package.json"},sources:map[string]string{"examples/mobile/package.json":`{"dependencies":{"expo":"51"}}`},mutate:func(i *Inspection){i.Unavailable=[]Unavailable{{Path:"package.json",Reason:"fetch error"}}},forbidden:apimodel.KindMobile},
+  {name:"truncated_go_entry_is_not_proof_of_no_server", language:"Go", paths:[]string{"go.mod","cmd/api/main.go"}, sources:map[string]string{"go.mod":"module example.com/api\n", "cmd/api/main.go":"package main\n"}, mutate:func(i *Inspection){for n := range i.Files {if i.Files[n].Path=="cmd/api/main.go" {i.Files[n].Truncated=true; i.Files[n].Size=100000}}}, forbidden:apimodel.KindCLI},
+  {name:"unparseable_go_entry_is_not_proof_of_no_server", language:"Go", paths:[]string{"go.mod","cmd/api/main.go"}, sources:map[string]string{"go.mod":"module example.com/api\n", "cmd/api/main.go":"package main\nfunc main() {\n"}, forbidden:apimodel.KindCLI},
+  {name:"go_method_name_is_not_http_identity",language:"Go",paths:[]string{"go.mod","cmd/tool/main.go"}, sources:map[string]string{"go.mod":"module example.com/tool\n", "cmd/tool/main.go":"package main\ntype logger struct{}\nfunc (logger) ListenAndServe(){}\nfunc main(){ logger{}.ListenAndServe() }\n"}, forbidden:apimodel.KindBackend},
+  {name:"unused_http_server_literal_is_not_a_start_call",language:"Go",paths:[]string{"go.mod","cmd/tool/main.go"},sources:map[string]string{"go.mod":"module example.com/tool\n","cmd/tool/main.go":"package main\nimport \"net/http\"\nfunc main(){ _ = http.Server{} }\n"},forbidden:apimodel.KindBackend},
+  {name:"optional_python_docs_extra_is_not_runtime",language:"Python",paths:[]string{"pyproject.toml","src/helper/__init__.py"},sources:map[string]string{"pyproject.toml":"[project]\nname='helper'\nversion='1.0'\n[project.optional-dependencies]\ndocs=['flask>=3']\n"},forbidden:apimodel.KindBackend},
+  {name:"js_dev_express_is_not_product_backend",language:"JavaScript",paths:[]string{"package.json","bin/tool.js"},sources:map[string]string{"package.json":`{"bin":"bin/tool.js","devDependencies":{"express":"5"}}`},forbidden:apimodel.KindBackend},
+  {name:"js_peer_expo_is_not_mobile_product",language:"TypeScript",paths:[]string{"package.json","src/index.ts"},sources:map[string]string{"package.json":`{"exports":"./dist/index.js","peerDependencies":{"expo":"51"}}`},forbidden:apimodel.KindMobile},
+  {name:"nested_ui_does_not_replace_root_library",language:"TypeScript",paths:[]string{"package.json","src/index.ts","ui/package.json","ui/index.html"},sources:map[string]string{"package.json":`{"exports":"./dist/index.js","dependencies":{"react":"18"}}`,"ui/package.json":`{"private":true,"dependencies":{"react":"18"}}`},forbidden:apimodel.KindFrontend},
+  {name:"secondary_go_module_does_not_replace_root_library",language:"Go",paths:[]string{"go.mod","lib.go","packages/demo/go.mod","packages/demo/main.go"},sources:map[string]string{"go.mod":"module example.com/lib\n","lib.go":"package lib\n", "packages/demo/go.mod":"module example.com/demo\n", "packages/demo/main.go":"package main\nimport \"net/http\"\nfunc main(){http.ListenAndServe(\":8080\",nil)}\n"},forbidden:apimodel.KindBackend},
+  {name:"docker_port_alone_does_not_establish_backend",language:"",paths:[]string{"Dockerfile"},sources:map[string]string{"Dockerfile":"FROM alpine\nEXPOSE 8080\n"},forbidden:apimodel.KindBackend},
+  {name:"rust_incomplete_tree_cannot_prove_no_bin",language:"Rust",paths:[]string{"Cargo.toml","src/lib.rs"},sources:map[string]string{"Cargo.toml":"[package]\nname='core'\nversion='0.1.0'\n"},mutate:func(i *Inspection){i.Scope.Truncated=true},forbidden:apimodel.KindLibrary},
+  {name:"python_truncated_manifest_cannot_prove_no_scripts",language:"Python",paths:[]string{"pyproject.toml"},sources:map[string]string{"pyproject.toml":"[project]\nname='tool'\nversion='0.1'\n"},mutate:func(i *Inspection){i.Files[0].Truncated=true;i.Files[0].Size=100000},forbidden:apimodel.KindLibrary},
+  {name:"legacy_python_comment_is_not_cli_declaration",language:"Python",paths:[]string{"setup.py"},sources:map[string]string{"setup.py":"# no console_scripts declared here\nfrom setuptools import setup\nsetup(name='core')\n"},forbidden:apimodel.KindCLI},
+  {name:"named_go_source_not_read_is_not_proof_of_no_main",language:"Go",paths:[]string{"go.mod","app.go"},sources:map[string]string{"go.mod":"module example.com/app\n"},forbidden:apimodel.KindLibrary},
+ }
+ for _, tc := range tests {t.Run(tc.name,func(t *testing.T){
+  insp:=InspectionFromSources(tc.language,tc.paths,tc.sources)
+  if tc.mutate!=nil {tc.mutate(&insp)}
+  got:=Classify(insp)
+  t.Logf("kind=%s status=%s evidence=%v",got.Kind,got.Status,got.Evidence())
+  if got.Kind==tc.forbidden && got.Status==VerdictResolved {t.Errorf("unsupported resolved %s verdict",got.Kind)}
+ })}
+}
+
+func TestReviewerArchivedPackReplay(t *testing.T) {
+ data,err:=os.ReadFile("reviewer_archived_fixtures.json");if err!=nil {t.Fatal(err)}
+ var fixtures []struct { Name,Language string; Paths []string; Manifests map[string]string }
+ if err:=json.Unmarshal(data,&fixtures);err!=nil {t.Fatal(err)}
+ for _,f:=range fixtures {t.Run(f.Name,func(t *testing.T){
+  insp:=InspectionFromSources(f.Language,f.Paths,f.Manifests)
+  insp.Scope.DepthLimited=true // Stored pack tree is abbreviated; never a complete-tree oracle.
+  got:=Classify(insp)
+  t.Logf("kind=%s status=%s observations=%v limitations=%v",got.Kind,got.Status,got.Observations,got.Limitations)
+ })}
+}

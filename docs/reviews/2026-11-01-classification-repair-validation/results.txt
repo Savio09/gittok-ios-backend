@@ -1,0 +1,113 @@
+Independent second-pass validation, 2026-11-01
+Branch: fortune/classification-review-repairs
+HEAD: cc564ad85fd9cfabb101729dd686ac2226863549
+Comparison baseline: 0ca94e4d4f9349a5df2ae1bf2cf42c15f64a5709
+
+Fresh tracked-suite verification at HEAD:
+go test -count=1 ./...        PASS
+go test -race -count=1 ./...  PASS
+go vet ./...                 PASS
+go build ./...               PASS (rerun with module-cache access)
+git diff --check             PASS
+gofmt -l internal/crawler internal/corpus internal/githubclient cmd/corpuscapture cmd/evidencepack
+                             no output
+
+Independent controls in /tmp/gittok-second-pass-review-dluokk2k (git archive of HEAD):
+go test -count=1 -run 'TestReviewerRepairBoundaries|TestSecondReviewBoundaries|TestReviewerCancellationOnFinalContentsRequest' -v ./internal/crawler ./internal/githubclient
+Exit code: 1
+The fifteen previous classifier controls and previous cancellation control pass.
+Nine additional classifier controls fail. These are selected counterexamples, not an accuracy estimate.
+
+=== RUN   TestSecondReviewBoundaries
+=== RUN   TestSecondReviewBoundaries/truncated_listing_cannot_prove_whole_command_package_read
+    reviewer_second_pass_test.go:29: kind=cli status=resolved evidence=[cmd/service/main.go: package main (produces a binary) cmd/service/main.go: the command's package was inspected in full and contains no server call (produces a command) limitation: the file listing was truncated; a signal absent from it cannot be treated as absent from the repository]
+    reviewer_second_pass_test.go:30: unsupported resolved cli
+=== RUN   TestSecondReviewBoundaries/test_only_http_call_is_not_product_backend
+    reviewer_second_pass_test.go:29: kind=backend status=resolved evidence=[cmd/tool/main.go: package main (produces a binary) cmd/tool/main_test.go: contains a call expression http.ListenAndServe(…) at line 3, resolved to the net/http package function ListenAndServe (static syntax, not observed running)]
+    reviewer_second_pass_test.go:30: unsupported resolved backend
+=== RUN   TestSecondReviewBoundaries/unread_package_clause_in_clipped_cmd_file_is_not_library_proof
+    reviewer_second_pass_test.go:29: kind=library status=resolved evidence=[go.mod: declares module example.com/core lib.go: declares package core (importable) go.mod: no package main at the conventional command locations (module root, cmd/)]
+    reviewer_second_pass_test.go:30: unsupported resolved library
+=== RUN   TestSecondReviewBoundaries/unparsed_command_package_is_not_library_proof
+    reviewer_second_pass_test.go:29: kind=library status=resolved evidence=[go.mod: declares module example.com/core lib.go: declares package core (importable) go.mod: no package main at the conventional command locations (module root, cmd/)]
+    reviewer_second_pass_test.go:30: unsupported resolved library
+=== RUN   TestSecondReviewBoundaries/private_workspace_root_app_is_not_discarded
+    reviewer_second_pass_test.go:29: kind=library status=resolved evidence=[packages/core/package.json: declares a lib entry ("exports") and no app or bin (importable package) packages/core/package.json: declares no "bin" field and the component has no app shell secondary (frontend, repository root): package.json: declares "react" (18) in dependencies (web framework) secondary (frontend, repository root): index.html: web app entry (index.html) secondary (frontend, repository root): package.json: "private": true (not a published package)]
+    reviewer_second_pass_test.go:30: unsupported resolved library
+=== RUN   TestSecondReviewBoundaries/rust_depth_three_cannot_rule_out_multifile_binary
+    reviewer_second_pass_test.go:29: kind=library status=resolved evidence=[src/lib.rs: src/lib.rs (Cargo's implicit library target) Cargo.toml: no [[bin]] table and no src/main.rs or src/bin/ in a covering listing (importable crate) limitation: the file listing was depth-limited; files below the depth cap were not listed, so a deeper entry point may exist]
+    reviewer_second_pass_test.go:30: unsupported resolved library
+=== RUN   TestSecondReviewBoundaries/nested_rust_helper_is_not_a_binary_target
+    reviewer_second_pass_test.go:29: kind=cli status=resolved evidence=[src/bin/tool/support.rs: src/bin/tool/support.rs (Cargo's implicit binary target) Cargo.toml: a binary target with no web-framework dependency (produces a command)]
+    reviewer_second_pass_test.go:30: unsupported resolved cli
+=== RUN   TestSecondReviewBoundaries/empty_npm_bin_does_not_install_a_command
+    reviewer_second_pass_test.go:29: kind=cli status=resolved evidence=[package.json: declares a "bin" field (installs a command)]
+    reviewer_second_pass_test.go:30: unsupported resolved cli
+=== RUN   TestSecondReviewBoundaries/lookalike_module_path_is_not_gin_framework
+    reviewer_second_pass_test.go:29: kind=backend status=resolved evidence=[main.go: package main (produces a binary) go.mod: requires "example.com/gin-gonic/gin-helper" (server framework)]
+    reviewer_second_pass_test.go:30: unsupported resolved backend
+--- FAIL: TestSecondReviewBoundaries (0.00s)
+    --- FAIL: TestSecondReviewBoundaries/truncated_listing_cannot_prove_whole_command_package_read (0.00s)
+    --- FAIL: TestSecondReviewBoundaries/test_only_http_call_is_not_product_backend (0.00s)
+    --- FAIL: TestSecondReviewBoundaries/unread_package_clause_in_clipped_cmd_file_is_not_library_proof (0.00s)
+    --- FAIL: TestSecondReviewBoundaries/unparsed_command_package_is_not_library_proof (0.00s)
+    --- FAIL: TestSecondReviewBoundaries/private_workspace_root_app_is_not_discarded (0.00s)
+    --- FAIL: TestSecondReviewBoundaries/rust_depth_three_cannot_rule_out_multifile_binary (0.00s)
+    --- FAIL: TestSecondReviewBoundaries/nested_rust_helper_is_not_a_binary_target (0.00s)
+    --- FAIL: TestSecondReviewBoundaries/empty_npm_bin_does_not_install_a_command (0.00s)
+    --- FAIL: TestSecondReviewBoundaries/lookalike_module_path_is_not_gin_framework (0.00s)
+=== RUN   TestReviewerRepairBoundaries
+=== RUN   TestReviewerRepairBoundaries/unavailable_root_manifest_cannot_promote_example
+    reviewer_validation_test.go:38: kind=other status=inconclusive evidence=[candidate (mobile, component examples/mobile): examples/mobile/package.json: declares "expo" (51) in dependencies (mobile framework) limitation: package.json could not be read (fetch error); its declarations are unknown limitation: the repository root's role could not be determined from the inspected evidence, so no nested component can stand in for it]
+=== RUN   TestReviewerRepairBoundaries/truncated_go_entry_is_not_proof_of_no_server
+    reviewer_validation_test.go:38: kind=other status=inconclusive evidence=[limitation: cannot conclude the command starts no server: cmd/api/main.go was read only partially (13 of 100000 bytes); its unread remainder was not inspected; a server call may lie in the unread remainder limitation: the repository root's role could not be determined from the inspected evidence, so no nested component can stand in for it]
+=== RUN   TestReviewerRepairBoundaries/unparseable_go_entry_is_not_proof_of_no_server
+    reviewer_validation_test.go:38: kind=other status=inconclusive evidence=[limitation: cannot conclude the command starts no server: cmd/api/main.go could not be parsed (cmd/api/main.go:2:15: expected '}', found 'EOF'); a server call cannot be ruled out limitation: the repository root's role could not be determined from the inspected evidence, so no nested component can stand in for it]
+=== RUN   TestReviewerRepairBoundaries/go_method_name_is_not_http_identity
+    reviewer_validation_test.go:38: kind=cli status=resolved evidence=[cmd/tool/main.go: package main (produces a binary) cmd/tool/main.go: the command's package was inspected in full and contains no server call (produces a command)]
+=== RUN   TestReviewerRepairBoundaries/unused_http_server_literal_is_not_a_start_call
+    reviewer_validation_test.go:38: kind=cli status=resolved evidence=[cmd/tool/main.go: package main (produces a binary) cmd/tool/main.go: the command's package was inspected in full and contains no server call (produces a command)]
+=== RUN   TestReviewerRepairBoundaries/optional_python_docs_extra_is_not_runtime
+    reviewer_validation_test.go:38: kind=library status=resolved evidence=[pyproject.toml: declares a static [project] table pyproject.toml: with no command or GUI entry points (importable package) limitation: pyproject.toml declares "flask>=3" only in the optional group project.optional-dependencies.docs — an extra installed on request, which does not establish a web application]
+=== RUN   TestReviewerRepairBoundaries/js_dev_express_is_not_product_backend
+    reviewer_validation_test.go:38: kind=cli status=resolved evidence=[package.json: declares a "bin" field (installs a command) limitation: package.json declares "express" (5) only in devDependencies — development tooling, which does not establish a server framework in the product]
+=== RUN   TestReviewerRepairBoundaries/js_peer_expo_is_not_mobile_product
+    reviewer_validation_test.go:38: kind=library status=resolved evidence=[package.json: declares a lib entry ("exports") and no app or bin (importable package) package.json: declares no "bin" field and the component has no app shell limitation: package.json declares "expo" (51) only in peerDependencies — an integration the host application provides, which does not establish a mobile framework in this package]
+=== RUN   TestReviewerRepairBoundaries/nested_ui_does_not_replace_root_library
+    reviewer_validation_test.go:38: kind=library status=resolved evidence=[package.json: declares a lib entry ("exports") and no app or bin (importable package) package.json: declares no "bin" field and the listing shows no app entry for runtime dependency "react" secondary (frontend, component ui): ui/package.json: declares "react" (18) in dependencies (web framework) secondary (frontend, component ui): ui/index.html: web app entry (index.html) secondary (frontend, component ui): ui/package.json: "private": true (not a published package)]
+=== RUN   TestReviewerRepairBoundaries/secondary_go_module_does_not_replace_root_library
+    reviewer_validation_test.go:38: kind=library status=resolved evidence=[go.mod: declares module example.com/lib lib.go: declares package lib (importable) go.mod: no package main at the conventional command locations (module root, cmd/) secondary (backend, component packages/demo): packages/demo/main.go: package main (produces a binary) secondary (backend, component packages/demo): packages/demo/main.go: contains a call expression http.ListenAndServe(…) at line 3, resolved to the net/http package function ListenAndServe (static syntax, not observed running)]
+=== RUN   TestReviewerRepairBoundaries/docker_port_alone_does_not_establish_backend
+    reviewer_validation_test.go:38: kind=other status=inconclusive evidence=[limitation: Dockerfile declares EXPOSE 8080 — a deployment port the image declares, which does not by itself establish a backend limitation: no decisive frontend / backend / library / CLI / mobile signal was found in the inspected manifests and file tree]
+=== RUN   TestReviewerRepairBoundaries/rust_incomplete_tree_cannot_prove_no_bin
+    reviewer_validation_test.go:38: kind=other status=inconclusive evidence=[limitation: the file listing was truncated; a signal absent from it cannot be treated as absent from the repository limitation: a library target is present, but the listing does not cover src/main.rs and src/bin/, so a binary target cannot be ruled out limitation: the repository root's role could not be determined from the inspected evidence, so no nested component can stand in for it]
+=== RUN   TestReviewerRepairBoundaries/python_truncated_manifest_cannot_prove_no_scripts
+    reviewer_validation_test.go:38: kind=other status=inconclusive evidence=[limitation: cannot conclude the package declares no command entry: pyproject.toml was read only partially (36 of 100000 bytes); its unread remainder was not inspected; entry points may lie in the unread remainder limitation: the repository root's role could not be determined from the inspected evidence, so no nested component can stand in for it]
+=== RUN   TestReviewerRepairBoundaries/legacy_python_comment_is_not_cli_declaration
+    reviewer_validation_test.go:38: kind=other status=inconclusive evidence=[limitation: setup.py is executable Python; its install_requires was not evaluated, so its dependencies are unknown limitation: setup.py may declare entry_points (e.g. console_scripts) in its setup() call, which is executable Python and was not evaluated limitation: the repository root's role could not be determined from the inspected evidence, so no nested component can stand in for it]
+=== RUN   TestReviewerRepairBoundaries/named_go_source_not_read_is_not_proof_of_no_main
+    reviewer_validation_test.go:38: kind=other status=inconclusive evidence=[limitation: no importable Go package clause was inspected (listed but not read: app.go); the module's packages are unknown limitation: the repository root's role could not be determined from the inspected evidence, so no nested component can stand in for it]
+--- PASS: TestReviewerRepairBoundaries (0.00s)
+    --- PASS: TestReviewerRepairBoundaries/unavailable_root_manifest_cannot_promote_example (0.00s)
+    --- PASS: TestReviewerRepairBoundaries/truncated_go_entry_is_not_proof_of_no_server (0.00s)
+    --- PASS: TestReviewerRepairBoundaries/unparseable_go_entry_is_not_proof_of_no_server (0.00s)
+    --- PASS: TestReviewerRepairBoundaries/go_method_name_is_not_http_identity (0.00s)
+    --- PASS: TestReviewerRepairBoundaries/unused_http_server_literal_is_not_a_start_call (0.00s)
+    --- PASS: TestReviewerRepairBoundaries/optional_python_docs_extra_is_not_runtime (0.00s)
+    --- PASS: TestReviewerRepairBoundaries/js_dev_express_is_not_product_backend (0.00s)
+    --- PASS: TestReviewerRepairBoundaries/js_peer_expo_is_not_mobile_product (0.00s)
+    --- PASS: TestReviewerRepairBoundaries/nested_ui_does_not_replace_root_library (0.00s)
+    --- PASS: TestReviewerRepairBoundaries/secondary_go_module_does_not_replace_root_library (0.00s)
+    --- PASS: TestReviewerRepairBoundaries/docker_port_alone_does_not_establish_backend (0.00s)
+    --- PASS: TestReviewerRepairBoundaries/rust_incomplete_tree_cannot_prove_no_bin (0.00s)
+    --- PASS: TestReviewerRepairBoundaries/python_truncated_manifest_cannot_prove_no_scripts (0.00s)
+    --- PASS: TestReviewerRepairBoundaries/legacy_python_comment_is_not_cli_declaration (0.00s)
+    --- PASS: TestReviewerRepairBoundaries/named_go_source_not_read_is_not_proof_of_no_main (0.00s)
+FAIL
+FAIL	github.com/Savio09/gittok-ios-backend/internal/crawler	0.450s
+=== RUN   TestReviewerCancellationOnFinalContentsRequest
+    reviewer_validation_test.go:16: err=context canceled skipped=[]
+--- PASS: TestReviewerCancellationOnFinalContentsRequest (0.00s)
+PASS
+ok  	github.com/Savio09/gittok-ios-backend/internal/githubclient	0.451s
+FAIL

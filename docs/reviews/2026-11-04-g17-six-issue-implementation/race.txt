@@ -1,0 +1,13 @@
+?   	github.com/Savio09/gittok-ios-backend/cmd/corpuscapture	[no test files]
+ok  	github.com/Savio09/gittok-ios-backend/cmd/evidencepack	2.297s
+ok  	github.com/Savio09/gittok-ios-backend/cmd/server	1.313s
+ok  	github.com/Savio09/gittok-ios-backend/internal/analysis	2.093s
+ok  	github.com/Savio09/gittok-ios-backend/internal/apimodel	1.138s
+ok  	github.com/Savio09/gittok-ios-backend/internal/config	1.133s
+ok  	github.com/Savio09/gittok-ios-backend/internal/corpus	1.154s
+ok  	github.com/Savio09/gittok-ios-backend/internal/crawler	2.475s
+ok  	github.com/Savio09/gittok-ios-backend/internal/feed	1.239s
+ok  	github.com/Savio09/gittok-ios-backend/internal/githubclient	1.295s
+ok  	github.com/Savio09/gittok-ios-backend/internal/preview	2.808s
+?   	github.com/Savio09/gittok-ios-backend/internal/selection	[no test files]
+?   	github.com/Savio09/gittok-ios-backend/internal/store	[no test files]

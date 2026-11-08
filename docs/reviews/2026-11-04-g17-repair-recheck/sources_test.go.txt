@@ -1,0 +1,46 @@
+package preview
+
+import (
+ "encoding/json"
+ "strings"
+ "testing"
+ "github.com/Savio09/gittok-ios-backend/internal/apimodel"
+ "github.com/Savio09/gittok-ios-backend/internal/crawler"
+)
+
+func TestSourceRecheckGoCommandBeyondDepth(t *testing.T) {
+ files := map[string]string{"go.mod":"module example.com/lib\n", "lib.go":"package lib\nfunc F() {}\n"}
+ in:=reviewSourceInput("Go", []string{"go.mod","lib.go"}, files)
+ in.Inspection.Scope=crawler.TreeScope{DepthLimited:true, MaxDepth:3}
+ p:=Build(in); c,ok:=kindProof(p)
+ b,_:=json.Marshal(c); t.Logf("depth-limited: kind=%s proof=%v %s",p.Kind,ok,b)
+ files["cmd/tool/sub/entry.go"]="package main\nfunc main() {}\n"
+ full:=Build(reviewSourceInput("Go", []string{"go.mod","lib.go","cmd/tool/sub/entry.go"}, files))
+ t.Logf("complete: kind=%s",full.Kind)
+ if p.Kind!=apimodel.KindOther {t.Errorf("depth cap cannot establish no other Go file under cmd/")}
+ if full.Kind!=apimodel.KindCLI {t.Fatal("counterexample does not resolve CLI")}
+}
+
+func TestSourceRecheckRootUninspectedAlternativePackage(t *testing.T) {
+ files:=map[string]string{"go.mod":"module example.com/lib\nrequire github.com/spf13/cobra v1.8.0\n", "lib.go":"//go:build !cli\n\npackage lib\nfunc F() {}\n"}
+ paths:=[]string{"go.mod","lib.go","entry.go"}
+ in:=reviewSourceInput("Go",paths,files)
+ p:=Build(in); c,ok:=kindProof(p)
+ b,_:=json.Marshal(c); t.Logf("unread alternative: kind=%s proof=%v %s",p.Kind,ok,b)
+ files["entry.go"]="//go:build cli\n\npackage main\nfunc main() {}\n"
+ full:=Build(reviewSourceInput("Go",paths,files)); t.Logf("read alternative: kind=%s",full.Kind)
+ if p.Kind!=apimodel.KindOther {t.Errorf("no-command proof does not rule out listed unread root alternative package")}
+ if full.Kind!=apimodel.KindCLI {t.Fatal("counterexample does not resolve CLI")}
+}
+
+func TestSourceRecheckExcludedKindSource(t *testing.T) {
+ files:=map[string]string{"package.json":"{\n \"private\":true,\n \"workspaces\":[\"apps/*\"],\n \"dependencies\":{\"sidecar\":\"*\"}\n}","apps/web/package.json":"{\n \"name\":\"web\",\n \"dependencies\":{\"react\":\"19\"}\n}","apps/sidecar/package.json":"{\n \"name\":\"sidecar\",\n \"dependencies\":{\"express\":\"5\"}\n}"}
+ in:=reviewSourceInput("JavaScript",[]string{"package.json","apps/web/package.json","apps/web/index.html","apps/sidecar/package.json"},files)
+ p:=Build(in); c,ok:=kindProof(p)
+ if p.Kind!=apimodel.KindFrontend || !ok {t.Fatal("fixture did not resolve")}
+ b,_:=json.Marshal(c); t.Log(string(b))
+ if !strings.Contains(c.Explanation,`component "apps/sidecar" (backend)`) {t.Fatal("fixture missing backend assertion")}
+ proved:=false
+ for _,s:=range allSources(c) {if s.Kind==apimodel.SourceFile && s.Ref=="apps/sidecar/package.json" {proved=proved || s.Lines=="" || strings.Contains(consumedLines(t,in,s.Ref,s.Lines),"express")}}
+ if !proved {t.Error("explanation asserts excluded sidecar is backend without a citation covering its backend premise")}
+}

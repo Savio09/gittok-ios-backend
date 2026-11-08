@@ -1,0 +1,26 @@
+package preview
+import (
+ "encoding/json"
+ "os"
+ "path/filepath"
+ "testing"
+ "time"
+ "github.com/Savio09/gittok-ios-backend/internal/crawler"
+ "github.com/Savio09/gittok-ios-backend/internal/githubclient"
+)
+func TestImplementationCaptureEightRepositories(t *testing.T) {
+ for _,name:=range []string{"cli__cli.json","pocketbase__pocketbase.json","starship__starship.json","excalidraw__excalidraw.json","Savio09__plantly.json","Savio09__face-recognition.json","charmbracelet__glow.json","rack__rack.json"} {
+  var in Input
+  if name=="charmbracelet__glow.json" || name=="rack__rack.json" {
+   var c struct { Repo githubclient.Repo `json:"metadata"`; CapturedAt time.Time `json:"captured_at"`; Revision crawler.Revision `json:"revision"`; Tree githubclient.FileTree `json:"tree"`; Fetched githubclient.FetchedContents `json:"consumed"` }
+   raw,err:=os.ReadFile(filepath.Join("..","analysis","testdata","g17",name));if err!=nil {t.Fatal(err)}
+   if err=json.Unmarshal(raw,&c);err!=nil {t.Fatal(err)}
+   in=Input{Repo:c.Repo,CapturedAt:c.CapturedAt,Inspection:crawler.NewInspection(c.Repo.Language,c.Revision,c.Tree,c.Fetched)}
+  } else { in=corpusInput(t,name) }
+  p:=Build(in)
+  for _,c:=range claimsIn(p){ if err:=ValidateClaim(in,c);err!=nil {t.Fatal(err)} }
+  raw,err:=json.MarshalIndent(p,"","  ");if err!=nil {t.Fatal(err)}
+  if err=os.WriteFile(filepath.Join("/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-six-issue-implementation/previews",name),raw,0600);err!=nil {t.Fatal(err)}
+  t.Logf("%s: kind=%s claims=%d deps=%v",name,p.Kind,len(claimsIn(p)),depLabels(p))
+ }
+}

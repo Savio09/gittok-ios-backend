@@ -1,0 +1,18 @@
+package githubclient
+import (
+ "context"
+ "errors"
+ "net/http"
+ "net/http/httptest"
+ "testing"
+)
+func TestReviewerCancellationOnFinalContentsRequest(t *testing.T) {
+ started:=make(chan struct{})
+ s:=httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter,r *http.Request){close(started);<-r.Context().Done()}));defer s.Close()
+ c:=New("",WithBaseURL(s.URL),WithMaxRetries(0))
+ ctx,cancel:=context.WithCancel(context.Background());defer cancel()
+ go func(){<-started;cancel()}()
+ got,err:=c.GetFileContents(ctx,"o","r","main",[]string{"main.go"},DefaultContentLimits())
+ t.Logf("err=%v skipped=%v",err,got.Skipped)
+ if !errors.Is(err,context.Canceled){t.Errorf("final contents cancellation must return context.Canceled; got %v",err)}
+}

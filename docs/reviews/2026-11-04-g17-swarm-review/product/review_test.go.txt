@@ -1,0 +1,83 @@
+package preview
+
+import (
+ "encoding/json"
+ "fmt"
+ "os"
+ "testing"
+ "time"
+ "github.com/Savio09/gittok-ios-backend/internal/crawler"
+ "github.com/Savio09/gittok-ios-backend/internal/githubclient"
+)
+
+func TestSwarmToolProductWithREADME(t *testing.T) {
+ paths := []string{"tools/app/go.mod", "tools/app/main.go"}
+ files := map[string]string{
+  "tools/app/go.mod": "module example.com/app\n\nrequire (\n github.com/spf13/cobra v1.8.0\n github.com/spf13/pflag v1.0.5\n golang.org/x/term v0.20.0\n)\n",
+  "tools/app/main.go": "package main\nimport (\n \"github.com/spf13/cobra\"\n \"net/http\"\n)\nfunc main() { _ = cobra.Command{}; http.ListenAndServe(\":8080\",nil) }\n",
+ }
+ before := Build(synthetic(paths, files))
+ paths = append(paths, "README.md")
+ files["README.md"] = "# App\n\nThe product command.\n"
+ after := Build(synthetic(paths, files))
+ t.Logf("without README: %v, server=%v; with README: %v, server=%v", depLabels(before), measure(before).labels["Contains net/http call"], depLabels(after), measure(after).labels["Contains net/http call"])
+ if len(depLabels(before)) != len(depLabels(after)) { t.Error("adding the product README removed product dependencies") }
+ if measure(before).labels["Contains net/http call"] && !measure(after).labels["Contains net/http call"] {t.Error("adding a product README suppressed the actual product source construct")}
+}
+
+func TestSwarmHelperImportsDisplaceProduct(t *testing.T) {
+ mod := "module example.com/app\n\nrequire (\n github.com/spf13/cobra v1.8.0\n example.com/zproduct v1.0.0\n"
+ helper := "package main\nimport (\n"
+ for i:=0; i<9; i++ { mod += fmt.Sprintf(" example.com/ahelper%d v1.0.0\n",i); helper += fmt.Sprintf(" _ \"example.com/ahelper%d\"\n",i) }
+ mod += ")\n"; helper += ")\nfunc main() {}\n"
+ files := map[string]string{
+  "go.mod": mod,
+  "cmd/app/main.go": "package main\nimport (\n \"github.com/spf13/cobra\"\n \"example.com/zproduct\"\n)\nfunc main() { _ = cobra.Command{}; zproduct.Run() }\n",
+  "script/helper.go": helper,
+ }
+ in := synthetic([]string{"go.mod", "cmd/app/main.go", "script/helper.go"},files)
+ p := Build(in)
+ t.Logf("classification: %+v; declarations: %v; imports: %v", crawler.Classify(in.Inspection).Products, depLabels(p), crawler.CollectImports(in.Inspection))
+ if !measure(p).labels["Declares example.com/zproduct"] { t.Error("a dependency imported by the product was displaced by helper imports") }
+}
+
+func TestSwarmInconclusiveCandidatesArePeers(t *testing.T) {
+ mk := func(root string) map[string]string {
+  deps := map[string]string{"react":"18"}
+  mod := "module example.com/cli\nrequire (\n github.com/spf13/cobra v1.8.0\n"
+  for i:=0;i<8;i++ { deps[fmt.Sprintf("z%d",i)]="1"; mod += fmt.Sprintf(" example.com/d%d v1.0.0\n",i) }
+  mod += ")\n"
+  body,_ := json.Marshal(map[string]any{"dependencies":deps})
+  return map[string]string{root+"/go.mod":mod, root+"/main.go":"package main\nimport \"github.com/spf13/cobra\"\nfunc main() { _ = cobra.Command{} }\n", "m/package.json":string(body)}
+ }
+ for _,root := range []string{"a","z"} {
+  in := synthetic([]string{root+"/go.mod",root+"/main.go", "m/package.json", "m/index.html"},mk(root))
+  cls := crawler.Classify(in.Inspection)
+  p := Build(in)
+  t.Logf("unresolved component %s: verdict=%s products=%v deps=%v",root,cls.Status,cls.Products,depLabels(p))
+  if !measure(p).labels["Declares github.com/spf13/cobra"] {t.Error("candidate CLI's decisive dependency displaced after directory rename")}
+ }
+ for _,name := range []string{"charmbracelet__glow.json", "rack__rack.json"} {
+  var c struct {
+   Repo githubclient.Repo `json:"metadata"`
+   CapturedAt time.Time `json:"captured_at"`
+   Revision crawler.Revision `json:"revision"`
+   Tree githubclient.FileTree `json:"tree"`
+   Fetched githubclient.FetchedContents `json:"consumed"`
+  }
+  raw,err:=os.ReadFile("../analysis/testdata/g17/"+name); if err!=nil {t.Fatal(err)}
+  if err=json.Unmarshal(raw,&c);err!=nil {t.Fatal(err)}
+  in:=Input{Repo:c.Repo,CapturedAt:c.CapturedAt,Inspection:crawler.NewInspection(c.Repo.Language,c.Revision,c.Tree,c.Fetched)}
+  p:=Build(in); b,_:=json.MarshalIndent(p,"","  ")
+  if err:=os.WriteFile("../../docs/reviews/2026-11-04-g17-swarm-review/product/"+name,b,0600);err!=nil {t.Fatal(err)}
+  t.Logf("%s: kind %s, %d claims, deps %v",name,p.Kind,len(claimsIn(p)),depLabels(p))
+ }
+}
+
+func TestSwarmCaptureOutputs(t *testing.T) {
+ for _, name := range []string{"cli__cli.json","pocketbase__pocketbase.json"} {
+  in:=corpusInput(t,name); p:=Build(in); b,_:=json.MarshalIndent(p,"","  ")
+  if err:=os.WriteFile("../../docs/reviews/2026-11-04-g17-swarm-review/product/"+name,b,0600);err!=nil {t.Fatal(err)}
+  t.Logf("%s: kind %s, %d claims, deps %v",name,p.Kind,len(claimsIn(p)),depLabels(p))
+ }
+}

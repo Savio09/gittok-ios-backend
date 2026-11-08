@@ -1,0 +1,233 @@
+{
+  "id": "Savio09/plantly",
+  "owner": "Savio09",
+  "name": "plantly",
+  "slug": "Savio09/plantly",
+  "kind": "mobile",
+  "language": "TypeScript",
+  "description": "",
+  "github_url": "https://github.com/Savio09/plantly",
+  "sections": [
+    {
+      "kind": "idea",
+      "title": "Repository descriptions",
+      "claims": [
+        {
+          "label": "Why this is a mobile app",
+          "source": {
+            "kind": "file",
+            "ref": "package.json",
+            "lines": "26-26",
+            "url": "https://github.com/Savio09/plantly/blob/81c15a40289784af8765f5b7485999d2aff8757d/package.json#L26-L26"
+          },
+          "excerpt": "\"react-native\": \"0.74.5\"",
+          "explanation": "Classified as a mobile app from the inspected files: \"package.json\" declares \"dependencies → react-native\" as \"0.74.5\".",
+          "supports": "GitTok's classification of this repository from the cited premises.",
+          "limit": "An inference from a bounded inspection; the code was not run, and files outside the inspection could change it.",
+          "confidence": "confident"
+        },
+        {
+          "label": "README passage",
+          "source": {
+            "kind": "file",
+            "ref": "README.md",
+            "lines": "3-3",
+            "url": "https://github.com/Savio09/plantly/blob/81c15a40289784af8765f5b7485999d2aff8757d/README.md#L3-L3"
+          },
+          "excerpt": "This is an application that reminds one to take care of their plants. It's one of the apps that I would be building for my five native apps challenge using React Native. I'll be getting back to this shortly.",
+          "explanation": "\"README.md\" states: \"This is an application that reminds one to take care of their plants. It's one of the apps that I would be building for my five native apps challenge using React Native. I'll be getting back to this shortly.\".",
+          "supports": "An attributed documentation passage in the repository root.",
+          "limit": "Repository documentation is an author statement; its described behavior was not verified.",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "stack",
+      "title": "Declared stack",
+      "claims": [
+        {
+          "label": "Declares react-native",
+          "source": {
+            "kind": "file",
+            "ref": "package.json",
+            "lines": "26-26",
+            "url": "https://github.com/Savio09/plantly/blob/81c15a40289784af8765f5b7485999d2aff8757d/package.json#L26-L26"
+          },
+          "excerpt": "\"react-native\": \"0.74.5\"",
+          "explanation": "\"package.json\" declares \"react-native\" in \"dependencies\" with declared specification \"0.74.5\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "GitHub primary language",
+          "source": {
+            "kind": "metadata",
+            "ref": "language",
+            "url": "https://api.github.com/repos/Savio09/plantly"
+          },
+          "explanation": "GitHub reports language as \"TypeScript\".",
+          "supports": "The value reported by GitHub for this repository.",
+          "limit": "Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares @expo/vector-icons",
+          "source": {
+            "kind": "file",
+            "ref": "package.json",
+            "lines": "13-13",
+            "url": "https://github.com/Savio09/plantly/blob/81c15a40289784af8765f5b7485999d2aff8757d/package.json#L13-L13"
+          },
+          "excerpt": "\"@expo/vector-icons\": \"^14.0.3\"",
+          "explanation": "\"package.json\" declares \"@expo/vector-icons\" in \"dependencies\" with declared specification \"^14.0.3\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares @react-native-async-storage/async-storage",
+          "source": {
+            "kind": "file",
+            "ref": "package.json",
+            "lines": "14-14",
+            "url": "https://github.com/Savio09/plantly/blob/81c15a40289784af8765f5b7485999d2aff8757d/package.json#L14-L14"
+          },
+          "excerpt": "\"@react-native-async-storage/async-storage\": \"1.23.1\"",
+          "explanation": "\"package.json\" declares \"@react-native-async-storage/async-storage\" in \"dependencies\" with declared specification \"1.23.1\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares date-fns",
+          "source": {
+            "kind": "file",
+            "ref": "package.json",
+            "lines": "15-15",
+            "url": "https://github.com/Savio09/plantly/blob/81c15a40289784af8765f5b7485999d2aff8757d/package.json#L15-L15"
+          },
+          "excerpt": "\"date-fns\": \"^4.1.0\"",
+          "explanation": "\"package.json\" declares \"date-fns\" in \"dependencies\" with declared specification \"^4.1.0\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares expo",
+          "source": {
+            "kind": "file",
+            "ref": "package.json",
+            "lines": "16-16",
+            "url": "https://github.com/Savio09/plantly/blob/81c15a40289784af8765f5b7485999d2aff8757d/package.json#L16-L16"
+          },
+          "excerpt": "\"expo\": \"~51.0.28\"",
+          "explanation": "\"package.json\" declares \"expo\" in \"dependencies\" with declared specification \"~51.0.28\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares expo-constants",
+          "source": {
+            "kind": "file",
+            "ref": "package.json",
+            "lines": "17-17",
+            "url": "https://github.com/Savio09/plantly/blob/81c15a40289784af8765f5b7485999d2aff8757d/package.json#L17-L17"
+          },
+          "excerpt": "\"expo-constants\": \"~16.0.2\"",
+          "explanation": "\"package.json\" declares \"expo-constants\" in \"dependencies\" with declared specification \"~16.0.2\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares expo-dev-client",
+          "source": {
+            "kind": "file",
+            "ref": "package.json",
+            "lines": "31-31",
+            "url": "https://github.com/Savio09/plantly/blob/81c15a40289784af8765f5b7485999d2aff8757d/package.json#L31-L31"
+          },
+          "excerpt": "\"expo-dev-client\": \"~4.0.29\"",
+          "explanation": "\"package.json\" declares \"expo-dev-client\" in \"dependencies\" with declared specification \"~4.0.29\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares expo-file-system",
+          "source": {
+            "kind": "file",
+            "ref": "package.json",
+            "lines": "18-18",
+            "url": "https://github.com/Savio09/plantly/blob/81c15a40289784af8765f5b7485999d2aff8757d/package.json#L18-L18"
+          },
+          "excerpt": "\"expo-file-system\": \"~17.0.1\"",
+          "explanation": "\"package.json\" declares \"expo-file-system\" in \"dependencies\" with declared specification \"~17.0.1\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "setup",
+      "title": "Declared commands",
+      "claims": [
+        {
+          "label": "Declares command start",
+          "source": {
+            "kind": "file",
+            "ref": "package.json",
+            "lines": "6-6",
+            "url": "https://github.com/Savio09/plantly/blob/81c15a40289784af8765f5b7485999d2aff8757d/package.json#L6-L6"
+          },
+          "excerpt": "\"start\": \"expo start\"",
+          "explanation": "\"package.json\" declares field \"scripts → start\" as \"expo start\".",
+          "supports": "A static command declaration in the repository root.",
+          "limit": "The command was not executed; success and required environment were not verified.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares command android",
+          "source": {
+            "kind": "file",
+            "ref": "package.json",
+            "lines": "7-7",
+            "url": "https://github.com/Savio09/plantly/blob/81c15a40289784af8765f5b7485999d2aff8757d/package.json#L7-L7"
+          },
+          "excerpt": "\"android\": \"expo start --android\"",
+          "explanation": "\"package.json\" declares field \"scripts → android\" as \"expo start --android\".",
+          "supports": "A static command declaration in the repository root.",
+          "limit": "The command was not executed; success and required environment were not verified.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares command ios",
+          "source": {
+            "kind": "file",
+            "ref": "package.json",
+            "lines": "8-8",
+            "url": "https://github.com/Savio09/plantly/blob/81c15a40289784af8765f5b7485999d2aff8757d/package.json#L8-L8"
+          },
+          "excerpt": "\"ios\": \"expo start --ios\"",
+          "explanation": "\"package.json\" declares field \"scripts → ios\" as \"expo start --ios\".",
+          "supports": "A static command declaration in the repository root.",
+          "limit": "The command was not executed; success and required environment were not verified.",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "decision",
+      "title": "Coverage notes",
+      "body": "Lower-priority declarations are not shown.",
+      "evidence_mode": "not_executed"
+    }
+  ]
+}

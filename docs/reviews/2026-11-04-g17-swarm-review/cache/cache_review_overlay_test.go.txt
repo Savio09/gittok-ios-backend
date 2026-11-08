@@ -1,0 +1,80 @@
+package analysis
+
+import (
+ "context"
+ "fmt"
+ "net/http"
+ "net/http/httptest"
+ "strings"
+ "sync/atomic"
+ "testing"
+ "time"
+
+ "github.com/Savio09/gittok-ios-backend/internal/githubclient"
+)
+
+// All barriers are channels; a timeout only bounds a broken test.
+type reviewHTTP struct {
+ metadata, refs, trees atomic.Int32
+ treeStarted, treeRelease chan struct{}
+ metadataStarted, metadataRelease chan struct{}
+ gateMetadata atomic.Bool
+}
+func reviewServer(t *testing.T) (*reviewHTTP, *Service) {
+ t.Helper()
+ h := &reviewHTTP{treeStarted: make(chan struct{}), treeRelease: make(chan struct{}), metadataStarted:make(chan struct{},128),metadataRelease:make(chan struct{})}
+ srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter,r *http.Request) {
+  switch {
+  case strings.Contains(r.URL.Path,"/commits/"):
+   h.refs.Add(1); fmt.Fprint(w,`{"sha":"0123456789abcdef0123456789abcdef01234567"}`)
+  case strings.Contains(r.URL.Path,"/git/trees/"):
+   if h.trees.Add(1)==1 {close(h.treeStarted); <-h.treeRelease};fmt.Fprint(w,`{"tree":[],"truncated":false}`)
+  case r.URL.Path=="/repos/o/r":
+   h.metadata.Add(1)
+   if h.gateMetadata.Load() { h.metadataStarted<-struct{}{}; <-h.metadataRelease }
+   fmt.Fprint(w,`{"id":7,"owner":{"login":"o"},"name":"r","full_name":"o/r","private":false,"default_branch":"main"}`)
+  default: t.Errorf("unexpected HTTP request %s",r.URL);w.WriteHeader(404)
+  }
+ }))
+ t.Cleanup(srv.Close)
+ s:=NewPublicService(githubclient.WithBaseURL(srv.URL),githubclient.WithMaxRetries(0))
+ c,err:=OpenPreviewCache(t.TempDir(),DefaultCacheLimits(),time.Now);if err!=nil {t.Fatal(err)};s.UseCache(c)
+ return h,s
+}
+func reviewStart(s *Service) <-chan error {done:=make(chan error,1);go func(){_,err:=s.Preview(context.Background(),"o","r");done<-err}();return done}
+
+func TestSwarmAdmissionBoundsPreAdmissionHTTP(t *testing.T) {
+ h,s:=reviewServer(t)
+ s.UseAdmission(AdmissionLimits{MaxActive:1,MaxPerKey:1,MaxWaiters:1,Deadline:30*time.Second})
+ first:=reviewStart(s);<-h.treeStarted
+ h.gateMetadata.Store(true)
+ const n=80
+ outs:=make([]<-chan error,n)
+ for i:=range outs {outs[i]=reviewStart(s)}
+ for range n {<-h.metadataStarted}
+ s.flights.mu.Lock();active,waiters:=s.flights.active,s.flights.waiters;s.flights.mu.Unlock()
+ t.Logf("saturated limits: active=%d waiters=%d; %d additional metadata HTTP requests are simultaneously blocked upstream",active,waiters,h.metadata.Load()-1)
+ h.gateMetadata.Store(false);close(h.metadataRelease)
+ for _,out:=range outs {if err:=<-out;err!=ErrOverloaded {t.Errorf("excess caller err=%v",err)}}
+ close(h.treeRelease);if err:=<-first;err!=nil {t.Fatal(err)}
+ if got:=h.metadata.Load()-2;got>1 {t.Errorf("admission limit=1 allowed %d extra upstream visibility requests",got)}
+}
+
+// preview.go's overlay inserts this barrier immediately after the outer cache
+// lookup misses. No acquisition/cache behavior is changed by instrumentation.
+var cacheMissBarrier func()
+
+func TestSwarmCacheMissRechecksAfterWinningFlight(t *testing.T) {
+ h,s:=reviewServer(t)
+ first:=reviewStart(s);<-h.treeStarted
+ missEntered,allowMiss:=make(chan struct{}),make(chan struct{})
+ cacheMissBarrier=func(){close(missEntered);<-allowMiss}
+ second:=reviewStart(s);<-missEntered
+ close(h.treeRelease)
+ if err:=<-first;err!=nil {t.Fatal(err)} // A has stored and retired its flight.
+ close(allowMiss)
+ if err:=<-second;err!=nil {t.Fatal(err)}
+ cacheMissBarrier=nil
+ t.Logf("HTTP endpoint counts: metadata=%d refs=%d trees=%d",h.metadata.Load(),h.refs.Load(),h.trees.Load())
+ if got:=h.trees.Load();got!=1 {t.Errorf("two simultaneous same-key misses ran %d acquisitions despite first storing a valid cache entry",got)}
+}

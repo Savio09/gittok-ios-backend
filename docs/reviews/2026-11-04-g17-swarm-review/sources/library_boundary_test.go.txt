@@ -1,0 +1,29 @@
+package crawler_test
+
+import (
+ "encoding/json"
+ "testing"
+ "github.com/Savio09/gittok-ios-backend/internal/apimodel"
+ "github.com/Savio09/gittok-ios-backend/internal/crawler"
+ "github.com/Savio09/gittok-ios-backend/internal/githubclient"
+ "github.com/Savio09/gittok-ios-backend/internal/preview"
+)
+
+func TestIndependentLibraryBackendBoundary(t *testing.T) {
+ paths:=[]string{"pyproject.toml","src/widgetkit/__init__.py"}
+ files:=map[string]string{
+ "pyproject.toml":"[build-system]\nrequires = [\"hatchling\"]\nbuild-backend = \"hatchling.build\"\n\n[project]\nname = \"widgetkit\"\nversion = \"1.0.0\"\ndescription = \"An importable ASGI middleware library\"\ndependencies = [\"starlette>=0.40\"]\n",
+ "src/widgetkit/__init__.py":"\"\"\"Importable utility; no application object or server entry point.\"\"\"\ndef double(value):\n    return value * 2\n",
+ }
+ i:=crawler.InspectionFromSources("Python",paths,files)
+ i.Revision=crawler.Revision{Ref:"0123456789abcdef0123456789abcdef01234567",Resolved:true}
+ c:=crawler.Classify(i)
+ t.Logf("classification kind=%s status=%s observations=%+v secondary=%+v",c.Kind,c.Status,c.Observations,c.Secondary)
+ if c.Kind!=apimodel.KindBackend {t.Fatalf("policy no longer produces backend: %s",c.Kind)}
+ p:=preview.Build(preview.Input{Repo:githubclient.Repo{Owner:"generic",Name:"widgetkit",FullName:"generic/widgetkit"},Inspection:i})
+ b,_:=json.MarshalIndent(p,"","  ");t.Log(string(b))
+ if p.Kind!=apimodel.KindBackend {t.Errorf("display kind=%s",p.Kind)}
+ files["pyproject.toml"]="[build-system]\nrequires = [\"hatchling\"]\nbuild-backend = \"hatchling.build\"\n\n[project]\nname = \"widgetkit\"\nversion = \"1.0.0\"\n"
+ without:=crawler.Classify(crawler.InspectionFromSources("Python",paths,files))
+ if without.Kind!=apimodel.KindLibrary {t.Errorf("without web dependency got %s; want library",without.Kind)}
+}

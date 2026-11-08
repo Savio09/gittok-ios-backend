@@ -1,0 +1,275 @@
+{
+  "id": "excalidraw/excalidraw",
+  "owner": "excalidraw",
+  "name": "excalidraw",
+  "slug": "excalidraw/excalidraw",
+  "kind": "other",
+  "language": "TypeScript",
+  "description": "",
+  "github_url": "https://github.com/excalidraw/excalidraw",
+  "sections": [
+    {
+      "kind": "idea",
+      "title": "Repository descriptions",
+      "claims": [
+        {
+          "label": "README passage",
+          "source": {
+            "kind": "file",
+            "ref": "README.md",
+            "lines": "17-21",
+            "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/README.md#L17-L21"
+          },
+          "excerpt": "    An open source virtual hand-drawn style whiteboard. \u003c/br\u003e\n    Collaborative and end-to-end encrypted. \u003c/br\u003e\n  \u003cbr /\u003e\n  \u003c/h2\u003e\n\u003c/div\u003e",
+          "explanation": "\"README.md\" states: \"    An open source virtual hand-drawn style whiteboard. \u003c/br\u003e\\n    Collaborative and end-to-end encrypted. \u003c/br\u003e\\n  \u003cbr /\u003e\\n  \u003c/h2\u003e\\n\u003c/div\u003e\".",
+          "supports": "An attributed documentation passage in the repository root.",
+          "limit": "Repository documentation is an author statement; its described behavior was not verified.",
+          "confidence": "confident"
+        },
+        {
+          "label": "README passage",
+          "source": {
+            "kind": "file",
+            "ref": "dev-docs/README.md",
+            "lines": "3-3",
+            "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/dev-docs/README.md#L3-L3"
+          },
+          "excerpt": "This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.",
+          "explanation": "\"dev-docs/README.md\" states: \"This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.\".",
+          "supports": "An attributed documentation passage in component \"dev-docs\".",
+          "limit": "Repository documentation is an author statement; its described behavior was not verified.",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "stack",
+      "title": "Declared stack",
+      "claims": [
+        {
+          "label": "Declares react",
+          "source": {
+            "kind": "file",
+            "ref": "excalidraw-app/package.json",
+            "lines": "36-36",
+            "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/excalidraw-app/package.json#L36-L36"
+          },
+          "excerpt": "\"react\": \"19.0.0\"",
+          "explanation": "\"excalidraw-app/package.json\" declares \"react\" in \"dependencies\" with declared specification \"19.0.0\".",
+          "supports": "A dependency declaration in component \"excalidraw-app\".",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "GitHub primary language",
+          "source": {
+            "kind": "metadata",
+            "ref": "language",
+            "url": "https://api.github.com/repos/excalidraw/excalidraw"
+          },
+          "explanation": "GitHub reports language as \"TypeScript\".",
+          "supports": "The value reported by GitHub for this repository.",
+          "limit": "Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares @excalidraw/random-username",
+          "source": {
+            "kind": "file",
+            "ref": "excalidraw-app/package.json",
+            "lines": "29-29",
+            "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/excalidraw-app/package.json#L29-L29"
+          },
+          "excerpt": "\"@excalidraw/random-username\": \"1.0.0\"",
+          "explanation": "\"excalidraw-app/package.json\" declares \"@excalidraw/random-username\" in \"dependencies\" with declared specification \"1.0.0\".",
+          "supports": "A dependency declaration in component \"excalidraw-app\".",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares @sentry/browser",
+          "source": {
+            "kind": "file",
+            "ref": "excalidraw-app/package.json",
+            "lines": "30-30",
+            "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/excalidraw-app/package.json#L30-L30"
+          },
+          "excerpt": "\"@sentry/browser\": \"9.0.1\"",
+          "explanation": "\"excalidraw-app/package.json\" declares \"@sentry/browser\" in \"dependencies\" with declared specification \"9.0.1\".",
+          "supports": "A dependency declaration in component \"excalidraw-app\".",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares callsites",
+          "source": {
+            "kind": "file",
+            "ref": "excalidraw-app/package.json",
+            "lines": "31-31",
+            "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/excalidraw-app/package.json#L31-L31"
+          },
+          "excerpt": "\"callsites\": \"4.2.0\"",
+          "explanation": "\"excalidraw-app/package.json\" declares \"callsites\" in \"dependencies\" with declared specification \"4.2.0\".",
+          "supports": "A dependency declaration in component \"excalidraw-app\".",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares firebase",
+          "source": {
+            "kind": "file",
+            "ref": "excalidraw-app/package.json",
+            "lines": "32-32",
+            "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/excalidraw-app/package.json#L32-L32"
+          },
+          "excerpt": "\"firebase\": \"11.3.1\"",
+          "explanation": "\"excalidraw-app/package.json\" declares \"firebase\" in \"dependencies\" with declared specification \"11.3.1\".",
+          "supports": "A dependency declaration in component \"excalidraw-app\".",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares i18next-browser-languagedetector",
+          "source": {
+            "kind": "file",
+            "ref": "excalidraw-app/package.json",
+            "lines": "33-33",
+            "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/excalidraw-app/package.json#L33-L33"
+          },
+          "excerpt": "\"i18next-browser-languagedetector\": \"6.1.4\"",
+          "explanation": "\"excalidraw-app/package.json\" declares \"i18next-browser-languagedetector\" in \"dependencies\" with declared specification \"6.1.4\".",
+          "supports": "A dependency declaration in component \"excalidraw-app\".",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares @docusaurus/core",
+          "source": {
+            "kind": "file",
+            "ref": "dev-docs/package.json",
+            "lines": "18-18",
+            "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/dev-docs/package.json#L18-L18"
+          },
+          "excerpt": "\"@docusaurus/core\": \"2.2.0\"",
+          "explanation": "\"dev-docs/package.json\" declares \"@docusaurus/core\" in \"dependencies\" with declared specification \"2.2.0\".",
+          "supports": "A dependency declaration in component \"dev-docs\".",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares @docusaurus/preset-classic",
+          "source": {
+            "kind": "file",
+            "ref": "dev-docs/package.json",
+            "lines": "19-19",
+            "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/dev-docs/package.json#L19-L19"
+          },
+          "excerpt": "\"@docusaurus/preset-classic\": \"2.2.0\"",
+          "explanation": "\"dev-docs/package.json\" declares \"@docusaurus/preset-classic\" in \"dependencies\" with declared specification \"2.2.0\".",
+          "supports": "A dependency declaration in component \"dev-docs\".",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "setup",
+      "title": "Declared commands",
+      "claims": [
+        {
+          "label": "Declares command build",
+          "source": {
+            "kind": "file",
+            "ref": "excalidraw-app/package.json",
+            "lines": "48-48",
+            "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/excalidraw-app/package.json#L48-L48"
+          },
+          "excerpt": "\"build\": \"yarn build:app \u0026\u0026 yarn build:version\"",
+          "explanation": "\"excalidraw-app/package.json\" declares field \"scripts → build\" as \"yarn build:app \u0026\u0026 yarn build:version\".",
+          "supports": "A static command declaration in component \"excalidraw-app\".",
+          "limit": "The command was not executed; success and required environment were not verified.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares command serve",
+          "source": {
+            "kind": "file",
+            "ref": "excalidraw-app/package.json",
+            "lines": "51-51",
+            "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/excalidraw-app/package.json#L51-L51"
+          },
+          "excerpt": "\"serve\": \"npx http-server build -a localhost -p 5001 -o\"",
+          "explanation": "\"excalidraw-app/package.json\" declares field \"scripts → serve\" as \"npx http-server build -a localhost -p 5001 -o\".",
+          "supports": "A static command declaration in component \"excalidraw-app\".",
+          "limit": "The command was not executed; success and required environment were not verified.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares command start",
+          "source": {
+            "kind": "file",
+            "ref": "excalidraw-app/package.json",
+            "lines": "49-49",
+            "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/excalidraw-app/package.json#L49-L49"
+          },
+          "excerpt": "\"start\": \"yarn \u0026\u0026 vite\"",
+          "explanation": "\"excalidraw-app/package.json\" declares field \"scripts → start\" as \"yarn \u0026\u0026 vite\".",
+          "supports": "A static command declaration in component \"excalidraw-app\".",
+          "limit": "The command was not executed; success and required environment were not verified.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares command build",
+          "source": {
+            "kind": "file",
+            "ref": "package.json",
+            "lines": "67-67",
+            "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/package.json#L67-L67"
+          },
+          "excerpt": "\"build\": \"yarn --cwd ./excalidraw-app build\"",
+          "explanation": "\"package.json\" declares field \"scripts → build\" as \"yarn --cwd ./excalidraw-app build\".",
+          "supports": "A static command declaration in the repository root.",
+          "limit": "The command was not executed; success and required environment were not verified.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares command build",
+          "source": {
+            "kind": "file",
+            "ref": "dev-docs/package.json",
+            "lines": "8-8",
+            "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/dev-docs/package.json#L8-L8"
+          },
+          "excerpt": "\"build\": \"docusaurus build\"",
+          "explanation": "\"dev-docs/package.json\" declares field \"scripts → build\" as \"docusaurus build\".",
+          "supports": "A static command declaration in component \"dev-docs\".",
+          "limit": "The command was not executed; success and required environment were not verified.",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares command build-node",
+          "source": {
+            "kind": "file",
+            "ref": "package.json",
+            "lines": "53-53",
+            "url": "https://github.com/excalidraw/excalidraw/blob/8bcdca4526867433f99fdfcb55a063668db0c9dc/package.json#L53-L53"
+          },
+          "excerpt": "\"build-node\": \"node ./scripts/build-node.js\"",
+          "explanation": "\"package.json\" declares field \"scripts → build-node\" as \"node ./scripts/build-node.js\".",
+          "supports": "A static command declaration in the repository root.",
+          "limit": "The command was not executed; success and required environment were not verified.",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "decision",
+      "title": "Coverage notes",
+      "body": "The project type could not be confirmed from the inspected files.\nLower-priority declarations are not shown.",
+      "evidence_mode": "not_executed"
+    }
+  ]
+}

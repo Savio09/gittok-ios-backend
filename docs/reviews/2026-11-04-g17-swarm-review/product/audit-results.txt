@@ -1,0 +1,4 @@
+cli__cli: kind=cli; claims=11; sources=13; deps=8; notes=['Lower-priority declarations are not shown.']; direct byte/line and pinned-SHA checks passed
+pocketbase__pocketbase: kind=other; claims=13; sources=13; deps=8; notes=['The project type could not be confirmed from the inspected files.\nLower-priority declarations are not shown.']; direct byte/line and pinned-SHA checks passed
+charmbracelet__glow: kind=cli; claims=12; sources=13; deps=8; notes=['Lower-priority declarations are not shown.']; direct byte/line and pinned-SHA checks passed
+rack__rack: kind=other; claims=3; sources=3; deps=0; notes=['The project type could not be confirmed from the inspected files.']; direct byte/line and pinned-SHA checks passed

@@ -1,0 +1,54 @@
+=== RUN   TestIndependentLibraryBackendBoundary
+    library_boundary_review_test.go:21: classification kind=backend status=resolved observations=[{Path:pyproject.toml Detail:declares "starlette>=0.40" in project.dependencies (web framework) Supports: Component: Role:backend Witness:pyproject.toml field project.dependencies.starlette Context:false Absence:}] secondary=[{Path:pyproject.toml Detail:declares a static [project] table Supports: Component: Role:library Witness:pyproject.toml field project Context:false Absence:} {Path:pyproject.toml Detail:with no command or GUI entry points (importable package) Supports: Component: Role:library Witness:scope complete-reads over pyproject.toml Context:false Absence:python-entry-points}]
+    library_boundary_review_test.go:24: {
+          "id": "generic/widgetkit",
+          "owner": "generic",
+          "name": "widgetkit",
+          "slug": "generic/widgetkit",
+          "kind": "backend",
+          "description": "",
+          "github_url": "https://github.com/generic/widgetkit",
+          "sections": [
+            {
+              "kind": "idea",
+              "title": "Repository descriptions",
+              "claims": [
+                {
+                  "label": "Why this is a backend",
+                  "source": {
+                    "kind": "file",
+                    "ref": "pyproject.toml",
+                    "url": "https://github.com/generic/widgetkit/blob/0123456789abcdef0123456789abcdef01234567/pyproject.toml"
+                  },
+                  "explanation": "Classified as a backend from the inspected files: \"pyproject.toml\" declares \"project → dependencies → starlette\" as \"starlette\u003e=0.40\".",
+                  "supports": "GitTok's classification of this repository from the cited premises.",
+                  "limit": "An inference from a bounded inspection; the code was not run, and files outside the inspection could change it.",
+                  "confidence": "confident"
+                }
+              ],
+              "evidence_mode": "not_executed"
+            },
+            {
+              "kind": "stack",
+              "title": "Declared stack",
+              "claims": [
+                {
+                  "label": "Declares starlette",
+                  "source": {
+                    "kind": "file",
+                    "ref": "pyproject.toml",
+                    "url": "https://github.com/generic/widgetkit/blob/0123456789abcdef0123456789abcdef01234567/pyproject.toml"
+                  },
+                  "explanation": "\"pyproject.toml\" declares \"starlette\" in \"project.dependencies\" with declared specification \"starlette\u003e=0.40\".",
+                  "supports": "A dependency declaration in the repository root.",
+                  "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+                  "confidence": "confident"
+                }
+              ],
+              "evidence_mode": "not_executed"
+            }
+          ]
+        }
+--- PASS: TestIndependentLibraryBackendBoundary (0.00s)
+PASS
+ok  	github.com/Savio09/gittok-ios-backend/internal/crawler	0.233s

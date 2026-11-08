@@ -1,0 +1,10 @@
+{
+  "Replace": {
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/analysis/review_previous_builder_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-repair-recheck/root-cache_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/analysis/review_recheck_cache_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-repair-recheck/cache_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/preview/product_recheck_adjacent_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-repair-recheck/product_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/preview/swarm_product_review_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-repair-recheck/product-helpers_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/preview/source_recheck_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-repair-recheck/sources_test.go.txt",
+    "/Users/fdeclan/Public/gittok-ios-backend/internal/preview/source_independent_review_test.go": "/Users/fdeclan/Public/gittok-ios-backend/docs/reviews/2026-11-04-g17-repair-recheck/source-helpers_test.go.txt"
+  }
+}

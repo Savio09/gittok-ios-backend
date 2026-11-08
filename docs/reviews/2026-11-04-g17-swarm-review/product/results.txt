@@ -1,0 +1,23 @@
+=== RUN   TestSwarmToolProductWithREADME
+    swarm_product_review_test.go:23: without README: [Declares github.com/spf13/cobra @tools/app/go.mod Declares github.com/spf13/pflag @tools/app/go.mod Declares golang.org/x/term @tools/app/go.mod], server=true; with README: [Declares github.com/spf13/cobra @tools/app/go.mod Declares github.com/spf13/pflag @tools/app/go.mod], server=false
+    swarm_product_review_test.go:24: adding the product README removed product dependencies
+    swarm_product_review_test.go:25: adding a product README suppressed the actual product source construct
+--- FAIL: TestSwarmToolProductWithREADME (0.00s)
+=== RUN   TestSwarmHelperImportsDisplaceProduct
+    swarm_product_review_test.go:40: classification: []; declarations: [Declares github.com/spf13/cobra @go.mod Declares example.com/ahelper0 @go.mod Declares example.com/ahelper1 @go.mod Declares example.com/ahelper2 @go.mod Declares example.com/ahelper3 @go.mod Declares example.com/ahelper4 @go.mod Declares example.com/ahelper5 @go.mod Declares example.com/ahelper6 @go.mod]; imports: [{ cmd/app/main.go example.com/zproduct} { cmd/app/main.go github.com/spf13/cobra} { script/helper.go example.com/ahelper0} { script/helper.go example.com/ahelper1} { script/helper.go example.com/ahelper2} { script/helper.go example.com/ahelper3} { script/helper.go example.com/ahelper4} { script/helper.go example.com/ahelper5} { script/helper.go example.com/ahelper6} { script/helper.go example.com/ahelper7} { script/helper.go example.com/ahelper8}]
+    swarm_product_review_test.go:41: a dependency imported by the product was displaced by helper imports
+--- FAIL: TestSwarmHelperImportsDisplaceProduct (0.00s)
+=== RUN   TestSwarmInconclusiveCandidatesArePeers
+    swarm_product_review_test.go:57: unresolved component a: verdict=inconclusive products=[a m] deps=[Declares github.com/spf13/cobra @a/go.mod Declares example.com/d0 @a/go.mod Declares example.com/d1 @a/go.mod Declares example.com/d2 @a/go.mod Declares example.com/d3 @a/go.mod Declares example.com/d4 @a/go.mod Declares react @m/package.json Declares z0 @m/package.json]
+    swarm_product_review_test.go:57: unresolved component z: verdict=inconclusive products=[m z] deps=[Declares react @m/package.json Declares z0 @m/package.json Declares z1 @m/package.json Declares z2 @m/package.json Declares z3 @m/package.json Declares z4 @m/package.json Declares example.com/d0 @z/go.mod Declares example.com/d1 @z/go.mod]
+    swarm_product_review_test.go:58: candidate CLI's decisive dependency displaced after directory rename
+    swarm_product_review_test.go:73: charmbracelet__glow.json: kind cli, 12 claims, deps [Declares github.com/spf13/cobra @go.mod Declares charm.land/glamour/v2 @go.mod Declares github.com/caarlos0/env/v11 @go.mod Declares github.com/charmbracelet/log @go.mod Declares github.com/charmbracelet/x/editor @go.mod Declares github.com/muesli/go-app-paths @go.mod Declares github.com/spf13/viper @go.mod Declares golang.org/x/sys @go.mod]
+    swarm_product_review_test.go:73: rack__rack.json: kind other, 3 claims, deps []
+--- FAIL: TestSwarmInconclusiveCandidatesArePeers (0.01s)
+=== RUN   TestSwarmCaptureOutputs
+    swarm_product_review_test.go:81: cli__cli.json: kind cli, 11 claims, deps [Declares github.com/spf13/cobra @go.mod Declares github.com/spf13/pflag @go.mod Declares charm.land/bubbles/v2 @go.mod Declares charm.land/bubbletea/v2 @go.mod Declares charm.land/glamour/v2 @go.mod Declares charm.land/huh/v2 @go.mod Declares charm.land/lipgloss/v2 @go.mod Declares github.com/AlecAivazis/survey/v2 @go.mod]
+    swarm_product_review_test.go:81: pocketbase__pocketbase.json: kind other, 13 claims, deps [Declares github.com/fatih/color @go.mod Declares github.com/pocketbase/ozzo-validation/v4 @go.mod Declares github.com/spf13/cast @go.mod Declares github.com/spf13/cobra @go.mod Declares github.com/disintegration/imaging @go.mod Declares github.com/domodwyer/mailyak/v3 @go.mod Declares leaflet @ui/package.json Declares pocketbase @ui/package.json]
+--- PASS: TestSwarmCaptureOutputs (0.01s)
+FAIL
+FAIL	github.com/Savio09/gittok-ios-backend/internal/preview	0.275s
+FAIL

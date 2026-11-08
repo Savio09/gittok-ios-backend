@@ -27,12 +27,60 @@ makes it hard to assert more than the evidence supports.
 |---|---|---|---|
 | `GET` | `/v1/feed` | `?cursor=` (opaque, optional) | `Feed` |
 | `GET` | `/v1/repos/{id}/preview` | — | `RepoPreview` |
+| `POST` | `/v1/repos/{owner}/{name}/walkthrough` | empty JSON object | walkthrough job |
+| `GET` | `/v1/walkthroughs/{id}` | — | walkthrough job |
 | `GET` | `/v1/profile` | — | `Profile` |
 | `PUT` | `/v1/profile` | `Profile` | `Profile` |
 | `POST` | `/v1/events` | `Event` | `204 No Content` |
 
-Endpoints are defined here but implemented in later tickets; this ticket fixes
-the shapes below.
+The feed, repository preview and optionally configured walkthrough endpoints are
+implemented. Profile and events remain contracts for later tickets.
+
+The production feed uses paginated public GitHub discovery and inexpensive
+metadata previews; it does not analyze every repository on the page. See
+[public discovery](public-discovery.md) for selection, caching and cursor behavior.
+The optional job endpoints provide independently reviewed source narratives;
+see the [walkthrough contract](visual-walkthrough-contract.md) and
+[operations guide](walkthrough-operations.md) for states, configuration, recovery
+and spending controls. Source previews remain available when generation is disabled.
+
+### On-demand repository preview (G17)
+
+`GET /v1/repos/owner%2Frepo/preview` (the generated `owner/name` ID as one
+encoded segment) or, equivalently, `GET /v1/repos/owner/repo/preview`. An
+analyzed preview uses bounded acquisition, commit-pinned file sources and
+deterministic claims ranked by product relevance (at most 24 claims, 8
+dependency claims, 2 lower-priority claims). A resolved `kind` is always led by
+its `Why this is <kind>` explanation; otherwise `kind` is `other`. Stars,
+license and last push are sourced `metrics`, not claims; a value GitHub did not
+report is omitted, never zero. A final `decision` section titled "Coverage
+notes" holds at most three short statements of what the inspection could not
+cover. Generated sections are `not_executed`; omitted sections/fit/media have
+not been established.
+
+Every request reconfirms public visibility, stable repository ID and canonical
+name with GitHub before answering. A completed inspection is reused for
+`PREVIEW_CACHE_TTL` (default 30 minutes) as a captured snapshot: its file links
+and metadata capture time are those of the original acquisition. Identical
+concurrent requests share one acquisition. Responses carry
+`Cache-Control: no-store`.
+
+Credentials: public discovery, previews and walkthroughs use only
+`GITHUB_PUBLIC_TOKEN` — a classic personal access token with no OAuth scopes,
+verified at startup and on every response — or, when that is empty, anonymous
+access. They cannot expose private repositories; the older trusted-token
+command path is not exposed through these public handlers.
+
+Errors retain `{ "error": "message" }`: 400 invalid ID; 404 inaccessible/private
+or unknown visibility; 502 fatal upstream failure; 503 provider authentication,
+permission or rate failure before usable metadata, a rejected public credential,
+or exhausted capacity (with `Retry-After`); 504 acquisition deadline before
+usable metadata. Failures after usable metadata may return a partial 200 preview
+with coverage notes. Caller cancellation stops acquisition and response work.
+The default 30-second acquisition deadline, physical API-attempt limits,
+per-response and cumulative read limits, and file/tree limits are configured as
+documented in [analysis limits](analysis-limits.md). They do not promise a strict
+CPU-time limit or successful execution of the inspected software.
 
 ## Types
 
@@ -50,10 +98,12 @@ Top-level fields render the card face; `sections` carries the deeper walkthrough
 - `metrics?` — array of `Metric` (health/activity stat grid)
 - `fit?` — `Fit`
 - `sections?` — array of `Section`
+- `presentation?` — `walkthrough` for the accepted narrative presentation; see
+  the separate walkthrough contract for visual facts and ordered beats.
 
 ### Claim (the backbone)
 - `label` — short category/headline
-- `source` — `{ kind?: file | search | metadata | api, ref, lines? }`
+- `source` — `{ kind?: file | search | metadata | api, ref, lines?, url? }`
 - `excerpt?` — the exact snippet the claim rests on
 - `explanation` — what the excerpt shows
 - `supports?` — what the evidence establishes
@@ -63,6 +113,29 @@ Top-level fields render the card face; `sections` carries the deeper walkthrough
 
 `confidence` (trust in the evidence) and `stance` (bearing on the reader's fit)
 are independent: a claim can be a confident caution or an uncertain match.
+
+`source.url` is optional and additive. Generated file URLs use the inspected
+commit ID, while `ref` remains the repository-relative path. `lines` is a
+one-based inclusive range such as `12-18`; it and `excerpt` are omitted when the
+parser cannot establish exact positions. Excerpts are exact consumed UTF-8 text,
+never reserialized manifest values. Metadata URLs identify the provider resource;
+`ref` names its field (for example `description` or `license.spdx_id`). Metadata
+is mutable: generated claim limits record capture time separately from code revision.
+
+`additional_sources?` — `[Source]`, optional and additive (omitted when empty).
+A multi-premise claim cites its first premise in `source` and the rest here;
+together they cover the claim's whole basis. Clients must render every
+additional source: a client that shows only `source` hides part of the evidence.
+Manifest declarations in `go.mod` and `package.json` cite their exact lines;
+formats without a verified locator (TOML, YAML) cite the whole file.
+
+The reserved claim `Why this is <kind>` leads an analyzed preview whose `kind`
+is resolved. It is a classification from the inspected files, citing every
+premise: consumed files (at their lines when known) and, for file-tree facts,
+`{ kind: api, ref: <listed path or git/trees/<commit>>, url: <the recorded tree
+request> }`. A bounded absence is stated within the files and tree it rests on,
+never as a repository-wide absence. If any premise cannot be cited, `kind` is
+`other` — an abstention, not a claim that the repository lacks a type.
 
 ### Section
 - `kind` — `idea | how | stack | activity | setup | decision`

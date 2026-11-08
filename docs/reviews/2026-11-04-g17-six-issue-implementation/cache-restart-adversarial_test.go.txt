@@ -1,0 +1,17 @@
+package analysis
+import("context";"reflect";"testing";"time";"os";"path/filepath")
+func TestAdversarialCurrentBuilderRestartReuse(t *testing.T) {
+ clock:=&fakeClock{time.Date(2026,11,4,12,0,0,0,time.UTC)}
+ dir:=t.TempDir(); gh:=&countingGitHub{repo:publicMeta()}
+ s:=NewService(gh);s.publicOnly=true;s.UseCache(openTestCache(t,dir,testLimits(),clock))
+ first,err:=s.Preview(context.Background(),"o","r");if err!=nil {t.Fatal(err)}
+ initialMetadata:=gh.metadata
+ files,_:=filepath.Glob(filepath.Join(dir,"*.json"));if len(files)!=1 {t.Fatalf("cache files: %v",files)}
+ before,_:=os.ReadFile(files[0]);clock.t=clock.t.Add(5*time.Minute)
+ s=NewService(gh);s.publicOnly=true;s.UseCache(openTestCache(t,dir,testLimits(),clock))
+ second,err:=s.Preview(context.Background(),"o","r");if err!=nil {t.Fatal(err)}
+ if !reflect.DeepEqual(first,second)||gh.metadata!=initialMetadata+1||gh.refs!=1||gh.trees!=1||gh.contentsN!=1 {t.Fatalf("restart did not reuse cache: meta=%d refs=%d tree=%d contents=%d",gh.metadata,gh.refs,gh.trees,gh.contentsN)}
+ after,_:=os.ReadFile(files[0]);if string(before)!=string(after) {t.Fatal("restart hit rewrote expiry/capture")}
+ clock.t=clock.t.Add(26*time.Minute)
+ _,err=s.Preview(context.Background(),"o","r");if err!=nil||gh.refs!=2||gh.trees!=2||gh.contentsN!=2 {t.Fatalf("TTL changed on restart hit: err=%v trees=%d",err,gh.trees)}
+}

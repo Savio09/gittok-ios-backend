@@ -1,0 +1,51 @@
+package preview
+import (
+ "fmt"
+ "reflect"
+ "strings"
+ "testing"
+ "github.com/Savio09/gittok-ios-backend/internal/crawler"
+)
+func TestAdversarialRankingManyPeers(t *testing.T) {
+ for _, n := range []int{3,7,9,12} {
+  files:=map[string]string{}; var paths []string
+  for i:=0;i<n;i++ { root:=fmt.Sprintf("p%02d",i); manifest:=root+"/package.json"; files[manifest]=`{"dependencies":{"react":"19","a0":"1","a1":"1","a2":"1","a3":"1"}}`; paths=append(paths,manifest,root+"/index.html") }
+  // use a backend peer to force inconclusive classification regardless of peer count
+  files["back/package.json"]=`{"dependencies":{"express":"4"}}`; paths=append(paths,"back/package.json")
+  in:=synthetic(paths,files); cls:=crawler.Classify(in.Inspection); p:=Build(in)
+  if len(cls.Products)!=n+1 { t.Fatalf("peers=%v",cls.Products) }
+  count:=0; for _,c:=range claimsIn(p) { if strings.HasPrefix(c.Label,"Declares ") {count++;if n+1>=8 && c.Label!="Declares react"&&c.Label!="Declares express" {t.Errorf("ordinary declaration outranked peer premises: %s",c.Label)} } }
+  if count!=8 {t.Errorf("n=%d count=%d deps=%v",n,count,depLabels(p))}
+  for i,j:=0,len(paths)-1;i<j;i,j=i+1,j-1 {paths[i],paths[j]=paths[j],paths[i]}
+  if !reflect.DeepEqual(p,Build(synthetic(paths,files))) {t.Error("path permutation changed output")}
+ }
+}
+func TestAdversarialRankingNoImportProductKinds(t *testing.T) {
+ for _,manifest:=range []string{"go.mod","package.json","pyproject.toml","Cargo.toml"} {
+  files:=map[string]string{"tools/helper.go":"package main\nimport \"net/http\"\nfunc main(){http.ListenAndServe(\":8080\",nil)}\n"}; paths:=[]string{manifest,"tools/helper.go"}
+  switch manifest {case "go.mod": files[manifest]="module example.com/product\n"; files["product.go"]="package product\n";paths=append(paths,"product.go")
+  case "package.json":files[manifest]=`{"name":"product","exports":"./index.js"}`;files["index.js"]="export const answer=42";paths=append(paths,"index.js")
+  case "pyproject.toml":files[manifest]="[project]\nname=\"product\"\nversion=\"1\"\n"
+  case "Cargo.toml":files[manifest]="[package]\nname=\"product\"\nversion=\"1.0.0\"\n[lib]\npath=\"lib.rs\"\n";files["lib.rs"]="pub fn product() {}";paths=append(paths,"lib.rs")}
+  in:=synthetic(paths,files); cls:=crawler.Classify(in.Inspection); if cls.Status!=crawler.VerdictResolved {t.Fatalf("%s fixture inconclusive: %+v",manifest,cls)}
+  for _,c:=range claimsIn(Build(in)) {if c.Source.Ref=="tools/helper.go"&&c.Label=="Contains net/http call" {t.Errorf("%s helper stands in for no-import product",manifest)}}
+ }
+}
+
+func TestAdversarialRankingHelperImportInversion(t *testing.T) {
+ for _,pkg:=range []string{"main","lib"} {for _,support:=range []string{"tools/helper.go","script/helper.go","nested/tests/helper.go"} {
+  mod:="module example.com/product\nrequire (\n";helper:="package main\nimport (\n"
+  for i:=0;i<9;i++ {mod+=fmt.Sprintf(" example.com/aproduct%d v1.0.0\n example.com/zhelper%d v1.0.0\n",i,i);helper+=fmt.Sprintf(" _ %q\n",fmt.Sprintf("example.com/zhelper%d",i))};mod+=")\n";helper+=")\nfunc main() {}\n"
+  files:=map[string]string{"go.mod":mod,"product.go":"package "+pkg+"\nfunc main(){}\n",support:helper};in:=synthetic([]string{"go.mod","product.go",support},files)
+  p:=Build(in);if support=="nested/tests/helper.go" {t.Logf("pkg=%s classification=%+v",pkg,crawler.Classify(in.Inspection))};for _,c:=range claimsIn(p) {if strings.HasPrefix(c.Label,"Declares example.com/zhelper") {t.Errorf("%s %s helper imports promoted: %v",pkg,support,depLabels(p))}}
+  if !measure(p).labels["Declares example.com/aproduct0"] {t.Errorf("%s %s no-import root evidence lost",pkg,support)}
+ }}
+}
+
+func TestAdversarialRankingNoImportLibraryTestHTTP(t *testing.T) {
+ in:=synthetic([]string{"go.mod","product.go","tests/helper.go"},map[string]string{
+ "go.mod":"module example.com/product\nrequire example.com/productdep v1.0.0\n",
+ "product.go":"package product\nfunc Product() {}\n",
+ "tests/helper.go":"package main\nimport \"net/http\"\nfunc main(){http.ListenAndServe(\":8080\",nil)}\n",
+ });for _,c:=range claimsIn(Build(in)) {if c.Label=="Contains net/http call"&&c.Source.Ref=="tests/helper.go" {t.Errorf("test HTTP helper became walkthrough: %+v",c)}}
+}
