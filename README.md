@@ -26,6 +26,8 @@ Each package owns one concern (separation of concerns):
 | `internal/githubclient` | GitHub API: metadata, file tree, contents; auth, rate limits, errors |
 | `internal/crawler` | Classify repo type, select informative files, enforce limits |
 | `internal/preview` | Build evidence-linked claims + calibrated uncertainty |
+| `internal/walkthrough` | Investigate pinned source, write/review stories, serve bounded background jobs |
+| `internal/generation` | Durable paid-call reservations and conservative spending limits |
 | `internal/selection` | Choose & rank repos for the feed (curated now; personalized later) |
 | `internal/store` | Persist built previews (and later, user profiles) |
 | `internal/feed` | Serve the feed JSON to the app |
@@ -50,9 +52,11 @@ curl localhost:8080/healthz   # -> {"status":"ok"}
 curl localhost:8080/v1/feed   # -> live feed of the curated repos (see API contract)
 ```
 
-The feed currently serves live GitHub **metadata** for a curated set of repos
-(`internal/selection`); the evidence layer (claims, fit, walkthrough) is filled
-in by later tickets.
+The feed serves GitHub metadata for curated repos. On-demand source previews
+work for arbitrary public `owner/name` identities. Optional source-grounded
+walkthroughs explain a representative input → mechanism → outcome using an
+independently reviewed story; they require explicit provider and spending
+configuration. See [walkthrough setup and API](docs/walkthrough-operations.md).
 
 Requires Go 1.25+. Configuration is read from the environment (see
 `.env.example`): `GITHUB_TOKEN` is **required** and the server refuses to
