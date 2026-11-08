@@ -107,6 +107,9 @@ func newRouter(feedSvc interface{ Handler() http.HandlerFunc }, previewSvc *anal
 	mux.HandleFunc("GET /healthz", handleHealthz)
 	if feedSvc != nil {
 		mux.Handle("GET /v1/feed", feedSvc.Handler())
+		if searchSvc, ok := feedSvc.(interface{ SearchHandler() http.HandlerFunc }); ok {
+			mux.Handle("GET /v1/repos/search", searchSvc.SearchHandler())
+		}
 	}
 	mux.Handle("GET /v1/repos/{id}/preview", previewSvc.Handler())
 	mux.Handle("GET /v1/repos/{owner}/{name}/preview", previewSvc.Handler())
