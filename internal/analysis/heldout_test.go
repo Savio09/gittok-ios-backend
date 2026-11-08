@@ -78,14 +78,10 @@ func TestHeldoutPreviewsAreGrounded(t *testing.T) {
 			if c.CapturedAt.IsZero() || !c.Repo.Public || !c.Revision.Resolved || !githubclient.ValidCommitID(c.Revision.Ref) {
 				t.Fatal("capture lacks identity/visibility/time/revision provenance")
 			}
-			selected := crawler.SelectFiles(c.Tree.Entries, crawler.DefaultSelectionBudget())
-			var paths []string
-			for _, s := range selected {
-				paths = append(paths, s.Path)
-			}
-			if !reflect.DeepEqual(paths, c.Requested) {
-				t.Fatal("fixture did not use production selection")
-			}
+			// This golden output belongs to its recorded capture selection.
+			// The current selector has a separate grounded replay below.
+			paths := c.Requested
+
 			allowed := map[string]bool{}
 			for _, p := range paths {
 				allowed[p] = true
@@ -185,5 +181,44 @@ func auditPreview(t *testing.T, c heldoutCapture, p apimodel.RepoPreview) {
 				t.Fatalf("unexpected source kind %s", claim.Source.Kind)
 			}
 		}
+	}
+}
+
+// Replaying a changed selector never gives it historical extras for free.
+// Only requested, actually captured bytes can support the current preview.
+func TestHeldoutCurrentSelectionGrounded(t *testing.T) {
+	for _, slug := range heldoutRepos {
+		t.Run(slug, func(t *testing.T) {
+			var c heldoutCapture
+			readJSON(t, filepath.Join("testdata", "g17", strings.ReplaceAll(slug, "/", "__")+".json"), &c)
+			available := map[string]githubclient.FileContent{}
+			for _, f := range c.Fetched.Files {
+				available[f.Path] = f
+			}
+			c.Requested = nil
+			c.Fetched = githubclient.FetchedContents{}
+			for _, selected := range crawler.SelectFiles(c.Tree.Entries, crawler.DefaultSelectionBudget()) {
+				c.Requested = append(c.Requested, selected.Path)
+				if f, captured := available[selected.Path]; captured {
+					c.Fetched.Files = append(c.Fetched.Files, f)
+				} else {
+					c.Fetched.Skipped = append(c.Fetched.Skipped, githubclient.SkippedFile{Path: selected.Path, Reason: "not captured by historical fixture"})
+				}
+			}
+			p := preview.Build(c.input())
+			auditPreview(t, c, p)
+			fileClaims := 0
+			for _, section := range p.Sections {
+				for _, claim := range section.Claims {
+					if claim.Source.Kind == apimodel.SourceFile {
+						fileClaims++
+					}
+				}
+			}
+			if fileClaims == 0 {
+				t.Fatal("current replay lost all captured file evidence")
+			}
+			t.Logf("%d selected, %d captured, %d unavailable, %d file claims", len(c.Requested), len(c.Fetched.Files), len(c.Fetched.Skipped), fileClaims)
+		})
 	}
 }

@@ -26,8 +26,9 @@ type SelectedFile struct {
 //   - MaxFiles   the overall cap on selected files.
 //   - MaxSource  a sub-cap on generic source files (matched only by extension),
 //     so a repo's raw code can't crowd out manifests, docs and config.
-//   - MaxPerBase a cap on files sharing a base name (e.g. the many package.json
-//     files in a JS monorepo), to dedupe that kind of spam.
+//   - MaxPerBase a cap on repeated basenames for docs/source/config. Component
+//     manifests use separate directory keys, so independent packages do not
+//     hide one another; MaxFiles still bounds their overall count.
 //   - MaxEntry   how many entry-point sources are reserved up front — see the
 //     entry-source guarantee in SelectFiles.
 type SelectionBudget struct {
@@ -56,7 +57,8 @@ func DefaultSelectionBudget() SelectionBudget {
 //
 // # Ranking (#algorithms)
 //
-// Every blob is scored by a fixed tier order — dependency manifests highest,
+// Product paths precede supporting/test paths. Within each scope,
+// every blob is scored by a fixed tier order — dependency manifests highest,
 // then contribution docs and READMEs, run/container config, root build config,
 // CI workflows, likely entry points, and finally generic source as a fallback
 // so a README-poor repo (where the code is the only evidence) still yields a
@@ -74,17 +76,41 @@ func DefaultSelectionBudget() SelectionBudget {
 // misclassify a caddy-style server as a CLI. To close that gap, SelectFiles
 // reserves the top MaxEntry entry-point sources (main.go, cmd/*/main.go, and
 // the analogous main/app/server/index files for Python, Rust, Node and Dart)
-// *before* filling the remaining budget, so a repo's entry source is always
-// present for the classifier to read. The reservation still counts against
+// *before* filling the remaining budget, prioritizing primary entry sources
+// within the configured caps. The reservation still counts against
 // MaxFiles, so the result never exceeds the budget.
 func SelectFiles(entries []githubclient.TreeEntry, budget SelectionBudget) []SelectedFile {
 	type candidate struct {
 		SelectedFile
-		depth    int
-		isSource bool
-		isEntry  bool
+		depth      int
+		isSource   bool
+		isEntry    bool
+		supporting bool
 	}
 
+	// Use the same manifest boundaries as the classifier. A Go source in a
+	// nested independent component must not borrow an ancestor module's scope.
+	components := map[string]bool{} // component root -> has go.mod
+	for _, e := range entries {
+		if kind, ok := manifestKindOf(e.Path); e.Type == "blob" && e.Mode != "120000" && ok && kind.definesComponent() {
+			dir := path.Dir(e.Path)
+			components[dir] = components[dir] || kind == kindGoMod
+		}
+	}
+	goPackageScope := func(p string) bool {
+		for dir := path.Dir(p); ; dir = path.Dir(dir) {
+			if isGo, boundary := components[dir]; boundary {
+				rel := p
+				if dir != "." {
+					rel = strings.TrimPrefix(p, dir+"/")
+				}
+				return isGo && (!strings.Contains(rel, "/") || strings.HasPrefix(strings.ToLower(rel), "cmd/"))
+			}
+			if dir == "." || dir == "/" {
+				return false
+			}
+		}
+	}
 	var cands []candidate
 	for _, e := range entries {
 		// Contents API may dereference a symlink and return another path's bytes.
@@ -96,17 +122,29 @@ func SelectFiles(entries []githubclient.TreeEntry, budget SelectionBudget) []Sel
 		if fs.score == 0 {
 			continue
 		}
+		supporting := selectionSupportingPath(e.Path, components)
+		if fs.isSource && strings.HasSuffix(strings.ToLower(e.Path), ".go") && !supporting && goPackageScope(e.Path) {
+			fs.score = 55 - strings.Count(e.Path, "/")
+			fs.reason = "Go module-root or command-package source (package/entry evidence)"
+		}
+		if supporting {
+			fs.reason += "; supporting/test path (lower selection priority)"
+		}
 		cands = append(cands, candidate{
 			SelectedFile: SelectedFile{Path: e.Path, Score: fs.score, Reason: fs.reason},
 			depth:        strings.Count(e.Path, "/"),
 			isSource:     fs.isSource,
 			isEntry:      fs.isEntry,
+			supporting:   supporting,
 		})
 	}
 
-	// Rank: score desc, then shallower paths first, then lexicographic — a total
+	// Rank: product scope first, then score, depth and path — a total
 	// order, so the selection is stable across runs.
 	sort.SliceStable(cands, func(i, j int) bool {
+		if cands[i].supporting != cands[j].supporting {
+			return !cands[i].supporting
+		}
 		if cands[i].Score != cands[j].Score {
 			return cands[i].Score > cands[j].Score
 		}
@@ -128,6 +166,9 @@ func SelectFiles(entries []githubclient.TreeEntry, budget SelectionBudget) []Sel
 			return
 		}
 		base := strings.ToLower(path.Base(cands[i].Path))
+		if kind, ok := manifestKindOf(cands[i].Path); ok && kind.definesComponent() {
+			base = path.Dir(cands[i].Path) + "\x00" + base
+		}
 		if budget.MaxPerBase > 0 && perBase[base] >= budget.MaxPerBase {
 			return
 		}
@@ -145,10 +186,10 @@ func SelectFiles(entries []githubclient.TreeEntry, budget SelectionBudget) []Sel
 		}
 	}
 
-	// Pass 1 — reserve entry-point sources first (the caddy-gap guarantee),
+	// Pass 1 — reserve primary entry-point sources (the caddy-gap guarantee),
 	// bounded by MaxEntry so they can't starve manifests and docs.
 	for i := range cands {
-		if !cands[i].isEntry {
+		if !cands[i].isEntry || cands[i].supporting {
 			continue
 		}
 		if budget.MaxEntry > 0 && entryCount >= budget.MaxEntry {
@@ -173,6 +214,31 @@ func SelectFiles(entries []githubclient.TreeEntry, budget SelectionBudget) []Sel
 		}
 	}
 	return out
+}
+
+// Treat declared nested component names and cmd/<binary> names as identities,
+// not directory-role markers. Supporting ancestors and command-internal fixtures
+// remain hints: examples/cmd/tool and cmd/tool/testdata are still supporting.
+func selectionSupportingPath(p string, components map[string]bool) bool {
+	parts := strings.Split(p, "/")
+	prefix := parts[0]
+	inCommand := false
+	for i := 1; i < len(parts)-1; i++ {
+		prefix += "/" + parts[i]
+		if strings.EqualFold(parts[i-1], "cmd") {
+			inCommand = true
+		}
+		if _, boundary := components[prefix]; boundary && !inCommand {
+			parts[i] = "_component"
+		}
+	}
+	for i := 0; i+1 < len(parts)-1; i++ {
+		if strings.EqualFold(parts[i], "cmd") {
+			parts[i+1] = "_command"
+			break
+		}
+	}
+	return SupportingPath(strings.Join(parts, "/")) || strings.HasSuffix(strings.ToLower(p), "_test.go")
 }
 
 // fileScore is the heuristic verdict for a single path: its weight, the reason
