@@ -127,6 +127,10 @@ func (c *Client) GetRepo(ctx context.Context, owner, name string) (Repo, error) 
 	if err := c.get(ctx, path, &p); err != nil {
 		return Repo{}, err
 	}
+	return p.repo(), nil
+}
+
+func (p repoPayload) repo() Repo {
 	return Repo{
 		ID:            p.ID,
 		Owner:         p.Owner.Login,
@@ -144,7 +148,7 @@ func (c *Client) GetRepo(ctx context.Context, owner, name string) (Repo, error) 
 		Fork:          p.Fork,
 		Public:        p.Private != nil && !*p.Private && (p.Visibility == "" || p.Visibility == "public"),
 		Metadata:      p.metadata,
-	}, nil
+	}
 }
 
 // licenseLabel returns the SPDX id (e.g. "MIT"). GitHub reports "NOASSERTION"
