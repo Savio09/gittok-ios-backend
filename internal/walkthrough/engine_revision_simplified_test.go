@@ -22,9 +22,11 @@ func TestRevisionMayReplaceIDsScenesAndCorrectRetainedSourceSelection(t *testing
 		revised.Statements[i].ID = "fresh-" + revised.Statements[i].ID
 	}
 	revised.Statements[2].Text = "Rows reach aggregate."
+	revised.Statements[2].Visual = copyVisual(revised.Statements[2].Visual)
+	revised.Statements[2].Visual.Cue = "Rows"
 	original.Statements = append([]Statement(nil), original.Statements...)
 	original.Statements[2].Sources = []Citation{original.Statements[0].Sources[0]}
-	revised.Scenes = []Scene{{ID: "fresh-layout", Role: "workflow", StatementIDs: []string{"fresh-p", "fresh-a", "fresh-m", "fresh-r"}}}
+	revised.Scenes = []Scene{{ID: "fresh-layout", Role: "workflow", StatementIDs: []string{"fresh-p", "fresh-a", "fresh-m", "fresh-r"}}, {ID: "fresh-next", Role: "handoff", StatementIDs: []string{"fresh-next"}}}
 	negative := Review{Accepted: false, Reason: "PRIVATE_REJECTION_FEEDBACK"}
 	positive := Review{Accepted: true, Reason: "The fresh candidate is source supported."}
 	for _, s := range original.Statements {
@@ -98,13 +100,14 @@ func TestRevisionRejectsUnknownOutOfRetainedAndOversizedFinalReview(t *testing.T
 				for _, kind := range kinds {
 					id := "large-" + kind
 					ids = append(ids, id)
-					statement := Statement{ID: id, Kind: kind, Text: "A bounded candidate."}
+					statement := Statement{ID: id, Kind: kind, Text: "A bounded candidate.", Visual: copyVisual(original.Statements[0].Visual)}
+					statement.Visual.Cue = "bounded"
 					for j := 0; j < 10; j++ {
 						statement.Sources = append(statement.Sources, Citation{FileID: inv.sourceIDs["src/report.rs"], StartLine: 5, EndLine: 5})
 					}
 					revised.Statements = append(revised.Statements, statement)
 				}
-				revised.Scenes = []Scene{{ID: "large-scene", Role: "workflow", StatementIDs: ids}}
+				revised.Scenes = []Scene{{ID: "large-scene", Role: "workflow", StatementIDs: ids[:len(ids)-1]}, {ID: "large-next", Role: "handoff", StatementIDs: ids[len(ids)-1:]}}
 			}
 			cfg := revisionConfig()
 			ledger := engineLedger(t)

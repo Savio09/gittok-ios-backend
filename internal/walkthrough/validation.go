@@ -69,8 +69,11 @@ func ValidateDraft(bundle Bundle, draft Draft) error {
 				return errors.New("walkthrough: invalid citation")
 			}
 		}
+		if !validVisual(statement, files) {
+			return errors.New("walkthrough: invalid visual")
+		}
 		statements[statement.ID] = statement
-		prose += utf8.RuneCountInString(statement.Text) + utf8.RuneCountInString(statement.Limit)
+		prose += utf8.RuneCountInString(statement.Text) + utf8.RuneCountInString(statement.Limit) + visualProse(renderVisual(statement, files))
 	}
 	if prose > maxProseChars {
 		return errors.New("walkthrough: prose limit exceeded")
@@ -93,7 +96,7 @@ func ValidateDraft(bundle Bundle, draft Draft) error {
 			seen[id] = true
 			kinds[statement.Kind] = true
 			hasPurpose = hasPurpose || statement.Kind == "purpose"
-			publishedProse += utf8.RuneCountInString(statement.Text) + utf8.RuneCountInString(statement.Limit)
+			publishedProse += utf8.RuneCountInString(statement.Text) + utf8.RuneCountInString(statement.Limit) + visualProse(renderVisual(statement, files))
 		}
 		hasWorkflow = hasWorkflow || (scene.Role == "workflow" && kinds["action"] && kinds["mechanism"] && kinds["result"])
 	}
