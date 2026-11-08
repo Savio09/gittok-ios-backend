@@ -114,6 +114,8 @@ type Source struct {
 type Claim struct {
 	// ID identifies a validated narrative statement when supplied by a story.
 	ID string `json:"id,omitempty"`
+	// Visual is accepted factual content synchronized to Supports by its cue.
+	Visual *StoryVisual `json:"visual,omitempty"`
 	// Label is the short category or headline, e.g. "Frontend is TypeScript".
 	Label string `json:"label"`
 	// Source is where the evidence comes from.

@@ -76,6 +76,7 @@ func engineInvestigation(t *testing.T) (*Investigation, *investigationFake, Draf
 	for _, s := range draft.Statements {
 		review.Decisions = append(review.Decisions, Decision{StatementID: s.ID, Accepted: true, Reason: "The source supports this limited statement."})
 	}
+	productionFixture(&draft, &review)
 	return inv, g, draft, review
 }
 
@@ -92,7 +93,7 @@ func engineCall(t *testing.T, name string, args any, callID string) map[string]a
 		if draft, ok := args.(Draft); ok {
 			selector := writerDraft{Scenes: draft.Scenes}
 			for _, statement := range draft.Statements {
-				s := writerStatement{ID: statement.ID, Kind: statement.Kind, Text: statement.Text, Limit: statement.Limit}
+				s := writerStatement{ID: statement.ID, Kind: statement.Kind, Text: statement.Text, Limit: statement.Limit, Visual: copyVisual(statement.Visual)}
 				for _, citation := range statement.Sources {
 					s.Sources = append(s.Sources, writerCitation{FileID: citation.FileID, StartLine: citation.StartLine, LineCount: citation.EndLine - citation.StartLine + 1})
 				}
@@ -166,7 +167,7 @@ func TestEngineWritesThroughBoundedToolsThenIndependentReviewer(t *testing.T) {
 	}
 	var stages []string
 	accepted, err := engine.Run(context.Background(), "job-tools", inv, func(s string) { stages = append(stages, s) })
-	if err != nil || accepted.ID() == "" || len(accepted.Sections()) != 2 {
+	if err != nil || accepted.ID() == "" || len(accepted.Sections()) != 3 {
 		t.Fatalf("accepted=%+v error=%v", accepted, err)
 	}
 	if !inv.Snapshot().Complete || len(requests) != 5 || strings.Join(stages, ",") != "writing,reviewing" {

@@ -1,0 +1,10 @@
+{
+  "http_status": 200,
+  "elapsed_seconds": 43.19,
+  "job": {
+    "id": "a544ded5ad2b5f996c853ba950c9e000",
+    "state": "failed",
+    "poll_after_ms": 0,
+    "message": "A source-grounded walkthrough could not be completed. The source preview is still available."
+  }
+}

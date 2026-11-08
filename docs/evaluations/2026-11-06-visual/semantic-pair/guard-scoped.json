@@ -1,0 +1,234 @@
+{
+  "variant": "scoped",
+  "bundle": {
+    "identity": {
+      "repo_id": 1,
+      "owner": "example",
+      "name": "guard-evaluation",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "files": [
+      {
+        "id": "code",
+        "path": "report.go",
+        "component": "",
+        "content": "func summarize(rows []int, export bool, writable bool) Report {\n  total := 0\n  for _, row := range rows { total += row }\n  report := Report{Total: total}\n  if export {\n    if writable {\n    // prepare export\n    // prepare export\n    // prepare export\n    // prepare export\n    // prepare export\n    // prepare export\n    // prepare export\n    // prepare export\n      writeReport(report)\n    }\n  }\n  return report\n}\n",
+        "truncated": false
+      }
+    ],
+    "paths": null,
+    "limitations": null,
+    "complete": true,
+    "captured_at": "0001-01-01T00:00:00Z"
+  },
+  "draft": {
+    "statements": [
+      {
+        "id": "purpose",
+        "kind": "purpose",
+        "text": "Summarize integer rows into a report containing their total.",
+        "sources": [
+          {
+            "file_id": "code",
+            "start_line": 1,
+            "end_line": 4,
+            "quote": "func summarize(rows []int, export bool, writable bool) Report {\n  total := 0\n  for _, row := range rows { total += row }\n  report := Report{Total: total}\n"
+          }
+        ],
+        "limit": "",
+        "visual": {
+          "kind": "source",
+          "title": "",
+          "lines": [],
+          "focus": 0,
+          "cue": "Summarize"
+        }
+      },
+      {
+        "id": "action",
+        "kind": "action",
+        "text": "A caller supplies integer rows and export/writable flags to summarize.",
+        "sources": [
+          {
+            "file_id": "code",
+            "start_line": 1,
+            "end_line": 1,
+            "quote": "func summarize(rows []int, export bool, writable bool) Report {\n"
+          }
+        ],
+        "limit": "",
+        "visual": {
+          "kind": "source",
+          "title": "",
+          "lines": [],
+          "focus": 0,
+          "cue": "A"
+        }
+      },
+      {
+        "id": "mechanism",
+        "kind": "mechanism",
+        "text": "The loop adds each row into total and stores it in Report.Total.",
+        "sources": [
+          {
+            "file_id": "code",
+            "start_line": 2,
+            "end_line": 4,
+            "quote": "  total := 0\n  for _, row := range rows { total += row }\n  report := Report{Total: total}\n"
+          }
+        ],
+        "limit": "",
+        "visual": {
+          "kind": "source",
+          "title": "",
+          "lines": [],
+          "focus": 0,
+          "cue": "The"
+        }
+      },
+      {
+        "id": "result",
+        "kind": "result",
+        "text": "The function returns the report containing that total.",
+        "sources": [
+          {
+            "file_id": "code",
+            "start_line": 18,
+            "end_line": 18,
+            "quote": "  return report\n"
+          }
+        ],
+        "limit": "",
+        "visual": {
+          "kind": "source",
+          "title": "",
+          "lines": [],
+          "focus": 0,
+          "cue": "The"
+        }
+      },
+      {
+        "id": "export",
+        "kind": "design",
+        "text": "When export and writable are both true, the function calls writeReport with the created report.",
+        "sources": [
+          {
+            "file_id": "code",
+            "start_line": 15,
+            "end_line": 15,
+            "quote": "      writeReport(report)\n"
+          },
+          {
+            "file_id": "code",
+            "start_line": 5,
+            "end_line": 6,
+            "quote": "  if export {\n    if writable {\n"
+          }
+        ],
+        "limit": "",
+        "visual": {
+          "kind": "source",
+          "title": "",
+          "lines": [],
+          "focus": 0,
+          "cue": "When"
+        }
+      },
+      {
+        "id": "handoff",
+        "kind": "handoff",
+        "text": "Investigate how export and writable control the writeReport call.",
+        "sources": [
+          {
+            "file_id": "code",
+            "start_line": 5,
+            "end_line": 6,
+            "quote": "  if export {\n    if writable {\n"
+          },
+          {
+            "file_id": "code",
+            "start_line": 15,
+            "end_line": 15,
+            "quote": "      writeReport(report)\n"
+          }
+        ],
+        "limit": "",
+        "visual": {
+          "kind": "source",
+          "title": "",
+          "lines": [],
+          "focus": 0,
+          "cue": "Investigate"
+        }
+      }
+    ],
+    "scenes": [
+      {
+        "id": "p",
+        "role": "purpose",
+        "statement_ids": [
+          "purpose"
+        ]
+      },
+      {
+        "id": "w",
+        "role": "workflow",
+        "statement_ids": [
+          "action",
+          "mechanism",
+          "result"
+        ]
+      },
+      {
+        "id": "d",
+        "role": "design",
+        "statement_ids": [
+          "export"
+        ]
+      },
+      {
+        "id": "h",
+        "role": "handoff",
+        "statement_ids": [
+          "handoff"
+        ]
+      }
+    ]
+  },
+  "review": {
+    "accepted": true,
+    "reason": "The story coherently explains the practical purpose, caller inputs, accumulation mechanism and returned result before discussing conditional export. Its export claim preserves both enclosing preconditions, and its handoff remains grounded in the actual control flow. No runtime observations or unsupported downstream effects are asserted.",
+    "decisions": [
+      {
+        "statement_id": "purpose",
+        "accepted": true,
+        "reason": "The initialization, accumulation loop and Report construction support the stated purpose; the visual shows those same operations."
+      },
+      {
+        "statement_id": "action",
+        "accepted": true,
+        "reason": "The signature accepts integer rows and both boolean flags, matching the narration and visual."
+      },
+      {
+        "statement_id": "mechanism",
+        "accepted": true,
+        "reason": "The loop accumulates each row into total, which is assigned to Report.Total. The visual accurately presents this mechanism."
+      },
+      {
+        "statement_id": "result",
+        "accepted": true,
+        "reason": "The function returns the constructed report after the conditional export block; no shown operation changes its total."
+      },
+      {
+        "statement_id": "export",
+        "accepted": true,
+        "reason": "The writeReport call is enclosed by both the export and writable guards, and the narration includes both required predicates. The visual accurately shows the call without asserting additional effects."
+      },
+      {
+        "statement_id": "handoff",
+        "accepted": true,
+        "reason": "The explicit handoff proposes investigating the two guards governing writeReport, a relationship directly supported by the enclosing source context and displayed guards."
+      }
+    ]
+  }
+}

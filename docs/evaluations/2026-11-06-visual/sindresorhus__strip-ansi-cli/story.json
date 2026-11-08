@@ -1,0 +1,398 @@
+{
+  "http_status": 200,
+  "elapsed_seconds": 49.59,
+  "job": {
+    "id": "028d950591b871c40994f2b889961f9c",
+    "state": "ready",
+    "poll_after_ms": 0,
+    "preview": {
+      "presentation": "walkthrough",
+      "id": "chalk/strip-ansi-cli",
+      "owner": "chalk",
+      "name": "strip-ansi-cli",
+      "slug": "chalk/strip-ansi-cli",
+      "kind": "other",
+      "kind_evidence_status": "unknown",
+      "evidence_mode": "not_executed",
+      "language": "JavaScript",
+      "description": "Need terminal text without ANSI escape codes? strip-ansi-cli provides a command-line filter for that job.\n\nPipe a colored directory listing into strip-ansi to remove its escape codes.\n\nThe usage also accepts text directly as an argument, or piped from another command.\n\nThe tests supply ANSI-styled foo followed by foo, and expect foofoo through both interfaces.",
+      "github_url": "https://github.com/chalk/strip-ansi-cli",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "62",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count",
+            "url": "https://api.github.com/repos/chalk/strip-ansi-cli"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id",
+            "url": "https://api.github.com/repos/chalk/strip-ansi-cli"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_push",
+          "label": "last push reported by GitHub",
+          "value": "2024-01-28T17:13:38Z",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at",
+            "url": "https://api.github.com/repos/chalk/strip-ansi-cli"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ],
+      "sections": [
+        {
+          "id": "scene-v1-740d7ecc7df092d0bdf39926278934b6991ae3cef1eecf48a689f365b9d9333c",
+          "kind": "idea",
+          "title": "What it does",
+          "body": "Need terminal text without ANSI escape codes? strip-ansi-cli provides a command-line filter for that job.\n\nPipe a colored directory listing into strip-ansi to remove its escape codes.\n\nThe usage also accepts text directly as an argument, or piped from another command.\n\nThe tests supply ANSI-styled foo followed by foo, and expect foofoo through both interfaces.",
+          "claims": [
+            {
+              "id": "statement-v1-72e0e9669ffdf73b002f0276fb222275b6f1793ef26f94b52dc8bdb5c8c39d20",
+              "visual": {
+                "kind": "concept",
+                "title": "Plain text without styling codes",
+                "lines": [
+                  "Strip ANSI escape codes"
+                ],
+                "focus": 1,
+                "cue": "ANSI escape codes"
+              },
+              "label": "Purpose",
+              "source": {
+                "kind": "file",
+                "ref": "readme.md",
+                "lines": "1-3",
+                "url": "https://github.com/chalk/strip-ansi-cli/blob/1f7df4e0e5f73cb23a4dcb9c7db8b30247df3941/readme.md#L1-L3"
+              },
+              "excerpt": "# strip-ansi-cli\n\n> Strip [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code)\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Need terminal text without ANSI escape codes? strip-ansi-cli provides a command-line filter for that job.",
+              "limit": "Documented purpose, not observed execution. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-c73144dee4e0c4e35c22878a83151903085b56d12e7e47c21d3ced40a393385c",
+              "visual": {
+                "kind": "terminal",
+                "title": "Filter a directory listing",
+                "lines": [
+                  "ls --color | strip-ansi"
+                ],
+                "focus": 1,
+                "cue": "strip-ansi"
+              },
+              "label": "Input",
+              "source": {
+                "kind": "file",
+                "ref": "readme.md",
+                "lines": "20-21",
+                "url": "https://github.com/chalk/strip-ansi-cli/blob/1f7df4e0e5f73cb23a4dcb9c7db8b30247df3941/readme.md#L20-L21"
+              },
+              "excerpt": "  Example\n    $ ls --color | strip-ansi\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Pipe a colored directory listing into strip-ansi to remove its escape codes.",
+              "limit": "Documented example, not executed here. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-a480f8c4950641ed841fcdfa81494695797956eddc76139aac0aac172a0d2d02",
+              "visual": {
+                "kind": "terminal",
+                "title": "Two ways to supply text",
+                "lines": [
+                  "strip-ansi <text>",
+                  "echo <text> | strip-ansi"
+                ],
+                "focus": 0,
+                "cue": "argument"
+              },
+              "label": "Input",
+              "source": {
+                "kind": "file",
+                "ref": "cli.js",
+                "lines": "8-10",
+                "url": "https://github.com/chalk/strip-ansi-cli/blob/1f7df4e0e5f73cb23a4dcb9c7db8b30247df3941/cli.js#L8-L10"
+              },
+              "excerpt": "\tUsage\n\t  $ strip-ansi <text>\n\t  $ echo <text> | strip-ansi\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "The usage also accepts text directly as an argument, or piped from another command.",
+              "limit": "Usage interfaces; no quoting behavior asserted. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-0bf6e23514d5379ca46d8c97af7edb8b541d02bdb53c3bd50cffbf3a907abb66",
+              "visual": {
+                "kind": "comparison",
+                "title": "Concrete test expectation",
+                "lines": [
+                  "Input: ANSI-styled foo + foo",
+                  "Expected output: foofoo"
+                ],
+                "focus": 2,
+                "cue": "expect foofoo"
+              },
+              "label": "Result",
+              "source": {
+                "kind": "file",
+                "ref": "test.js",
+                "lines": "4-13",
+                "url": "https://github.com/chalk/strip-ansi-cli/blob/1f7df4e0e5f73cb23a4dcb9c7db8b30247df3941/test.js#L4-L13"
+              },
+              "excerpt": "const fixture = '\\u001B[0m\\u001B[4m\\u001B[42m\\u001B[31mfoo\\u001B[39m\\u001B[49m\\u001B[24mfoo\\u001B[0m';\n\ntest('main', async t => {\n\tconst {stdout} = await execa('./cli.js', [fixture]);\n\tt.is(stdout, 'foofoo');\n});\n\ntest('stdin', async t => {\n\tconst {stdout} = await execa('./cli.js', {input: fixture});\n\tt.is(stdout, 'foofoo');\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "The tests supply ANSI-styled foo followed by foo, and expect foofoo through both interfaces.",
+              "limit": "Test assertions, not results obtained here. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "storyboard": {
+            "version": 1,
+            "beats": [
+              {
+                "id": "beat-v1-c5bf5c7d72d1e0fbb0af7709a7d9da0ec2bd7b92947345a2a42e148fe8106444",
+                "claim_id": "statement-v1-72e0e9669ffdf73b002f0276fb222275b6f1793ef26f94b52dc8bdb5c8c39d20"
+              },
+              {
+                "id": "beat-v1-605d75a0b2fbed5360cca39313d0f6bafb8e235b2273cf1ea45a77c95673c867",
+                "claim_id": "statement-v1-c73144dee4e0c4e35c22878a83151903085b56d12e7e47c21d3ced40a393385c"
+              },
+              {
+                "id": "beat-v1-02e0dfc7e27163a490683273edb78975e9edb294b54da6ffa7734314d20ea11c",
+                "claim_id": "statement-v1-a480f8c4950641ed841fcdfa81494695797956eddc76139aac0aac172a0d2d02"
+              },
+              {
+                "id": "beat-v1-c736588e15653c8bc48b760c91304492d8dd468dbe4a0db8a4a12986179532be",
+                "claim_id": "statement-v1-0bf6e23514d5379ca46d8c97af7edb8b541d02bdb53c3bd50cffbf3a907abb66"
+              }
+            ]
+          },
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-f3caab4f62230d4378116931c882bc8100247e91d51ad0071b26cce1aedf2a04",
+          "kind": "how",
+          "title": "How it works",
+          "body": "Inside cli.js, input means the first positional argument. If it is falsy and stdin is a TTY, execution stops with Input required and status one.\n\nA truthy first argument goes to init. Only with falsy input and non-TTY stdin does the program await getStdin instead.\n\nBoth processing routes share init, which delegates stripping to the imported strip-ansi function.\n\nIt writes the transformed string directly to standard output, adding no newline of its own.",
+          "claims": [
+            {
+              "id": "statement-v1-151805f8c58c3e63480a0f7e86c1c2cbc4336510f68a8d4773424d426865c9c8",
+              "visual": {
+                "kind": "flow",
+                "title": "Check the terminal guard first",
+                "lines": [
+                  "First positional argument \u2192 input",
+                  "Falsy input AND stdin.isTTY \u2192 Input required \u2192 exit(1)"
+                ],
+                "focus": 0,
+                "cue": "Input required"
+              },
+              "label": "Mechanism",
+              "source": {
+                "kind": "file",
+                "ref": "cli.js",
+                "lines": "18-18",
+                "url": "https://github.com/chalk/strip-ansi-cli/blob/1f7df4e0e5f73cb23a4dcb9c7db8b30247df3941/cli.js#L18-L18"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "cli.js",
+                  "lines": "24-27",
+                  "url": "https://github.com/chalk/strip-ansi-cli/blob/1f7df4e0e5f73cb23a4dcb9c7db8b30247df3941/cli.js#L24-L27"
+                }
+              ],
+              "excerpt": "const input = cli.input[0];\n\n\nif (!input && process.stdin.isTTY) {\n\tconsole.error('Input required');\n\tprocess.exit(1);\n}\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Inside cli.js, input means the first positional argument. If it is falsy and stdin is a TTY, execution stops with Input required and status one.",
+              "limit": "The guard tests falsiness, not just absence. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-ea428567f734b4bdd99e040bba8a45e65dc013a305c64436c09435997d802af0",
+              "visual": {
+                "kind": "flow",
+                "title": "Select a processing route",
+                "lines": [
+                  "Truthy input \u2192 init(input)",
+                  "Falsy input AND non-TTY stdin \u2192 await getStdin() \u2192 init"
+                ],
+                "focus": 0,
+                "cue": "non-TTY stdin"
+              },
+              "label": "Input",
+              "source": {
+                "kind": "file",
+                "ref": "cli.js",
+                "lines": "24-33",
+                "url": "https://github.com/chalk/strip-ansi-cli/blob/1f7df4e0e5f73cb23a4dcb9c7db8b30247df3941/cli.js#L24-L33"
+              },
+              "excerpt": "if (!input && process.stdin.isTTY) {\n\tconsole.error('Input required');\n\tprocess.exit(1);\n}\n\nif (input) {\n\tinit(input);\n} else {\n\tinit(await getStdin());\n}\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "A truthy first argument goes to init. Only with falsy input and non-TTY stdin does the program await getStdin instead.",
+              "limit": "Includes the preceding exit guard's precondition. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-8986499b234dc2af43652d488e91b6ccae97e7241ca7b91967ddbce1c6aba042",
+              "visual": {
+                "kind": "flow",
+                "title": "Shared transformation",
+                "lines": [
+                  "Selected data \u2192 init(data)",
+                  "init(data) \u2192 stripAnsi(data)"
+                ],
+                "focus": 0,
+                "cue": "share init"
+              },
+              "label": "Mechanism",
+              "source": {
+                "kind": "file",
+                "ref": "cli.js",
+                "lines": "4-4",
+                "url": "https://github.com/chalk/strip-ansi-cli/blob/1f7df4e0e5f73cb23a4dcb9c7db8b30247df3941/cli.js#L4-L4"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "cli.js",
+                  "lines": "20-22",
+                  "url": "https://github.com/chalk/strip-ansi-cli/blob/1f7df4e0e5f73cb23a4dcb9c7db8b30247df3941/cli.js#L20-L22"
+                }
+              ],
+              "excerpt": "import stripAnsi from 'strip-ansi';\n\n\nfunction init(data) {\n\tprocess.stdout.write(stripAnsi(data));\n}\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Both processing routes share init, which delegates stripping to the imported strip-ansi function.",
+              "limit": "Dependency internals were not inspected. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-6bb266a606b1802748c2632864b0df3e463f9c9538c115fad5901e63b4d1659e",
+              "visual": {
+                "kind": "source",
+                "title": "cli.js",
+                "lines": [
+                  "function init(data) {",
+                  "\tprocess.stdout.write(stripAnsi(data));",
+                  "}"
+                ],
+                "focus": 0,
+                "cue": "standard output"
+              },
+              "label": "Result",
+              "source": {
+                "kind": "file",
+                "ref": "cli.js",
+                "lines": "20-22",
+                "url": "https://github.com/chalk/strip-ansi-cli/blob/1f7df4e0e5f73cb23a4dcb9c7db8b30247df3941/cli.js#L20-L22"
+              },
+              "excerpt": "function init(data) {\n\tprocess.stdout.write(stripAnsi(data));\n}\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "It writes the transformed string directly to standard output, adding no newline of its own.",
+              "limit": "Describes the wrapper's output call. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "storyboard": {
+            "version": 1,
+            "beats": [
+              {
+                "id": "beat-v1-67b936283d203dfb52d42c356ee794e0a1f78a8ea79d71a23757a3c65aa81ee3",
+                "claim_id": "statement-v1-151805f8c58c3e63480a0f7e86c1c2cbc4336510f68a8d4773424d426865c9c8"
+              },
+              {
+                "id": "beat-v1-3383339f4e1f635dbcc97299870c0357158097f4c293336360f95be5c57e8aec",
+                "claim_id": "statement-v1-ea428567f734b4bdd99e040bba8a45e65dc013a305c64436c09435997d802af0"
+              },
+              {
+                "id": "beat-v1-82b27e71772ede25422e6590832ce96b7f6335bd5f0ec81a2c96c79e2e6c8998",
+                "claim_id": "statement-v1-8986499b234dc2af43652d488e91b6ccae97e7241ca7b91967ddbce1c6aba042"
+              },
+              {
+                "id": "beat-v1-70182585066edb26fb2d483ee7b421f4914fd3839441b45b51ebd7869bebd24b",
+                "claim_id": "statement-v1-6bb266a606b1802748c2632864b0df3e463f9c9538c115fad5901e63b4d1659e"
+              }
+            ]
+          },
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-75bea255ab7658ec9ce1a9be467c7c6e4eb20d603f1330eea26ef3ba80b925f9",
+          "kind": "handoff",
+          "title": "Where to look next",
+          "body": "Next, investigate the no-input test's explicit TTY assumption alongside CI's script-wrapped npm test command to understand terminal-dependent testing.",
+          "claims": [
+            {
+              "id": "statement-v1-0f8c31b22ea57dbac76c07f6978fb6bde6d8d335396b5f1ec68567e9c06d5d71",
+              "visual": {
+                "kind": "concept",
+                "title": "Next: inspect terminal-dependent testing",
+                "lines": [
+                  "test.js: no-input test assumes a TTY",
+                  "CI: script -e -c \"npm test\""
+                ],
+                "focus": 0,
+                "cue": "TTY assumption"
+              },
+              "label": "Next step",
+              "source": {
+                "kind": "file",
+                "ref": "test.js",
+                "lines": "16-24",
+                "url": "https://github.com/chalk/strip-ansi-cli/blob/1f7df4e0e5f73cb23a4dcb9c7db8b30247df3941/test.js#L16-L24"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": ".github/workflows/main.yml",
+                  "lines": "21-22",
+                  "url": "https://github.com/chalk/strip-ansi-cli/blob/1f7df4e0e5f73cb23a4dcb9c7db8b30247df3941/.github/workflows/main.yml#L21-L22"
+                }
+              ],
+              "excerpt": "// NOTE: This test assumes AVA is run in a TTY environment\ntest('no input', async t => {\n\t/** @type {import('execa').ExecaError} */\n\tconst error = await t.throwsAsync(execa('./cli.js', {stdin: 'inherit'}));\n\n\tt.like(error, {\n\t\tstderr: 'Input required',\n\t\texitCode: 1,\n\t});\n\n\n      - run: npm install\n      - run: script -e -c \"npm test\"\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Next, investigate the no-input test's explicit TTY assumption alongside CI's script-wrapped npm test command to understand terminal-dependent testing.",
+              "limit": "Proposed investigation, not an observed runtime outcome or reported issue. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "storyboard": {
+            "version": 1,
+            "beats": [
+              {
+                "id": "beat-v1-f3e5fb0e71740b237925da7d59083e5ecbc6fc5ac9c4049cd6e5c76649344a59",
+                "claim_id": "statement-v1-0f8c31b22ea57dbac76c07f6978fb6bde6d8d335396b5f1ec68567e9c06d5d71"
+              }
+            ]
+          },
+          "evidence_mode": "not_executed"
+        }
+      ]
+    }
+  }
+}

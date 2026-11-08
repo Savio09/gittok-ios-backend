@@ -121,6 +121,9 @@ func TestEngineRevisionNeverRetriesMalformedTransportOrUnfundedPair(t *testing.T
 			engine, err := NewEngine(cfg, ledger, WithHTTPClient(&http.Client{Transport: engineRoundTrip(func(*http.Request) (*http.Response, error) {
 				calls++
 				if calls == 1 {
+					if failure == "cost budget" {
+						return revisionHTTPUsage(t, 2000, engineCall(t, "submit_story", draft, "initial-submit")), nil
+					}
 					return engineHTTP(t, engineCall(t, "submit_story", draft, "initial-submit")), nil
 				}
 				if failure == "transport" {
@@ -128,6 +131,9 @@ func TestEngineRevisionNeverRetriesMalformedTransportOrUnfundedPair(t *testing.T
 				}
 				if failure == "malformed" {
 					return engineHTTP(t, engineMessage(t, map[string]any{"accepted": false})), nil
+				}
+				if failure == "cost budget" {
+					return revisionHTTPUsage(t, 2000, engineMessage(t, revisionRejected(review))), nil
 				}
 				return engineHTTP(t, engineMessage(t, revisionRejected(review))), nil
 			})}))

@@ -125,13 +125,14 @@ const (
 	SectionStack    SectionKind = "stack"    // architecture / components
 	SectionActivity SectionKind = "activity" // maintenance / health
 	SectionSetup    SectionKind = "setup"    // getting started
+	SectionHandoff  SectionKind = "handoff"  // source-based next investigation
 	SectionDecision SectionKind = "decision" // your call / fit
 )
 
 // Valid reports whether k is a known section kind.
 func (k SectionKind) Valid() bool {
 	switch k {
-	case SectionIdea, SectionHow, SectionStack, SectionActivity, SectionSetup, SectionDecision:
+	case SectionIdea, SectionHow, SectionStack, SectionActivity, SectionSetup, SectionHandoff, SectionDecision:
 		return true
 	default:
 		return false
@@ -152,6 +153,7 @@ type Section struct {
 	Title        string       `json:"title"`
 	Body         string       `json:"body,omitempty"`
 	Claims       []Claim      `json:"claims,omitempty"`
+	Storyboard   *Storyboard  `json:"storyboard,omitempty"`
 	EvidenceMode EvidenceMode `json:"evidence_mode,omitempty"`
 }
 
