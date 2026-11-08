@@ -1,0 +1,15 @@
+# Public repository discovery
+
+Production `GET /v1/feed` now returns live GitHub metadata rather than the Sprint 1 four-project list. The existing `items` and optional opaque `next_cursor` wire shape remains. `github_id` is an optional positive numeric GitHub identity; slug-based `id` is unchanged. iOS deduplicates both slugs and GitHub identities across live pages, including renames.
+
+Selection is explicit: public, non-fork, non-archived repositories created in the past 30 days with at least 20 stars, sorted by total stars descending. This is **popular new repositories**, not measured star velocity, exhaustive GitHub coverage, or personalized ranking. The Folio Discover screen states these criteria. Search results may move between pages as stars change; a date anchor is not a snapshot. The client removes duplicates but cannot guarantee no omissions from a changing provider ranking.
+
+Each page requests 25 search results; continuation stops at a short provider page, its total count, or GitHub's 1,000-result search horizon. Public status is checked explicitly on each decoded item before caching. Missing `private:false`, contradictory visibility, private repositories, forks and archived projects cannot enter this feed. Metadata cards do not imply an analyzed or generated walkthrough. Opening a repository invokes the existing preview and on-demand walkthrough pipelines and their fresh visibility checks.
+
+Cursors are URL-safe opaque strings. The server accepts only version 1, pages 2–40 and today's/yesterday's UTC date, rejects unknown fields/trailing data and caps cursor length. A bad/expired cursor returns HTTP 400 with a refresh instruction; iOS keeps loaded cards and makes retry refresh the collection. A successful empty search returns `items: []`. Upstream failure or incomplete search returns HTTP 503 with a fixed message and `Retry-After: 10`, never a fabricated fallback list.
+
+Successful pages (including empty ones) share a ten-minute process cache. Cache keys are bounded to two days × forty pages, with expired entries pruned on writes. A single cancellable gate coalesces successful misses and paces physical searches: at least 2.1 seconds for a verified public-only token, 6.1 seconds anonymously. Search disables automatic HTTP retries. Failures share a ten-second error cooldown to prevent an outage burst from repeating the same request; partial results are never cached as a successful page. Caller cancellation is not cached. This pacing is per backend process, not a distributed token quota; other applications/processes sharing a token or anonymous IP can still exhaust GitHub's allowance.
+
+Discovery uses `GITHUB_PUBLIC_TOKEN`, under the existing no-scope credential policy and startup verification, never the legacy broad `GITHUB_TOKEN`. Authentication and personalized ranking remain separate work. No paid model calls or repository source crawling occur while listing cards.
+
+Sources: [GitHub search API](https://docs.github.com/en/rest/search/search#search-repositories), [repository search qualifiers](https://docs.github.com/en/search-github/searching-on-github/searching-for-repositories).

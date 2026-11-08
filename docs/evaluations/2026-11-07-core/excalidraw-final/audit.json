@@ -1,0 +1,15 @@
+{
+  "repository": "excalidraw/excalidraw",
+  "job_id": "0a7305f60fd4605b4134aa910c5989e0",
+  "claims": 8,
+  "citations": 9,
+  "scenes": 4,
+  "unique_files": 2,
+  "commits": [
+    "701b901a0f1ba3d0b390d9cdf63d112e25abac4b"
+  ],
+  "errors": [],
+  "source_audit_passed": true,
+  "spoken_words": 155,
+  "semantic_quality": "Requires separate assessment; exact source matching alone does not establish meaning."
+}

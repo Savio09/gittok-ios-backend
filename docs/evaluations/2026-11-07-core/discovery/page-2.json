@@ -1,0 +1,1194 @@
+{
+  "items": [
+    {
+      "id": "jhaizhou-ops/d2r-mobile",
+      "github_id": 1415313946,
+      "owner": "jhaizhou-ops",
+      "name": "d2r-mobile",
+      "slug": "jhaizhou-ops/d2r-mobile",
+      "kind": "other",
+      "kind_evidence_status": "unknown",
+      "evidence_mode": "not_executed",
+      "language": "C",
+      "description": "Open-source compatibility layer for Diablo II: Resurrected with the Reign of the Warlock expansion. Runs your own Switch copy natively on iPhone, iPad, Mac, Android and HarmonyOS \u2014 full touch controls, 60 fps, new endgame modes. Bring your own game files. \u5f00\u6e90\u7684\u300a\u6697\u9ed1\u7834\u574f\u795e II\uff1a\u72f1\u706b\u91cd\u751f\u300b\u672f\u58eb\u541b\u4e34 iOS / macOS / \u5b89\u5353 / \u9e3f\u8499\u517c\u5bb9\u5c42",
+      "github_url": "https://github.com/jhaizhou-ops/d2r-mobile",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "5.2k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "2d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "storytold/craft-launcher",
+      "github_id": 1412548284,
+      "owner": "storytold",
+      "name": "craft-launcher",
+      "slug": "storytold/craft-launcher",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Rust",
+      "description": "The Craft App Launcher",
+      "github_url": "https://github.com/storytold/craft-launcher",
+      "license": "Apache-2.0",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "5.1k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "Apache-2.0",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "Djihads80/Eglantine",
+      "github_id": 1437774066,
+      "owner": "Djihads80",
+      "name": "Eglantine",
+      "slug": "Djihads80/Eglantine",
+      "kind": "other",
+      "kind_evidence_status": "unknown",
+      "evidence_mode": "not_executed",
+      "language": "C++",
+      "description": "VERY experimental Nintendo Switch 2 emulator",
+      "github_url": "https://github.com/Djihads80/Eglantine",
+      "license": "GPL-3.0",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "5.1k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "GPL-3.0",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "microsoft/TokenEconomizer",
+      "github_id": 1416442720,
+      "owner": "microsoft",
+      "name": "TokenEconomizer",
+      "slug": "microsoft/TokenEconomizer",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Python",
+      "description": "Experience-Driven Black-Box Cost Control for Coding Agents",
+      "github_url": "https://github.com/microsoft/TokenEconomizer",
+      "license": "Apache-2.0",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "4.9k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "Apache-2.0",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "kingcharleslzy-ai/dsh-purge",
+      "github_id": 1421822085,
+      "owner": "kingcharleslzy-ai",
+      "name": "dsh-purge",
+      "slug": "kingcharleslzy-ai/dsh-purge",
+      "kind": "cli",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "JavaScript",
+      "description": "dsh-purge Community \u00b7 DeepSeek Harness \u793e\u533a\u7ef4\u62a4\u7248\uff1a\u5bbf\u4e3b\u517c\u5bb9\u3001\u72b6\u6001\u8bca\u65ad\u3001\u63d0\u793a\u8bcd\u7ba1\u7406\u3001\u66f4\u65b0\u4e0e\u672c\u673a\u5907\u4efd\u56de\u6eda\u3002\u57fa\u4e8e\u5c0f\u6768 / YuJunZhiXue \u7684 dsh-purge\u3002",
+      "github_url": "https://github.com/kingcharleslzy-ai/dsh-purge",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "4.9k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "1d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "JustAResearcher/gpu-unlock-ada",
+      "github_id": 1431545439,
+      "owner": "JustAResearcher",
+      "name": "gpu-unlock-ada",
+      "slug": "JustAResearcher/gpu-unlock-ada",
+      "kind": "other",
+      "kind_evidence_status": "unknown",
+      "evidence_mode": "not_executed",
+      "language": "C",
+      "description": "GPU tensor unlock source for RTX 4090 and experimental RTX 4070 Ti SUPER; firmware generated locally",
+      "github_url": "https://github.com/JustAResearcher/gpu-unlock-ada",
+      "license": "GPL-2.0",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "4.8k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "12d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "GPL-2.0",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "LNPANDY/NX2Apple",
+      "github_id": 1427401105,
+      "owner": "LNPANDY",
+      "name": "NX2Apple",
+      "slug": "LNPANDY/NX2Apple",
+      "kind": "other",
+      "kind_evidence_status": "unknown",
+      "evidence_mode": "not_executed",
+      "language": "Swift",
+      "description": "Play your own Switch games on iPhone/iPad \u2014 one-click macOS app, no terminal. | \u628a Switch \u6e38\u620f\u88c5\u8fdb iPhone\uff1a\u56fe\u5f62\u754c\u9762\u4e00\u952e\u6784\u5efa\uff0c\u4e0d\u7528\u547d\u4ee4\u884c\u3002Bring your own game.",
+      "github_url": "https://github.com/LNPANDY/NX2Apple",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "4.8k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "zortos293/Lichii",
+      "github_id": 1440927503,
+      "owner": "zortos293",
+      "name": "Lichii",
+      "slug": "zortos293/Lichii",
+      "kind": "other",
+      "kind_evidence_status": "unknown",
+      "evidence_mode": "not_executed",
+      "language": "C++",
+      "description": "VERY experimental Nintendo Switch 2 emulator",
+      "github_url": "https://github.com/zortos293/Lichii",
+      "license": "GPL-3.0",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "4.7k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "GPL-3.0",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "onehumanbeing/esp32-iphone-agent",
+      "github_id": 1414685342,
+      "owner": "onehumanbeing",
+      "name": "esp32-iphone-agent",
+      "slug": "onehumanbeing/esp32-iphone-agent",
+      "kind": "other",
+      "kind_evidence_status": "unknown",
+      "evidence_mode": "not_executed",
+      "language": "Swift",
+      "description": "Let an AI model use a real iPhone with a $7 ESP32: AirPlay eyes, USB HID hands, any OpenAI-compatible vision model. No Mac, no developer account, no jailbreak.",
+      "github_url": "https://github.com/onehumanbeing/esp32-iphone-agent",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "4.6k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "storytold/figcraft",
+      "github_id": 1412112308,
+      "owner": "storytold",
+      "name": "figcraft",
+      "slug": "storytold/figcraft",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Rust",
+      "description": "FigCraft: interface design and prototyping; an open-source, clean-room reimplementation of collaborative design workflows in pure Rust",
+      "github_url": "https://github.com/storytold/figcraft",
+      "license": "Apache-2.0",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "4.6k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "Apache-2.0",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "interplains/Zero-Breach-Toolkit",
+      "github_id": 1433297111,
+      "owner": "interplains",
+      "name": "Zero-Breach-Toolkit",
+      "slug": "interplains/Zero-Breach-Toolkit",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Python",
+      "description": "Free, open-source check for traces of mercenary spyware (Pegasus, Predator, Graphite, Candiru and more) on computers, Android phones and iPhone backups. Double-click apps for Windows, Mac and Linux, in 27 languages.",
+      "github_url": "https://github.com/interplains/Zero-Breach-Toolkit",
+      "license": "Apache-2.0",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "4.5k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "1d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "Apache-2.0",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "designfuchen/word-atlas",
+      "github_id": 1432980411,
+      "owner": "designfuchen",
+      "name": "word-atlas",
+      "slug": "designfuchen/word-atlas",
+      "kind": "frontend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "TypeScript",
+      "description": "\u8bcd\u5149 \u00b7 Word Atlas \u2014 Illustrated IELTS vocabulary with 7,298 words, UK/US audio and FSRS review. Open-source app + CC BY 4.0 dataset.",
+      "github_url": "https://github.com/designfuchen/word-atlas",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "4.4k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "7d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "Arekejoker/qwen21-nsfw-pose-skill",
+      "github_id": 1416386910,
+      "owner": "Arekejoker",
+      "name": "qwen21-nsfw-pose-skill",
+      "slug": "Arekejoker/qwen21-nsfw-pose-skill",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Python",
+      "description": "Qwen-Image 2.1 NSFW/\u59ff\u52bf\u51fa\u56fe skill\uff1a\u4f5c\u8005\u7ea7\u63d0\u793a\u8bcd\u914d\u65b9 + NSFW LoRA + 136 \u59ff\u52bf VNCCS \u4eba\u5076\u63a7\u5236\uff1b\u9002\u7528 Claude Code / Codex / Cursor / OpenClaw",
+      "github_url": "https://github.com/Arekejoker/qwen21-nsfw-pose-skill",
+      "license": "Apache-2.0",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "4.2k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "11d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "Apache-2.0",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "BryceYuuu/RUN",
+      "github_id": 1438326535,
+      "owner": "BryceYuuu",
+      "name": "RUN",
+      "slug": "BryceYuuu/RUN",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Python",
+      "description": "RUN \u00b7 \u6da6\uff1a\u4e2d\u56fd\u62a4\u7167\u6301\u6709\u4eba\u7684\u6d77\u5916\u79fb\u5c45\u624b\u518c\u3002\u6b27\u6d32 36 \u56fd 110 \u6761\u79fb\u6c11\u8def\u7ebf + 13 \u4e2a\u4e3b\u8981\u79fb\u6c11\u5730\u533a\uff1a\u6570\u5b57\u6e38\u6c11\u7b7e\u8bc1\u3001\u6b27\u76df\u84dd\u5361\u3001\u6280\u672f\u79fb\u6c11\u3001\u7559\u5b66\u8f6c\u5de5\u4f5c\u3001\u521b\u4e1a\u81ea\u96c7\u3001\u6295\u8d44\u5c45\u7559\uff0c\u6bcf\u6761\u9644\u5b98\u65b9\u6765\u6e90\uff0c\u6301\u7eed\u66f4\u65b0\u3002",
+      "github_url": "https://github.com/BryceYuuu/RUN",
+      "license": "CC-BY-SA-4.0",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "4.2k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "CC-BY-SA-4.0",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "Leonxlnx/earshot",
+      "github_id": 1420305104,
+      "owner": "Leonxlnx",
+      "name": "earshot",
+      "slug": "Leonxlnx/earshot",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Python",
+      "description": "Ears for coding agents: let AI hear, review and make sound. CPU-only, open source.",
+      "github_url": "https://github.com/Leonxlnx/earshot",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "4.1k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "aicodeking/leanrea",
+      "github_id": 1422883896,
+      "owner": "aicodeking",
+      "name": "leanrea",
+      "slug": "aicodeking/leanrea",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Python",
+      "description": "One 8 KB skill that replaces REA (Reverse Engineer Anything): plain CLI tools, no MCP. Benchmarked: 38% faster, 35% cheaper.",
+      "github_url": "https://github.com/aicodeking/leanrea",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "4.1k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "2w",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "AhmadHassan-BTed/.github",
+      "github_id": 1411873195,
+      "owner": "AhmadHassan-BTed",
+      "name": ".github",
+      "slug": "AhmadHassan-BTed/.github",
+      "kind": "frontend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "HTML",
+      "description": "",
+      "github_url": "https://github.com/AhmadHassan-BTed/.github",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "4k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "5d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "KKKKhazix/agent-autoloop",
+      "github_id": 1443985070,
+      "owner": "KKKKhazix",
+      "name": "agent-autoloop",
+      "slug": "KKKKhazix/agent-autoloop",
+      "kind": "cli",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "TypeScript",
+      "description": "\u8ba9\u4f60\u7684\u547d\u4ee4\u884c Agent \u5728\u540e\u53f0\u81ea\u5df1\u63a5\u6d3b\u3001\u81ea\u5df1\u8ddf\u8fdb\u5230\u5e95\uff1b\u5e73\u65f6\u4e0d\u70e6\u4f60\uff0c\u9047\u5230\u62ff\u4e0d\u51c6\u7684\u4e8b\u624d\u53d1\u5361\u7247\u627e\u4f60\u62cd\u677f\u3002",
+      "github_url": "https://github.com/KKKKhazix/agent-autoloop",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "3.9k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "JoasASantos/REA-Prompts",
+      "github_id": 1426240325,
+      "owner": "JoasASantos",
+      "name": "REA-Prompts",
+      "slug": "JoasASantos/REA-Prompts",
+      "kind": "cli",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Batchfile",
+      "description": "REAP - Prompts for you to use REA (Reverse Engineer Anything), get the most out of it, and clone or break down any program",
+      "github_url": "https://github.com/JoasASantos/REA-Prompts",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "3.7k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "2d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "InukaAsith/TwinDesk",
+      "github_id": 1418204810,
+      "owner": "InukaAsith",
+      "name": "TwinDesk",
+      "slug": "InukaAsith/TwinDesk",
+      "kind": "frontend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "JavaScript",
+      "description": " All your computers and your phone, working as one desk. Screens, apps, files, clipboard, calls, texts, notifications, mouse and keyboard, shared between Mac, Windows, Linux and Android. Free and open source. No account, no cloud, and now no shared network needed.",
+      "github_url": "https://github.com/InukaAsith/TwinDesk",
+      "license": "GPL-3.0",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "3.7k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "1d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "GPL-3.0",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "JuneYaooo/rea-video",
+      "github_id": 1438661890,
+      "owner": "JuneYaooo",
+      "name": "rea-video",
+      "slug": "JuneYaooo/rea-video",
+      "kind": "cli",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Python",
+      "description": "Reverse-engineer any video, shot by shot: tells whether each shot was filmed, AI-generated or coded, how the captions, cuts and audio were made, and how to remake it. \u9006\u5411\u4e00\u5207\u89c6\u9891\uff0c\u9010\u955c\u62c6\u51fa\u5236\u4f5c\u65b9\u5f0f\u5e76\u7ed9\u51fa\u590d\u523b\u65b9\u6848\u3002",
+      "github_url": "https://github.com/JuneYaooo/rea-video",
+      "license": "Apache-2.0",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "3.5k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "Apache-2.0",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "liseami/CCBaga",
+      "github_id": 1413898431,
+      "owner": "liseami",
+      "name": "CCBaga",
+      "slug": "liseami/CCBaga",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Rust",
+      "description": "",
+      "github_url": "https://github.com/liseami/CCBaga",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "3.5k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "6d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "Revivedx/SavageWindRecomp",
+      "github_id": 1422474621,
+      "owner": "Revivedx",
+      "name": "SavageWindRecomp",
+      "slug": "Revivedx/SavageWindRecomp",
+      "kind": "other",
+      "kind_evidence_status": "unknown",
+      "evidence_mode": "not_executed",
+      "language": "C",
+      "description": "Work-in-progress static recompilation of The Legend of Zelda: Breath of the Wild (Switch, v1.9.0) for Windows and Linux. Bring your own dump: no game files, keys or dumping tools included.",
+      "github_url": "https://github.com/Revivedx/SavageWindRecomp",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "3.4k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "today",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "t4t5/owly",
+      "github_id": 1409860044,
+      "owner": "t4t5",
+      "name": "owly",
+      "slug": "t4t5/owly",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Rust",
+      "description": "airdrop for non-apple devices",
+      "github_url": "https://github.com/t4t5/owly",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "3.3k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "4d",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    },
+    {
+      "id": "mmparko/dsh-purge",
+      "github_id": 1416497190,
+      "owner": "mmparko",
+      "name": "dsh-purge",
+      "slug": "mmparko/dsh-purge",
+      "kind": "frontend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "JavaScript",
+      "description": "DeepSeek Harness \u7834\u7532 (mirror of YuJunZhiXue/dsh-purge) \u2014 \u4e0a\u6e38\u5373\u5c06\u5220\u5e93\uff0c\u6b64\u4e3a\u672c\u4ed3\u5e93\u5168\u91cf\u955c\u50cf\uff1a\u542b\u5168\u90e8\u5206\u652f/73 \u4e2a tag/\u5b8c\u6574\u63d0\u4ea4\u5386\u53f2\u3002\u539f\u4f5c\u8005\u7f72\u540d\u4e0e\u4e8c\u5f00\u8981\u6c42\u89c1 README \u7f72\u540d\u7ae0\u8282\u3002",
+      "github_url": "https://github.com/mmparko/dsh-purge",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "3.2k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_commit",
+          "label": "since last push",
+          "value": "3w",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    }
+  ],
+  "next_cursor": "eyJ2ZXJzaW9uIjoxLCJkYXRlIjoiMjAyNi0xMS0wNyIsInBhZ2UiOjN9"
+}

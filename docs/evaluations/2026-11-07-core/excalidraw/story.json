@@ -1,0 +1,453 @@
+{
+  "http_status": 200,
+  "elapsed_seconds": 56.36,
+  "job": {
+    "id": "c88ac5ecd4e79b02a3c2f5e9bd5f29bf",
+    "state": "ready",
+    "poll_after_ms": 0,
+    "preview": {
+      "presentation": "walkthrough",
+      "id": "excalidraw/excalidraw",
+      "owner": "excalidraw",
+      "name": "excalidraw",
+      "slug": "excalidraw/excalidraw",
+      "kind": "other",
+      "kind_evidence_status": "unknown",
+      "evidence_mode": "not_executed",
+      "language": "TypeScript",
+      "description": "To share an Excalidraw scene, this export path accepts elements, app state, and files, and can return a shareable URL.",
+      "github_url": "https://github.com/excalidraw/excalidraw",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "135276",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count",
+            "url": "https://api.github.com/repos/excalidraw/excalidraw"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id",
+            "url": "https://api.github.com/repos/excalidraw/excalidraw"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_push",
+          "label": "last push reported by GitHub",
+          "value": "2026-11-07T07:35:37Z",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at",
+            "url": "https://api.github.com/repos/excalidraw/excalidraw"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ],
+      "sections": [
+        {
+          "id": "scene-v1-b934a820908bebadbd2c1a5ed251c180c107fecb210bd22b128ea75acbb8c932",
+          "kind": "idea",
+          "title": "What it does",
+          "body": "To share an Excalidraw scene, this export path accepts elements, app state, and files, and can return a shareable URL.",
+          "claims": [
+            {
+              "id": "statement-v1-4c3a0ff670cd7d6e0f9327c78f55796c37c8e8a6a13f7925117d423272acd677",
+              "visual": {
+                "kind": "concept",
+                "title": "Share a scene",
+                "lines": [
+                  "Scene + app state + files \u2192 shareable URL"
+                ],
+                "focus": 0,
+                "cue": "share"
+              },
+              "label": "Purpose",
+              "source": {
+                "kind": "file",
+                "ref": "excalidraw-app/data/index.ts",
+                "lines": "248-257",
+                "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L248-L257"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "excalidraw-app/data/index.ts",
+                  "lines": "288-293",
+                  "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L288-L293"
+                }
+              ],
+              "excerpt": "export const exportToBackend = async (\n  elements: readonly ExcalidrawElement[],\n  appState: Partial<AppState>,\n  files: BinaryFiles,\n): Promise<ExportToBackendResult> => {\n  const encryptionKey = await generateEncryptionKey(\"string\");\n\n  const payload = await compressData(\n    new TextEncoder().encode(\n      serializeAsJSON(elements, appState, files, \"database\"),\n\n\n      await saveFilesToFirebase({\n        prefix: `/files/shareLinks/${json.id}`,\n        files: filesToUpload,\n      });\n\n      return { url: urlString, errorMessage: null };\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "To share an Excalidraw scene, this export path accepts elements, app state, and files, and can return a shareable URL.",
+              "limit": "API-level sharing path, not an observed UI session. Source interpretation only; execution was not observed. Source components: excalidraw-app.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "storyboard": {
+            "version": 1,
+            "beats": [
+              {
+                "id": "beat-v1-7ca016aba16d7f7e8f46305cae773c3b931efb3957fb70778999838afae111d5",
+                "claim_id": "statement-v1-4c3a0ff670cd7d6e0f9327c78f55796c37c8e8a6a13f7925117d423272acd677"
+              }
+            ]
+          },
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-8d106aafeab46a987ade2d008359e55d8e5262bb5d02595142adbf3d5202e2cb",
+          "kind": "how",
+          "title": "How it works",
+          "body": "Image-file selection requires both an initialized image element and matching file data.\n\nThe implementation serializes database-mode JSON, generates a key, passes it to compression, and posts the payload.\n\nWith a truthy response ID, it builds the URL fragment, awaits file saving, then returns the URL if saving succeeds.\n\nImport fetches by ID. Only with an OK response and successful keyed decoding and JSON parsing does this path return elements and app state, each defaulting to null.\n\nNon-OK responses alert and return an empty object; errors inside the new-format decoding/parsing block invoke the legacy decoder.",
+          "claims": [
+            {
+              "id": "statement-v1-043c6a8005a50f0c34d7ab14088acdd970216f2a2a686f87db106732ff706e83",
+              "visual": {
+                "kind": "concept",
+                "title": "Select associated files",
+                "lines": [
+                  "Initialized image AND files[element.fileId] \u2192 filesMap"
+                ],
+                "focus": 1,
+                "cue": "initialized"
+              },
+              "label": "Input",
+              "source": {
+                "kind": "file",
+                "ref": "excalidraw-app/data/index.ts",
+                "lines": "263-268",
+                "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L263-L268"
+              },
+              "excerpt": "    const filesMap = new Map<FileId, BinaryFileData>();\n    for (const element of elements) {\n      if (isInitializedImageElement(element) && files[element.fileId]) {\n        filesMap.set(element.fileId, files[element.fileId]);\n      }\n    }\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Image-file selection requires both an initialized image element and matching file data.",
+              "limit": "Selection into the file map only. Source interpretation only; execution was not observed. Source components: excalidraw-app.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-2e609994c21fd333fe435e937a0e1d17d81bb95ce737af9381640a91a14a89a4",
+              "visual": {
+                "kind": "flow",
+                "title": "Prepare and send",
+                "lines": [
+                  "generateEncryptionKey(\"string\")",
+                  "serializeAsJSON(..., \"database\") \u2192 compressData with key",
+                  "POST payload.buffer"
+                ],
+                "focus": 3,
+                "cue": "posts"
+              },
+              "label": "Mechanism",
+              "source": {
+                "kind": "file",
+                "ref": "excalidraw-app/data/index.ts",
+                "lines": "253-260",
+                "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L253-L260"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "excalidraw-app/data/index.ts",
+                  "lines": "276-279",
+                  "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L276-L279"
+                }
+              ],
+              "excerpt": "  const encryptionKey = await generateEncryptionKey(\"string\");\n\n  const payload = await compressData(\n    new TextEncoder().encode(\n      serializeAsJSON(elements, appState, files, \"database\"),\n    ),\n    { encryptionKey },\n  );\n\n\n    const response = await fetch(BACKEND_V2_POST, {\n      method: \"POST\",\n      body: payload.buffer,\n    });\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "The implementation serializes database-mode JSON, generates a key, passes it to compression, and posts the payload.",
+              "limit": "Helper internals are not established here. Source interpretation only; execution was not observed. Source components: excalidraw-app.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-d9ed447db55bcdf5ebe385b58371ceefaec281e90b47182758870c2aa4686b68",
+              "visual": {
+                "kind": "flow",
+                "title": "Successful export branch",
+                "lines": [
+                  "Truthy json.id \u2192 #json=<id>,<key>",
+                  "await saveFilesToFirebase \u2192 return URL"
+                ],
+                "focus": 1,
+                "cue": "truthy"
+              },
+              "label": "Result",
+              "source": {
+                "kind": "file",
+                "ref": "excalidraw-app/data/index.ts",
+                "lines": "281-286",
+                "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L281-L286"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "excalidraw-app/data/index.ts",
+                  "lines": "288-293",
+                  "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L288-L293"
+                }
+              ],
+              "excerpt": "    if (json.id) {\n      const url = new URL(window.location.href);\n      // We need to store the key (and less importantly the id) as hash instead\n      // of queryParam in order to never send it to the server\n      url.hash = `json=${json.id},${encryptionKey}`;\n      const urlString = url.toString();\n\n\n      await saveFilesToFirebase({\n        prefix: `/files/shareLinks/${json.id}`,\n        files: filesToUpload,\n      });\n\n      return { url: urlString, errorMessage: null };\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "With a truthy response ID, it builds the URL fragment, awaits file saving, then returns the URL if saving succeeds.",
+              "limit": "Conditional return, not an observed upload. Source interpretation only; execution was not observed. Source components: excalidraw-app.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-5032cc43c43babc30db667df7411599faf12f0002bd02ba51d2ffe02b86e1ec1",
+              "visual": {
+                "kind": "flow",
+                "title": "New-format import success",
+                "lines": [
+                  "Fetch ID \u2192 require response.ok",
+                  "Decode with key \u2192 parse JSON successfully",
+                  "Return elements || null, appState || null"
+                ],
+                "focus": 1,
+                "cue": "OK response"
+              },
+              "label": "Result",
+              "source": {
+                "kind": "file",
+                "ref": "excalidraw-app/data/index.ts",
+                "lines": "207-216",
+                "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L207-L216"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "excalidraw-app/data/index.ts",
+                  "lines": "217-226",
+                  "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L217-L226"
+                },
+                {
+                  "kind": "file",
+                  "ref": "excalidraw-app/data/index.ts",
+                  "lines": "227-229",
+                  "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L227-L229"
+                }
+              ],
+              "excerpt": "    const response = await fetch(`${BACKEND_V2_GET}${id}`);\n\n    if (!response.ok) {\n      window.alert(t(\"alerts.importBackendFailed\"));\n      return {};\n    }\n    const buffer = await response.arrayBuffer();\n\n    try {\n      const { data: decodedBuffer } = await decompressData(\n\n\n        new Uint8Array(buffer),\n        {\n          decryptionKey,\n        },\n      );\n      const data: ImportedDataState = JSON.parse(\n        new TextDecoder().decode(decodedBuffer),\n      );\n\n      return {\n\n\n        elements: data.elements || null,\n        appState: data.appState || null,\n      };\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Import fetches by ID. Only with an OK response and successful keyed decoding and JSON parsing does this path return elements and app state, each defaulting to null.",
+              "limit": "Does not establish canvas application or image retrieval. Source interpretation only; execution was not observed. Source components: excalidraw-app.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-c9a18ed331e3e0983aad9865e3b74d088adaa50e77cff950b3b46c1aa277d6b7",
+              "visual": {
+                "kind": "concept",
+                "title": "Import alternatives",
+                "lines": [
+                  "Non-OK response \u2192 alert + {}",
+                  "New-format decode/parse error \u2192 legacy decoder"
+                ],
+                "focus": 0,
+                "cue": "legacy decoder"
+              },
+              "label": "Mechanism",
+              "source": {
+                "kind": "file",
+                "ref": "excalidraw-app/data/index.ts",
+                "lines": "209-212",
+                "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L209-L212"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "excalidraw-app/data/index.ts",
+                  "lines": "230-235",
+                  "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L230-L235"
+                }
+              ],
+              "excerpt": "    if (!response.ok) {\n      window.alert(t(\"alerts.importBackendFailed\"));\n      return {};\n    }\n\n\n    } catch (error: any) {\n      console.warn(\n        \"error when decoding shareLink data using the new format:\",\n        error,\n      );\n      return legacy_decodeFromBackend({ buffer, decryptionKey });\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Non-OK responses alert and return an empty object; errors inside the new-format decoding/parsing block invoke the legacy decoder.",
+              "limit": "Fallback scope is the inner decode/parse block. Source interpretation only; execution was not observed. Source components: excalidraw-app.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "storyboard": {
+            "version": 1,
+            "beats": [
+              {
+                "id": "beat-v1-131123d5f43ffbd2f288b1dde5b296520af893d1d9115a2d3a478e1230d7529f",
+                "claim_id": "statement-v1-043c6a8005a50f0c34d7ab14088acdd970216f2a2a686f87db106732ff706e83"
+              },
+              {
+                "id": "beat-v1-5c4b4b3ebeb4690c286f1a4677b717b78b45d6339a049e96365c1fabf87ad771",
+                "claim_id": "statement-v1-2e609994c21fd333fe435e937a0e1d17d81bb95ce737af9381640a91a14a89a4"
+              },
+              {
+                "id": "beat-v1-e3c2f436c8b1d125f8961c1d540cb41bc157b790e2c7eefe3a155bb533294a91",
+                "claim_id": "statement-v1-d9ed447db55bcdf5ebe385b58371ceefaec281e90b47182758870c2aa4686b68"
+              },
+              {
+                "id": "beat-v1-17a4941cdb3ab985df32955193e79c99dbeb942b84045e6daef57002bcef4123",
+                "claim_id": "statement-v1-5032cc43c43babc30db667df7411599faf12f0002bd02ba51d2ffe02b86e1ec1"
+              },
+              {
+                "id": "beat-v1-e048a7db666087db0fc63f797cc4768664b66f99797dd03a1bca843c0fa66d5a",
+                "claim_id": "statement-v1-c9a18ed331e3e0983aad9865e3b74d088adaa50e77cff950b3b46c1aa277d6b7"
+              }
+            ]
+          },
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-f70497c26bf361fd7fe7f56b649ac170f0b1e03e41144693ef9e932203ed9a2c",
+          "kind": "stack",
+          "title": "A closer look",
+          "body": "The URL fragment avoids query parameters specifically to keep the key from being sent to the server, according to the source comment.\n\nExport returns the size-specific error only when the response lacks a truthy ID and error_class equals RequestTooLargeError.",
+          "claims": [
+            {
+              "id": "statement-v1-3147e7e0af4221997f4dd7605f3faac4d2fbfd087b347bfa5ae06589b2d02c36",
+              "visual": {
+                "kind": "source",
+                "title": "excalidraw-app/data/index.ts",
+                "lines": [
+                  "    if (json.id) {",
+                  "      const url = new URL(window.location.href);",
+                  "      // We need to store the key (and less importantly the id) as hash instead",
+                  "      // of queryParam in order to never send it to the server",
+                  "      url.hash = `json=${json.id},${encryptionKey}`;"
+                ],
+                "focus": 0,
+                "cue": "URL fragment"
+              },
+              "label": "Design",
+              "source": {
+                "kind": "file",
+                "ref": "excalidraw-app/data/index.ts",
+                "lines": "281-285",
+                "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L281-L285"
+              },
+              "excerpt": "    if (json.id) {\n      const url = new URL(window.location.href);\n      // We need to store the key (and less importantly the id) as hash instead\n      // of queryParam in order to never send it to the server\n      url.hash = `json=${json.id},${encryptionKey}`;\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "The URL fragment avoids query parameters specifically to keep the key from being sent to the server, according to the source comment.",
+              "limit": "Source rationale, not a general security guarantee. Source interpretation only; execution was not observed. Source components: excalidraw-app.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-2f4286944399a11187e69743a9e732e6025f66c89d70ab609a1d60f3d7ee34e9",
+              "visual": {
+                "kind": "concept",
+                "title": "Size-specific failure",
+                "lines": [
+                  "No truthy json.id AND RequestTooLargeError \u2192 size error"
+                ],
+                "focus": 1,
+                "cue": "lacks a truthy ID"
+              },
+              "label": "Mechanism",
+              "source": {
+                "kind": "file",
+                "ref": "excalidraw-app/data/index.ts",
+                "lines": "281-281",
+                "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L281-L281"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "excalidraw-app/data/index.ts",
+                  "lines": "294-301",
+                  "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L294-L301"
+                }
+              ],
+              "excerpt": "    if (json.id) {\n\n\n    } else if (json.error_class === \"RequestTooLargeError\") {\n      return {\n        url: null,\n        errorMessage: t(\"alerts.couldNotCreateShareableLinkTooBig\"),\n      };\n    }\n\n    return { url: null, errorMessage: t(\"alerts.couldNotCreateShareableLink\") };\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Export returns the size-specific error only when the response lacks a truthy ID and error_class equals RequestTooLargeError.",
+              "limit": "Parsed-response branch only. Source interpretation only; execution was not observed. Source components: excalidraw-app.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "storyboard": {
+            "version": 1,
+            "beats": [
+              {
+                "id": "beat-v1-253681bed54fc472ee04e981d9bc3dce76ee97523c015aa098e8e2cbdd59309c",
+                "claim_id": "statement-v1-3147e7e0af4221997f4dd7605f3faac4d2fbfd087b347bfa5ae06589b2d02c36"
+              },
+              {
+                "id": "beat-v1-63f07509f238194340e22179e469f4626c8a1a3b3c4894c7821095622d5d1ed7",
+                "claim_id": "statement-v1-2f4286944399a11187e69743a9e732e6025f66c89d70ab609a1d60f3d7ee34e9"
+              }
+            ]
+          },
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-ae446d93865f007970b714f5868ba188b38732248454221e08e2e640783d9583",
+          "kind": "handoff",
+          "title": "Where to look next",
+          "body": "Next, follow encodeFilesForUpload into FileManager to investigate its handling of the selected files, encryption key, and maxBytes limit.",
+          "claims": [
+            {
+              "id": "statement-v1-a8bf7581fc72eebaa1af4a2226edff0b10276265f241d202036f7175d35c2c86",
+              "visual": {
+                "kind": "flow",
+                "title": "Next investigation",
+                "lines": [
+                  "filesMap + encryptionKey + FILE_UPLOAD_MAX_BYTES",
+                  "FileManager \u2192 encodeFilesForUpload"
+                ],
+                "focus": 2,
+                "cue": "encodeFilesForUpload"
+              },
+              "label": "Next step",
+              "source": {
+                "kind": "file",
+                "ref": "excalidraw-app/data/index.ts",
+                "lines": "38-39",
+                "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L38-L39"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "excalidraw-app/data/index.ts",
+                  "lines": "270-274",
+                  "url": "https://github.com/excalidraw/excalidraw/blob/701b901a0f1ba3d0b390d9cdf63d112e25abac4b/excalidraw-app/data/index.ts#L270-L274"
+                }
+              ],
+              "excerpt": "import { encodeFilesForUpload } from \"./FileManager\";\nimport { saveFilesToFirebase } from \"./firebase\";\n\n\n    const filesToUpload = await encodeFilesForUpload({\n      files: filesMap,\n      encryptionKey,\n      maxBytes: FILE_UPLOAD_MAX_BYTES,\n    });\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "Next, follow encodeFilesForUpload into FileManager to investigate its handling of the selected files, encryption key, and maxBytes limit.",
+              "limit": "Proposed next investigation; helper internals remain unverified. Source interpretation only; execution was not observed. Source components: excalidraw-app.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "storyboard": {
+            "version": 1,
+            "beats": [
+              {
+                "id": "beat-v1-ebbf61f553f76f6d18e11a1b00c53cd9dea0401f6ecf5473b1fa5c01245b1348",
+                "claim_id": "statement-v1-a8bf7581fc72eebaa1af4a2226edff0b10276265f241d202036f7175d35c2c86"
+              }
+            ]
+          },
+          "evidence_mode": "not_executed"
+        }
+      ]
+    }
+  }
+}

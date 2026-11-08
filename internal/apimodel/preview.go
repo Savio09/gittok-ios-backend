@@ -165,6 +165,7 @@ type RepoPreview struct {
 	// Presentation marks an accepted story separately from a source report.
 	Presentation string   `json:"presentation,omitempty"`
 	ID           string   `json:"id"`
+	GitHubID     int64    `json:"github_id,omitempty"`
 	Owner        string   `json:"owner"`
 	Name         string   `json:"name"`
 	Slug         string   `json:"slug"` // "owner/name"

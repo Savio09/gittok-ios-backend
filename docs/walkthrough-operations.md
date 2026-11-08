@@ -73,6 +73,28 @@ local ledger cannot detect restoration of an older snapshot from the same ledger
 or rollback of all control files. Legacy empty markers are refused; there is no
 automatic migration that could erase prior accounting.
 
+### Raising an existing authorized ceiling
+
+After explicit owner authorization, change only the existing ceiling using the
+operator command. Do not initialize a new window or delete historical entries:
+
+```sh
+go run ./cmd/walkthrough-ledger \
+  -path /absolute/private-directory/spend.json \
+  -window capstone-demo -increase-from-micros 2000000 \
+  -budget-micros 50000000
+```
+
+The command checks the exact current ceiling, ownership, ledger digest and
+strict increase before atomically persisting the change. Window identity,
+charges, unsettled outcomes, replay protection and reservation limits remain.
+Set `WALKTHROUGH_WINDOW_BUDGET_MICROS` to the new ceiling before restarting; a
+stale configured ceiling is rejected. This command never runs automatically.
+
+On November 7 the owner approved $50 total for the existing capstone window.
+Live cold-generation checks used that ceiling and a $1/job limit, retaining two
+prior unsettled outcomes. See [the core repair record](core-preview-repair.md).
+
 ## HTTP contract
 
 ```http
