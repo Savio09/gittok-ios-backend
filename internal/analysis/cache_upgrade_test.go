@@ -9,14 +9,14 @@ import (
 	"github.com/Savio09/gittok-ios-backend/internal/apimodel"
 )
 
-func TestRepairInvalidatesPersistedVersionTwoPreviews(t *testing.T) {
+func TestEvidenceInvalidatesPersistedVersionThreePreviews(t *testing.T) {
 	clock := &fakeClock{time.Now()}
 	dir := t.TempDir()
 	old := openTestCache(t, dir, testLimits(), clock)
-	oldKey := CacheKey{RepoID: 7, Owner: "o", Name: "r", version: 2}
+	oldKey := CacheKey{RepoID: 7, Owner: "o", Name: "r", version: 3}
 	stale := apimodel.RepoPreview{ID: "o/r", Owner: "o", Name: "r", Kind: apimodel.KindBackend}
 	if !old.Put(oldKey, "0123456789abcdef0123456789abcdef01234567", clock.t, stale) {
-		t.Fatal("could not seed the pre-repair cache")
+		t.Fatal("could not seed the pre-evidence cache")
 	}
 	gh := &countingGitHub{repo: publicMeta()}
 	s := NewService(gh)
@@ -27,7 +27,7 @@ func TestRepairInvalidatesPersistedVersionTwoPreviews(t *testing.T) {
 		t.Fatal(err)
 	}
 	if gh.refs != 1 || gh.trees != 1 || gh.contentsN != 1 || reflect.DeepEqual(fresh, stale) {
-		t.Fatalf("served pre-repair output: refs=%d trees=%d contents=%d preview=%+v", gh.refs, gh.trees, gh.contentsN, fresh)
+		t.Fatalf("served pre-evidence output: refs=%d trees=%d contents=%d preview=%+v", gh.refs, gh.trees, gh.contentsN, fresh)
 	}
 	metadata := gh.metadata
 	warm, err := s.Preview(context.Background(), "o", "r")

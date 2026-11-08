@@ -6,6 +6,8 @@
       "name": "orbit",
       "slug": "acme/orbit",
       "kind": "frontend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
       "language": "TypeScript",
       "headline": "Your work. One clear view.",
       "description": "A productivity dashboard that pulls tasks from several tools into a single web view.",
@@ -34,13 +36,14 @@
       "metrics": [
         {
           "key": "last_commit",
-          "label": "since last commit",
+          "label": "since last push",
           "value": "3d",
           "source": {
             "kind": "metadata",
             "ref": "pushed_at"
           },
-          "confidence": "confident"
+          "confidence": "confident",
+          "evidence_status": "supported"
         },
         {
           "key": "good_first_issues",
@@ -50,7 +53,8 @@
             "kind": "api",
             "ref": "GET /repos/acme/orbit/issues?labels=good+first+issue"
           },
-          "confidence": "confident"
+          "confidence": "confident",
+          "evidence_status": "supported"
         },
         {
           "key": "contributing_guide",
@@ -60,7 +64,8 @@
             "kind": "file",
             "ref": "CONTRIBUTING.md"
           },
-          "confidence": "confident"
+          "confidence": "confident",
+          "evidence_status": "supported"
         }
       ],
       "fit": {
@@ -100,7 +105,7 @@
           "body": "A React app talks to a Go API that stores items in PostgreSQL.",
           "claims": [
             {
-              "label": "Frontend is TypeScript and React",
+              "label": "Declares React and Next.js",
               "source": {
                 "kind": "file",
                 "ref": "apps/web/package.json",
@@ -110,20 +115,22 @@
               "explanation": "The web app lists React and Next.js as dependencies.",
               "supports": "the stack as written",
               "limit": "does not prove runtime behavior",
+              "evidence_status": "supported",
               "confidence": "confident",
               "stance": "match"
             },
             {
-              "label": "API is Go",
+              "label": "Declares a Go module",
               "source": {
                 "kind": "file",
                 "ref": "go.mod",
                 "lines": "1-5"
               },
               "excerpt": "module github.com/acme/orbit",
-              "explanation": "The server module is written in Go.",
-              "supports": "the API language",
+              "explanation": "The Go manifest declares a module path.",
+              "supports": "a Go module declaration",
               "limit": "does not prove the API runs",
+              "evidence_status": "supported",
               "confidence": "confident",
               "stance": "stretch"
             }
@@ -135,13 +142,14 @@
           "title": "Your call",
           "claims": [
             {
-              "label": "No tests found for the API",
+              "label": "API test coverage could not be determined",
               "source": {
                 "kind": "search",
                 "ref": "glob: server/**/*_test.go"
               },
               "explanation": "A search for Go test files under the server turned up nothing.",
               "limit": "absence of test files is not proof there are no tests",
+              "evidence_status": "unknown",
               "confidence": "uncertain",
               "stance": "unknown"
             }

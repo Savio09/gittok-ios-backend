@@ -29,20 +29,21 @@ type Input struct {
 // BuilderVersion identifies the preview builder's output semantics. Bump it
 // whenever ranking, schema or claim wording changes, so stored previews built
 // by an older builder are never served as current.
-const BuilderVersion = 3
+const BuilderVersion = 4
 
 // Build is pure: no GitHub requests, environment, model calls or current clock.
 func Build(in Input) apimodel.RepoPreview {
 	r := in.Repo
 	if !ValidIdentity(r.Owner, r.Name) {
-		return apimodel.RepoPreview{Kind: apimodel.KindOther}
+		return apimodel.RepoPreview{Kind: apimodel.KindOther, KindEvidenceStatus: apimodel.EvidenceUnknown, EvidenceMode: apimodel.NotExecuted}
 	}
-	p := apimodel.RepoPreview{ID: r.Owner + "/" + r.Name, Owner: r.Owner, Name: r.Name, Slug: r.Owner + "/" + r.Name, Kind: apimodel.KindOther, GitHubURL: repoURL(r)}
+	p := apimodel.RepoPreview{ID: r.Owner + "/" + r.Name, Owner: r.Owner, Name: r.Name, Slug: r.Owner + "/" + r.Name, Kind: apimodel.KindOther, KindEvidenceStatus: apimodel.EvidenceUnknown, EvidenceMode: apimodel.NotExecuted, GitHubURL: repoURL(r)}
 	classification := crawler.Classify(in.Inspection)
 	// The kind is displayed only with an explanation citing its whole basis.
 	_, explained := kindClaim(in, classification)
 	if classification.Status == crawler.VerdictResolved && explained {
 		p.Kind = classification.Kind
+		p.KindEvidenceStatus = apimodel.EvidenceInferred
 	}
 	for _, field := range []struct {
 		key, value string

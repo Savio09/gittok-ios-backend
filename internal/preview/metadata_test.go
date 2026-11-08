@@ -17,6 +17,11 @@ func TestFromMetadataMapsIdentityAndMetrics(t *testing.T) {
 		PushedAt: time.Now().Add(-72 * time.Hour),
 		Topics:   []string{"go", "backend", "realtime"},
 	}
+	r.Metadata = map[string]githubclient.MetadataField{
+		"stargazers_count": {Value: "61456"},
+		"license.spdx_id":  {Value: "MIT"},
+		"pushed_at":        {Value: r.PushedAt.Format(time.RFC3339)},
+	}
 	p := FromMetadata(r)
 
 	if p.ID != "pocketbase/pocketbase" || p.Slug != "pocketbase/pocketbase" || p.Owner != "pocketbase" {

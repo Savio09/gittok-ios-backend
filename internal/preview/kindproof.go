@@ -128,13 +128,14 @@ func kindClaim(in Input, cls crawler.Classification) (candidate, bool) {
 	}
 	label := "Why this is " + name
 	c := apimodel.Claim{
-		Label:       label,
-		Source:      sources[0],
-		Excerpt:     excerpt,
-		Explanation: text,
-		Supports:    "GitTok's classification of this repository from the cited premises.",
-		Limit:       limit,
-		Confidence:  apimodel.Confident,
+		Label:          label,
+		Source:         sources[0],
+		Excerpt:        excerpt,
+		Explanation:    text,
+		Supports:       "GitTok's classification of this repository from the cited premises.",
+		Limit:          limit,
+		Confidence:     apimodel.Uncertain,
+		EvidenceStatus: apimodel.EvidenceInferred,
 	}
 	if len(sources) > 1 {
 		c.AdditionalSources = sources[1:]

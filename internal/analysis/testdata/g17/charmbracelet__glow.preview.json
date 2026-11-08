@@ -4,6 +4,8 @@
   "name": "glow",
   "slug": "charmbracelet/glow",
   "kind": "cli",
+  "kind_evidence_status": "inferred",
+  "evidence_mode": "not_executed",
   "language": "Go",
   "description": "Render markdown on the CLI, with pizzazz! 💅🏻",
   "github_url": "https://github.com/charmbracelet/glow",
@@ -18,7 +20,8 @@
         "ref": "stargazers_count",
         "url": "https://api.github.com/repos/charmbracelet/glow"
       },
-      "confidence": "confident"
+      "confidence": "confident",
+      "evidence_status": "supported"
     },
     {
       "key": "license",
@@ -29,7 +32,8 @@
         "ref": "license.spdx_id",
         "url": "https://api.github.com/repos/charmbracelet/glow"
       },
-      "confidence": "confident"
+      "confidence": "confident",
+      "evidence_status": "supported"
     },
     {
       "key": "last_push",
@@ -40,7 +44,8 @@
         "ref": "pushed_at",
         "url": "https://api.github.com/repos/charmbracelet/glow"
       },
-      "confidence": "confident"
+      "confidence": "confident",
+      "evidence_status": "supported"
     }
   ],
   "sections": [
@@ -68,7 +73,8 @@
           "explanation": "Classified as a CLI from the inspected files: \"config_cmd.go\" declares package main; \"go.mod\" declares \"require → github.com/spf13/cobra\" as \"v1.10.2\".",
           "supports": "GitTok's classification of this repository from the cited premises.",
           "limit": "An inference from a bounded inspection; the code was not run, and files outside the inspection could change it.",
-          "confidence": "confident"
+          "evidence_status": "inferred",
+          "confidence": "uncertain"
         },
         {
           "label": "README passage",
@@ -82,6 +88,7 @@
           "explanation": "\"README.md\" states: \"Render markdown on the CLI, with _pizzazz_!\".",
           "supports": "An attributed documentation passage in the repository root.",
           "limit": "Repository documentation is an author statement; its described behavior was not verified.",
+          "evidence_status": "supported",
           "confidence": "confident"
         },
         {
@@ -94,6 +101,7 @@
           "explanation": "The repository's GitHub description states: \"Render markdown on the CLI, with pizzazz! 💅🏻\".",
           "supports": "The value reported by GitHub for this repository.",
           "limit": "Captured 2026-11-02T13:10:01Z. Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "evidence_status": "supported",
           "confidence": "confident"
         }
       ],
@@ -115,6 +123,7 @@
           "explanation": "\"go.mod\" declares \"github.com/spf13/cobra\" in \"require\" with declared specification \"v1.10.2\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
           "confidence": "confident"
         },
         {
@@ -129,6 +138,7 @@
           "explanation": "\"go.mod\" declares \"charm.land/glamour/v2\" in \"require\" with declared specification \"v2.0.1\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
           "confidence": "confident"
         },
         {
@@ -141,6 +151,7 @@
           "explanation": "GitHub reports language as \"Go\".",
           "supports": "The value reported by GitHub for this repository.",
           "limit": "Captured 2026-11-02T13:10:01Z. Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "evidence_status": "supported",
           "confidence": "confident"
         },
         {
@@ -155,6 +166,7 @@
           "explanation": "\"go.mod\" declares \"github.com/caarlos0/env/v11\" in \"require\" with declared specification \"v11.3.1\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
           "confidence": "confident"
         },
         {
@@ -169,6 +181,7 @@
           "explanation": "\"go.mod\" declares \"github.com/charmbracelet/log\" in \"require\" with declared specification \"v0.4.2\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
           "confidence": "confident"
         },
         {
@@ -183,6 +196,7 @@
           "explanation": "\"go.mod\" declares \"github.com/charmbracelet/x/editor\" in \"require\" with declared specification \"v0.1.0\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
           "confidence": "confident"
         },
         {
@@ -197,6 +211,7 @@
           "explanation": "\"go.mod\" declares \"github.com/muesli/go-app-paths\" in \"require\" with declared specification \"v0.2.2\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
           "confidence": "confident"
         },
         {
@@ -211,6 +226,7 @@
           "explanation": "\"go.mod\" declares \"github.com/spf13/viper\" in \"require\" with declared specification \"v1.21.0\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
           "confidence": "confident"
         },
         {
@@ -225,6 +241,7 @@
           "explanation": "\"go.mod\" declares \"golang.org/x/sys\" in \"require\" with declared specification \"v0.47.0\".",
           "supports": "A dependency declaration in the repository root.",
           "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
           "confidence": "confident"
         }
       ],

@@ -11,21 +11,25 @@ import (
 // sampleFeed is a representative feed page used both as a round-trip fixture and
 // to generate the golden JSON that documents the contract for the app. It is a
 // frontend repo the reader can read (TypeScript/React) with a Go stretch, an
-// observed-running demo, and one honestly uncertain claim.
+// hypothetical observed-running demo, and an unresolved fit question.
+// It illustrates schema capabilities; production source previews never emit
+// observed-running media.
 func sampleFeed() Feed {
 	return Feed{
 		Items: []RepoPreview{
 			{
-				ID:          "orbit",
-				Owner:       "acme",
-				Name:        "orbit",
-				Slug:        "acme/orbit",
-				Kind:        KindFrontend,
-				Language:    "TypeScript",
-				Headline:    "Your work. One clear view.",
-				Description: "A productivity dashboard that pulls tasks from several tools into a single web view.",
-				GitHubURL:   "https://github.com/acme/orbit",
-				License:     "MIT",
+				ID:                 "orbit",
+				Owner:              "acme",
+				Name:               "orbit",
+				Slug:               "acme/orbit",
+				Kind:               KindFrontend,
+				KindEvidenceStatus: EvidenceInferred,
+				EvidenceMode:       NotExecuted,
+				Language:           "TypeScript",
+				Headline:           "Your work. One clear view.",
+				Description:        "A productivity dashboard that pulls tasks from several tools into a single web view.",
+				GitHubURL:          "https://github.com/acme/orbit",
+				License:            "MIT",
 				Media: &Media{
 					Kind:         "narrated_video",
 					EvidenceMode: ObservedRunning,
@@ -38,12 +42,12 @@ func sampleFeed() Feed {
 					{Value: "Developer tools", Reason: ReasonDomainMatch},
 				},
 				Metrics: []Metric{
-					{Key: "last_commit", Label: "since last commit", Value: "3d",
-						Source: &Source{Kind: SourceMetadata, Ref: "pushed_at"}, Confidence: Confident},
+					{Key: "last_commit", Label: "since last push", Value: "3d",
+						Source: &Source{Kind: SourceMetadata, Ref: "pushed_at"}, Confidence: Confident, EvidenceStatus: EvidenceSupported},
 					{Key: "good_first_issues", Label: "good first issues", Value: "12",
-						Source: &Source{Kind: SourceAPI, Ref: "GET /repos/acme/orbit/issues?labels=good+first+issue"}, Confidence: Confident},
+						Source: &Source{Kind: SourceAPI, Ref: "GET /repos/acme/orbit/issues?labels=good+first+issue"}, Confidence: Confident, EvidenceStatus: EvidenceSupported},
 					{Key: "contributing_guide", Label: "contributing guide", Value: "Yes",
-						Source: &Source{Kind: SourceFile, Ref: "CONTRIBUTING.md"}, Confidence: Confident},
+						Source: &Source{Kind: SourceFile, Ref: "CONTRIBUTING.md"}, Confidence: Confident, EvidenceStatus: EvidenceSupported},
 				},
 				Fit: &Fit{
 					Summary: "TypeScript you know, Go you want",
@@ -67,24 +71,26 @@ func sampleFeed() Feed {
 						Body:         "A React app talks to a Go API that stores items in PostgreSQL.",
 						Claims: []Claim{
 							{
-								Label:       "Frontend is TypeScript and React",
-								Source:      Source{Kind: SourceFile, Ref: "apps/web/package.json", Lines: "12-18"},
-								Excerpt:     "\"react\": \"^18.2\",\n\"next\": \"^14.0\"",
-								Explanation: "The web app lists React and Next.js as dependencies.",
-								Supports:    "the stack as written",
-								Limit:       "does not prove runtime behavior",
-								Confidence:  Confident,
-								Stance:      Match,
+								Label:          "Declares React and Next.js",
+								Source:         Source{Kind: SourceFile, Ref: "apps/web/package.json", Lines: "12-18"},
+								Excerpt:        "\"react\": \"^18.2\",\n\"next\": \"^14.0\"",
+								Explanation:    "The web app lists React and Next.js as dependencies.",
+								Supports:       "the stack as written",
+								Limit:          "does not prove runtime behavior",
+								Confidence:     Confident,
+								EvidenceStatus: EvidenceSupported,
+								Stance:         Match,
 							},
 							{
-								Label:       "API is Go",
-								Source:      Source{Kind: SourceFile, Ref: "go.mod", Lines: "1-5"},
-								Excerpt:     "module github.com/acme/orbit",
-								Explanation: "The server module is written in Go.",
-								Supports:    "the API language",
-								Limit:       "does not prove the API runs",
-								Confidence:  Confident,
-								Stance:      Stretch,
+								Label:          "Declares a Go module",
+								Source:         Source{Kind: SourceFile, Ref: "go.mod", Lines: "1-5"},
+								Excerpt:        "module github.com/acme/orbit",
+								Explanation:    "The Go manifest declares a module path.",
+								Supports:       "a Go module declaration",
+								Limit:          "does not prove the API runs",
+								Confidence:     Confident,
+								EvidenceStatus: EvidenceSupported,
+								Stance:         Stretch,
 							},
 						},
 					},
@@ -93,12 +99,13 @@ func sampleFeed() Feed {
 						Title: "Your call",
 						Claims: []Claim{
 							{
-								Label:       "No tests found for the API",
-								Source:      Source{Kind: SourceSearch, Ref: "glob: server/**/*_test.go"},
-								Explanation: "A search for Go test files under the server turned up nothing.",
-								Limit:       "absence of test files is not proof there are no tests",
-								Confidence:  Uncertain,
-								Stance:      Unknown,
+								Label:          "API test coverage could not be determined",
+								Source:         Source{Kind: SourceSearch, Ref: "glob: server/**/*_test.go"},
+								Explanation:    "A search for Go test files under the server turned up nothing.",
+								Limit:          "absence of test files is not proof there are no tests",
+								Confidence:     Uncertain,
+								EvidenceStatus: EvidenceUnknown,
+								Stance:         Unknown,
 							},
 						},
 					},
@@ -165,6 +172,7 @@ func TestRoundTrip(t *testing.T) {
 func TestEnumValidity(t *testing.T) {
 	valid := []interface{ Valid() bool }{
 		Confident, Uncertain,
+		EvidenceSupported, EvidenceInferred, EvidenceUnknown, EvidenceStatus(""),
 		Match, Stretch, Caution, Unknown, Stance(""),
 		SourceFile, SourceSearch, SourceMetadata, SourceAPI, SourceKind(""),
 		KindFrontend, KindBackend, KindLibrary, KindCLI, KindMobile, KindOther,
@@ -181,7 +189,7 @@ func TestEnumValidity(t *testing.T) {
 	}
 
 	invalid := []interface{ Valid() bool }{
-		Confidence("maybe"), Stance("meh"), SourceKind("blob"), RepoKind(""),
+		EvidenceStatus("unverified"), Confidence("maybe"), Stance("meh"), SourceKind("blob"), RepoKind(""),
 		RepoKind("webapp"), EvidenceMode("ran_it"), SignalReason("vibes"),
 		SectionKind("intro"), LearnMix("some"), Experience("pro"),
 		TimePerWeek("lots"), EventAction("open"),

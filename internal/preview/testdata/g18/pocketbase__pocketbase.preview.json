@@ -1,0 +1,234 @@
+{
+  "id": "pocketbase/pocketbase",
+  "owner": "pocketbase",
+  "name": "pocketbase",
+  "slug": "pocketbase/pocketbase",
+  "kind": "other",
+  "kind_evidence_status": "unknown",
+  "evidence_mode": "not_executed",
+  "language": "Go",
+  "description": "",
+  "github_url": "https://github.com/pocketbase/pocketbase",
+  "sections": [
+    {
+      "kind": "idea",
+      "title": "Repository descriptions",
+      "claims": [
+        {
+          "label": "README passage",
+          "source": {
+            "kind": "file",
+            "ref": "README.md",
+            "lines": "1-1",
+            "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/README.md#L1-L1"
+          },
+          "excerpt": "**⚠️ The repo has moved to https://ganigeorgiev.com/pocketbase/pocketbase.**",
+          "explanation": "\"README.md\" states: \"**⚠️ The repo has moved to https://ganigeorgiev.com/pocketbase/pocketbase.**\".",
+          "supports": "An attributed documentation passage in the repository root.",
+          "limit": "Repository documentation is an author statement; its described behavior was not verified.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        },
+        {
+          "label": "README passage",
+          "source": {
+            "kind": "file",
+            "ref": "ui/README.md",
+            "lines": "1-2",
+            "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/ui/README.md#L1-L2"
+          },
+          "excerpt": "PocketBase Superuser dashboard UI\n======================================================================",
+          "explanation": "\"ui/README.md\" states: \"PocketBase Superuser dashboard UI\\n======================================================================\".",
+          "supports": "An attributed documentation passage in component \"ui\".",
+          "limit": "Repository documentation is an author statement; its described behavior was not verified.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "stack",
+      "title": "Declared stack",
+      "claims": [
+        {
+          "label": "Declares github.com/fatih/color",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "lines": "10-10",
+            "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/go.mod#L10-L10"
+          },
+          "excerpt": "github.com/fatih/color v1.19.0",
+          "explanation": "\"go.mod\" declares \"github.com/fatih/color\" in \"require\" with declared specification \"v1.19.0\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        },
+        {
+          "label": "GitHub primary language",
+          "source": {
+            "kind": "metadata",
+            "ref": "language",
+            "url": "https://api.github.com/repos/pocketbase/pocketbase"
+          },
+          "explanation": "GitHub reports language as \"Go\".",
+          "supports": "The value reported by GitHub for this repository.",
+          "limit": "Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/pocketbase/ozzo-validation/v4",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "lines": "16-16",
+            "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/go.mod#L16-L16"
+          },
+          "excerpt": "github.com/pocketbase/ozzo-validation/v4 v4.3.0",
+          "explanation": "\"go.mod\" declares \"github.com/pocketbase/ozzo-validation/v4\" in \"require\" with declared specification \"v4.3.0\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/spf13/cast",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "lines": "18-18",
+            "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/go.mod#L18-L18"
+          },
+          "excerpt": "github.com/spf13/cast v1.10.0",
+          "explanation": "\"go.mod\" declares \"github.com/spf13/cast\" in \"require\" with declared specification \"v1.10.0\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/spf13/cobra",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "lines": "19-19",
+            "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/go.mod#L19-L19"
+          },
+          "excerpt": "github.com/spf13/cobra v1.10.2",
+          "explanation": "\"go.mod\" declares \"github.com/spf13/cobra\" in \"require\" with declared specification \"v1.10.2\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/disintegration/imaging",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "lines": "6-6",
+            "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/go.mod#L6-L6"
+          },
+          "excerpt": "github.com/disintegration/imaging v1.6.2",
+          "explanation": "\"go.mod\" declares \"github.com/disintegration/imaging\" in \"require\" with declared specification \"v1.6.2\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/domodwyer/mailyak/v3",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "lines": "7-7",
+            "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/go.mod#L7-L7"
+          },
+          "excerpt": "github.com/domodwyer/mailyak/v3 v3.6.2",
+          "explanation": "\"go.mod\" declares \"github.com/domodwyer/mailyak/v3\" in \"require\" with declared specification \"v3.6.2\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares leaflet",
+          "source": {
+            "kind": "file",
+            "ref": "ui/package.json",
+            "lines": "10-10",
+            "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/ui/package.json#L10-L10"
+          },
+          "excerpt": "\"leaflet\": \"^1.9.4\"",
+          "explanation": "\"ui/package.json\" declares \"leaflet\" in \"dependencies\" with declared specification \"^1.9.4\".",
+          "supports": "A dependency declaration in component \"ui\".",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares pocketbase",
+          "source": {
+            "kind": "file",
+            "ref": "ui/package.json",
+            "lines": "11-11",
+            "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/ui/package.json#L11-L11"
+          },
+          "excerpt": "\"pocketbase\": \"^0.28.1\"",
+          "explanation": "\"ui/package.json\" declares \"pocketbase\" in \"dependencies\" with declared specification \"^0.28.1\".",
+          "supports": "A dependency declaration in component \"ui\".",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "setup",
+      "title": "Declared commands",
+      "claims": [
+        {
+          "label": "Declares command build",
+          "source": {
+            "kind": "file",
+            "ref": "ui/package.json",
+            "lines": "7-7",
+            "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/ui/package.json#L7-L7"
+          },
+          "excerpt": "\"build\": \"dprint fmt \u0026\u0026 vite build\"",
+          "explanation": "\"ui/package.json\" declares field \"scripts → build\" as \"dprint fmt \u0026\u0026 vite build\".",
+          "supports": "A static command declaration in component \"ui\".",
+          "limit": "The command was not executed; success and required environment were not verified.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares command dev",
+          "source": {
+            "kind": "file",
+            "ref": "ui/package.json",
+            "lines": "6-6",
+            "url": "https://github.com/pocketbase/pocketbase/blob/7f2773ec234b62d0b80ca47c508397cb3d0da3ea/ui/package.json#L6-L6"
+          },
+          "excerpt": "\"dev\": \"vite\"",
+          "explanation": "\"ui/package.json\" declares field \"scripts → dev\" as \"vite\".",
+          "supports": "A static command declaration in component \"ui\".",
+          "limit": "The command was not executed; success and required environment were not verified.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "decision",
+      "title": "Coverage notes",
+      "body": "The project type could not be confirmed from the inspected files.\nLower-priority declarations are not shown.",
+      "evidence_mode": "not_executed"
+    }
+  ]
+}
