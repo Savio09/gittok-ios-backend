@@ -143,6 +143,8 @@ func (k SectionKind) Valid() bool {
 // architecture diagram inferred from code) carry the runtime guarantee, not
 // just Media.
 type Section struct {
+	// ID identifies a validated scene; legacy source reports may omit it.
+	ID string `json:"id,omitempty"`
 	// Media is an optional artifact for this ordered content item. Its execution
 	// provenance is independent of source claims and other captures.
 	Media        *Media       `json:"media,omitempty"`
@@ -158,11 +160,13 @@ type Section struct {
 // signals); Sections carry the deeper walkthrough. No field says where anything
 // is drawn.
 type RepoPreview struct {
-	ID    string   `json:"id"`
-	Owner string   `json:"owner"`
-	Name  string   `json:"name"`
-	Slug  string   `json:"slug"` // "owner/name"
-	Kind  RepoKind `json:"kind"`
+	// Presentation marks an accepted story separately from a source report.
+	Presentation string   `json:"presentation,omitempty"`
+	ID           string   `json:"id"`
+	Owner        string   `json:"owner"`
+	Name         string   `json:"name"`
+	Slug         string   `json:"slug"` // "owner/name"
+	Kind         RepoKind `json:"kind"`
 	// KindEvidenceStatus marks a classification as inferred or undecided.
 	KindEvidenceStatus EvidenceStatus `json:"kind_evidence_status,omitempty"`
 	// EvidenceMode is the execution guarantee for the preview as a whole.
