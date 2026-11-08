@@ -2,6 +2,7 @@ package walkthrough
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"io"
 	"math"
@@ -220,7 +221,9 @@ func TestProviderConnectionFailureNeverReplaysPaidPOST(t *testing.T) {
 		_, _ = io.Copy(w, response.Body)
 	}))
 	defer server.Close()
-	engine, err := NewEngine(engineConfig(), engineLedger(t), WithBaseURL(server.URL))
+	cfg := engineConfig()
+	cfg.MaxCalls = 3 // Two physical writer attempts plus the reserved reviewer slot.
+	engine, err := NewEngine(cfg, engineLedger(t), WithBaseURL(server.URL))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -248,5 +251,42 @@ func TestProviderStatusErrorExposesOnlyHTTPStatus(t *testing.T) {
 	}
 	if err.Error() != ErrProviderUnavailable.Error() || strings.Contains(err.Error(), "provider-body-secret") || strings.Contains(err.Error(), "explicit-test-key") {
 		t.Fatalf("provider diagnostic leaked content: %v", err)
+	}
+}
+
+func TestProviderUsesConfiguredReasoningAndStandardServiceTier(t *testing.T) {
+	for _, effort := range []string{"", "low"} {
+		t.Run("effort-"+effort, func(t *testing.T) {
+			cfg := engineConfig()
+			cfg.ReasoningEffort = effort
+			engine, err := NewEngine(cfg, engineLedger(t), WithHTTPClient(&http.Client{Transport: engineRoundTrip(func(r *http.Request) (*http.Response, error) {
+				var request map[string]any
+				if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+					t.Fatal(err)
+				}
+				if request["service_tier"] != "default" {
+					t.Fatal("request inherited an unpriced project service tier")
+				}
+				if effort == "" {
+					if request["reasoning"] != nil {
+						t.Fatal("empty configuration changed provider reasoning default")
+					}
+				} else if request["reasoning"].(map[string]any)["effort"] != effort {
+					t.Fatal("configured reasoning effort not sent")
+				}
+				return engineHTTP(t, engineMessage(t, Review{})), nil
+			})}))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := engine.respond(context.Background(), "reasoning-"+effort, &engineBudget{}, responseRequest{Instructions: "bounded wire test"}, false); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+	cfg := engineConfig()
+	cfg.ReasoningEffort = "unbounded"
+	if _, err := NewEngine(cfg, engineLedger(t)); err == nil {
+		t.Fatal("unknown reasoning effort accepted")
 	}
 }

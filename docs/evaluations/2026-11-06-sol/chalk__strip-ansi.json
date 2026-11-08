@@ -1,0 +1,319 @@
+{
+  "http_status": 200,
+  "elapsed_seconds": 29.8,
+  "job": {
+    "id": "3b186767984b280abc1ea3c35629673f",
+    "state": "ready",
+    "poll_after_ms": 0,
+    "preview": {
+      "presentation": "walkthrough",
+      "id": "chalk/strip-ansi",
+      "owner": "chalk",
+      "name": "strip-ansi",
+      "slug": "chalk/strip-ansi",
+      "kind": "other",
+      "kind_evidence_status": "unknown",
+      "evidence_mode": "not_executed",
+      "language": "JavaScript",
+      "description": "strip-ansi is a small string-processing library for removing ANSI escape codes from text. Its README describes that purpose; the implementation returns a string with matches from ansi-regex removed.",
+      "github_url": "https://github.com/chalk/strip-ansi",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "499",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count",
+            "url": "https://api.github.com/repos/chalk/strip-ansi"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id",
+            "url": "https://api.github.com/repos/chalk/strip-ansi"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "last_push",
+          "label": "last push reported by GitHub",
+          "value": "2026-09-18T19:15:54Z",
+          "source": {
+            "kind": "metadata",
+            "ref": "pushed_at",
+            "url": "https://api.github.com/repos/chalk/strip-ansi"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ],
+      "sections": [
+        {
+          "id": "scene-v1-30d6f13a68c002f769173297f48cb3a05feca682a7e4c239ce7abd694d40a50e",
+          "kind": "idea",
+          "title": "What it does",
+          "body": "strip-ansi is a small string-processing library for removing ANSI escape codes from text. Its README describes that purpose; the implementation returns a string with matches from ansi-regex removed.",
+          "claims": [
+            {
+              "id": "statement-v1-14df25b9a4d60ad8ee3b7cd394fdc2a259a5363fa60c65923a357a67981593e6",
+              "label": "Purpose",
+              "source": {
+                "kind": "file",
+                "ref": "readme.md",
+                "lines": "1-3",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/readme.md#L1-L3"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "index.js",
+                  "lines": "1-3",
+                  "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/index.js#L1-L3"
+                },
+                {
+                  "kind": "file",
+                  "ref": "index.js",
+                  "lines": "18-18",
+                  "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/index.js#L18-L18"
+                }
+              ],
+              "excerpt": "# strip-ansi\n\n> Strip [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code) from a string\n\n\nimport ansiRegex from 'ansi-regex';\n\nconst regex = ansiRegex();\n\n\n\treturn string.replace(regex, '');\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "strip-ansi is a small string-processing library for removing ANSI escape codes from text. Its README describes that purpose; the implementation returns a string with matches from ansi-regex removed.",
+              "limit": "Purpose is documented; the inspected implementation delegates escape-pattern recognition to ansi-regex. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-ae50fcefebdc42834ba4944d3bb7ec81a05e6ca9cfd4b76bd5ad66510c060331",
+          "kind": "how",
+          "title": "How it works",
+          "body": "A representative call is stripAnsi('\\u009B31mfoo\\u009B39m'): a string containing color codes introduced by the 8-bit CSI character around the text \u201cfoo.\u201d The test suite passes this exact input to the exported function.\n\nThe function first checks that its argument is a string, throwing a TypeError otherwise. It returns immediately only when neither ESC (\\u001B) nor CSI (\\u009B) occurs. This input contains CSI, so it continues to the replacement step.\n\nAt module initialization, ansiRegex() creates a shared regex. For the example input, stripAnsi reaches string.replace(regex, ''), replacing matched escape sequences with empty text rather than modifying the visible text deliberately.\n\nThe test asserts that this call returns 'foo': the color-control sequences are gone and the enclosed text remains.",
+          "claims": [
+            {
+              "id": "statement-v1-2d7f9bb05f09eb2bb90b5873e241377bfee1bb6d96120853f7a8bc876d8579a3",
+              "label": "Input",
+              "source": {
+                "kind": "file",
+                "ref": "test.js",
+                "lines": "1-2",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/test.js#L1-L2"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "test.js",
+                  "lines": "26-28",
+                  "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/test.js#L26-L28"
+                }
+              ],
+              "excerpt": "import test from 'ava';\nimport stripAnsi from './index.js';\n\n\ntest('strip color from string using 8-bit CSI introducer', t => {\n\tt.is(stripAnsi('\\u009B31mfoo\\u009B39m'), 'foo');\n});\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "A representative call is stripAnsi('\\u009B31mfoo\\u009B39m'): a string containing color codes introduced by the 8-bit CSI character around the text \u201cfoo.\u201d The test suite passes this exact input to the exported function.",
+              "limit": "This is an existing test input, not an executed demonstration. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-e37ea77310b00500afb3569fc939d8c34c64bebf84b1c6155c885ea9f60ed364",
+              "label": "Mechanism",
+              "source": {
+                "kind": "file",
+                "ref": "index.js",
+                "lines": "5-13",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/index.js#L5-L13"
+              },
+              "excerpt": "export default function stripAnsi(string) {\n\tif (typeof string !== 'string') {\n\t\tthrow new TypeError(`Expected a \\`string\\`, got \\`${typeof string}\\``);\n\t}\n\n\t// Fast path: ANSI codes require ESC (7-bit) or CSI (8-bit) introducer\n\tif (!string.includes('\\u001B') && !string.includes('\\u009B')) {\n\t\treturn string;\n\t}\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "The function first checks that its argument is a string, throwing a TypeError otherwise. It returns immediately only when neither ESC (\\u001B) nor CSI (\\u009B) occurs. This input contains CSI, so it continues to the replacement step.",
+              "limit": "Control flow is derived from index.js; no runtime execution was performed. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-18e9d27f937e066844f85520defbb5e98642d612bb06a3bc556e1fcc445988d1",
+              "label": "Mechanism",
+              "source": {
+                "kind": "file",
+                "ref": "index.js",
+                "lines": "1-3",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/index.js#L1-L3"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "index.js",
+                  "lines": "18-18",
+                  "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/index.js#L18-L18"
+                }
+              ],
+              "excerpt": "import ansiRegex from 'ansi-regex';\n\nconst regex = ansiRegex();\n\n\n\treturn string.replace(regex, '');\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "At module initialization, ansiRegex() creates a shared regex. For the example input, stripAnsi reaches string.replace(regex, ''), replacing matched escape sequences with empty text rather than modifying the visible text deliberately.",
+              "limit": "The dependency's actual regular-expression construction was not inspected. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-6a5f33875614c141f2ea2d347098d359baf96463168be4e1a616eb85fbf44ba2",
+              "label": "Result",
+              "source": {
+                "kind": "file",
+                "ref": "test.js",
+                "lines": "26-28",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/test.js#L26-L28"
+              },
+              "excerpt": "test('strip color from string using 8-bit CSI introducer', t => {\n\tt.is(stripAnsi('\\u009B31mfoo\\u009B39m'), 'foo');\n});\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "The test asserts that this call returns 'foo': the color-control sequences are gone and the enclosed text remains.",
+              "limit": "This is the test's asserted outcome, not a reported test run. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-118e2d4a6843f670cfbae1bff2e0c095312f0e17c6116b190e96c4f519603564",
+          "kind": "stack",
+          "title": "A closer look",
+          "body": "A meaningful optimization is the introducer check: ordinary strings avoid regex replacement altogether. Tests assert that both 'foo bar' and the empty string are returned unchanged.\n\nThe implementation deliberately does not reset the shared regex's lastIndex. Its comment explains that replace handles this automatically for a global regex, unlike exec or test, and that manually resetting it has a performance penalty.\n\nThe library exposes an ES-module entry at index.js and a TypeScript declaration at index.d.ts. The declared API is a default function accepting a string and returning a string.",
+          "claims": [
+            {
+              "id": "statement-v1-2dcc80b529e4aadd100033dad3484a9684ac83468aa9f9b466465f437ea51826",
+              "label": "Design",
+              "source": {
+                "kind": "file",
+                "ref": "index.js",
+                "lines": "10-13",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/index.js#L10-L13"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "test.js",
+                  "lines": "30-36",
+                  "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/test.js#L30-L36"
+                }
+              ],
+              "excerpt": "\t// Fast path: ANSI codes require ESC (7-bit) or CSI (8-bit) introducer\n\tif (!string.includes('\\u001B') && !string.includes('\\u009B')) {\n\t\treturn string;\n\t}\n\n\ntest('return string as-is if no ANSI codes', t => {\n\tt.is(stripAnsi('foo bar'), 'foo bar');\n});\n\ntest('return empty string as-is', t => {\n\tt.is(stripAnsi(''), '');\n});\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "A meaningful optimization is the introducer check: ordinary strings avoid regex replacement altogether. Tests assert that both 'foo bar' and the empty string are returned unchanged.",
+              "limit": "The source identifies this as a fast path; no performance measurements were inspected. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-74b9d0f76ac4757bfd9df4757168003aac1712e2e848aadafaede418e110d2d2",
+              "label": "Design",
+              "source": {
+                "kind": "file",
+                "ref": "index.js",
+                "lines": "15-18",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/index.js#L15-L18"
+              },
+              "excerpt": "\t// Even though the regex is global, we don't need to reset the `.lastIndex`\n\t// because unlike `.exec()` and `.test()`, `.replace()` does it automatically\n\t// and doing it manually has a performance penalty.\n\treturn string.replace(regex, '');\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "The implementation deliberately does not reset the shared regex's lastIndex. Its comment explains that replace handles this automatically for a global regex, unlike exec or test, and that manually resetting it has a performance penalty.",
+              "limit": "The explanation of regex state and performance is attributed to the implementation comment, not independently benchmarked. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-8c754d8c72143578db261739b7f10e4f1f96537fb8fd6caa7519eba3530b37fc",
+              "label": "Design",
+              "source": {
+                "kind": "file",
+                "ref": "package.json",
+                "lines": "13-15",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/package.json#L13-L15"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "index.d.ts",
+                  "lines": "15-15",
+                  "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/index.d.ts#L15-L15"
+                }
+              ],
+              "excerpt": "\t\"type\": \"module\",\n\t\"exports\": \"./index.js\",\n\t\"types\": \"./index.d.ts\",\n\n\nexport default function stripAnsi(string: string): string;\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "The library exposes an ES-module entry at index.js and a TypeScript declaration at index.d.ts. The declared API is a default function accepting a string and returning a string.",
+              "limit": "These are published package metadata and type declarations, not a compatibility test. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "evidence_mode": "not_executed"
+        },
+        {
+          "id": "scene-v1-71bfc03b3ffb4af55b7803122c3c031c11d15ee04611fb5ae22d1192be5028fd",
+          "kind": "setup",
+          "title": "Where to look next",
+          "body": "To explore behavior beyond color removal, read test.js's terminal-link and OSC cases. They assert that a terminal hyperlink becomes 'click' and that an OSC-containing input retains 'ABC\\r\\n', giving concrete examples of which text should survive stripping.\n\nFor questions about exactly which escape sequences match, follow ansi-regex, which the README identifies as the escape-code matching regex and index.js imports directly. For local validation work, package.json defines the test script as 'xo && ava && tsd'.",
+          "claims": [
+            {
+              "id": "statement-v1-977ce09ebabe07d264e5061dfb9f20ab5f9f95b5cc934ceea9f537e078476dbb",
+              "label": "Next step",
+              "source": {
+                "kind": "file",
+                "ref": "test.js",
+                "lines": "16-24",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/test.js#L16-L24"
+              },
+              "excerpt": "test('strip link from terminal link', t => {\n\tt.is(stripAnsi('\\u001B]8;;https://github.com\\u0007click\\u001B]8;;\\u0007'), 'click');\n});\n\ntest('strip OSC sequence with BEL terminator', t => {\n\tconst input = '\\u001B[2J\\u001B[m\\u001B[HABC\\r\\n\\u001B]0;C:\\\\WINDOWS\\\\system32\\\\cmd.exe\\u0007\\u001B[?25h';\n\tconst output = stripAnsi(input);\n\tt.is(output, 'ABC\\r\\n');\n});\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "To explore behavior beyond color removal, read test.js's terminal-link and OSC cases. They assert that a terminal hyperlink becomes 'click' and that an OSC-containing input retains 'ABC\\r\\n', giving concrete examples of which text should survive stripping.",
+              "limit": "These tests describe expected behavior; they were not run. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            },
+            {
+              "id": "statement-v1-30bec50d4cff4efe5850eb4b604db4023e66ee107c705287edac33efe0a6e947",
+              "label": "Next step",
+              "source": {
+                "kind": "file",
+                "ref": "index.js",
+                "lines": "1-3",
+                "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/index.js#L1-L3"
+              },
+              "additional_sources": [
+                {
+                  "kind": "file",
+                  "ref": "readme.md",
+                  "lines": "31-31",
+                  "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/readme.md#L31-L31"
+                },
+                {
+                  "kind": "file",
+                  "ref": "package.json",
+                  "lines": "20-22",
+                  "url": "https://github.com/chalk/strip-ansi/blob/622cca7b5dd4621cf85e5b517f396f94d8959d2e/package.json#L20-L22"
+                }
+              ],
+              "excerpt": "import ansiRegex from 'ansi-regex';\n\nconst regex = ansiRegex();\n\n\n- [ansi-regex](https://github.com/chalk/ansi-regex) - Regular expression for matching ANSI escape codes\n\n\n\t\"scripts\": {\n\t\t\"test\": \"xo && ava && tsd\"\n\t},\n",
+              "explanation": "Source-based interpretation checked against the cited passages.",
+              "supports": "For questions about exactly which escape sequences match, follow ansi-regex, which the README identifies as the escape-code matching regex and index.js imports directly. For local validation work, package.json defines the test script as 'xo && ava && tsd'.",
+              "limit": "The matching dependency is a next investigation target; its internals are outside the inspected evidence. Source interpretation only; execution was not observed.",
+              "evidence_status": "inferred",
+              "confidence": "uncertain"
+            }
+          ],
+          "evidence_mode": "not_executed"
+        }
+      ]
+    }
+  }
+}

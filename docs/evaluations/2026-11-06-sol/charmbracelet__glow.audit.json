@@ -1,0 +1,26 @@
+{
+  "repository": "charmbracelet/glow",
+  "job_id": "cfd6bd96f3f8ecabe1acfacbc894116b",
+  "scenes": 4,
+  "claims": 9,
+  "citations": 22,
+  "unique_files": 2,
+  "commits": [
+    "8b0600fa445535b9c53194c0d4f7fe3cf700ef3e"
+  ],
+  "errors": [],
+  "source_audit_passed": true,
+  "semantic_quality": "Reviewer-agent assessment passed for the accepted source-only CLI rendering story.",
+  "source_transport": "Independently fetched public GitHub contents API with raw media type; no credentials.",
+  "semantic_assessment": {
+    "passed": true,
+    "purpose": "Explains terminal Markdown reading with README attribution and actual CLI command registration.",
+    "workflow": "Concrete piped Markdown input follows execute stdin detection into executeCLI, read/frontmatter preprocessing, Glamour renderer construction/Render, text sizing, and stdout write with scoped pager/TUI assumptions.",
+    "design": "Destination-aware non-TTY style/width and a common source abstraction are actual implementation insights, rather than dependency inventory.",
+    "handoff": "Specific inspected execute/runTUI/ui.NewProgram route and style/width renderer call sites provide useful next investigation points.",
+    "limits": "No command was run, visual output claimed, helper parsing internals invented, or library internals asserted. Exact visual treatment of the sample remains explicitly unestablished.",
+    "minor_clarity_note": "Interactive handoff says no arguments route to TUI; read within its interactive-branch context after the earlier stdin-pipe check. Adding that condition would improve local wording, but the narrative already states stdin is checked first.",
+    "material_defects_found": []
+  },
+  "assessor": "AI reviewer agent using the source-quality rubric; not human participant evaluation."
+}

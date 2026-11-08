@@ -27,6 +27,39 @@ and native Swift6; no new application dependency is needed for this slice.
    presentation='walkthrough' skips redundant metadata intro; Section.id and
    Claim.id are additive. Legacy/unconfigured APIs retain honest source fallback.
 
+## Stronger-model follow-up
+
+The first real GPT-6.1 Sol control passed both independent publication review and
+a separate exact-source and reviewer-agent quality audit. A larger CLI then failed before
+any model call because its initial projection exceeded generation preflight.
+The resulting narrow repair fits already acquired initial source to the
+exact final-writer request allowance, keeping the pinned bundle and quotas
+unchanged. It preserves useful complete code context where it fits and drops or
+accurately marks clipped secondary context. The oversized case passed RED/GREEN;
+a subsequent bounded Glow run passed exact-source and reviewer-agent assessment.
+Neither the $2 window nor the $0.50 job cap was increased.
+
+Live acceptance evidence for the library and CLI is in
+`docs/evaluations/2026-11-06-sol/`. This establishes the first source-only slice;
+broader repository coverage and actual sandbox observations remain further work.
+
+## Remaining review finding
+
+The final committed build produced another exact-citation Glow story, but its
+optional width explanation omitted a nested terminal-output condition. Keep
+SAV-52 open for that semantic precision gap and owner acceptance. Next work:
+
+1. Add a held-out semantic evaluation pair: a conditional implementation, an
+   overbroad statement that omits a nested guard, and a correctly scoped variant.
+   Synthetic tests should use generic conditions rather than repository names.
+2. Require the semantic reviewer to enumerate necessary branch predicates and
+   reject a missing premise even when a vague limit or surrounding prose hints
+   at it. Establish actual model behavior on the negative and positive controls;
+   a stubbed reviewer cannot prove this property.
+3. Reassess live prose under the existing budget before closing the ticket.
+   Preserve the recorded counterexample and source-only status. Runtime sandbox
+   work remains separate; it does not repair static semantic overclaims.
+
 ## Validation
 
 Per-increment RED/GREEN logs, fresh adversarial review, then full Go tests/race/
