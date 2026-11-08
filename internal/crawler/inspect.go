@@ -1,6 +1,7 @@
 package crawler
 
 import (
+	"context"
 	"strconv"
 	"strings"
 )
@@ -22,6 +23,7 @@ const (
 // inspIndex is a path-keyed view of an Inspection. Building it once keeps every
 // read-state question O(1) and keeps the original Inspection untouched.
 type inspIndex struct {
+	ctx           context.Context
 	scope         TreeScope
 	paths         []string // the listing, original order and case
 	listed        map[string]bool
@@ -52,7 +54,12 @@ func (st *inspIndex) goFile(p string) goFile {
 }
 
 func indexInspection(insp Inspection) *inspIndex {
+	return indexInspectionContext(context.Background(), insp)
+}
+
+func indexInspectionContext(ctx context.Context, insp Inspection) *inspIndex {
 	x := &inspIndex{
+		ctx:     ctx,
 		scope:   insp.Scope,
 		paths:   insp.Paths,
 		listed:  make(map[string]bool, len(insp.Paths)),

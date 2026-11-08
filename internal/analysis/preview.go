@@ -35,7 +35,9 @@ func (s *Service) Preview(ctx context.Context, owner, name string) (apimodel.Rep
 		}
 		defer s.flights.exit()
 	}
-	repo, err := s.metadata(ctx, owner, name)
+	workCtx, cancel, budget, deadline := s.workContext(ctx)
+	defer cancel()
+	repo, err := s.metadata(workCtx, owner, name)
 	if err != nil {
 		return apimodel.RepoPreview{}, err
 	}
@@ -60,7 +62,9 @@ func (s *Service) Preview(ctx context.Context, owner, name string) (apimodel.Rep
 				return p, false, nil
 			}
 		}
-		a, err := s.acquireFrom(ctx, repo, owner, name)
+		bounded, stop := context.WithDeadline(ctx, deadline)
+		defer stop()
+		a, err := s.acquireFrom(ctx, budget.Context(bounded), repo, owner, name)
 		if err != nil {
 			return apimodel.RepoPreview{}, false, err
 		}
@@ -69,7 +73,7 @@ func (s *Service) Preview(ctx context.Context, owner, name string) (apimodel.Rep
 			return apimodel.RepoPreview{}, false, err
 		}
 		commit, captured = a.Inspection.Revision.Ref, a.CapturedAt
-		return p, cacheable && a.Outcome.Cacheable(), nil
+		return p, cacheable && a.Outcome.Cacheable() && bounded.Err() == nil, nil
 	}
 	store := func(p apimodel.RepoPreview) { s.cache.Put(key, commit, captured, p) }
 	if s.flights != nil {
@@ -86,7 +90,13 @@ func (s *Service) render(ctx context.Context, a Result) (apimodel.RepoPreview, e
 	if err := ctx.Err(); err != nil {
 		return apimodel.RepoPreview{}, err
 	}
-	p := preview.Build(preview.Input{Repo: a.Repo, Inspection: a.Inspection, CapturedAt: a.CapturedAt, Coverage: a.Coverage, Limitations: a.Limitations})
+	bounded := ctx
+	if !a.deadline.IsZero() {
+		var cancel context.CancelFunc
+		bounded, cancel = context.WithDeadline(ctx, a.deadline)
+		defer cancel()
+	}
+	p := preview.BuildContext(bounded, preview.Input{Repo: a.Repo, Inspection: a.Inspection, CapturedAt: a.CapturedAt, Coverage: a.Coverage, Limitations: a.Limitations})
 	if err := ctx.Err(); err != nil {
 		return apimodel.RepoPreview{}, err
 	}

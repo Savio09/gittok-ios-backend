@@ -111,6 +111,13 @@ func previewService(ctx context.Context, cfg config.Config, opts ...githubclient
 	if err != nil {
 		return nil, "", err
 	}
+	analysisLimits := cfg.AnalysisLimits
+	if analysisLimits == (analysis.Limits{}) {
+		analysisLimits = analysis.DefaultLimits()
+	}
+	if err := svc.UseLimits(analysisLimits); err != nil {
+		return nil, "", fmt.Errorf("analysis limits: %w", err)
+	}
 	limits := analysis.DefaultCacheLimits()
 	limits.TTL = cfg.PreviewCacheTTL
 	dir := cfg.PreviewCacheDir
@@ -126,7 +133,7 @@ func previewService(ctx context.Context, cfg config.Config, opts ...githubclient
 	if client.Mode() == "anonymous" {
 		access = "anonymous GitHub access (60 requests/hour per outbound IP, shared on hosted platforms; set GITHUB_PUBLIC_TOKEN before a demo)"
 	}
-	return svc, fmt.Sprintf("%s; cache %s, TTL %s, %d entries / %d MiB", access, dir, limits.TTL, limits.MaxEntries, limits.MaxBytes>>20), nil
+	return svc, fmt.Sprintf("%s; analysis %s, %d files / %d API attempts; cache %s, TTL %s, %d entries / %d MiB", access, analysisLimits.Timeout, analysisLimits.MaxFiles, analysisLimits.MaxAPICalls, dir, limits.TTL, limits.MaxEntries, limits.MaxBytes>>20), nil
 }
 
 // handleHealthz reports that the process is up and able to serve requests.

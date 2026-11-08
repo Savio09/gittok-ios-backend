@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Savio09/gittok-ios-backend/internal/analysis"
 	"github.com/Savio09/gittok-ios-backend/internal/config"
 	"github.com/Savio09/gittok-ios-backend/internal/feed"
 	"github.com/Savio09/gittok-ios-backend/internal/githubclient"
@@ -109,6 +110,27 @@ func TestPreviewRequestEconomics(t *testing.T) {
 		t.Errorf("warm hit made more than one visibility lookup: cold %v, warm %v", cold, warm)
 	}
 	t.Logf("cold requests %v; warm adds metadata=%d, ref/tree/contents=0", cold, warm["metadata"]-cold["metadata"])
+}
+
+func TestPreviewAppliesConfiguredAcquisitionLimits(t *testing.T) {
+	api := newFakeGitHubAPI(t, nil)
+	cfg := previewConfig(t, "")
+	cfg.AnalysisLimits = analysis.DefaultLimits()
+	cfg.AnalysisLimits.MaxAPICalls = 1
+	svc, _, err := previewService(context.Background(), cfg, githubclient.WithBaseURL(api.srv.URL))
+	if err != nil {
+		t.Fatal(err)
+	}
+	router := newRouter(feed.NewService(nil, nil, time.Minute), svc)
+	for i := 0; i < 2; i++ {
+		if rec := get(router, "/v1/repos/o/r/preview"); rec.Code != 200 {
+			t.Fatalf("status=%d body=%s", rec.Code, rec.Body.String())
+		}
+	}
+	counts := api.snapshot()
+	if counts["metadata"] != 2 || counts["ref"] != 0 || counts["tree"] != 0 || counts["contents"] != 0 {
+		t.Fatalf("configured cap bypassed: %v", counts)
+	}
 }
 
 func TestPreviewResponsesForbidIntermediaryCaching(t *testing.T) {

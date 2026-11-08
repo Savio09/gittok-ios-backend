@@ -137,6 +137,49 @@ func TestAFollowerSurvivesItsLeadersCancellation(t *testing.T) {
 	}
 }
 
+type deadlineGitHub struct {
+	*gatedGitHub
+	deadlines chan time.Time
+}
+
+func (g *deadlineGitHub) GetTree(ctx context.Context, o, n, ref string, l githubclient.TreeLimits) (githubclient.FileTree, error) {
+	d, _ := ctx.Deadline()
+	g.deadlines <- d
+	return g.gatedGitHub.GetTree(ctx, o, n, ref, l)
+}
+
+func TestSharedWorkDoesNotInheritLeadersEarlierDeadline(t *testing.T) {
+	l := wideLimits()
+	l.Deadline = 2 * time.Minute
+	h := newHarness(t, l)
+	// Capture the work context's deadline while the leader has an earlier one.
+	// Cancel after the follower joins; inspect the propagated context directly
+	// instead of waiting for either wall-clock deadline.
+	leaderCtx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+	h.s.timeout = 2 * time.Minute
+	captured := make(chan time.Time, 1)
+	h.s.github = &deadlineGitHub{gatedGitHub: h.gh, deadlines: captured}
+	leader := h.start(leaderCtx, "r1")
+	<-h.joined
+	<-h.gh.started
+	workDeadline := <-captured
+	leaderDeadline, _ := leaderCtx.Deadline()
+	if !workDeadline.After(leaderDeadline) {
+		t.Fatalf("shared work inherited caller deadline: work=%v caller=%v", workDeadline, leaderDeadline)
+	}
+	follower := h.start(context.Background(), "r1")
+	<-h.joined
+	cancel()
+	if got := <-leader; !errors.Is(got.err, context.Canceled) {
+		t.Fatalf("leader err=%v", got.err)
+	}
+	close(h.gh.release)
+	if got := <-follower; got.err != nil {
+		t.Fatalf("follower err=%v", got.err)
+	}
+}
+
 func TestTheLastCallerLeavingCancelsWorkAndRetiresItsGeneration(t *testing.T) {
 	h := newHarness(t, wideLimits())
 	ctx, cancel := context.WithCancel(context.Background())

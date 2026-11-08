@@ -133,6 +133,9 @@ func (c *component) manifest(k manifestKind) manifestRef {
 func buildInventory(x *inspIndex) []*component {
 	known := map[string]bool{}
 	for _, p := range x.paths {
+		if x.ctx.Err() != nil {
+			return nil
+		}
 		known[p] = true
 	}
 	for p := range x.files {
@@ -149,6 +152,9 @@ func buildInventory(x *inspIndex) []*component {
 
 	roots := map[string]bool{"": true}
 	for _, p := range all {
+		if x.ctx.Err() != nil {
+			return nil
+		}
 		if k, ok := manifestKindOf(p); ok && k.definesComponent() {
 			roots[dirOf(p)] = true
 		}
@@ -163,7 +169,13 @@ func buildInventory(x *inspIndex) []*component {
 	byDepth := append([]*component(nil), comps...)
 	sort.SliceStable(byDepth, func(i, j int) bool { return len(byDepth[i].root) > len(byDepth[j].root) })
 	for _, p := range all {
+		if x.ctx.Err() != nil {
+			return nil
+		}
 		for _, c := range byDepth {
+			if x.ctx.Err() != nil {
+				return nil
+			}
 			if !c.owns(p) {
 				continue
 			}
@@ -180,7 +192,13 @@ func buildInventory(x *inspIndex) []*component {
 		}
 	}
 	for _, c := range comps {
+		if x.ctx.Err() != nil {
+			return nil
+		}
 		for _, m := range c.manifests {
+			if x.ctx.Err() != nil {
+				return nil
+			}
 			if m.readable() {
 				c.deps = append(c.deps, manifestDeps(m)...)
 			}
