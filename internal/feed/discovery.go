@@ -18,6 +18,7 @@ import (
 
 type RepositorySearcher interface {
 	SearchRecentPublicRepositories(context.Context, time.Time, int) (githubclient.RepositorySearch, error)
+	SearchPublicRepositories(context.Context, string, int) (githubclient.RepositorySearch, error)
 }
 type discoveryCursor struct {
 	Version int    `json:"version"`
@@ -43,13 +44,14 @@ type DiscoveryService struct {
 	gate        chan struct{}
 	mu          sync.Mutex
 	cache       map[discoveryCursor]discoveryCacheEntry
+	queryCache  map[querySearchKey]discoveryCacheEntry
 	lastRequest time.Time // owned by gate, including failures
 }
 
 func NewDiscoveryService(search RepositorySearcher, ttl time.Duration) *DiscoveryService {
 	// The anonymous GitHub search allowance is ten/minute. Public-token mode
 	// can use a shorter interval via the constructor below.
-	return &DiscoveryService{search: search, ttl: ttl, now: time.Now, interval: 6100 * time.Millisecond, gate: make(chan struct{}, 1), cache: make(map[discoveryCursor]discoveryCacheEntry)}
+	return &DiscoveryService{search: search, ttl: ttl, now: time.Now, interval: 6100 * time.Millisecond, gate: make(chan struct{}, 1), cache: make(map[discoveryCursor]discoveryCacheEntry), queryCache: make(map[querySearchKey]discoveryCacheEntry)}
 }
 func NewPublicDiscoveryService(search *githubclient.Client, ttl time.Duration) *DiscoveryService {
 	s := NewDiscoveryService(search, ttl)
@@ -115,16 +117,9 @@ func (s *DiscoveryService) Feed(ctx context.Context, raw string) (apimodel.Feed,
 	if page, err, ok := s.cached(c); ok {
 		return page, err
 	}
-	if wait := s.interval - time.Since(s.lastRequest); wait > 0 {
-		timer := time.NewTimer(wait)
-		defer timer.Stop()
-		select {
-		case <-timer.C:
-		case <-ctx.Done():
-			return apimodel.Feed{}, ctx.Err()
-		}
+	if err := s.waitForSearch(ctx); err != nil {
+		return apimodel.Feed{}, err
 	}
-	s.lastRequest = time.Now()
 	date, _ := time.Parse("2006-01-02", c.Date)
 	result, err := s.search.SearchRecentPublicRepositories(ctx, date, c.Page)
 	if err != nil || result.Incomplete || result.TotalCount < 0 || len(result.Repos) > githubclient.DiscoveryPageSize {
@@ -152,6 +147,24 @@ func (s *DiscoveryService) Feed(ctx context.Context, raw string) (apimodel.Feed,
 	}
 	s.remember(c, discoveryCacheEntry{page: page, at: s.now()})
 	return page, nil
+}
+
+// Called while holding gate, shared by Discover and user-entered searches.
+func (s *DiscoveryService) waitForSearch(ctx context.Context) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	if wait := s.interval - time.Since(s.lastRequest); wait > 0 {
+		timer := time.NewTimer(wait)
+		defer timer.Stop()
+		select {
+		case <-timer.C:
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+	}
+	s.lastRequest = time.Now()
+	return nil
 }
 
 func (s *DiscoveryService) remember(c discoveryCursor, entry discoveryCacheEntry) {

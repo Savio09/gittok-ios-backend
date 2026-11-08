@@ -28,6 +28,9 @@ func (f *searchFake) SearchRecentPublicRepositories(_ context.Context, _ time.Ti
 	f.pages = append(f.pages, page)
 	return f.result, f.err
 }
+func (f *searchFake) SearchPublicRepositories(ctx context.Context, _ string, page int) (githubclient.RepositorySearch, error) {
+	return f.SearchRecentPublicRepositories(ctx, time.Time{}, page)
+}
 func testDiscovery(f *searchFake) *DiscoveryService {
 	s := NewDiscoveryService(f, 10*time.Minute)
 	s.now = func() time.Time { return time.Date(2026, 11, 7, 12, 0, 0, 0, time.UTC) }
