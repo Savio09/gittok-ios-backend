@@ -9,6 +9,8 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/Savio09/gittok-ios-backend/internal/analysis"
 )
 
 // Config holds the validated runtime configuration for the GitTok backend.
@@ -29,6 +31,8 @@ type Config struct {
 	// dedicated cache directory; empty selects the default.
 	PreviewCacheTTL time.Duration
 	PreviewCacheDir string
+	// AnalysisLimits bounds each repository acquisition and local inspection.
+	AnalysisLimits analysis.Limits
 }
 
 const (
@@ -73,6 +77,37 @@ func Load() (Config, error) {
 		cfg.PreviewCacheTTL = ttl
 	}
 	cfg.PreviewCacheDir = os.Getenv("PREVIEW_CACHE_DIR")
+	cfg.AnalysisLimits = analysis.DefaultLimits()
+	if raw := os.Getenv("ANALYSIS_TIMEOUT"); raw != "" {
+		d, err := time.ParseDuration(raw)
+		if err != nil {
+			return Config{}, fmt.Errorf("ANALYSIS_TIMEOUT must be a positive Go duration")
+		}
+		cfg.AnalysisLimits.Timeout = d
+	}
+	for _, setting := range []struct {
+		name string
+		dest *int
+	}{
+		{"ANALYSIS_MAX_TREE_ENTRIES", &cfg.AnalysisLimits.MaxTreeEntries},
+		{"ANALYSIS_MAX_DEPTH", &cfg.AnalysisLimits.MaxDepth},
+		{"ANALYSIS_MAX_FILES", &cfg.AnalysisLimits.MaxFiles},
+		{"ANALYSIS_MAX_FILE_BYTES", &cfg.AnalysisLimits.MaxFileBytes},
+		{"ANALYSIS_MAX_TOTAL_BYTES", &cfg.AnalysisLimits.MaxTotalBytes},
+		{"ANALYSIS_MAX_API_CALLS", &cfg.AnalysisLimits.MaxAPICalls},
+		{"ANALYSIS_MAX_RESPONSE_BYTES", &cfg.AnalysisLimits.MaxResponseBytes},
+	} {
+		if raw := os.Getenv(setting.name); raw != "" {
+			n, err := strconv.Atoi(raw)
+			if err != nil || n <= 0 {
+				return Config{}, fmt.Errorf("%s must be a positive integer", setting.name)
+			}
+			*setting.dest = n
+		}
+	}
+	if err := cfg.AnalysisLimits.Validate(); err != nil {
+		return Config{}, err
+	}
 
 	return cfg, nil
 }

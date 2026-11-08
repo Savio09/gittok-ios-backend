@@ -1,6 +1,7 @@
 package crawler
 
 import (
+	"context"
 	"strings"
 
 	"github.com/Savio09/gittok-ios-backend/internal/apimodel"
@@ -26,6 +27,13 @@ import (
 // the decision.
 func Classify(insp Inspection) Classification { return classify(insp, nil) }
 
+// ClassifyContext cooperatively stops between bounded parser/component stages.
+// Standard-library parsers are synchronous; cancellation does not preempt a
+// parser already reading a size-bounded source file.
+func ClassifyContext(ctx context.Context, insp Inspection) Classification {
+	return classifyContext(ctx, insp, nil)
+}
+
 // candidateHook lets a test replace a component's extracted candidates before
 // validation, to show that evidence which fails its witness never reaches the
 // verdict. Production code passes nil.
@@ -33,18 +41,42 @@ type candidateHook func(root string, cands []candidate) []candidate
 
 // classify is Classify with an optional hook between extraction and validation.
 func classify(insp Inspection, hook candidateHook) Classification {
-	st := indexInspection(insp)
+	return classifyContext(context.Background(), insp, hook)
+}
+
+func classifyContext(ctx context.Context, insp Inspection, hook candidateHook) Classification {
+	unknown := Classification{Kind: apimodel.KindOther, Status: VerdictInconclusive}
+	if ctx.Err() != nil {
+		return unknown
+	}
+	st := indexInspectionContext(ctx, insp)
 	comps := buildInventory(st)
 	verdicts := make([]compVerdict, 0, len(comps))
 	for _, c := range comps {
+		if ctx.Err() != nil {
+			return unknown
+		}
 		ix := newRepoIndex(st, c, insp.Language)
+		if ctx.Err() != nil {
+			return unknown
+		}
 		cands := extractCandidates(ix)
+		if ctx.Err() != nil {
+			return unknown
+		}
 		if hook != nil {
 			cands = hook(c.root, cands)
 		}
 		verdicts = append(verdicts, classifyComponent(ix, validateCandidates(ix, cands)))
 	}
-	return resolveRepository(st, verdicts)
+	if ctx.Err() != nil {
+		return unknown
+	}
+	out := resolveRepository(st, verdicts)
+	if ctx.Err() != nil {
+		return unknown
+	}
+	return out
 }
 
 // detectors extract role evidence from one component, in precedence order.
@@ -128,6 +160,9 @@ type candidate struct {
 func extractCandidates(ix *repoIndex) []candidate {
 	var cands []candidate
 	for _, detect := range detectors {
+		if ix.st.ctx.Err() != nil {
+			return nil
+		}
 		kind, groups := detect(ix)
 		if len(groups) == 0 {
 			continue
@@ -150,8 +185,14 @@ func extractCandidates(ix *repoIndex) []candidate {
 func validateCandidates(ix *repoIndex, cands []candidate) []candidate {
 	var out []candidate
 	for _, c := range cands {
+		if ix.st.ctx.Err() != nil {
+			return nil
+		}
 		var kept, context []evidenceGroup
 		for _, g := range c.groups {
+			if ix.st.ctx.Err() != nil {
+				return nil
+			}
 			failure := ""
 			for _, o := range g {
 				if err := validateWitness(ix.st, o.Witness); err != nil {
