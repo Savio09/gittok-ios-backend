@@ -15,6 +15,7 @@ import (
 
 	"github.com/Savio09/gittok-ios-backend/internal/analysis"
 	"github.com/Savio09/gittok-ios-backend/internal/apimodel"
+	"github.com/Savio09/gittok-ios-backend/internal/generation"
 	"github.com/Savio09/gittok-ios-backend/internal/githubclient"
 	"github.com/Savio09/gittok-ios-backend/internal/preview"
 )
@@ -403,6 +404,8 @@ func (s *Service) execute(id string) {
 			code = fmt.Sprintf("provider_http_%d", status.Status)
 		} else {
 			switch {
+			case errors.Is(err, generation.ErrBudgetExceeded):
+				code = "spending_limit"
 			case errors.Is(err, context.DeadlineExceeded):
 				code = "deadline"
 			case errors.Is(err, context.Canceled):

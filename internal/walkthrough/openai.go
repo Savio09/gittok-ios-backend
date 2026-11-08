@@ -267,7 +267,10 @@ func (e *Engine) respondReserved(ctx context.Context, jobID string, budget *engi
 	var reservation generation.Reservation
 	if receipt == nil {
 		reservation, err = e.ledger.Reserve(jobID, "responses-v1-"+strconv.Itoa(budget.calls+1), maximum)
-		if err != nil || reservation.AlreadyReserved {
+		if err != nil {
+			return zero, providerReservationError(err)
+		}
+		if reservation.AlreadyReserved {
 			return zero, ErrProviderUnavailable
 		}
 	} else {
@@ -329,6 +332,14 @@ func (e *Engine) respondReserved(ctx context.Context, jobID string, budget *engi
 	budget.spent -= maximum - actual
 	budget.output += int(*u.Output)
 	return zero, nil
+}
+
+// Preserve a fixed, non-sensitive spending signal for operator diagnostics.
+func providerReservationError(err error) error {
+	if errors.Is(err, generation.ErrBudgetExceeded) {
+		return errors.Join(ErrProviderUnavailable, generation.ErrBudgetExceeded)
+	}
+	return ErrProviderUnavailable
 }
 
 func modelCost(input, output int64, cfg EngineConfig) (int64, error) {
