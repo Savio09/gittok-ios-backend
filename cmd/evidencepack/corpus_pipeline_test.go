@@ -130,10 +130,8 @@ var pipelineCases = []pipelineCase{
 	{file: "Savio09__plantly.json", kind: apimodel.KindMobile, status: crawler.VerdictResolved},
 	{file: "starship__starship.json", kind: apimodel.KindCLI, status: crawler.VerdictResolved},
 	{file: "cli__cli.json", kind: apimodel.KindCLI, status: crawler.VerdictResolved},
-	{file: "excalidraw__excalidraw.json", kind: apimodel.KindOther, status: crawler.VerdictInconclusive,
-		mentions: []string{"packages/excalidraw/package.json is listed but its content was not fetched"}},
-	{file: "pocketbase__pocketbase.json", kind: apimodel.KindOther, status: crawler.VerdictInconclusive,
-		mentions: []string{"cmd/serve.go is listed but its content was not fetched", "cmd/superuser.go is listed but its content was not fetched"}},
+	{file: "excalidraw__excalidraw.json", kind: apimodel.KindFrontend, status: crawler.VerdictResolved},
+	{file: "pocketbase__pocketbase.json", kind: apimodel.KindLibrary, status: crawler.VerdictResolved},
 	{file: "Savio09__face-recognition.json", kind: apimodel.KindOther, status: crawler.VerdictInconclusive,
 		mentions: []string{"no decisive"}},
 }
@@ -150,11 +148,17 @@ func TestCorpusThroughThePipeline(t *testing.T) {
 			}
 			got := a.Classification
 
-			// Acquisition fetched exactly the captured canonical selection, in
-			// order, with one requested ref throughout.
-			if !reflect.DeepEqual(m.requested, s.Selected) {
-				t.Errorf("requested contents differ from the canonical selection:\n got  %v\n want %v", m.requested, s.Selected)
+			// Production acquisition must follow the CURRENT bounded selector.
+			// Historical Selected remains unchanged; uncaptured newly selected
+			// paths are explicit 404s in snapshotServer, never fabricated bytes.
+			var selected []string
+			for _, f := range crawler.SelectFiles(s.FileTree().Entries, crawler.DefaultSelectionBudget()) {
+				selected = append(selected, f.Path)
 			}
+			if !reflect.DeepEqual(m.requested, selected) {
+				t.Errorf("requested contents differ from current selection: got=%v want=%v", m.requested, selected)
+			}
+
 			if len(m.refs) != 1 || !m.refs[s.ResolvedSHA] {
 				t.Errorf("refs used = %v, want only %q", m.refs, s.ResolvedSHA)
 			}
@@ -268,7 +272,8 @@ func TestCorpusPipelineDegradations(t *testing.T) {
 // analysis with the context error rather than a verdict built on a skip.
 func TestCorpusPipelineFinalFileCancellation(t *testing.T) {
 	s := loadCorpus(t, "starship__starship.json")
-	last := s.Selected[len(s.Selected)-1]
+	selected := crawler.SelectFiles(s.FileTree().Entries, crawler.DefaultSelectionBudget())
+	last := selected[len(selected)-1].Path
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	m := &snapshotServer{s: s, onContents: func(p string, r *http.Request) {
