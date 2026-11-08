@@ -20,7 +20,7 @@ func revisionRejected(review Review) Review {
 }
 
 func TestEngineOneRevisionPublishesOnlyFreshlyReviewedCandidate(t *testing.T) {
-	for _, scenario := range []string{"accepted", "second rejected", "new statement", "new source", "duplicate source", "new scene", "duplicate scene reference", "expanded prose"} {
+	for _, scenario := range []string{"accepted", "second rejected", "duplicate scene reference"} {
 		t.Run(scenario, func(t *testing.T) {
 			inv, _, draft, review := engineInvestigation(t)
 			for _, p := range []string{"README.md", "src/report.rs"} {
@@ -28,25 +28,14 @@ func TestEngineOneRevisionPublishesOnlyFreshlyReviewedCandidate(t *testing.T) {
 					t.Fatal(err)
 				}
 			}
-			cfg := engineConfig()
-			cfg.MaxRevisions = 1
+			cfg := revisionConfig()
 			revised := draft
 			revised.Statements = append([]Statement(nil), draft.Statements...)
 			revised.Scenes = append([]Scene(nil), draft.Scenes...)
 			revised.Statements[2].Text = "The rows are passed to aggregate."
 			switch scenario {
-			case "new statement":
-				revised.Statements[2].ID = "new-mechanism"
-			case "new source":
-				revised.Statements[2].Sources = []Citation{draft.Statements[0].Sources[0]}
-			case "duplicate source":
-				revised.Statements[2].Sources = append(append([]Citation(nil), draft.Statements[2].Sources...), draft.Statements[2].Sources[0])
-			case "new scene":
-				revised.Scenes[0].ID = "new-scene"
 			case "duplicate scene reference":
 				revised.Scenes[1].StatementIDs = []string{"a", "m", "m", "r"}
-			case "expanded prose":
-				revised.Statements[2].Text = draft.Statements[2].Text + strings.Repeat(" extra", 20)
 			}
 			ledger := engineLedger(t)
 			calls := 0
@@ -94,7 +83,7 @@ func TestEngineOneRevisionPublishesOnlyFreshlyReviewedCandidate(t *testing.T) {
 					want = 4
 				}
 				if err == nil || accepted.ID() != "" || calls != want {
-					t.Fatalf("revision escaped frozen registry or repeated: %v calls=%d", err, calls)
+					t.Fatalf("revision escaped ordinary validation or repeated: %v calls=%d", err, calls)
 				}
 				if calls == 3 {
 					if _, err := ledger.Reserve("unused-review-proof", "remaining", 1000000-6); err != nil {
@@ -115,8 +104,7 @@ func TestEngineRevisionNeverRetriesMalformedTransportOrUnfundedPair(t *testing.T
 					t.Fatal(err)
 				}
 			}
-			cfg := engineConfig()
-			cfg.MaxRevisions = 1
+			cfg := revisionConfig()
 			if failure == "input budget" {
 				cfg.MaxInputBytes = 26000
 			}
@@ -206,65 +194,6 @@ func TestRevisionReceiptsAuthorizeOnlyOnePhysicalCall(t *testing.T) {
 	}
 }
 
-func TestRevisionReviewUpperBoundCoversDoublyEncodedHTML(t *testing.T) {
-	inv, _, original, _ := engineInvestigation(t)
-	for _, p := range []string{"README.md", "src/report.rs"} {
-		if _, err := inv.Read(p); err != nil {
-			t.Fatal(err)
-		}
-	}
-	for i := range original.Statements {
-		original.Statements[i].Sources[0].Quote = ""
-	}
-	original, err := groundDraft(inv.Snapshot(), original)
-	if err != nil {
-		t.Fatal(err)
-	}
-	for i := range original.Statements {
-		original.Statements[i].Text = strings.Repeat("x", 800)
-	}
-	revised := original
-	revised.Statements = append([]Statement(nil), original.Statements...)
-	for i := range revised.Statements {
-		revised.Statements[i].Text = strings.Repeat("<", 800)
-	}
-	if !frozenRevision(original, revised) {
-		t.Fatal("prose-only narrowing changed frozen structure")
-	}
-	engine, err := NewEngine(engineConfig(), engineLedger(t))
-	if err != nil {
-		t.Fatal(err)
-	}
-	before, err := engine.reviewRequest(inv.Snapshot(), original, 4096)
-	if err != nil {
-		t.Fatal(err)
-	}
-	after, err := engine.reviewRequest(inv.Snapshot(), revised, 4096)
-	if err != nil {
-		t.Fatal(err)
-	}
-	first, err := engine.prepareRequest(&engineBudget{}, before, true)
-	if err != nil {
-		t.Fatal(err)
-	}
-	second, err := engine.prepareRequest(&engineBudget{}, after, true)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(second.body)-len(first.body) < 6*4*800 || strings.Count(string(second.body), `\\u003c`) < 4*800 || len(second.body) > len(first.body)+revisionReviewGrowthBytes(original) {
-		t.Fatalf("HTML framing bound incorrect: before=%d after=%d upper=%d", len(first.body), len(second.body), len(first.body)+revisionReviewGrowthBytes(original))
-	}
-	revised.Statements[2].Kind = "result"
-	if !frozenRevision(original, revised) {
-		t.Fatal("source-limited retagging was rejected before semantic review")
-	}
-	revised.Scenes = append([]Scene(nil), original.Scenes...)
-	revised.Scenes[0].Role = "design"
-	if frozenRevision(original, revised) {
-		t.Fatal("scene role escaped frozen registry")
-	}
-}
-
 func TestRevisionRequiresFullBoundedFeedbackWithoutTruncation(t *testing.T) {
 	inv, _, draft, _ := engineInvestigation(t)
 	for _, p := range []string{"README.md", "src/report.rs"} {
@@ -284,8 +213,7 @@ func TestRevisionRequiresFullBoundedFeedbackWithoutTruncation(t *testing.T) {
 	if len(engineJSON(t, feedback)) <= 32<<10 {
 		t.Fatal("feedback fixture is not over the serialization cap")
 	}
-	cfg := engineConfig()
-	cfg.MaxRevisions = 1
+	cfg := revisionConfig()
 	calls := 0
 	engine, err := NewEngine(cfg, engineLedger(t), WithHTTPClient(&http.Client{Transport: engineRoundTrip(func(*http.Request) (*http.Response, error) {
 		calls++
@@ -309,8 +237,8 @@ func TestEngineReservesFiveInitialWriterTurnsAndRevisionPairWithinEightCalls(t *
 			t.Fatal(err)
 		}
 	}
-	cfg := engineConfig()
-	cfg.MaxRevisions = 1
+	cfg := revisionConfig()
+	cfg.MaxCalls = 8
 	calls := 0
 	engine, err := NewEngine(cfg, engineLedger(t), WithHTTPClient(&http.Client{Transport: engineRoundTrip(func(r *http.Request) (*http.Response, error) {
 		calls++

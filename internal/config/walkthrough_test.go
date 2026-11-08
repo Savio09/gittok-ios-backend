@@ -84,3 +84,16 @@ func TestWalkthroughRevisionIsBoundedAndCanBeDisabled(t *testing.T) {
 		t.Fatal("strict single-pass operation unavailable", err)
 	}
 }
+
+func TestWalkthroughReasoningEffortIsExplicitAndValidated(t *testing.T) {
+	walkthroughEnv(t)
+	t.Setenv("OPENAI_REASONING_EFFORT", "low")
+	cfg, err := Load()
+	if err != nil || cfg.Walkthrough.Engine.ReasoningEffort != "low" {
+		t.Fatal("reasoning choice missing", err)
+	}
+	t.Setenv("OPENAI_REASONING_EFFORT", "unbounded")
+	if _, err := Load(); err == nil {
+		t.Fatal("unknown effort accepted")
+	}
+}

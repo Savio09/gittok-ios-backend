@@ -49,6 +49,12 @@ func loadWalkthrough() (Walkthrough, error) {
 	if len(c.Engine.Model) > 100 || strings.ContainsAny(c.Engine.Model, " /\\") {
 		return Walkthrough{}, fmt.Errorf("OPENAI_MODEL must be a model identifier")
 	}
+	c.Engine.ReasoningEffort = os.Getenv("OPENAI_REASONING_EFFORT")
+	switch c.Engine.ReasoningEffort {
+	case "", "none", "low", "medium", "high", "xhigh", "max":
+	default:
+		return Walkthrough{}, fmt.Errorf("OPENAI_REASONING_EFFORT is not supported")
+	}
 	if c.LedgerPath, err = required("WALKTHROUGH_LEDGER_PATH"); err != nil {
 		return Walkthrough{}, err
 	}

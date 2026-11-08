@@ -22,7 +22,16 @@ type engineRoundTrip func(*http.Request) (*http.Response, error)
 func (f engineRoundTrip) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }
 
 func engineConfig() EngineConfig {
-	return EngineConfig{APIKey: "explicit-test-key", Model: "explicit-test-model", InputMicrosPerMillion: 1000, OutputMicrosPerMillion: 2000, MaxCalls: 8, MaxInputBytes: 512 << 10, MaxOutputTokens: 12000, MaxJobMicros: 100000}
+	// Publication-only fixtures start in a legitimate dedicated final phase.
+	// Exploration tests explicitly request their larger call budget.
+	return EngineConfig{APIKey: "explicit-test-key", Model: "explicit-test-model", InputMicrosPerMillion: 1000, OutputMicrosPerMillion: 2000, MaxCalls: 2, MaxInputBytes: 512 << 10, MaxOutputTokens: 12000, MaxJobMicros: 100000}
+}
+
+func revisionConfig() EngineConfig {
+	cfg := engineConfig()
+	cfg.MaxCalls = 4
+	cfg.MaxRevisions = 1
+	return cfg
 }
 
 func engineLedger(t *testing.T) *generation.Ledger {
@@ -136,8 +145,10 @@ func TestEngineWritesThroughBoundedToolsThenIndependentReviewer(t *testing.T) {
 			if !strings.Contains(encoded, draft.Statements[1].Sources[0].FileID) || !strings.Contains(encoded, "number") {
 				t.Fatal("tool output omitted real evidence ID or line numbers")
 			}
-			return engineHTTP(t, engineCall(t, "submit_story", draft, "c3")), nil
+			return engineHTTP(t, engineCall(t, "finish_reading", map[string]any{}, "c3")), nil
 		case 4:
+			return engineHTTP(t, engineCall(t, "submit_story", draft, "c4")), nil
+		case 5:
 			if len(request["input"].([]any)) != 1 || request["tools"] != nil || request["text"] == nil {
 				t.Fatal("reviewer inherited writer conversation or tools")
 			}
@@ -147,7 +158,9 @@ func TestEngineWritesThroughBoundedToolsThenIndependentReviewer(t *testing.T) {
 			return nil, errors.New("unexpected request")
 		}
 	})}
-	engine, err := NewEngine(engineConfig(), ledger, WithHTTPClient(client))
+	cfg := engineConfig()
+	cfg.MaxCalls = 8
+	engine, err := NewEngine(cfg, ledger, WithHTTPClient(client))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -156,10 +169,10 @@ func TestEngineWritesThroughBoundedToolsThenIndependentReviewer(t *testing.T) {
 	if err != nil || accepted.ID() == "" || len(accepted.Sections()) != 2 {
 		t.Fatalf("accepted=%+v error=%v", accepted, err)
 	}
-	if !inv.Snapshot().Complete || len(requests) != 4 || strings.Join(stages, ",") != "writing,reviewing" {
+	if !inv.Snapshot().Complete || len(requests) != 5 || strings.Join(stages, ",") != "writing,reviewing" {
 		t.Fatalf("publication gate or stages: %v %v", inv.Snapshot().Complete, stages)
 	}
-	if _, err := engine.Run(context.Background(), "job-tools", inv, nil); err == nil || len(requests) != 4 {
+	if _, err := engine.Run(context.Background(), "job-tools", inv, nil); err == nil || len(requests) != 5 {
 		t.Fatal("same paid generation replayed")
 	}
 }
@@ -397,6 +410,7 @@ func TestEngineForcesFinalWriterSubmissionBeforeReviewerBudget(t *testing.T) {
 				t.Fatal(err)
 			}
 			cfg := engineConfig()
+			cfg.MaxCalls = 8
 			switch pressure {
 			case "calls":
 				cfg.MaxCalls = 4
@@ -463,6 +477,7 @@ func TestEngineReservesToolGrowthAndFinalOutputBeforeExploration(t *testing.T) {
 				t.Fatal(err)
 			}
 			cfg := engineConfig()
+			cfg.MaxCalls = 8
 			if pressure == "input growth" {
 				requestBytes := 0
 				probe, err := NewEngine(cfg, engineLedger(t), WithHTTPClient(&http.Client{Transport: engineRoundTrip(func(r *http.Request) (*http.Response, error) {
@@ -519,7 +534,9 @@ func TestEngineBoundsSerializedToolOutputAndContinuation(t *testing.T) {
 				g.files["src/report.rs"] = strings.Repeat("\t", 8192) + "\n"
 			}
 			calls := 0
-			engine, err := NewEngine(engineConfig(), engineLedger(t), WithHTTPClient(&http.Client{Transport: engineRoundTrip(func(r *http.Request) (*http.Response, error) {
+			cfg := engineConfig()
+			cfg.MaxCalls = 8
+			engine, err := NewEngine(cfg, engineLedger(t), WithHTTPClient(&http.Client{Transport: engineRoundTrip(func(r *http.Request) (*http.Response, error) {
 				calls++
 				if calls == 1 {
 					call := engineCall(t, "read_file", map[string]any{"path": "src/report.rs", "start_line": 1, "line_count": 80}, "read-bounded")
