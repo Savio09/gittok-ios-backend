@@ -33,6 +33,7 @@ type Config struct {
 	PreviewCacheDir string
 	// AnalysisLimits bounds each repository acquisition and local inspection.
 	AnalysisLimits analysis.Limits
+	Walkthrough    Walkthrough
 }
 
 const (
@@ -106,6 +107,11 @@ func Load() (Config, error) {
 		}
 	}
 	if err := cfg.AnalysisLimits.Validate(); err != nil {
+		return Config{}, err
+	}
+	var err error
+	cfg.Walkthrough, err = loadWalkthrough()
+	if err != nil {
 		return Config{}, err
 	}
 

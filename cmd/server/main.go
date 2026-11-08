@@ -20,7 +20,7 @@ import (
 	"github.com/Savio09/gittok-ios-backend/internal/config"
 	"github.com/Savio09/gittok-ios-backend/internal/feed"
 	"github.com/Savio09/gittok-ios-backend/internal/githubclient"
-	"github.com/Savio09/gittok-ios-backend/internal/selection"
+	"github.com/Savio09/gittok-ios-backend/internal/walkthrough"
 )
 
 func main() {
@@ -29,17 +29,37 @@ func main() {
 		log.Fatalf("gittok: invalid configuration: %v", err)
 	}
 
-	gh := githubclient.New(cfg.GitHubToken, githubclient.WithUserAgent("gittok-backend"))
-	feedSvc := feed.NewService(gh, selection.Curated(), 10*time.Minute)
 	previewSvc, mode, err := previewService(context.Background(), cfg)
 	if err != nil {
 		log.Fatalf("gittok: preview service: %v", err)
 	}
 	log.Printf("gittok: previews: %s", mode)
+	// previewService has verified this same public-only credential at startup.
+	// Discovery also checks scopes on every response; the broad legacy token
+	// must never be used for public discovery.
+	discoveryClient, err := githubclient.NewPublic(cfg.PublicToken, githubclient.WithUserAgent("gittok-discovery"))
+	if err != nil {
+		log.Fatal("gittok: public discovery credential rejected")
+	}
+	feedSvc := feed.NewPublicDiscoveryService(discoveryClient, 10*time.Minute)
+	walkthroughSvc, closeWalkthrough, err := walkthroughService(context.Background(), cfg)
+	if err != nil {
+		log.Fatalf("gittok: walkthrough service: %v", err)
+	}
+	defer func() {
+		if err := closeWalkthrough(); err != nil {
+			log.Print("gittok: walkthrough control state could not be closed cleanly")
+		}
+	}()
+	if walkthroughSvc == nil {
+		log.Print("gittok: walkthrough generation disabled")
+	} else {
+		log.Print("gittok: source walkthrough generation enabled; single bounded worker")
+	}
 
 	srv := &http.Server{
 		Addr:              ":" + strconv.Itoa(cfg.Port),
-		Handler:           newRouter(feedSvc, previewSvc),
+		Handler:           newRouter(feedSvc, previewSvc, walkthroughSvc),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
@@ -82,12 +102,20 @@ func run(srv *http.Server) error {
 // newRouter builds the HTTP handler for the backend: the operational health
 // check, v1 feed and on-demand preview. Further v1 endpoints (profile, events) are
 // added in later tickets.
-func newRouter(feedSvc *feed.Service, previewSvc *analysis.Service) http.Handler {
+func newRouter(feedSvc interface{ Handler() http.HandlerFunc }, previewSvc *analysis.Service, storyServices ...*walkthrough.Service) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", handleHealthz)
-	mux.Handle("GET /v1/feed", feedSvc.Handler())
+	if feedSvc != nil {
+		mux.Handle("GET /v1/feed", feedSvc.Handler())
+	}
 	mux.Handle("GET /v1/repos/{id}/preview", previewSvc.Handler())
 	mux.Handle("GET /v1/repos/{owner}/{name}/preview", previewSvc.Handler())
+	var stories *walkthrough.Service
+	if len(storyServices) > 0 {
+		stories = storyServices[0]
+	}
+	mux.Handle("POST /v1/repos/{owner}/{name}/walkthrough", stories.Handler())
+	mux.Handle("GET /v1/walkthroughs/{id}", stories.Handler())
 	return mux
 }
 

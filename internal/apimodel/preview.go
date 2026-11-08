@@ -125,13 +125,14 @@ const (
 	SectionStack    SectionKind = "stack"    // architecture / components
 	SectionActivity SectionKind = "activity" // maintenance / health
 	SectionSetup    SectionKind = "setup"    // getting started
+	SectionHandoff  SectionKind = "handoff"  // source-based next investigation
 	SectionDecision SectionKind = "decision" // your call / fit
 )
 
 // Valid reports whether k is a known section kind.
 func (k SectionKind) Valid() bool {
 	switch k {
-	case SectionIdea, SectionHow, SectionStack, SectionActivity, SectionSetup, SectionDecision:
+	case SectionIdea, SectionHow, SectionStack, SectionActivity, SectionSetup, SectionHandoff, SectionDecision:
 		return true
 	default:
 		return false
@@ -143,6 +144,8 @@ func (k SectionKind) Valid() bool {
 // architecture diagram inferred from code) carry the runtime guarantee, not
 // just Media.
 type Section struct {
+	// ID identifies a validated scene; legacy source reports may omit it.
+	ID string `json:"id,omitempty"`
 	// Media is an optional artifact for this ordered content item. Its execution
 	// provenance is independent of source claims and other captures.
 	Media        *Media       `json:"media,omitempty"`
@@ -150,6 +153,7 @@ type Section struct {
 	Title        string       `json:"title"`
 	Body         string       `json:"body,omitempty"`
 	Claims       []Claim      `json:"claims,omitempty"`
+	Storyboard   *Storyboard  `json:"storyboard,omitempty"`
 	EvidenceMode EvidenceMode `json:"evidence_mode,omitempty"`
 }
 
@@ -158,11 +162,14 @@ type Section struct {
 // signals); Sections carry the deeper walkthrough. No field says where anything
 // is drawn.
 type RepoPreview struct {
-	ID    string   `json:"id"`
-	Owner string   `json:"owner"`
-	Name  string   `json:"name"`
-	Slug  string   `json:"slug"` // "owner/name"
-	Kind  RepoKind `json:"kind"`
+	// Presentation marks an accepted story separately from a source report.
+	Presentation string   `json:"presentation,omitempty"`
+	ID           string   `json:"id"`
+	GitHubID     int64    `json:"github_id,omitempty"`
+	Owner        string   `json:"owner"`
+	Name         string   `json:"name"`
+	Slug         string   `json:"slug"` // "owner/name"
+	Kind         RepoKind `json:"kind"`
 	// KindEvidenceStatus marks a classification as inferred or undecided.
 	KindEvidenceStatus EvidenceStatus `json:"kind_evidence_status,omitempty"`
 	// EvidenceMode is the execution guarantee for the preview as a whole.
