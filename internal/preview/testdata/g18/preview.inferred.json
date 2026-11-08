@@ -1,0 +1,211 @@
+{
+  "id": "cli/cli",
+  "owner": "cli",
+  "name": "cli",
+  "slug": "cli/cli",
+  "kind": "cli",
+  "kind_evidence_status": "inferred",
+  "evidence_mode": "not_executed",
+  "language": "Go",
+  "description": "",
+  "github_url": "https://github.com/cli/cli",
+  "sections": [
+    {
+      "kind": "idea",
+      "title": "Repository descriptions",
+      "claims": [
+        {
+          "label": "Why this is a CLI",
+          "source": {
+            "kind": "file",
+            "ref": "cmd/gen-docs/main.go",
+            "lines": "1-1",
+            "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/cmd/gen-docs/main.go#L1-L1"
+          },
+          "additional_sources": [
+            {
+              "kind": "file",
+              "ref": "cmd/gh/main.go",
+              "lines": "1-1",
+              "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/cmd/gh/main.go#L1-L1"
+            },
+            {
+              "kind": "file",
+              "ref": "go.mod",
+              "lines": "50-50",
+              "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/go.mod#L50-L50"
+            }
+          ],
+          "excerpt": "main",
+          "explanation": "Classified as a CLI from the inspected files: \"cmd/gen-docs/main.go\" declares package main; \"cmd/gh/main.go\" declares package main; \"go.mod\" declares \"require → github.com/spf13/cobra\" as \"v1.10.2\".",
+          "supports": "GitTok's classification of this repository from the cited premises.",
+          "limit": "An inference from a bounded inspection; the code was not run, and files outside the inspection could change it.",
+          "evidence_status": "inferred",
+          "confidence": "uncertain"
+        },
+        {
+          "label": "README passage",
+          "source": {
+            "kind": "file",
+            "ref": "README.md",
+            "lines": "3-3",
+            "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/README.md#L3-L3"
+          },
+          "excerpt": "GitHub CLI, or the gh CLI, is GitHub on the command line. It brings pull requests, issues, and other GitHub concepts to the terminal next to where you are already working with `git` and your code.",
+          "explanation": "\"README.md\" states: \"GitHub CLI, or the gh CLI, is GitHub on the command line. It brings pull requests, issues, and other GitHub concepts to the terminal next to where you are already working with `git` and your code.\".",
+          "supports": "An attributed documentation passage in the repository root.",
+          "limit": "Repository documentation is an author statement; its described behavior was not verified.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "stack",
+      "title": "Declared stack",
+      "claims": [
+        {
+          "label": "Declares github.com/spf13/cobra",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "lines": "50-50",
+            "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/go.mod#L50-L50"
+          },
+          "excerpt": "github.com/spf13/cobra v1.10.2",
+          "explanation": "\"go.mod\" declares \"github.com/spf13/cobra\" in \"require\" with declared specification \"v1.10.2\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/spf13/pflag",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "lines": "51-51",
+            "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/go.mod#L51-L51"
+          },
+          "excerpt": "github.com/spf13/pflag v1.0.10",
+          "explanation": "\"go.mod\" declares \"github.com/spf13/pflag\" in \"require\" with declared specification \"v1.0.10\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        },
+        {
+          "label": "GitHub primary language",
+          "source": {
+            "kind": "metadata",
+            "ref": "language",
+            "url": "https://api.github.com/repos/cli/cli"
+          },
+          "explanation": "GitHub reports language as \"Go\".",
+          "supports": "The value reported by GitHub for this repository.",
+          "limit": "Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares charm.land/bubbles/v2",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "lines": "8-8",
+            "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/go.mod#L8-L8"
+          },
+          "excerpt": "charm.land/bubbles/v2 v2.2.1",
+          "explanation": "\"go.mod\" declares \"charm.land/bubbles/v2\" in \"require\" with declared specification \"v2.2.1\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares charm.land/bubbletea/v2",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "lines": "9-9",
+            "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/go.mod#L9-L9"
+          },
+          "excerpt": "charm.land/bubbletea/v2 v2.1.0",
+          "explanation": "\"go.mod\" declares \"charm.land/bubbletea/v2\" in \"require\" with declared specification \"v2.1.0\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares charm.land/glamour/v2",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "lines": "10-10",
+            "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/go.mod#L10-L10"
+          },
+          "excerpt": "charm.land/glamour/v2 v2.0.2-0.20261015065741-010543cac1a0",
+          "explanation": "\"go.mod\" declares \"charm.land/glamour/v2\" in \"require\" with declared specification \"v2.0.2-0.20261015065741-010543cac1a0\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares charm.land/huh/v2",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "lines": "11-11",
+            "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/go.mod#L11-L11"
+          },
+          "excerpt": "charm.land/huh/v2 v2.0.3",
+          "explanation": "\"go.mod\" declares \"charm.land/huh/v2\" in \"require\" with declared specification \"v2.0.3\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares charm.land/lipgloss/v2",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "lines": "12-12",
+            "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/go.mod#L12-L12"
+          },
+          "excerpt": "charm.land/lipgloss/v2 v2.0.6",
+          "explanation": "\"go.mod\" declares \"charm.land/lipgloss/v2\" in \"require\" with declared specification \"v2.0.6\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        },
+        {
+          "label": "Declares github.com/AlecAivazis/survey/v2",
+          "source": {
+            "kind": "file",
+            "ref": "go.mod",
+            "lines": "13-13",
+            "url": "https://github.com/cli/cli/blob/9490d204a2ba95434153dedce99898ce9f281426/go.mod#L13-L13"
+          },
+          "excerpt": "github.com/AlecAivazis/survey/v2 v2.3.7",
+          "explanation": "\"go.mod\" declares \"github.com/AlecAivazis/survey/v2\" in \"require\" with declared specification \"v2.3.7\".",
+          "supports": "A dependency declaration in the repository root.",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "decision",
+      "title": "Coverage notes",
+      "body": "Lower-priority declarations are not shown.",
+      "evidence_mode": "not_executed"
+    }
+  ]
+}

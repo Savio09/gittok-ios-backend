@@ -271,11 +271,10 @@ func metadataMetricsFrom(in Input) []apimodel.Metric {
 	r := in.Repo
 	var out []apimodel.Metric
 	add := func(key, label, field, value string) {
-		f, ok := r.Metadata[field]
-		if !ok || f.Null || f.Value != value || value == "" {
+		if !reportedMetadataValue(r, field, value) {
 			return
 		}
-		out = append(out, apimodel.Metric{Key: key, Label: label, Value: value, Source: &apimodel.Source{Kind: apimodel.SourceMetadata, Ref: field, URL: metadataURL(r)}, Confidence: apimodel.Confident})
+		out = append(out, apimodel.Metric{Key: key, Label: label, Value: value, Source: &apimodel.Source{Kind: apimodel.SourceMetadata, Ref: field, URL: metadataURL(r)}, Confidence: apimodel.Confident, EvidenceStatus: apimodel.EvidenceSupported})
 	}
 	add("stars", "stars", "stargazers_count", strconv.Itoa(r.Stars))
 	if r.License != "NOASSERTION" {

@@ -1,0 +1,41 @@
+{
+  "items": [
+    {
+      "id": "any/repo",
+      "owner": "any",
+      "name": "repo",
+      "slug": "any/repo",
+      "kind": "backend",
+      "kind_evidence_status": "inferred",
+      "evidence_mode": "not_executed",
+      "language": "Go",
+      "description": "Author purpose",
+      "github_url": "https://github.com/any/repo",
+      "license": "MIT",
+      "metrics": [
+        {
+          "key": "stars",
+          "label": "stars",
+          "value": "61.6k",
+          "source": {
+            "kind": "metadata",
+            "ref": "stargazers_count"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        },
+        {
+          "key": "license",
+          "label": "license",
+          "value": "MIT",
+          "source": {
+            "kind": "metadata",
+            "ref": "license.spdx_id"
+          },
+          "confidence": "confident",
+          "evidence_status": "supported"
+        }
+      ]
+    }
+  ]
+}

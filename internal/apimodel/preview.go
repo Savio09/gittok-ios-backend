@@ -89,11 +89,12 @@ type Signal struct {
 // evidence-backed like a claim: Value may be "Unclear" with Confidence
 // uncertain when the backend could not determine it.
 type Metric struct {
-	Key        string     `json:"key"`
-	Label      string     `json:"label"`
-	Value      string     `json:"value"`
-	Source     *Source    `json:"source,omitempty"`
-	Confidence Confidence `json:"confidence,omitempty"`
+	Key            string         `json:"key"`
+	Label          string         `json:"label"`
+	Value          string         `json:"value"`
+	Source         *Source        `json:"source,omitempty"`
+	Confidence     Confidence     `json:"confidence,omitempty"`
+	EvidenceStatus EvidenceStatus `json:"evidence_status,omitempty"`
 }
 
 // FitDimension is one axis of the fit scorecard: a named dimension scored on a
@@ -142,6 +143,9 @@ func (k SectionKind) Valid() bool {
 // architecture diagram inferred from code) carry the runtime guarantee, not
 // just Media.
 type Section struct {
+	// Media is an optional artifact for this ordered content item. Its execution
+	// provenance is independent of source claims and other captures.
+	Media        *Media       `json:"media,omitempty"`
 	Kind         SectionKind  `json:"kind"`
 	Title        string       `json:"title"`
 	Body         string       `json:"body,omitempty"`
@@ -154,16 +158,20 @@ type Section struct {
 // signals); Sections carry the deeper walkthrough. No field says where anything
 // is drawn.
 type RepoPreview struct {
-	ID          string   `json:"id"`
-	Owner       string   `json:"owner"`
-	Name        string   `json:"name"`
-	Slug        string   `json:"slug"` // "owner/name"
-	Kind        RepoKind `json:"kind"`
-	Language    string   `json:"language,omitempty"`
-	Headline    string   `json:"headline,omitempty"`
-	Description string   `json:"description"`
-	GitHubURL   string   `json:"github_url"`
-	License     string   `json:"license,omitempty"`
+	ID    string   `json:"id"`
+	Owner string   `json:"owner"`
+	Name  string   `json:"name"`
+	Slug  string   `json:"slug"` // "owner/name"
+	Kind  RepoKind `json:"kind"`
+	// KindEvidenceStatus marks a classification as inferred or undecided.
+	KindEvidenceStatus EvidenceStatus `json:"kind_evidence_status,omitempty"`
+	// EvidenceMode is the execution guarantee for the preview as a whole.
+	EvidenceMode EvidenceMode `json:"evidence_mode,omitempty"`
+	Language     string       `json:"language,omitempty"`
+	Headline     string       `json:"headline,omitempty"`
+	Description  string       `json:"description"`
+	GitHubURL    string       `json:"github_url"`
+	License      string       `json:"license,omitempty"`
 
 	Media    *Media    `json:"media,omitempty"`
 	Signals  []Signal  `json:"signals,omitempty"`

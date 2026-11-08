@@ -1,0 +1,98 @@
+{
+  "id": "any/repo",
+  "owner": "any",
+  "name": "repo",
+  "slug": "any/repo",
+  "kind": "other",
+  "kind_evidence_status": "unknown",
+  "evidence_mode": "not_executed",
+  "description": "Author purpose",
+  "github_url": "https://github.com/any/repo",
+  "sections": [
+    {
+      "kind": "idea",
+      "title": "Repository descriptions",
+      "claims": [
+        {
+          "label": "README passage",
+          "source": {
+            "kind": "file",
+            "ref": "README.md",
+            "lines": "3-3",
+            "url": "https://github.com/any/repo/blob/0123456789abcdef0123456789abcdef01234567/README.md#L3-L3"
+          },
+          "excerpt": "An example with evidence.",
+          "explanation": "\"README.md\" states: \"An example with evidence.\".",
+          "supports": "An attributed documentation passage in the repository root.",
+          "limit": "Repository documentation is an author statement; its described behavior was not verified.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        },
+        {
+          "label": "GitHub description",
+          "source": {
+            "kind": "metadata",
+            "ref": "description",
+            "url": "https://api.github.com/repos/any/repo"
+          },
+          "explanation": "The repository's GitHub description states: \"Author purpose\".",
+          "supports": "The value reported by GitHub for this repository.",
+          "limit": "Captured 2026-11-02T00:00:00Z. Provider metadata is mutable and does not verify implementation or runtime behavior.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "stack",
+      "title": "Declared stack",
+      "claims": [
+        {
+          "label": "Declares react",
+          "source": {
+            "kind": "file",
+            "ref": "web/package.json",
+            "lines": "1-1",
+            "url": "https://github.com/any/repo/blob/0123456789abcdef0123456789abcdef01234567/web/package.json#L1-L1"
+          },
+          "excerpt": "\"react\":\"^19\"",
+          "explanation": "\"web/package.json\" declares \"react\" in \"devDependencies\" with declared specification \"^19\".",
+          "supports": "A dependency declaration in component \"web\".",
+          "limit": "A declaration does not prove installation, runtime use or repository-wide architecture.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "setup",
+      "title": "Declared commands",
+      "claims": [
+        {
+          "label": "Declares command build",
+          "source": {
+            "kind": "file",
+            "ref": "web/package.json",
+            "lines": "1-1",
+            "url": "https://github.com/any/repo/blob/0123456789abcdef0123456789abcdef01234567/web/package.json#L1-L1"
+          },
+          "excerpt": "\"build\":\"vite build\"",
+          "explanation": "\"web/package.json\" declares field \"scripts → build\" as \"vite build\".",
+          "supports": "A static command declaration in component \"web\".",
+          "limit": "The command was not executed; success and required environment were not verified.",
+          "evidence_status": "supported",
+          "confidence": "confident"
+        }
+      ],
+      "evidence_mode": "not_executed"
+    },
+    {
+      "kind": "decision",
+      "title": "Coverage notes",
+      "body": "The project type could not be confirmed from the inspected files.",
+      "evidence_mode": "not_executed"
+    }
+  ]
+}

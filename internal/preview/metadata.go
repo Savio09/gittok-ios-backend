@@ -2,6 +2,7 @@ package preview
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -18,50 +19,55 @@ import (
 // deliberately lets a preview carry only what has actually been determined, so
 // a metadata-only preview never implies analysis that has not run.
 func FromMetadata(r githubclient.Repo) apimodel.RepoPreview {
+	kind := inferKind(r)
+	status := apimodel.EvidenceInferred
+	if kind == apimodel.KindOther {
+		status = apimodel.EvidenceUnknown
+	}
 	return apimodel.RepoPreview{
-		ID:          r.FullName,
-		Owner:       r.Owner,
-		Name:        r.Name,
-		Slug:        r.FullName,
-		Kind:        inferKind(r),
-		Language:    r.Language,
-		Description: r.Description,
-		GitHubURL:   r.HTMLURL,
-		License:     r.License,
-		Metrics:     metadataMetrics(r),
+		ID:                 r.FullName,
+		Owner:              r.Owner,
+		Name:               r.Name,
+		Slug:               r.FullName,
+		Kind:               kind,
+		KindEvidenceStatus: status,
+		EvidenceMode:       apimodel.NotExecuted,
+		Language:           r.Language,
+		Description:        r.Description,
+		GitHubURL:          r.HTMLURL,
+		License:            r.License,
+		Metrics:            metadataMetrics(r),
 	}
 }
 
-// metadataMetrics turns the raw numbers into the display metrics the feed shows.
-// Each is sourced to the API field it came from and marked confident, since it
-// is reported directly by GitHub rather than inferred.
+// reportedMetadataValue requires the retained provider field to establish the
+// value. A zero-valued Go field alone cannot distinguish missing from reported.
+func reportedMetadataValue(r githubclient.Repo, field, value string) bool {
+	f, ok := r.Metadata[field]
+	return ok && !f.Null && f.Value == value && value != ""
+}
+
+// metadataMetrics preserves feed display formats and legacy keys, but uses the
+// same provider-value check as the analyzed preview before marking support.
 func metadataMetrics(r githubclient.Repo) []apimodel.Metric {
-	metrics := []apimodel.Metric{
-		{
-			Key:        "stars",
-			Label:      "stars",
-			Value:      formatCount(r.Stars),
-			Source:     &apimodel.Source{Kind: apimodel.SourceMetadata, Ref: "stargazers_count"},
-			Confidence: apimodel.Confident,
-		},
+	var metrics []apimodel.Metric
+	add := func(key, label, field, raw, display string) {
+		if !reportedMetadataValue(r, field, raw) {
+			return
+		}
+		metrics = append(metrics, apimodel.Metric{
+			Key: key, Label: label, Value: display,
+			Source:     &apimodel.Source{Kind: apimodel.SourceMetadata, Ref: field},
+			Confidence: apimodel.Confident, EvidenceStatus: apimodel.EvidenceSupported,
+		})
 	}
+	add("stars", "stars", "stargazers_count", strconv.Itoa(r.Stars), formatCount(r.Stars))
 	if !r.PushedAt.IsZero() {
-		metrics = append(metrics, apimodel.Metric{
-			Key:        "last_commit",
-			Label:      "since last commit",
-			Value:      humanizeDuration(time.Since(r.PushedAt)),
-			Source:     &apimodel.Source{Kind: apimodel.SourceMetadata, Ref: "pushed_at"},
-			Confidence: apimodel.Confident,
-		})
+		// Keep the legacy key; pushed_at reports a push, not a commit.
+		add("last_commit", "since last push", "pushed_at", r.PushedAt.Format(time.RFC3339), humanizeDuration(time.Since(r.PushedAt)))
 	}
-	if r.License != "" {
-		metrics = append(metrics, apimodel.Metric{
-			Key:        "license",
-			Label:      "license",
-			Value:      r.License,
-			Source:     &apimodel.Source{Kind: apimodel.SourceMetadata, Ref: "license.spdx_id"},
-			Confidence: apimodel.Confident,
-		})
+	if r.License != "NOASSERTION" {
+		add("license", "license", "license.spdx_id", r.License, r.License)
 	}
 	return metrics
 }
