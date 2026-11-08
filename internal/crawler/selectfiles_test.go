@@ -77,8 +77,8 @@ func TestSelectFiles(t *testing.T) {
 				".github/workflows/ci.yml", "main.go",
 			),
 			budget:        DefaultSelectionBudget(),
-			mustInclude:   []string{"go.mod", "CONTRIBUTING.md", "README.md", ".github/workflows/ci.yml", "main.go"},
-			orderedBefore: []string{"go.mod", "CONTRIBUTING.md", "README.md", ".github/workflows/ci.yml", "main.go"},
+			mustInclude:   []string{"go.mod", "CONTRIBUTING.md", "README.md", "main.go", ".github/workflows/ci.yml"},
+			orderedBefore: []string{"go.mod", "CONTRIBUTING.md", "README.md", "main.go", ".github/workflows/ci.yml"},
 		},
 		{
 			name: "directories and unscored files are never selected",
@@ -91,7 +91,7 @@ func TestSelectFiles(t *testing.T) {
 			mustExclude: []string{"LICENSE", "assets/logo.png", ".gitignore", "internal", "somedir"},
 		},
 		{
-			name: "monorepo package.json spam is capped per basename",
+			name: "independent monorepo manifests remain eligible",
 			tree: blobs(
 				"package.json",
 				"packages/a/package.json", "packages/b/package.json",
@@ -99,8 +99,8 @@ func TestSelectFiles(t *testing.T) {
 				"packages/e/package.json",
 			),
 			budget: DefaultSelectionBudget(),
-			// Root wins (shallowest) and only MaxPerBase (3) survive — asserted
-			// numerically below; here just pin the root as always present.
+			// Root wins (shallowest); independent manifests share the total cap,
+			// rather than displacing one another through a global basename cap.
 			mustInclude: []string{"package.json"},
 		},
 		{
@@ -156,22 +156,17 @@ func TestSelectFiles(t *testing.T) {
 	}
 }
 
-// TestSelectFilesPerBaseCap pins the monorepo dedupe numerically: no more than
-// MaxPerBase files sharing a base name survive, and the shallowest wins.
+// Repeated docs still obey the basename cap; independent component manifests
+// are separately covered by TestG16IndependentManifestCoverage.
 func TestSelectFilesPerBaseCap(t *testing.T) {
-	tree := blobs(
-		"package.json",
-		"packages/a/package.json", "packages/b/package.json",
-		"packages/c/package.json", "packages/d/package.json",
-	)
+	tree := blobs("README.md", "a/README.md", "b/README.md", "c/README.md", "d/README.md")
 	budget := DefaultSelectionBudget()
 	got := SelectFiles(tree, budget)
-
-	if n := countBase(got, "package.json"); n != budget.MaxPerBase {
-		t.Fatalf("package.json count = %d, want MaxPerBase %d (%v)", n, budget.MaxPerBase, paths(got))
+	if n := countBase(got, "README.md"); n != budget.MaxPerBase {
+		t.Fatalf("README count=%d, want=%d: %v", n, budget.MaxPerBase, paths(got))
 	}
-	if !contains(got, "package.json") {
-		t.Errorf("root package.json (shallowest) must be among the kept ones; got %v", paths(got))
+	if !contains(got, "README.md") {
+		t.Fatal("root README was displaced")
 	}
 }
 
@@ -215,7 +210,7 @@ func TestSelectFilesBudgetEnforced(t *testing.T) {
 		}
 	}
 	for base, n := range perBase {
-		if n > budget.MaxPerBase {
+		if base != "package.json" && n > budget.MaxPerBase {
 			t.Errorf("base %q selected %d times, exceeds MaxPerBase %d", base, n, budget.MaxPerBase)
 		}
 	}
