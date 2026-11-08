@@ -1,6 +1,7 @@
 package preview
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 	"strings"
@@ -33,12 +34,30 @@ const BuilderVersion = 4
 
 // Build is pure: no GitHub requests, environment, model calls or current clock.
 func Build(in Input) apimodel.RepoPreview {
+	return BuildContext(context.Background(), in)
+}
+
+// BuildContext cooperatively limits interpretation. If its deadline interrupts
+// any stage, discard file claims and render a truthful metadata-only preview.
+func BuildContext(ctx context.Context, in Input) apimodel.RepoPreview {
+	metadataOnly := func() apimodel.RepoPreview {
+		in.Inspection = crawler.Inspection{Scope: crawler.TreeScope{Truncated: true}}
+		in.Coverage.AnalysisIncomplete = true
+		in.Coverage.FilesNotAcquired = true
+		return BuildContext(context.Background(), in)
+	}
+	if ctx.Err() != nil || (in.Coverage.AnalysisIncomplete && len(in.Inspection.Paths)+len(in.Inspection.Files) > 0) {
+		return metadataOnly()
+	}
 	r := in.Repo
 	if !ValidIdentity(r.Owner, r.Name) {
 		return apimodel.RepoPreview{Kind: apimodel.KindOther, KindEvidenceStatus: apimodel.EvidenceUnknown, EvidenceMode: apimodel.NotExecuted}
 	}
 	p := apimodel.RepoPreview{ID: r.Owner + "/" + r.Name, Owner: r.Owner, Name: r.Name, Slug: r.Owner + "/" + r.Name, Kind: apimodel.KindOther, KindEvidenceStatus: apimodel.EvidenceUnknown, EvidenceMode: apimodel.NotExecuted, GitHubURL: repoURL(r)}
-	classification := crawler.Classify(in.Inspection)
+	classification := crawler.ClassifyContext(ctx, in.Inspection)
+	if ctx.Err() != nil {
+		return metadataOnly()
+	}
 	// The kind is displayed only with an explanation citing its whole basis.
 	_, explained := kindClaim(in, classification)
 	if classification.Status == crawler.VerdictResolved && explained {
@@ -54,7 +73,10 @@ func Build(in Input) apimodel.RepoPreview {
 			*field.dest = field.value
 		}
 	}
-	all := candidates(in, classification)
+	all := candidatesContext(ctx, in, classification)
+	if ctx.Err() != nil {
+		return metadataOnly()
+	}
 	secondaries := false
 	for _, c := range all {
 		secondaries = secondaries || (c.dep && !c.productDep && c.tier == tierSecondary)
@@ -75,6 +97,9 @@ func Build(in Input) apimodel.RepoPreview {
 	}
 	if notes := coverageNotes(in, classification, explained, omitted); len(notes) > 0 {
 		p.Sections = append(p.Sections, apimodel.Section{Kind: apimodel.SectionDecision, Title: "Coverage notes", Body: strings.Join(notes, "\n"), EvidenceMode: apimodel.NotExecuted})
+	}
+	if ctx.Err() != nil {
+		return metadataOnly()
 	}
 	return p
 }

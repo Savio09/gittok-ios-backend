@@ -72,13 +72,15 @@ type Result struct {
 	Limitations    []string // internal diagnostics: paths and technical reasons
 	Coverage       preview.Coverage
 	Outcome        Outcome
-	transient      bool // a selected file failed for a transient reason
+	transient      bool      // a selected file failed for a transient reason
+	deadline       time.Time // absolute acquisition/rendering deadline
 }
 
 // Service has no mutable request state and may be shared by HTTP handlers.
 type Service struct {
 	github     GitHub
 	timeout    time.Duration
+	limits     Limits
 	publicOnly bool
 	cache      *PreviewCache // public services only
 	flights    *group        // coalescing and admission, when enabled
@@ -95,7 +97,9 @@ func (s *Service) UseCache(c *PreviewCache) *Service {
 	return s
 }
 
-func NewService(github GitHub) *Service { return &Service{github: github, timeout: 30 * time.Second} }
+func NewService(github GitHub) *Service {
+	return &Service{github: github, timeout: DefaultLimits().Timeout, limits: DefaultLimits()}
+}
 
 // NewPublicService cannot inherit the server's shared token. Anonymous requests
 // cannot retrieve newly private evidence after an initially public metadata read.
@@ -123,11 +127,13 @@ func (s *Service) Acquire(parent context.Context, owner, name string) (Result, e
 	if err := parent.Err(); err != nil {
 		return Result{}, err
 	}
-	repo, err := s.metadata(parent, owner, name)
+	ctx, cancel, _, _ := s.workContext(parent)
+	defer cancel()
+	repo, err := s.metadata(ctx, owner, name)
 	if err != nil {
 		return Result{}, err
 	}
-	return s.acquireFrom(parent, repo, owner, name)
+	return s.acquireFrom(parent, ctx, repo, owner, name)
 }
 
 // metadata reads and gates current repository metadata: a public service
@@ -152,11 +158,10 @@ func (s *Service) metadata(parent context.Context, owner, name string) (githubcl
 }
 
 // acquireFrom reads canonically selected files for already gated metadata.
-func (s *Service) acquireFrom(parent context.Context, repo githubclient.Repo, owner, name string) (Result, error) {
-	ctx, cancel := context.WithTimeout(parent, s.timeout)
-	defer cancel()
+func (s *Service) acquireFrom(parent, ctx context.Context, repo githubclient.Repo, owner, name string) (Result, error) {
 	var err error
 	a := Result{Repo: repo, CapturedAt: time.Now().UTC(), Outcome: OutcomeComplete}
+	a.deadline, _ = ctx.Deadline()
 	// Follow canonical identity after a redirected metadata lookup. A reused
 	// alias must never select another repository's commits for this metadata.
 	if preview.ValidIdentity(repo.Owner, repo.Name) {
@@ -204,7 +209,27 @@ func (s *Service) acquireFrom(parent context.Context, repo githubclient.Repo, ow
 			}
 		}
 		a.Inspection = crawler.NewInspection(repo.Language, a.Inspection.Revision, a.Tree, a.Fetched)
-		a.Classification = crawler.Classify(a.Inspection)
+		if ctx.Err() != nil {
+			if a.Outcome == OutcomeComplete {
+				a.Outcome = OutcomePartial
+			}
+			a.Coverage.AnalysisIncomplete = true
+			a.Classification = crawler.ClassifyContext(ctx, a.Inspection)
+			if err := parent.Err(); err != nil {
+				return Result{}, err
+			}
+			return a, nil
+		}
+		a.Classification = crawler.ClassifyContext(ctx, a.Inspection)
+		if ctx.Err() != nil {
+			if a.Outcome == OutcomeComplete {
+				a.Outcome = OutcomePartial
+			}
+			a.Coverage.AnalysisIncomplete = true
+		}
+		if err := parent.Err(); err != nil {
+			return Result{}, err
+		}
 		return a, nil
 	}
 	a.Tree.Truncated = true // until a successful tree establishes listing scope
@@ -230,7 +255,7 @@ func (s *Service) acquireFrom(parent context.Context, repo githubclient.Repo, ow
 		a.Coverage.FilesNotAcquired = true
 		return finish("Analysis stopped before the tree could be acquired.")
 	}
-	tree, err := s.github.GetTree(ctx, owner, name, ref, githubclient.DefaultTreeLimits())
+	tree, err := s.github.GetTree(ctx, owner, name, ref, githubclient.TreeLimits{MaxEntries: s.limits.MaxTreeEntries, MaxDepth: s.limits.MaxDepth})
 	if policyRejected(err) {
 		return Result{}, err
 	}
@@ -246,7 +271,13 @@ func (s *Service) acquireFrom(parent context.Context, repo githubclient.Repo, ow
 			break
 		}
 	}
-	selected := crawler.SelectFiles(tree.Entries, crawler.DefaultSelectionBudget())
+	if ctx.Err() != nil {
+		a.Coverage.FilesNotAcquired = true
+		return finish("Analysis deadline reached before file selection.")
+	}
+	selectionBudget := crawler.DefaultSelectionBudget()
+	selectionBudget.MaxFiles = s.limits.MaxFiles
+	selected := crawler.SelectFiles(tree.Entries, selectionBudget)
 	paths := make([]string, len(selected))
 	for i, f := range selected {
 		paths[i] = f.Path
@@ -256,7 +287,7 @@ func (s *Service) acquireFrom(parent context.Context, repo githubclient.Repo, ow
 		a.Coverage.FilesNotAcquired = true
 		return finish("Analysis stopped before selected contents could be acquired.")
 	}
-	fetched, err := s.github.GetFileContents(ctx, owner, name, ref, paths, githubclient.DefaultContentLimits())
+	fetched, err := s.github.GetFileContents(ctx, owner, name, ref, paths, githubclient.ContentLimits{MaxFiles: s.limits.MaxFiles, MaxFileBytes: s.limits.MaxFileBytes, MaxTotalBytes: s.limits.MaxTotalBytes})
 	if policyRejected(err) {
 		return Result{}, err
 	}

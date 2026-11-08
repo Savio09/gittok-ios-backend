@@ -2,6 +2,7 @@ package githubclient
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"io"
@@ -29,7 +30,7 @@ type Client struct {
 	userAgent   string
 	maxRetries  int
 	backoffBase time.Duration
-	sleep       func(time.Duration) // injectable so tests don't actually wait
+	sleep       func(time.Duration) // optional test hook; production uses a cancellable timer
 	// check, when set, vets every response before any body is decoded; a
 	// non-nil result (normally a *PolicyError) is terminal.
 	check func(*http.Response) error
@@ -46,6 +47,9 @@ func WithBaseURL(u string) Option {
 }
 
 // WithHTTPClient supplies the underlying HTTP client (default: 15s timeout).
+// Standard transports are cloned and use fresh HTTP/1 connections so hidden
+// transport retries cannot evade the quota. A custom RoundTripper must perform
+// at most one network attempt per RoundTrip and honor request cancellation.
 func WithHTTPClient(h *http.Client) Option {
 	return func(c *Client) {
 		if h != nil {
@@ -90,11 +94,37 @@ func New(token string, opts ...Option) *Client {
 		userAgent:   "gittok-backend",
 		maxRetries:  defaultMaxRetries,
 		backoffBase: defaultBackoffBase,
-		sleep:       time.Sleep,
 	}
 	for _, opt := range opts {
 		opt(c)
 	}
+	// Copy the caller's client before wrapping its transport; a shared HTTP
+	// client must never acquire another service's mutable configuration.
+	copied := *c.httpClient
+	transport := copied.Transport
+	if transport == nil {
+		transport = http.DefaultTransport
+	}
+	if standard, ok := transport.(*http.Transport); ok {
+		// A reused connection or HTTP/2 stream can retry inside RoundTrip,
+		// invisible to our attempt counter. Fresh HTTP/1 connections keep all
+		// retries in get(), where the analysis quota can stop them.
+		isolated := standard.Clone()
+		isolated.DisableKeepAlives = true
+		isolated.ForceAttemptHTTP2 = false
+		isolated.Protocols = new(http.Protocols)
+		isolated.Protocols.SetHTTP1(true)
+		// Clone initializes HTTP/2 defaults on the original transport. Clear
+		// their ALPN offers and handlers too, including explicitly supplied H2.
+		if isolated.TLSClientConfig == nil {
+			isolated.TLSClientConfig = &tls.Config{}
+		}
+		isolated.TLSClientConfig.NextProtos = []string{"http/1.1"}
+		isolated.TLSNextProto = map[string]func(string, *tls.Conn) http.RoundTripper{}
+		transport = isolated
+	}
+	copied.Transport = budgetTransport{base: transport}
+	c.httpClient = &copied
 	c.mode = "anonymous"
 	if token != "" {
 		c.mode = "token"
@@ -114,6 +144,12 @@ func (c *Client) get(ctx context.Context, path string, v any) error {
 	var retryAfter time.Duration
 
 	for attempt := 0; attempt <= c.maxRetries; attempt++ {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		if err := requestBudget(ctx).check(false); err != nil {
+			return err
+		}
 		if attempt > 0 {
 			if err := c.waitBackoff(ctx, backoffDelay(attempt, retryAfter, c.backoffBase)); err != nil {
 				return err
@@ -127,6 +163,9 @@ func (c *Client) get(ctx context.Context, path string, v any) error {
 			if errors.As(err, &policy) {
 				return policy // a refused redirect is terminal, not transient
 			}
+			if errors.Is(err, ErrCallBudget) || ctx.Err() != nil {
+				return err
+			}
 			lastErr = err // transport error — transient, retry
 			continue
 		}
@@ -137,6 +176,7 @@ func (c *Client) get(ctx context.Context, path string, v any) error {
 				return err // terminal: never decode or retry a rejected response
 			}
 		}
+		resp.Body = capResponse(ctx, resp.Body)
 		done, ra, err := classify(resp, c.baseURL+path, v)
 		resp.Body.Close()
 		if done {
@@ -148,15 +188,23 @@ func (c *Client) get(ctx context.Context, path string, v any) error {
 	return lastErr
 }
 
-// waitBackoff pauses for d before the next retry, but returns early with the
-// context's error if ctx is cancelled during the wait. The delay still runs
-// through the injectable sleep (so tests stay instant), but it is raced against
-// ctx.Done(), so a cancelled request no longer blocks for the full backoff —
-// which, at maxBackoff, could otherwise be 30s.
+// waitBackoff cancels its production timer when the work ends; even an enormous
+// Retry-After cannot leave sleeping goroutines behind after the deadline.
 func (c *Client) waitBackoff(ctx context.Context, d time.Duration) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
+	if c.sleep == nil {
+		timer := time.NewTimer(d)
+		defer timer.Stop()
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-timer.C:
+			return nil
+		}
+	}
+	// The injected hook lets tests observe/advance backoff without wall time.
 	done := make(chan struct{})
 	go func() {
 		c.sleep(d)
@@ -192,7 +240,14 @@ func (c *Client) doOnce(ctx context.Context, path string) (*http.Response, error
 func classify(resp *http.Response, url string, v any) (done bool, retryAfter time.Duration, err error) {
 	switch {
 	case resp.StatusCode >= 200 && resp.StatusCode < 300:
-		if decErr := json.NewDecoder(resp.Body).Decode(v); decErr != nil {
+		dec := json.NewDecoder(resp.Body)
+		var decErr error
+		if streaming, ok := v.(interface{ decodeJSON(*json.Decoder) error }); ok {
+			decErr = streaming.decodeJSON(dec)
+		} else {
+			decErr = dec.Decode(v)
+		}
+		if decErr != nil {
 			return true, 0, decErr
 		}
 		return true, 0, nil
