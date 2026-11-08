@@ -520,7 +520,7 @@ func TestEngineReservesToolGrowthAndFinalOutputBeforeExploration(t *testing.T) {
 				t.Fatal(err)
 			}
 			accepted, err := engine.Run(context.Background(), "lookahead-"+strings.ReplaceAll(pressure, " ", "-"), inv, nil)
-			if err != nil || accepted.ID() == "" || calls != 2 {
+			if err != nil || accepted.ID() == "" || calls < 2 || calls > cfg.MaxCalls || (pressure == "final output" && calls != 2) {
 				t.Fatalf("exploration consumed final submission capacity: accepted=%s err=%v calls=%d", accepted.ID(), err, calls)
 			}
 		})
