@@ -41,6 +41,7 @@ func (*ProviderStatusError) Unwrap() error { return ErrProviderUnavailable }
 // MaxRevisions is 0 or 1; one revision requires at least four total calls.
 type EngineConfig struct {
 	APIKey, Model                                 string
+	ReasoningEffort                               string
 	InputMicrosPerMillion, OutputMicrosPerMillion int64
 	MaxCalls, MaxOutputTokens, MaxInputBytes      int
 	MaxJobMicros                                  int64
@@ -79,7 +80,7 @@ func WithBaseURL(origin string) EngineOption {
 }
 
 func NewEngine(cfg EngineConfig, ledger *generation.Ledger, opts ...EngineOption) (*Engine, error) {
-	if ledger == nil || cfg.APIKey == "" || len(cfg.APIKey) > 512 || strings.ContainsAny(cfg.APIKey, " \t\r\n") || !idPattern.MatchString(cfg.Model) || cfg.InputMicrosPerMillion <= 0 || cfg.OutputMicrosPerMillion <= 0 || cfg.MaxCalls < 2 || cfg.MaxCalls > 16 || cfg.MaxInputBytes < 1 || cfg.MaxInputBytes > 4<<20 || cfg.MaxOutputTokens < 2 || cfg.MaxOutputTokens > 64000 || cfg.MaxJobMicros <= 0 || cfg.MaxRevisions < 0 || cfg.MaxRevisions > 1 || cfg.MaxRevisions == 1 && cfg.MaxCalls < 4 {
+	if ledger == nil || cfg.APIKey == "" || len(cfg.APIKey) > 512 || strings.ContainsAny(cfg.APIKey, " \t\r\n") || !idPattern.MatchString(cfg.Model) || cfg.InputMicrosPerMillion <= 0 || cfg.OutputMicrosPerMillion <= 0 || cfg.MaxCalls < 2 || cfg.MaxCalls > 16 || cfg.MaxInputBytes < 1 || cfg.MaxInputBytes > 4<<20 || cfg.MaxOutputTokens < 2 || cfg.MaxOutputTokens > 64000 || cfg.MaxJobMicros <= 0 || cfg.MaxRevisions < 0 || cfg.MaxRevisions > 1 || cfg.MaxRevisions == 1 && cfg.MaxCalls < 4 || !validReasoningEffort(cfg.ReasoningEffort) {
 		return nil, ErrProviderUnavailable
 	}
 	if _, err := modelCost(int64(cfg.MaxInputBytes)*2+4096, int64(cfg.MaxOutputTokens), cfg); err != nil {
@@ -112,18 +113,32 @@ type engineBudget struct {
 	spent                int64
 }
 type responseRequest struct {
-	Model             string            `json:"model"`
-	Instructions      string            `json:"instructions"`
-	Input             []json.RawMessage `json:"input"`
-	Tools             []responseTool    `json:"tools,omitempty"`
-	ToolChoice        any               `json:"tool_choice,omitempty"`
-	Text              any               `json:"text,omitempty"`
-	MaxOutputTokens   int               `json:"max_output_tokens"`
-	ParallelToolCalls bool              `json:"parallel_tool_calls"`
-	Store             bool              `json:"store"`
-	Include           []string          `json:"include"`
+	Model             string             `json:"model"`
+	Instructions      string             `json:"instructions"`
+	Input             []json.RawMessage  `json:"input"`
+	Tools             []responseTool     `json:"tools,omitempty"`
+	ToolChoice        any                `json:"tool_choice,omitempty"`
+	Text              any                `json:"text,omitempty"`
+	MaxOutputTokens   int                `json:"max_output_tokens"`
+	ParallelToolCalls bool               `json:"parallel_tool_calls"`
+	Store             bool               `json:"store"`
+	Include           []string           `json:"include"`
+	Reasoning         *responseReasoning `json:"reasoning,omitempty"`
+	ServiceTier       string             `json:"service_tier"`
 	pairPhase         bool
 }
+type responseReasoning struct {
+	Effort string `json:"effort"`
+}
+
+func validReasoningEffort(effort string) bool {
+	switch effort {
+	case "", "none", "low", "medium", "high", "xhigh", "max":
+		return true
+	}
+	return false
+}
+
 type responseTool struct {
 	Type        string `json:"type"`
 	Name        string `json:"name"`
@@ -188,6 +203,15 @@ func (e *Engine) prepareRequest(budget *engineBudget, request responseRequest, r
 		return preparedRequest{}, ErrGenerationBudget
 	}
 	request.Model = e.cfg.Model
+	// Standard tier keeps operator-supplied standard pricing applicable; an
+	// optional effort is model-dependent operator configuration, never source.
+	// https://developers.openai.com/api/docs/guides/reasoning
+	// https://developers.openai.com/api/docs/guides/fast-mode
+	request.ServiceTier = "default"
+	request.Reasoning = nil
+	if e.cfg.ReasoningEffort != "" {
+		request.Reasoning = &responseReasoning{Effort: e.cfg.ReasoningEffort}
+	}
 	outputCap := min(4096, remaining.OutputTokens)
 	if request.MaxOutputTokens > 0 {
 		outputCap = min(outputCap, request.MaxOutputTokens)
@@ -373,6 +397,10 @@ func writerTools() []responseTool {
 		{Type: "function", Name: "list_paths", Description: "Find eligible pinned repository paths using ONE literal path substring, or empty string to list paths. Not natural-language search or a space-joined OR list. Listed paths alone are not evidence. Limit 1..40.", Strict: true, Parameters: schemaObject(map[string]any{"query": schemaString(), "limit": schemaCount(40)})},
 		{Type: "function", Name: "read_file", Description: "Read an eligible repository source window with actual evidence ID and original line numbers. start_line>=1, line_count=1..80. Maximum 8192 text bytes.", Strict: true, Parameters: schemaObject(map[string]any{"path": schemaString(), "start_line": schemaInteger(), "line_count": schemaCount(80)})},
 		{Type: "function", Name: "search_file", Description: "Find the first literal query match in one eligible file at or after start_line. Return matched_line and a window starting at that line, up to line_count lines/8192 text bytes, with actual evidence IDs and original numbers. If the byte cap hides the query, return a matching_line_exceeds_window error and matched_line. query=1..160 bytes; line_count=1..80. Same acquisition budget as read_file; no regex or global search.", Strict: true, Parameters: schemaObject(map[string]any{"path": schemaString(), "query": schemaString(), "start_line": schemaInteger(), "line_count": schemaCount(80)})},
-		{Type: "function", Name: "submit_story", Description: "Submit final bounded source-grounded story for independent review. No further writer calls follow.", Strict: true, Parameters: draftSchema()},
+		{Type: "function", Name: "finish_reading", Description: "Signal that existing inspected evidence is sufficient. No reads occur. The next dedicated turn requires submit_story with the full remaining initial output allocation.", Strict: true, Parameters: schemaObject(map[string]any{})},
 	}
+}
+
+func storySubmissionTool() responseTool {
+	return responseTool{Type: "function", Name: "submit_story", Description: "Submit final bounded source-grounded story for independent review. No further investigation calls follow.", Strict: true, Parameters: draftSchema()}
 }

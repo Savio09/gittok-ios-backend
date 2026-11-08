@@ -30,8 +30,7 @@ func TestRevisionPairWith4001RemainingNeverPaysForOneTokenRewrite(t *testing.T) 
 			t.Fatal(err)
 		}
 	}
-	cfg := engineConfig()
-	cfg.MaxRevisions = 1
+	cfg := revisionConfig()
 	calls := 0
 	engine, err := NewEngine(cfg, engineLedger(t), WithHTTPClient(&http.Client{Transport: engineRoundTrip(func(r *http.Request) (*http.Response, error) {
 		calls++
@@ -50,16 +49,8 @@ func TestRevisionPairWith4001RemainingNeverPaysForOneTokenRewrite(t *testing.T) 
 	if err != nil {
 		t.Fatal(err)
 	}
-	request, err := engine.reviewRequest(inv.Snapshot(), draft, 0)
-	if err != nil {
-		t.Fatal(err)
-	}
-	prepared, err := engine.prepareRequest(&engineBudget{}, request, true)
-	if err != nil {
-		t.Fatal(err)
-	}
 	budget := engineBudget{calls: 2, output: cfg.MaxOutputTokens - 4001}
-	_, accepted, err := engine.revise(context.Background(), "tight-pair", inv.Snapshot(), draft, revisionRejected(review), &budget, request, len(prepared.body), func(string) {})
+	_, accepted, err := engine.revise(context.Background(), "tight-pair", inv.Snapshot(), draft, revisionRejected(review), &budget, func(string) {})
 	if err != nil || !accepted.Accepted || calls != 2 {
 		t.Fatalf("funded tight pair failed: %v calls=%d", err, calls)
 	}
@@ -72,8 +63,7 @@ func TestRevisionOutputPhasesPreservePairAfterMaximumInitialUsage(t *testing.T) 
 			t.Fatal(err)
 		}
 	}
-	cfg := engineConfig()
-	cfg.MaxRevisions = 1
+	cfg := revisionConfig()
 	calls, writerOutput, totalOutput, reviews := 0, 0, 0, 0
 	engine, err := NewEngine(cfg, engineLedger(t), WithHTTPClient(&http.Client{Transport: engineRoundTrip(func(r *http.Request) (*http.Response, error) {
 		calls++
@@ -106,7 +96,7 @@ func TestRevisionOutputPhasesPreservePairAfterMaximumInitialUsage(t *testing.T) 
 			}
 			return revisionHTTPUsage(t, cap, engineCall(t, "read_file", map[string]any{"path": "src/report.rs", "start_line": 1, "line_count": 10}, "read-phase-"+string(rune('a'+calls)))), nil
 		}
-		if cap > 2048 {
+		if cap > cfg.MaxOutputTokens/3 {
 			t.Errorf("initial final cap=%d", cap)
 		}
 		return revisionHTTPUsage(t, cap, engineCall(t, "submit_story", draft, "first-finish")), nil
@@ -158,8 +148,7 @@ func TestMalformedReviewKeysNeverTriggerPaidRevision(t *testing.T) {
 				negative.Decisions[0].StatementID = "absent"
 				raw = engineJSON(t, negative)
 			}
-			cfg := engineConfig()
-			cfg.MaxRevisions = 1
+			cfg := revisionConfig()
 			calls := 0
 			engine, err := NewEngine(cfg, engineLedger(t), WithHTTPClient(&http.Client{Transport: engineRoundTrip(func(*http.Request) (*http.Response, error) {
 				calls++
